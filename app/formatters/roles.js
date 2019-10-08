@@ -4,9 +4,9 @@ const cols = SQL_TABLES.ROLES.COLUMNS;
 
 const formatRolesForResponse = (roles, translator) => roles.map(role => formatRoleForResponse(role, translator));
 
-const formatRoleForResponse = (role, translator) => ({
+const formatRoleForResponse = role => ({
     id: role.id,
-    [cols.NAME]: translator(role[cols.NAME]),
+    [cols.NAME]: role[cols.NAME],
 });
 
 module.exports = {

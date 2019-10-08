@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
-const i18n = require('i18n');
 
 const api = require('api');
 const { reject } = require('./api/response');
@@ -15,18 +14,10 @@ const { API_PREFIX } = require('constants/routes');
 const app = express();
 const debug = Debug('config-setup-backend:log');
 
-i18n.configure({
-    locales:['en', 'rus'],
-    directory: `${__dirname}/locales`,
-    defaultLocale: 'en',
-    cookie: 'i18n'
-});
-
 app.use(cors());
 app.use(logger('dev'));
 app.use(bodyParser.json({ type: 'application/json' }));
 app.use(cookieParser());
-app.use(i18n.init);
 
 app.use(express.static(path.join(__dirname, 'public')));
 

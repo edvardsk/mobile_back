@@ -68,7 +68,7 @@ const createUser = async (req, res, next) => {
 const getRoles = async (req, res, next) => {
     try {
         const roles = await RolesService.getRolesByNames(ROLES_TO_REGISTER);
-        return success(res, { roles: formatRolesForResponse(roles, req.__) });
+        return success(res, { roles: formatRolesForResponse(roles) });
     } catch (error) {
         next(error);
     }
