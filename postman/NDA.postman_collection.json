@@ -1,0 +1,519 @@
+{
+	"info": {
+		"_postman_id": "3325c103-42d9-4f0a-a145-0a39cfb48e1c",
+		"name": "NDA",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Registration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"test@mail.ru\",\n\t\"password\": \"password1\",\n\t\"role_id\": \"3c84b09e-7365-41a2-8016-778dae294fcd\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/registration",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"registration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Authorization",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0f2dc4c3-5070-41ab-8625-473e117b6a2b",
+								"exec": [
+									"const jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable (\"token\", jsonData.data.token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"test@mail.ru\",\n\t\"password\": \"password1\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/authorization",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"authorization"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0f2dc4c3-5070-41ab-8625-473e117b6a2b",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/confirm-email?hash=b7b2eafd-1ed4-41df-b0d0-f5b7fbabc37c",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"confirm-email"
+							],
+							"query": [
+								{
+									"key": "hash",
+									"value": "b7b2eafd-1ed4-41df-b0d0-f5b7fbabc37c"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0f2dc4c3-5070-41ab-8625-473e117b6a2b",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"test@mail.ru\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/forgot-password/reset",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"forgot-password",
+								"reset"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0f2dc4c3-5070-41ab-8625-473e117b6a2b",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"password\": \"password1\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/forgot-password/change?hash=f4433ac6-c1d5-46c0-8c29-82e1b0437ce7",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"forgot-password",
+								"change"
+							],
+							"query": [
+								{
+									"key": "hash",
+									"value": "f4433ac6-c1d5-46c0-8c29-82e1b0437ce7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get roles for registration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/registration/roles",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"registration",
+								"roles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Finish registration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "companyName",
+									"value": "test company",
+									"type": "text"
+								},
+								{
+									"key": "passport",
+									"type": "file",
+									"src": [
+										"/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg",
+										"/Users/qwerty/Downloads/2019-09-03 11.19.31.jpg",
+										"/Users/qwerty/Downloads/190513_Briefing HEMRO App & IoT (2).pdf"
+									]
+								},
+								{
+									"key": "plan",
+									"type": "file",
+									"src": "/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg"
+								},
+								{
+									"key": "dsad",
+									"type": "file",
+									"src": "/Users/qwerty/Downloads/190513_Use Case descriptions (2).xlsx",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/finish-registration/role1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"finish-registration",
+								"role1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Get user",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/users/me",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Invites",
+			"item": [
+				{
+					"name": "Invite user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"test@mail.ru\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Roles",
+			"item": [
+				{
+					"name": "Upgrade role",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"test@mail.ru\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/roles/upgrade/{{role}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"roles",
+								"upgrade",
+								"{{role}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "afbd1f72-bbf6-4d4c-be6d-2c1f70fa6f46",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "d1a270bc-4480-4d37-ac0d-40f011e1501f",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	]
+}
