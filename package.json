@@ -29,7 +29,6 @@
     "email-templates": "^6.0.2",
     "express": "^4.16.4",
     "http-errors": "^1.7.2",
-    "i18n": "^0.8.3",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.19.4",
     "knex-migrate": "^1.7.1",
