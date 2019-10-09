@@ -26,15 +26,15 @@ const FINISH_REGISTRATION_PERMISSIONS = [
 ];
 
 const FINISH_REGISTRATION_TEXT_MAP_SCHEMES = {
-    [ROLES.CONFIRMED_PENDING_ROLE1]: ValidatorSchemes.companyFieldsRole1,
-    [ROLES.CONFIRMED_PENDING_ROLE2]: ValidatorSchemes.companyFieldsRole2,
-    [ROLES.CONFIRMED_PENDING_ROLE3]: ValidatorSchemes.companyFieldsRole3,
+    [ROLES.CONFIRMED_EMAIL_TRANSPORTER]: ValidatorSchemes.companyFieldsTransporter,
+    [ROLES.CONFIRMED_EMAIL_HOLDER]: ValidatorSchemes.companyFieldsHolder,
+    [ROLES.CONFIRMED_EMAIL_FORWARDER]: ValidatorSchemes.companyFieldsForwarder,
 };
 
 const FINISH_REGISTRATION_FILES_MAP_SCHEMES = {
-    [ROLES.CONFIRMED_PENDING_ROLE1]: ValidatorSchemes.companyFilesRole1,
-    [ROLES.CONFIRMED_PENDING_ROLE2]: ValidatorSchemes.companyFilesRole2,
-    [ROLES.CONFIRMED_PENDING_ROLE3]: ValidatorSchemes.companyFilesRole3,
+    [ROLES.CONFIRMED_EMAIL_TRANSPORTER]: ValidatorSchemes.companyFilesTransporter,
+    [ROLES.CONFIRMED_EMAIL_HOLDER]: ValidatorSchemes.companyFilesHolder,
+    [ROLES.CONFIRMED_EMAIL_FORWARDER]: ValidatorSchemes.companyFilesForwarder,
 };
 
 const uploadData = upload.any();
