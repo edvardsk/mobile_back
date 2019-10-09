@@ -58,7 +58,7 @@ const authorization = {
     required: [colsUsers.EMAIL, colsUsers.PASSWORD],
 };
 
-const companyFieldsRole1 = {
+const companyFieldsTransporter = {
     properties: {
         [colsCompanies.NAME]: {
             type: 'string',
@@ -67,7 +67,7 @@ const companyFieldsRole1 = {
     required: [colsCompanies.NAME],
 };
 
-const companyFieldsRole2 = {
+const companyFieldsHolder = {
     properties: {
         [colsCompanies.NAME]: {
             type: 'string',
@@ -76,7 +76,7 @@ const companyFieldsRole2 = {
     required: [colsCompanies.NAME],
 };
 
-const companyFieldsRole3 = {
+const companyFieldsForwarder = {
     properties: {
         [colsCompanies.NAME]: {
             type: 'string',
@@ -85,7 +85,7 @@ const companyFieldsRole3 = {
     required: [colsCompanies.NAME],
 };
 
-const companyFilesRole1 = {
+const companyFilesTransporter = {
     properties: {
         passport: fileFormat,
         plan: fileFormat,
@@ -94,7 +94,7 @@ const companyFilesRole1 = {
     additionalProperties: false,
 };
 
-const companyFilesRole2 = {
+const companyFilesHolder = {
     properties: {
         passport: fileFormat,
         plan: fileFormat,
@@ -103,7 +103,7 @@ const companyFilesRole2 = {
     additionalProperties: false,
 };
 
-const companyFilesRole3 = {
+const companyFilesForwarder = {
     properties: {
         passport: fileFormat,
         plan: fileFormat,
@@ -115,10 +115,10 @@ const companyFilesRole3 = {
 module.exports = {
     registration,
     authorization,
-    companyFieldsRole1,
-    companyFieldsRole2,
-    companyFieldsRole3,
-    companyFilesRole1,
-    companyFilesRole2,
-    companyFilesRole3,
+    companyFieldsTransporter,
+    companyFieldsHolder,
+    companyFieldsForwarder,
+    companyFilesTransporter,
+    companyFilesHolder,
+    companyFilesForwarder,
 };
