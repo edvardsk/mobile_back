@@ -8,6 +8,8 @@ const {
     updateUserRoleByUserId,
 } = require('sql-helpers/users-to-roles');
 
+const { OPERATIONS } = require('constants/postgres');
+
 const addRecord = data => one(insertRecord(data));
 
 const getRecordByHash = hash => oneOrNone(selectRecordByHash(hash));
@@ -20,9 +22,12 @@ const confirmEmail = (id, userId, role) => tx(t => {
     return t.batch([q1, q2]);
 });
 
+const addRecordAsTransaction = data => [insertRecord(data), OPERATIONS.ONE];
+
 module.exports = {
     addRecord,
     getRecordByHash,
     deleteRecord,
     confirmEmail,
+    addRecordAsTransaction,
 };

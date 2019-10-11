@@ -6,6 +6,7 @@ const UsersService = require('services/tables/users');
 const EmailConfirmationService = require('services/tables/email-confirmation-hashes');
 const UsersRolesService = require('services/tables/users-to-roles');
 const RolesService = require('services/tables/roles');
+const TableService = require('services/tables');
 const CryptService = require('services/crypto');
 const MailService = require('services/mail');
 
@@ -47,17 +48,19 @@ const createUser = async (req, res, next) => {
 
         const password = body[colsUsers.PASSWORD];
         const { hash, key } = await CryptService.hashPassword(password);
-        const data = formatUserForSaving(body, hash, key);
 
-        const { id } = await UsersService.addUser(data);
-
+        const userId = uuid();
         const confirmationHash = uuid();
 
-        await Promise.all([
-            EmailConfirmationService.addRecord(formatRecordToSave(id, confirmationHash)),
-            MailService.sendConfirmationEmail(email, confirmationHash),
-            UsersRolesService.addUserRole(id, pendingRole),
+        const data = formatUserForSaving(userId, body, hash, key);
+
+        await TableService.runTransaction([
+            UsersService.addUserAsTransaction(data),
+            UsersRolesService.addUserRoleAsTransaction(userId, pendingRole),
+            EmailConfirmationService.addRecordAsTransaction(formatRecordToSave(userId, confirmationHash)),
         ]);
+
+        await MailService.sendConfirmationEmail(email, confirmationHash);
 
         return success(res, {}, SUCCESS_CODES.CREATED);
     } catch (error) {
