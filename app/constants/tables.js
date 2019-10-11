@@ -100,6 +100,15 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    PHONE_NUMBERS: {
+        NAME: 'phone_numbers',
+        COLUMNS: {
+            USER_ID: 'user_id',
+            NUMBER: 'number',
+            PREFIX: 'prefix',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
