@@ -26,6 +26,10 @@ const FINISH_REGISTRATION_PERMISSIONS = [
     PERMISSIONS.FINISH_REGISTRATION,
 ];
 
+const CONFIRM_PHONE_NUMBER_PERMISSIONS = [
+    PERMISSIONS.CONFIRM_PHONE_NUMBER,
+];
+
 const FINISH_REGISTRATION_TEXT_MAP_SCHEMES = {
     [ROLES.CONFIRMED_EMAIL_TRANSPORTER]: ValidatorSchemes.companyFieldsTransporter,
     [ROLES.CONFIRMED_EMAIL_HOLDER]: ValidatorSchemes.companyFieldsHolder,
@@ -84,11 +88,14 @@ router.post(
 // confirm phone number
 router.post(
     ROUTES.AUTH.PHONE_NUMBERS.BASE + ROUTES.AUTH.PHONE_NUMBERS.SEND_CODE.BASE + ROUTES.AUTH.PHONE_NUMBERS.SEND_CODE.POST,
+    isHasPermissions(CONFIRM_PHONE_NUMBER_PERMISSIONS),
     phoneConfirmation.sendCode,
 );
 
 router.post(
     ROUTES.AUTH.PHONE_NUMBERS.BASE + ROUTES.AUTH.PHONE_NUMBERS.CONFIRM_PHONE.BASE + ROUTES.AUTH.PHONE_NUMBERS.CONFIRM_PHONE.POST,
+    isHasPermissions(CONFIRM_PHONE_NUMBER_PERMISSIONS),
+    validate(ValidatorSchemes.confirmPhoneNumber),
     phoneConfirmation.confirmPhone,
 );
 

@@ -4,6 +4,7 @@ const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
+const colsPhoneConfirmation = SQL_TABLES.PHONE_CONFIRMATION_CODES.COLUMNS;
 
 const UUID_VALIDATION_PATTER = '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$';
 const DIGITS_VALIDATION_PATTERN = '^\\d+$';
@@ -132,6 +133,19 @@ const companyFilesForwarder = {
     additionalProperties: false,
 };
 
+const confirmPhoneNumber = {
+    properties: {
+        [colsPhoneConfirmation.CODE]: {
+            type: 'string',
+            maxLength: 6,
+            minLength: 6,
+            pattern: DIGITS_VALIDATION_PATTERN,
+        }
+    },
+    required: [colsPhoneConfirmation.CODE],
+    additionalProperties: false,
+};
+
 module.exports = {
     registration,
     authorization,
@@ -141,4 +155,5 @@ module.exports = {
     companyFilesTransporter,
     companyFilesHolder,
     companyFilesForwarder,
+    confirmPhoneNumber,
 };
