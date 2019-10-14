@@ -7,6 +7,7 @@ const registration = require('./registration');
 const emailConfirmation = require('./email-confirmation');
 const forgotPassword = require('./forgot-password');
 const finishRegistration = require('./finish-registration');
+const phoneConfirmation = require('./phone-confirmation');
 
 // constants
 const { ROUTES } = require('constants/routes');
@@ -77,6 +78,18 @@ router.post(
 router.post(
     ROUTES.AUTH.FORGOT_PASSWORD.BASE + ROUTES.AUTH.FORGOT_PASSWORD.CHANGE.BASE + ROUTES.AUTH.FORGOT_PASSWORD.CHANGE.POST,
     forgotPassword.changePassword,
+);
+
+
+// confirm phone number
+router.post(
+    ROUTES.AUTH.PHONE_NUMBERS.BASE + ROUTES.AUTH.PHONE_NUMBERS.SEND_CODE.BASE + ROUTES.AUTH.PHONE_NUMBERS.SEND_CODE.POST,
+    phoneConfirmation.sendCode,
+);
+
+router.post(
+    ROUTES.AUTH.PHONE_NUMBERS.BASE + ROUTES.AUTH.PHONE_NUMBERS.CONFIRM_PHONE.BASE + ROUTES.AUTH.PHONE_NUMBERS.CONFIRM_PHONE.POST,
+    phoneConfirmation.confirmPhone,
 );
 
 
