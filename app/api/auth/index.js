@@ -58,9 +58,14 @@ router.get(
     registration.getRoles
 );
 
+router.get(
+    ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.PHONE_PREFIXES.BASE + ROUTES.AUTH.REGISTRATION.PHONE_PREFIXES.GET,
+    registration.getPhonePrefixes
+);
 
-// confirm password
-router.get(ROUTES.AUTH.CONFIRM_EMAIL.BASE + ROUTES.AUTH.CONFIRM_EMAIL.GET, emailConfirmation.confirmEmail);
+
+// confirm email
+router.post(ROUTES.AUTH.CONFIRM_EMAIL.BASE + ROUTES.AUTH.CONFIRM_EMAIL.GET, emailConfirmation.confirmEmail);
 
 
 // forgot password

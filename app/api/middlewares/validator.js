@@ -4,10 +4,19 @@ const { reject } = require('api/response');
 const ajv = new Ajv({ allErrors: true });
 require('ajv-keywords')(ajv, 'instanceof');
 
+// services
+const PhonePrefixesService = require('services/tables/phone-prefixes');
+
 // constants
 const { ERRORS } = require('constants/errors');
 
-const validate = (schemeOrGetter, pathToData = 'body') => (req, res, next) => {
+ajv.addKeyword('phonePrefixExists', {
+    async: true,
+    type: 'string',
+    validate: PhonePrefixesService.checkPhonePrefixExists,
+});
+
+const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {
     try {
         const data = get(req, pathToData);
         let scheme;
@@ -22,9 +31,17 @@ const validate = (schemeOrGetter, pathToData = 'body') => (req, res, next) => {
 
         const validate = ajv.compile(scheme);
         const isValidData = validate(data);
-        if (!isValidData) {
+
+        if (isValidData.then) {
+            try {
+                await isValidData;
+            } catch (error) {
+                return reject(res, ERRORS.VALIDATION.ERROR, error.errors);
+            }
+        } else if (!isValidData) {
             return reject(res, ERRORS.VALIDATION.ERROR, validate.errors);
         }
+
 
         next();
     } catch (error) {

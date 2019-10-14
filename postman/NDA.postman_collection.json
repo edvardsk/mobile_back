@@ -34,7 +34,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"email\": \"test@mail.ru\",\n\t\"password\": \"password1\",\n\t\"role_id\": \"3c84b09e-7365-41a2-8016-778dae294fcd\"\n}"
+							"raw": "{\n\t\"email\": \"test@mail.ru\",\n\t\"password\": \"password1\",\n\t\"role_id\": \"4464a984-5836-4a2d-92bc-e739a9fd494e\",\n\t\"phone_number\": \"337480311\",\n\t\"phone_prefix_id\": \"BY\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{url}}/registration",
@@ -103,14 +108,11 @@
 							}
 						}
 					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "noauth"
 						},
-						"method": "GET",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -124,7 +126,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{url}}/confirm-email?hash=b7b2eafd-1ed4-41df-b0d0-f5b7fbabc37c",
+							"raw": "{{url}}/confirm-email?hash=b8c35aa3-f9e9-426e-a6e3-16fe0c1b7bbb",
 							"host": [
 								"{{url}}"
 							],
@@ -134,7 +136,7 @@
 							"query": [
 								{
 									"key": "hash",
-									"value": "b7b2eafd-1ed4-41df-b0d0-f5b7fbabc37c"
+									"value": "b8c35aa3-f9e9-426e-a6e3-16fe0c1b7bbb"
 								}
 							]
 						}
@@ -274,6 +276,50 @@
 							"path": [
 								"registration",
 								"roles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get phone prefixes for registration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/registration/phone-prefixes",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"registration",
+								"phone-prefixes"
 							]
 						}
 					},

@@ -36,6 +36,7 @@ const ERRORS = {
     },
     VALIDATION: {
         ERROR: 'validation.error',
+        INVALID_PHONE_NUMBER: 'validation.invalid_phone_number',
     },
 };
 

@@ -100,6 +100,23 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    PHONE_PREFIXES: {
+        NAME: 'phone_prefixes',
+        COLUMNS: {
+            PREFIX: 'prefix',
+            CODE: 'code',
+            CREATED_AT: 'created_at',
+        },
+    },
+    PHONE_NUMBERS: {
+        NAME: 'phone_numbers',
+        COLUMNS: {
+            USER_ID: 'user_id',
+            NUMBER: 'number',
+            PHONE_PREFIX_ID: 'phone_prefix_id',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
@@ -109,6 +126,8 @@ const NO_SQL_TABLES = {
 const HOMELESS_COLUMNS = {
     ROLE: 'role',
     ROLE_ID: 'role_id',
+    PHONE_NUMBER: 'phone_number',
+    PHONE_PREFIX_ID: 'phone_prefix_id',
 };
 
 module.exports = {

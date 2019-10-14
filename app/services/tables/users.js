@@ -8,6 +8,8 @@ const {
     selectUserRole,
 } = require('sql-helpers/users');
 
+const { OPERATIONS } = require('constants/postgres');
+
 const addUser = data => one(insertUser(data));
 
 const getUser = id => oneOrNone(selectUser(id));
@@ -21,6 +23,8 @@ const getUserByEmailWithRole = email => oneOrNone(selectUserByEmailWithRole(emai
 const getUserRole = id => one(selectUserRole(id))
     .then(({ name }) => name);
 
+const addUserAsTransaction = data => [insertUser(data), OPERATIONS.ONE];
+
 module.exports = {
     addUser,
     getUser,
@@ -28,4 +32,5 @@ module.exports = {
     getUserByEmailWithRole,
     getUserByEmail,
     getUserRole,
+    addUserAsTransaction,
 };

@@ -2,7 +2,8 @@ const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
 const cols = SQL_TABLES.USERS.COLUMNS;
 
-const formatUserForSaving = (user, password, key) => ({
+const formatUserForSaving = (id, user, password, key) => ({
+    id,
     [cols.EMAIL]: user[cols.EMAIL],
     [cols.PASSWORD]: password,
     [cols.KEY]: key,

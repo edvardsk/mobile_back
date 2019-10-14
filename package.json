@@ -28,6 +28,7 @@
     "dotenv": "^7.0.0",
     "email-templates": "^6.0.2",
     "express": "^4.16.4",
+    "google-libphonenumber": "^3.2.5",
     "http-errors": "^1.7.2",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.19.4",
