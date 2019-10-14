@@ -24,6 +24,7 @@ const { formatUserForSaving } = require('formatters/users');
 const { formatRecordToSave } = require('formatters/email-confirmation');
 const { formatRolesForResponse } = require('formatters/roles');
 const { formatPhoneNumberToSave } = require('formatters/phone-numbers');
+const { formatPhonePrefixesForResponse } = require('formatters/phone-prefixes');
 
 // helpers
 const { isValidPhoneNumber } = require('helpers/validators/phone-number');
@@ -99,7 +100,17 @@ const getRoles = async (req, res, next) => {
     }
 };
 
+const getPhonePrefixes = async (req, res, next) => {
+    try {
+        const prefixes = await PhonePrefixesService.getRecords();
+        return success(res, { prefixes: formatPhonePrefixesForResponse(prefixes) });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createUser,
     getRoles,
+    getPhonePrefixes,
 };

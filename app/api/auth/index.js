@@ -58,6 +58,11 @@ router.get(
     registration.getRoles
 );
 
+router.get(
+    ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.PHONE_PREFIXES.BASE + ROUTES.AUTH.REGISTRATION.PHONE_PREFIXES.GET,
+    registration.getPhonePrefixes
+);
+
 
 // confirm email
 router.post(ROUTES.AUTH.CONFIRM_EMAIL.BASE + ROUTES.AUTH.CONFIRM_EMAIL.GET, emailConfirmation.confirmEmail);
