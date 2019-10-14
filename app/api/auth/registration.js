@@ -11,7 +11,6 @@ const PhonePrefixesService = require('services/tables/phone-prefixes');
 const TableService = require('services/tables');
 const CryptService = require('services/crypto');
 const MailService = require('services/mail');
-const SmsService = require('services/sms');
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
@@ -80,10 +79,7 @@ const createUser = async (req, res, next) => {
             PhoneNumbersService.addRecordAsTransaction(formatPhoneNumberToSave(userId, phonePrefixId, phoneNumber)),
         ]);
 
-        await Promise.all([
-            MailService.sendConfirmationEmail(email, confirmationHash),
-            SmsService.sendRegistrationCode(),
-        ]);
+        await MailService.sendConfirmationEmail(email, confirmationHash);
 
         return success(res, {}, SUCCESS_CODES.CREATED);
     } catch (error) {
