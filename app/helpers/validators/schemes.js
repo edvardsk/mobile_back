@@ -1,9 +1,13 @@
+
+// constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
 
-const uuid = '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$';
+const UUID_VALIDATION_PATTER = '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$';
+const DIGITS_VALIDATION_PATTERN = '^\\d+$';
+const PASSWORD_VALIDATION_PATTERN = '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$';
 
 // helpers
 const fileFormat = {
@@ -27,6 +31,7 @@ const fileFormat = {
 // helpers
 
 const registration = {
+    $async: true,
     properties: {
         [colsUsers.EMAIL]: {
             type: 'string',
@@ -34,14 +39,29 @@ const registration = {
         },
         [colsUsers.PASSWORD]: {
             type: 'string',
-            pattern: '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$',
+            pattern: PASSWORD_VALIDATION_PATTERN,
         },
         [HOMELESS_COLUMNS.ROLE_ID]: {
             type: 'string',
-            pattern: uuid,
+            pattern: UUID_VALIDATION_PATTER,
         },
+        [HOMELESS_COLUMNS.PHONE_NUMBER]: {
+            type: 'string',
+            pattern: DIGITS_VALIDATION_PATTERN,
+        },
+        [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
+            type: 'string',
+            pattern: UUID_VALIDATION_PATTER,
+            phonePrefixExists: {}
+        }
     },
-    required: [colsUsers.EMAIL, colsUsers.PASSWORD, HOMELESS_COLUMNS.ROLE_ID],
+    required: [
+        colsUsers.EMAIL,
+        colsUsers.PASSWORD,
+        HOMELESS_COLUMNS.ROLE_ID,
+        HOMELESS_COLUMNS.PHONE_NUMBER,
+        HOMELESS_COLUMNS.PHONE_PREFIX_ID,
+    ],
 };
 
 const authorization = {
@@ -52,7 +72,7 @@ const authorization = {
         },
         [colsUsers.PASSWORD]: {
             type: 'string',
-            pattern: '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$',
+            pattern: PASSWORD_VALIDATION_PATTERN,
         },
     },
     required: [colsUsers.EMAIL, colsUsers.PASSWORD],

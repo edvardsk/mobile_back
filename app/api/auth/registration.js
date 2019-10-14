@@ -6,9 +6,12 @@ const UsersService = require('services/tables/users');
 const EmailConfirmationService = require('services/tables/email-confirmation-hashes');
 const UsersRolesService = require('services/tables/users-to-roles');
 const RolesService = require('services/tables/roles');
+const PhoneNumbersService = require('services/tables/phone-numbers');
+const PhonePrefixesService = require('services/tables/phone-prefixes');
 const TableService = require('services/tables');
 const CryptService = require('services/crypto');
 const MailService = require('services/mail');
+const SmsService = require('services/sms');
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
@@ -20,14 +23,22 @@ const { MAP_ROLES_FROM_CLIENT_TO_SERVER, ROLES_TO_REGISTER } = require('constant
 const { formatUserForSaving } = require('formatters/users');
 const { formatRecordToSave } = require('formatters/email-confirmation');
 const { formatRolesForResponse } = require('formatters/roles');
+const { formatPhoneNumberToSave } = require('formatters/phone-numbers');
+
+// helpers
+const { isValidPhoneNumber } = require('helpers/validators/phone-number');
+
 
 const createUser = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
     const colsRoles = SQL_TABLES.ROLES.COLUMNS;
+    const colsPhonePrefixes = SQL_TABLES.PHONE_PREFIXES.COLUMNS;
     try {
         const { body } = req;
-
+        const phoneNumber = body.phone_number;
+        const phonePrefixId = body.phone_prefix_id;
         const email = body[colsUsers.EMAIL];
+
         const userByEmail = await UsersService.getUserByEmail(email);
         if (userByEmail) {
             return reject(res, ERRORS.REGISTRATION.DUPLICATE_USER);
@@ -46,6 +57,13 @@ const createUser = async (req, res, next) => {
             return reject(res, ERRORS.REGISTRATION.INVALID_ROLE_ID);
         }
 
+        const phonePrefixRecord = await PhonePrefixesService.getRecord(phonePrefixId);
+        const phonePrefixName = phonePrefixRecord[colsPhonePrefixes.PREFIX];
+
+        if (!isValidPhoneNumber(phoneNumber, phonePrefixName)) {
+            return reject(res, ERRORS.VALIDATION.INVALID_PHONE_NUMBER);
+        }
+
         const password = body[colsUsers.PASSWORD];
         const { hash, key } = await CryptService.hashPassword(password);
 
@@ -58,9 +76,13 @@ const createUser = async (req, res, next) => {
             UsersService.addUserAsTransaction(data),
             UsersRolesService.addUserRoleAsTransaction(userId, pendingRole),
             EmailConfirmationService.addRecordAsTransaction(formatRecordToSave(userId, confirmationHash)),
+            PhoneNumbersService.addRecordAsTransaction(formatPhoneNumberToSave(userId, phonePrefixId, phoneNumber)),
         ]);
 
-        await MailService.sendConfirmationEmail(email, confirmationHash);
+        await Promise.all([
+            MailService.sendConfirmationEmail(email, confirmationHash),
+            SmsService.sendRegistrationCode(),
+        ]);
 
         return success(res, {}, SUCCESS_CODES.CREATED);
     } catch (error) {
