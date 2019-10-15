@@ -40,6 +40,9 @@ const ERRORS = {
     },
     PHONE_CONFIRMATION: {
         TOO_OFTEN: 'phone_confirmation.too_often',
+        INVALID_CODE: 'phone_confirmation.invalid_code',
+        SEND_CODE_FIRST: 'phone_confirmation.send_code_first',
+        CODE_HAS_EXPIRED: 'phone_confirmation.code_has_expired',
     },
 };
 
