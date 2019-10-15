@@ -8,7 +8,7 @@ const RolesPermissionsService = require('services/tables/roles-to-permissions');
 // constants
 const { SQL_TABLES } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
-const { MAP_FROM_UNCONFIRMED_TO_CONFIRMED_ROLE, PERMISSIONS } = require('constants/system');
+const { MAP_FROM_UNCONFIRMED_TO_CONFIRMED_EMAIL_ROLE, PERMISSIONS } = require('constants/system');
 
 const confirmEmail = async (req, res, next) => {
     const colsEmailConfirmation = SQL_TABLES.EMAIL_CONFIRMATION_HASHES.COLUMNS;
@@ -30,7 +30,7 @@ const confirmEmail = async (req, res, next) => {
 
         const userRole = await UsersService.getUserRole(userId);
 
-        const upgradedRole = MAP_FROM_UNCONFIRMED_TO_CONFIRMED_ROLE[userRole];
+        const upgradedRole = MAP_FROM_UNCONFIRMED_TO_CONFIRMED_EMAIL_ROLE[userRole];
 
         await EmailConfirmationService.confirmEmail(hashFromDb.id, userId, upgradedRole);
 

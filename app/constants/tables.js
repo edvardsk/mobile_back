@@ -117,6 +117,15 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    PHONE_CONFIRMATION_CODES: {
+        NAME: 'phone_confirmation_codes',
+        COLUMNS: {
+            USER_ID: 'user_id',
+            CODE: 'code',
+            EXPIRED_AT: 'expired_at',
+            CREATED_AT: 'created_at',
+        },
+    }
 };
 
 const NO_SQL_TABLES = {

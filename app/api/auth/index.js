@@ -7,6 +7,7 @@ const registration = require('./registration');
 const emailConfirmation = require('./email-confirmation');
 const forgotPassword = require('./forgot-password');
 const finishRegistration = require('./finish-registration');
+const phoneConfirmation = require('./phone-confirmation');
 
 // constants
 const { ROUTES } = require('constants/routes');
@@ -23,6 +24,10 @@ const router = express.Router();
 
 const FINISH_REGISTRATION_PERMISSIONS = [
     PERMISSIONS.FINISH_REGISTRATION,
+];
+
+const CONFIRM_PHONE_NUMBER_PERMISSIONS = [
+    PERMISSIONS.CONFIRM_PHONE_NUMBER,
 ];
 
 const FINISH_REGISTRATION_TEXT_MAP_SCHEMES = {
@@ -77,6 +82,21 @@ router.post(
 router.post(
     ROUTES.AUTH.FORGOT_PASSWORD.BASE + ROUTES.AUTH.FORGOT_PASSWORD.CHANGE.BASE + ROUTES.AUTH.FORGOT_PASSWORD.CHANGE.POST,
     forgotPassword.changePassword,
+);
+
+
+// confirm phone number
+router.post(
+    ROUTES.AUTH.PHONE_NUMBERS.BASE + ROUTES.AUTH.PHONE_NUMBERS.SEND_CODE.BASE + ROUTES.AUTH.PHONE_NUMBERS.SEND_CODE.POST,
+    isHasPermissions(CONFIRM_PHONE_NUMBER_PERMISSIONS),
+    phoneConfirmation.sendCode,
+);
+
+router.post(
+    ROUTES.AUTH.PHONE_NUMBERS.BASE + ROUTES.AUTH.PHONE_NUMBERS.CONFIRM_PHONE.BASE + ROUTES.AUTH.PHONE_NUMBERS.CONFIRM_PHONE.POST,
+    isHasPermissions(CONFIRM_PHONE_NUMBER_PERMISSIONS),
+    validate(ValidatorSchemes.confirmPhoneNumber),
+    phoneConfirmation.confirmPhone,
 );
 
 

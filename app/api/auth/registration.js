@@ -28,7 +28,6 @@ const { formatPhonePrefixesForResponse } = require('formatters/phone-prefixes');
 // helpers
 const { isValidPhoneNumber } = require('helpers/validators/phone-number');
 
-
 const createUser = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
     const colsRoles = SQL_TABLES.ROLES.COLUMNS;

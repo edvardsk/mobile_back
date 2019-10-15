@@ -9,6 +9,115 @@
 			"name": "Auth",
 			"item": [
 				{
+					"name": "Confirm phone number",
+					"item": [
+						{
+							"name": "Send confirmation code",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0f2dc4c3-5070-41ab-8625-473e117b6a2b",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{url}}/phone-numbers/send-code",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"phone-numbers",
+										"send-code"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Confirm phone",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0f2dc4c3-5070-41ab-8625-473e117b6a2b",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"code\": \"000000\"\n}"
+								},
+								"url": {
+									"raw": "{{url}}/phone-numbers/confirm-phone",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"phone-numbers",
+										"confirm-phone"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
 					"name": "Registration",
 					"event": [
 						{
