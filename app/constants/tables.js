@@ -125,6 +125,14 @@ const SQL_TABLES = {
             EXPIRED_AT: 'expired_at',
             CREATED_AT: 'created_at',
         },
+    },
+    USERS_TO_PERMISSIONS: {
+        NAME: 'users_to_permissions',
+        COLUMNS: {
+            USER_ID: 'user_id',
+            PERMISSION_ID: 'permission_id',
+            CREATED_AT: 'created_at',
+        },
     }
 };
 
