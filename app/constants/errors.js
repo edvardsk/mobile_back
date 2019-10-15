@@ -38,6 +38,9 @@ const ERRORS = {
         ERROR: 'validation.error',
         INVALID_PHONE_NUMBER: 'validation.invalid_phone_number',
     },
+    PHONE_CONFIRMATION: {
+        TOO_OFTEN: 'phone_confirmation.too_often',
+    },
 };
 
 class PaginationError extends Error {
