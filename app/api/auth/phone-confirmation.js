@@ -4,11 +4,13 @@ const moment = require('moment');
 // services
 const PhoneConfirmationCodesService = require('services/tables/phone-confirmation-codes');
 const UserRolesService = require('services/tables/users-to-roles');
+const UserPermissionsService = require('services/tables/users-to-permissions');
+const TablesService = require('services/tables');
 
 // constants
 const { SQL_TABLES } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
-const { MAP_FROM_CONFIRMED_EMAIL_TO_CONFIRMED_PHONE } = require('constants/system');
+const { MAP_FROM_CONFIRMED_EMAIL_TO_CONFIRMED_PHONE, PERMISSIONS } = require('constants/system');
 
 // helpers
 const { nextAllowedRequestForSendingCode } = require('helpers/phone-confirmation');
@@ -67,7 +69,10 @@ const confirmPhone = async (req, res, next) => {
 
         const futureRole = MAP_FROM_CONFIRMED_EMAIL_TO_CONFIRMED_PHONE[role];
 
-        await UserRolesService.updateUserRole(userId, futureRole);
+        await TablesService.runTransaction([
+            UserRolesService.updateUserRoleAsTransaction(userId, futureRole),
+            UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.REGISTRATION_SAVE_STEP_1),
+        ]);
 
         return success(res, {});
     } catch (error) {

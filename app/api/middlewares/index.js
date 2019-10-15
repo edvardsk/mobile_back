@@ -1,10 +1,11 @@
-const { get } = require('lodash');
+const { get, uniq } = require('lodash');
 const { reject } = require('api/response');
 
 // services
 const TokenService = require('services/token');
 const UsersService = require('services/tables/users');
 const RolesPermissionsService = require('services/tables/roles-to-permissions');
+const UsersPermissionsService = require('services/tables/users-to-permissions');
 
 // constants
 const { ERRORS } = require('constants/errors');
@@ -42,10 +43,13 @@ const isAuthenticated = async (req, res) => {
                 return reject(res, ERRORS.AUTHENTICATION.INVALID_TOKEN);
             }
 
-            const permissions = await RolesPermissionsService.getUserPermissions(user.id);
+            const [permissionsFromRoles, permissions] = await Promise.all([
+                RolesPermissionsService.getUserPermissions(user.id),
+                UsersPermissionsService.getUserPermissions(user.id),
+            ]);
 
             res.locals.user = user;
-            res.locals.permissions = permissions;
+            res.locals.permissions = uniq([...permissionsFromRoles, ...permissions]);
             return req.next();
         } catch (error) {
             logger.error(error);

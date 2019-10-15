@@ -10,10 +10,13 @@ const addUserRole = (id, role) => one(insertUserRole(id, role));
 
 const updateUserRole = (id, role) => one(updateUserRoleByUserId(id, role));
 
+const updateUserRoleAsTransaction = (id, role) => [updateUserRoleByUserId(id, role), OPERATIONS.ONE];
+
 const addUserRoleAsTransaction = (id, role) => [insertUserRole(id, role), OPERATIONS.ONE];
 
 module.exports = {
     addUserRole,
     updateUserRole,
+    updateUserRoleAsTransaction,
     addUserRoleAsTransaction,
 };
