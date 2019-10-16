@@ -6,6 +6,7 @@ require('ajv-keywords')(ajv, 'instanceof');
 
 // services
 const PhonePrefixesService = require('services/tables/phone-prefixes');
+const CountriesService = require('services/tables/countries');
 
 // constants
 const { ERRORS } = require('constants/errors');
@@ -14,6 +15,12 @@ ajv.addKeyword('phonePrefixExists', {
     async: true,
     type: 'string',
     validate: PhonePrefixesService.checkPhonePrefixExists,
+});
+
+ajv.addKeyword('countryExists', {
+    async: true,
+    type: 'string',
+    validate: CountriesService.checkCountryExists,
 });
 
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {

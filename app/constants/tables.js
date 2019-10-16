@@ -5,7 +5,7 @@ const SQL_TABLES = {
             EMAIL: 'email',
             PASSWORD: 'password',
             KEY: 'key',
-            IS_CONFIRMED: 'is_confirmed',
+            FULL_NAME: 'full_name',
             CREATED_AT: 'created_at',
         },
     },
@@ -95,8 +95,11 @@ const SQL_TABLES = {
         NAME: 'companies',
         COLUMNS: {
             NAME: 'name',
-            USER_ID: 'user_id',
-            DESCRIPTION: 'description',
+            COUNTRY_ID: 'country_id',
+            IDENTITY_NUMBER: 'identity_number',
+            OWNERSHIP_TYPE: 'ownership_type',
+            REGISTERED_AT: 'registered_at',
+            WEBSITE: 'website',
             CREATED_AT: 'created_at',
         },
     },
@@ -133,7 +136,22 @@ const SQL_TABLES = {
             PERMISSION_ID: 'permission_id',
             CREATED_AT: 'created_at',
         },
-    }
+    },
+    COUNTRIES: {
+        NAME: 'countries',
+        COLUMNS: {
+            NAME: 'name',
+            CREATED_AT: 'created_at',
+        },
+    },
+    USERS_TO_COMPANIES: {
+        NAME: 'users_to_companies',
+        COLUMNS: {
+            USER_ID: 'user_id',
+            COMPANY_ID: 'company_id',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {

@@ -4,91 +4,65 @@ const uuid = require('uuid/v4');
 // services
 const CryptService = require('services/crypto');
 const FilesService = require('services/tables/files');
+const UsersService = require('services/tables/users');
 const FileLabelsService = require('services/tables/file-labels');
 const FilesLabelsService = require('services/tables/files-to-labels');
 const UsersFilesService = require('services/tables/users-to-files');
 const CompaniesService = require('services/tables/companies');
-const TableService = require('services/tables');
+const UsersCompaniesService = require('services/tables/users-to-companies');
+const PhoneConfirmationCodesService = require('services/tables/phone-confirmation-codes');
+const UserRolesService = require('services/tables/users-to-roles');
+const UserPermissionsService = require('services/tables/users-to-permissions');
+const TablesService = require('services/tables');
 const UsersRolesService = require('services/tables/users-to-roles');
 const S3Service = require('services/aws/s3');
 
 // constants
 const { SQL_TABLES } = require('constants/tables');
-const { MAP_FROM_PENDING_ROLE_TO_MAIN } = require('constants/system');
+const { ROLES, PERMISSIONS } = require('constants/system');
+const { SUCCESS_CODES } = require('constants/http-codes');
 
 // formatters
-const { formatInitialDataToSave } = require('formatters/companies');
+const UsersCompaniesFormatters = require('formatters/users-to-companies');
 
 const { AWS_S3_BUCKET_NAME } = process.env;
 
-const finishRegistration = async (req, res, next) => {
-    const colsFiles = SQL_TABLES.FILES.COLUMNS;
-    const colsFileLabels = SQL_TABLES.FILE_LABELS.COLUMNS;
-    const colsFilesToLabels = SQL_TABLES.FILES_TO_FILE_LABELS.COLUMNS;
-    const colsUsersFiles = SQL_TABLES.USERS_TO_FILES.COLUMNS;
+const finishRegistrationStep1 = async (req, res, next) => {
+    const colsUsers = SQL_TABLES.USERS.COLUMNS;
     try {
         const userId = res.locals.user.id;
         const userRole = res.locals.user.role;
-        const { files } = req;
+        const companyId = uuid();
 
-        const labels = await FileLabelsService.getLabels();
+        const companyData = {
+            ...req.body,
+            id: companyId,
+        };
+        const userData = {};
 
-        const filesToSave = Object.keys(files).reduce((filesToSave, file) => {
-            const fileGroup = files[file];
-            fileGroup.forEach(file => {
-                const id = uuid();
-                const fileStorage = [];
-                const label = labels.find(label => label[colsFileLabels.NAME] === file.fieldname);
-                if (!label) {
-                    throw new Error();
-                }
-                fileStorage.push({
-                    id,
-                    [colsFiles.NAME]: file.originalname,
-                    [colsFiles.URL]: CryptService.encrypt(`${AWS_S3_BUCKET_NAME}/${id}`),
-                });
-                fileStorage.push({
-                    [colsUsersFiles.FILE_ID]: id,
-                    [colsUsersFiles.USER_ID]: userId,
-                });
-                fileStorage.push({
-                    [colsFilesToLabels.FILE_ID]: id,
-                    [colsFilesToLabels.LABEL_ID]: label.id,
-                });
-                fileStorage.push({
-                    bucket: AWS_S3_BUCKET_NAME,
-                    path: id,
-                    data: file.buffer,
-                });
-                filesToSave.push(fileStorage);
-            });
-            return filesToSave;
+        let transactionList = [];
 
-        }, [] /* [file, users to files, files_to_labels, files to s3] */);
+        if (userRole === ROLES.CONFIRMED_EMAIL_AND_PHONE_FORWARDER) {
+            userData[colsUsers.FULL_NAME] = companyData[colsUsers.FULL_NAME];
+            delete companyData[colsUsers.FULL_NAME];
+            transactionList.push(UsersService.updateUserAsTransaction(userId, userData));
+        }
 
-        const companyData = formatInitialDataToSave(req.body, userId);
-
-        await TableService.runTransaction([
-            FilesService.addFilesAsTransaction(filesToSave.map(fileData => fileData[0])),
-            UsersFilesService.addRecordsAsTransaction(filesToSave.map(fileData => fileData[1])),
-            FilesLabelsService.addRecordsAsTransaction(filesToSave.map(fileData => fileData[2])),
+        transactionList = [
+            ...transactionList,
             CompaniesService.addCompanyAsTransaction(companyData),
-        ]);
+            UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.REGISTRATION_SAVE_STEP_2),
+            UsersCompaniesService.addRecordAsTransaction(UsersCompaniesFormatters.formatRecordToSave(userId, companyId)),
+        ];
 
-        await Promise.all(filesToSave.map(fileGroup => {
-            const { bucket, path, data } = fileGroup.pop();
-            return S3Service.putObject(bucket, path, data);
-        }));
+        await TablesService.runTransaction(transactionList);
 
-        const updatedRole = MAP_FROM_PENDING_ROLE_TO_MAIN[userRole];
-
-        UsersRolesService.updateUserRole(userId, updatedRole);
-        return success(res, {});
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
     } catch (error) {
         next(error);
     }
 };
 
 module.exports = {
-    finishRegistration,
+    finishRegistrationStep1,
 };

@@ -9,6 +9,7 @@ const colsPhoneConfirmation = SQL_TABLES.PHONE_CONFIRMATION_CODES.COLUMNS;
 const UUID_VALIDATION_PATTER = '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$';
 const DIGITS_VALIDATION_PATTERN = '^\\d+$';
 const PASSWORD_VALIDATION_PATTERN = '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$';
+const URL_VALIDATION_PATTERN = '^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#[\\]@!\\$&\'\\(\\)\\*\\+,;=.]+$';
 
 // helpers
 const fileFormat = {
@@ -53,7 +54,7 @@ const registration = {
         [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
             type: 'string',
             pattern: UUID_VALIDATION_PATTER,
-            phonePrefixExists: {}
+            phonePrefixExists: {},
         }
     },
     required: [
@@ -79,31 +80,128 @@ const authorization = {
     required: [colsUsers.EMAIL, colsUsers.PASSWORD],
 };
 
-const companyFieldsTransporter = {
+const finishRegistrationStep1Transporter = {
+    $async: true,
     properties: {
         [colsCompanies.NAME]: {
             type: 'string',
+            maxLength: 255,
         },
+        [colsCompanies.OWNERSHIP_TYPE]: {
+            type: 'string',
+            maxLength: 50,
+        },
+        [colsCompanies.REGISTERED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsCompanies.COUNTRY_ID]: {
+            type: 'string',
+            pattern: UUID_VALIDATION_PATTER,
+            countryExists: {},
+        },
+        [colsCompanies.IDENTITY_NUMBER]: {
+            type: 'string',
+            maxLength: 12,
+        },
+        [colsCompanies.WEBSITE]: {
+            type: 'string',
+            maxLength: 255,
+            pattern: URL_VALIDATION_PATTERN,
+        }
     },
-    required: [colsCompanies.NAME],
+    required: [
+        colsCompanies.NAME,
+        colsCompanies.OWNERSHIP_TYPE,
+        colsCompanies.REGISTERED_AT,
+        colsCompanies.COUNTRY_ID,
+        colsCompanies.IDENTITY_NUMBER,
+    ],
+    additionalProperties: false,
 };
 
-const companyFieldsHolder = {
+const finishRegistrationStep1Holder = {
+    $async: true,
     properties: {
         [colsCompanies.NAME]: {
             type: 'string',
+            maxLength: 255,
         },
+        [colsCompanies.OWNERSHIP_TYPE]: {
+            type: 'string',
+            maxLength: 50,
+        },
+        [colsCompanies.REGISTERED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsCompanies.COUNTRY_ID]: {
+            type: 'string',
+            pattern: UUID_VALIDATION_PATTER,
+            countryExists: {},
+        },
+        [colsCompanies.IDENTITY_NUMBER]: {
+            type: 'string',
+            maxLength: 12,
+        },
+        [colsCompanies.WEBSITE]: {
+            type: 'string',
+            maxLength: 255,
+        }
     },
-    required: [colsCompanies.NAME],
+    required: [
+        colsCompanies.NAME,
+        colsCompanies.OWNERSHIP_TYPE,
+        colsCompanies.REGISTERED_AT,
+        colsCompanies.COUNTRY_ID,
+        colsCompanies.IDENTITY_NUMBER,
+    ],
+    additionalProperties: false,
 };
 
-const companyFieldsForwarder = {
+const finishRegistrationStep1Forwarder = {
+    $async: true,
     properties: {
+        [colsUsers.FULL_NAME]: {
+            type: 'string',
+            maxLength: 255,
+        },
         [colsCompanies.NAME]: {
             type: 'string',
+            maxLength: 255,
+        },
+        [colsCompanies.REGISTERED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsCompanies.COUNTRY_ID]: {
+            type: 'string',
+            pattern: UUID_VALIDATION_PATTER,
+            countryExists: {},
+        },
+        [colsCompanies.IDENTITY_NUMBER]: {
+            type: 'string',
+            maxLength: 12,
+        },
+        [colsCompanies.WEBSITE]: {
+            type: 'string',
+            maxLength: 255,
+        }
+    },
+    dependencies: {
+        [colsCompanies.NAME]: {
+            required: [colsCompanies.REGISTERED_AT],
+        },
+        [colsCompanies.REGISTERED_AT]: {
+            required: [colsCompanies.NAME],
         },
     },
-    required: [colsCompanies.NAME],
+    required: [
+        colsUsers.FULL_NAME,
+        colsCompanies.COUNTRY_ID,
+        colsCompanies.IDENTITY_NUMBER,
+    ],
+    additionalProperties: false,
 };
 
 const companyFilesTransporter = {
@@ -149,11 +247,14 @@ const confirmPhoneNumber = {
 module.exports = {
     registration,
     authorization,
-    companyFieldsTransporter,
-    companyFieldsHolder,
-    companyFieldsForwarder,
+
+    finishRegistrationStep1Transporter,
+    finishRegistrationStep1Holder,
+    finishRegistrationStep1Forwarder,
+
     companyFilesTransporter,
     companyFilesHolder,
     companyFilesForwarder,
+
     confirmPhoneNumber,
 };

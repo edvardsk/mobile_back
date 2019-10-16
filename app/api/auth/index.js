@@ -22,25 +22,26 @@ const { validate } = require('api/middlewares/validator');
 const upload = multer();
 const router = express.Router();
 
-const FINISH_REGISTRATION_PERMISSIONS = [
+const FINISH_REGISTRATION_STEP1_PERMISSIONS = [
     PERMISSIONS.FINISH_REGISTRATION,
+    PERMISSIONS.REGISTRATION_SAVE_STEP_1,
 ];
 
 const CONFIRM_PHONE_NUMBER_PERMISSIONS = [
     PERMISSIONS.CONFIRM_PHONE_NUMBER,
 ];
 
-const FINISH_REGISTRATION_TEXT_MAP_SCHEMES = {
-    [ROLES.CONFIRMED_EMAIL_TRANSPORTER]: ValidatorSchemes.companyFieldsTransporter,
-    [ROLES.CONFIRMED_EMAIL_HOLDER]: ValidatorSchemes.companyFieldsHolder,
-    [ROLES.CONFIRMED_EMAIL_FORWARDER]: ValidatorSchemes.companyFieldsForwarder,
+const FINISH_REGISTRATION_STEP_1_TEXT_MAP_SCHEMES = {
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: ValidatorSchemes.finishRegistrationStep1Transporter,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: ValidatorSchemes.finishRegistrationStep1Holder,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_FORWARDER]: ValidatorSchemes.finishRegistrationStep1Forwarder,
 };
 
-const FINISH_REGISTRATION_FILES_MAP_SCHEMES = {
-    [ROLES.CONFIRMED_EMAIL_TRANSPORTER]: ValidatorSchemes.companyFilesTransporter,
-    [ROLES.CONFIRMED_EMAIL_HOLDER]: ValidatorSchemes.companyFilesHolder,
-    [ROLES.CONFIRMED_EMAIL_FORWARDER]: ValidatorSchemes.companyFilesForwarder,
-};
+// const FINISH_REGISTRATION_STEP_1_FILES_MAP_SCHEMES = {
+//     [ROLES.CONFIRMED_EMAIL_TRANSPORTER]: ValidatorSchemes.companyFilesTransporter,
+//     [ROLES.CONFIRMED_EMAIL_HOLDER]: ValidatorSchemes.companyFilesHolder,
+//     [ROLES.CONFIRMED_EMAIL_FORWARDER]: ValidatorSchemes.companyFilesForwarder,
+// };
 
 const uploadData = upload.any();
 
@@ -102,12 +103,12 @@ router.post(
 
 // finish registration
 router.post(
-    ROUTES.AUTH.FINISH_REGISTRATION.BASE,
-    isHasPermissions(FINISH_REGISTRATION_PERMISSIONS), // permissions middleware
-    formDataHandler(uploadData), // uploading files middleware
-    validate(({ role }) => FINISH_REGISTRATION_TEXT_MAP_SCHEMES[role]),
-    validate(({ role }) => FINISH_REGISTRATION_FILES_MAP_SCHEMES[role], 'files'),
-    finishRegistration.finishRegistration,
+    ROUTES.AUTH.FINISH_REGISTRATION.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['1'].BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['1'].POST,
+    isHasPermissions(FINISH_REGISTRATION_STEP1_PERMISSIONS), // permissions middleware
+    // formDataHandler(uploadData), // uploading files middleware
+    validate(({ role }) => FINISH_REGISTRATION_STEP_1_TEXT_MAP_SCHEMES[role]),
+    // validate(({ role }) => FINISH_REGISTRATION_STEP_1_FILES_MAP_SCHEMES[role], 'files'),
+    finishRegistration.finishRegistrationStep1,
 );
 
 module.exports = router;
