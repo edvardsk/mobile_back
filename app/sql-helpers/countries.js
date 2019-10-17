@@ -11,6 +11,12 @@ const selectCountryById = id => squelPostgres
     .where(`id = '${id}'`)
     .toString();
 
+const selectCountries = () => squelPostgres
+    .select()
+    .from(table.NAME)
+    .toString();
+
 module.exports = {
     selectCountryById,
+    selectCountries,
 };

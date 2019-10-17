@@ -12,6 +12,7 @@ const BASES = {
     ME: '/me',
     ROLES: '/roles',
     PHONE_PREFIXES: '/phone-prefixes',
+    COUNTRIES: '/countries',
     PHONE_NUMBERS: '/phone-numbers',
     SEND_CODE: '/send-code',
     CONFIRM_PRONE: '/confirm-phone',
@@ -35,6 +36,10 @@ const ROUTES = {
             },
             PHONE_PREFIXES: {
                 BASE: BASES.PHONE_PREFIXES,
+                GET: '',
+            },
+            COUNTRIES: {
+                BASE: BASES.COUNTRIES,
                 GET: '',
             },
         },

@@ -8,6 +8,7 @@ const UsersRolesService = require('services/tables/users-to-roles');
 const RolesService = require('services/tables/roles');
 const PhoneNumbersService = require('services/tables/phone-numbers');
 const PhonePrefixesService = require('services/tables/phone-prefixes');
+const CountriesService = require('services/tables/countries');
 const TableService = require('services/tables');
 const CryptService = require('services/crypto');
 const MailService = require('services/mail');
@@ -104,8 +105,18 @@ const getPhonePrefixes = async (req, res, next) => {
     }
 };
 
+const getCountries = async (req, res, next) => {
+    try {
+        const countries = await CountriesService.getCountries();
+        return success(res, { countries });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createUser,
     getRoles,
     getPhonePrefixes,
+    getCountries,
 };

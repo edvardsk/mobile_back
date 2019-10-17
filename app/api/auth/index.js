@@ -69,6 +69,11 @@ router.get(
     registration.getPhonePrefixes
 );
 
+router.get(
+    ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.COUNTRIES.BASE + ROUTES.AUTH.REGISTRATION.COUNTRIES.GET,
+    registration.getCountries
+);
+
 
 // confirm email
 router.post(ROUTES.AUTH.CONFIRM_EMAIL.BASE + ROUTES.AUTH.CONFIRM_EMAIL.GET, emailConfirmation.confirmEmail);
