@@ -10,6 +10,7 @@ const UUID_VALIDATION_PATTER = '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab]
 const DIGITS_VALIDATION_PATTERN = '^\\d+$';
 const PASSWORD_VALIDATION_PATTERN = '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$';
 const URL_VALIDATION_PATTERN = '^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#[\\]@!\\$&\'\\(\\)\\*\\+,;=.]+$';
+const LETTERS_AND_DIGITS_VALIDATION_PATTERN = '^[a-zA-Z0-9]*$';
 
 // helpers
 const fileFormat = {
@@ -47,15 +48,16 @@ const registration = {
             type: 'string',
             pattern: UUID_VALIDATION_PATTER,
         },
-        [HOMELESS_COLUMNS.PHONE_NUMBER]: {
-            type: 'string',
-            pattern: DIGITS_VALIDATION_PATTERN,
-        },
         [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
             type: 'string',
             pattern: UUID_VALIDATION_PATTER,
             phonePrefixExists: {},
-        }
+        },
+        [HOMELESS_COLUMNS.PHONE_NUMBER]: {
+            type: 'string',
+            pattern: DIGITS_VALIDATION_PATTERN,
+            phoneNumberExists: {},
+        },
     },
     required: [
         colsUsers.EMAIL,
@@ -204,6 +206,158 @@ const finishRegistrationStep1Forwarder = {
     additionalProperties: false,
 };
 
+const finishRegistrationStep2Transporter = {
+    $async: true,
+    properties: {
+        [colsCompanies.LEGAL_ADDRESS]: {
+            type: 'string',
+            maxLength: 255,
+        },
+        [colsCompanies.SETTLEMENT_ACCOUNT]: {
+            type: 'string',
+            maxLength: 29,
+            minLength: 20,
+            pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
+            companyWithSettlementAccountExists: {},
+        },
+        [colsCompanies.POST_ADDRESS]: {
+            type: 'string',
+            maxLength: 255,
+        },
+        [colsCompanies.BANK_NAME]: {
+            type: 'string',
+            maxLength: 255,
+        },
+        [colsCompanies.HEAD_COMPANY_FULL_NAME]: {
+            type: 'string',
+            maxLength: 255,
+        },
+        [colsCompanies.BANK_ADDRESS]: {
+            type: 'string',
+            maxLength: 255,
+        },
+        [colsCompanies.BANK_CODE]: {
+            type: 'string',
+            maxLength: 9,
+            minLength: 6,
+            pattern: DIGITS_VALIDATION_PATTERN,
+        },
+        [colsCompanies.CONTRACT_SIGNER_FULL_NAME]: {
+            type: 'string',
+            maxLength: 255,
+        },
+    },
+    required: [
+        colsCompanies.LEGAL_ADDRESS,
+        colsCompanies.SETTLEMENT_ACCOUNT,
+        colsCompanies.POST_ADDRESS,
+        colsCompanies.BANK_NAME,
+        colsCompanies.HEAD_COMPANY_FULL_NAME,
+        colsCompanies.BANK_ADDRESS,
+        colsCompanies.BANK_CODE,
+        colsCompanies.CONTRACT_SIGNER_FULL_NAME,
+    ],
+    additionalProperties: false,
+};
+
+const finishRegistrationStep2Holder = {
+    $async: true,
+    properties: {
+        [colsCompanies.LEGAL_ADDRESS]: {
+            type: 'string',
+            maxLength: 255,
+        },
+        [colsCompanies.SETTLEMENT_ACCOUNT]: {
+            type: 'string',
+            maxLength: 29,
+            minLength: 20,
+            pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
+            companyWithSettlementAccountExists: {},
+        },
+        [colsCompanies.POST_ADDRESS]: {
+            type: 'string',
+            maxLength: 255,
+        },
+        [colsCompanies.BANK_NAME]: {
+            type: 'string',
+            maxLength: 255,
+        },
+        [colsCompanies.HEAD_COMPANY_FULL_NAME]: {
+            type: 'string',
+            maxLength: 255,
+        },
+        [colsCompanies.BANK_ADDRESS]: {
+            type: 'string',
+            maxLength: 255,
+        },
+        [colsCompanies.BANK_CODE]: {
+            type: 'string',
+            maxLength: 9,
+            minLength: 6,
+            pattern: DIGITS_VALIDATION_PATTERN,
+        },
+        [colsCompanies.CONTRACT_SIGNER_FULL_NAME]: {
+            type: 'string',
+            maxLength: 255,
+        },
+    },
+    required: [
+        colsCompanies.LEGAL_ADDRESS,
+        colsCompanies.SETTLEMENT_ACCOUNT,
+        colsCompanies.POST_ADDRESS,
+        colsCompanies.BANK_NAME,
+        colsCompanies.HEAD_COMPANY_FULL_NAME,
+        colsCompanies.BANK_ADDRESS,
+        colsCompanies.BANK_CODE,
+        colsCompanies.CONTRACT_SIGNER_FULL_NAME,
+    ],
+    additionalProperties: false,
+};
+
+const finishRegistrationStep2Forwarder = {
+    $async: true,
+    properties: {
+        [colsCompanies.LEGAL_ADDRESS]: {
+            type: 'string',
+            maxLength: 255,
+        },
+        [colsCompanies.SETTLEMENT_ACCOUNT]: {
+            type: 'string',
+            maxLength: 29,
+            minLength: 20,
+            pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
+            companyWithSettlementAccountExists: {},
+        },
+        [colsCompanies.POST_ADDRESS]: {
+            type: 'string',
+            maxLength: 255,
+        },
+        [colsCompanies.BANK_NAME]: {
+            type: 'string',
+            maxLength: 255,
+        },
+        [colsCompanies.BANK_ADDRESS]: {
+            type: 'string',
+            maxLength: 255,
+        },
+        [colsCompanies.BANK_CODE]: {
+            type: 'string',
+            maxLength: 9,
+            minLength: 6,
+            pattern: DIGITS_VALIDATION_PATTERN,
+        },
+    },
+    required: [
+        colsCompanies.LEGAL_ADDRESS,
+        colsCompanies.SETTLEMENT_ACCOUNT,
+        colsCompanies.POST_ADDRESS,
+        colsCompanies.BANK_NAME,
+        colsCompanies.BANK_ADDRESS,
+        colsCompanies.BANK_CODE,
+    ],
+    additionalProperties: false,
+};
+
 const companyFilesTransporter = {
     properties: {
         passport: fileFormat,
@@ -251,6 +405,10 @@ module.exports = {
     finishRegistrationStep1Transporter,
     finishRegistrationStep1Holder,
     finishRegistrationStep1Forwarder,
+
+    finishRegistrationStep2Transporter,
+    finishRegistrationStep2Holder,
+    finishRegistrationStep2Forwarder,
 
     companyFilesTransporter,
     companyFilesHolder,

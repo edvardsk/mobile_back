@@ -41,6 +41,7 @@ const finishRegistrationStep1 = async (req, res, next) => {
         const userRole = res.locals.user.role;
         const userPermissions = res.locals.permissions;
 
+        let transactionList = [];
         if (userPermissions.includes(PERMISSIONS.REGISTRATION_SAVE_STEP_2)) {
             // update data
             const companyData = {
@@ -48,9 +49,7 @@ const finishRegistrationStep1 = async (req, res, next) => {
             };
             const userData = {};
 
-            let transactionList = [];
-
-            const company = await CompaniesService.getCompanyByUserId(userId);
+            const company = await CompaniesService.getCompanyByUserIdStrict(userId);
 
             if (userRole === ROLES.CONFIRMED_EMAIL_AND_PHONE_FORWARDER) {
                 userData[colsUsers.FULL_NAME] = companyData[colsUsers.FULL_NAME];
@@ -61,8 +60,6 @@ const finishRegistrationStep1 = async (req, res, next) => {
                 ...transactionList,
                 CompaniesService.updateCompanyAsTransaction(company.id, MAP_ROLES_AND_FORMATTERS_STEP_1[userRole](companyData)),
             ];
-
-            await TablesService.runTransaction(transactionList);
         } else {
             // insert data
             const companyId = uuid();
@@ -72,8 +69,6 @@ const finishRegistrationStep1 = async (req, res, next) => {
                 id: companyId,
             };
             const userData = {};
-
-            let transactionList = [];
 
             if (userRole === ROLES.CONFIRMED_EMAIL_AND_PHONE_FORWARDER) {
                 userData[colsUsers.FULL_NAME] = companyData[colsUsers.FULL_NAME];
@@ -87,9 +82,27 @@ const finishRegistrationStep1 = async (req, res, next) => {
                 UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.REGISTRATION_SAVE_STEP_2),
                 UsersCompaniesService.addRecordAsTransaction(UsersCompaniesFormatters.formatRecordToSave(userId, companyId)),
             ];
-
-            await TablesService.runTransaction(transactionList);
         }
+
+        await TablesService.runTransaction(transactionList);
+
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const finishRegistrationStep2 = async (req, res, next) => {
+    try {
+        const { body } = req;
+        const userId = res.locals.user.id;
+
+        const company = await CompaniesService.getCompanyByUserIdStrict(userId);
+
+        await TablesService.runTransaction([
+            CompaniesService.updateCompanyAsTransaction(company.id, body),
+            UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.REGISTRATION_SAVE_STEP_3),
+        ]);
 
         return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
     } catch (error) {
@@ -99,4 +112,5 @@ const finishRegistrationStep1 = async (req, res, next) => {
 
 module.exports = {
     finishRegistrationStep1,
+    finishRegistrationStep2,
 };

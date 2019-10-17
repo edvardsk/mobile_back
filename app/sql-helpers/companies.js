@@ -6,6 +6,7 @@ const squelPostgres = squel.useFlavour('postgres');
 const table = SQL_TABLES.COMPANIES;
 const tableUsersCompanies = SQL_TABLES.USERS_TO_COMPANIES;
 
+const cols = table.COLUMNS;
 const colsUsersCompanies = tableUsersCompanies.COLUMNS;
 
 const insertCompany = values => squelPostgres
@@ -31,8 +32,15 @@ const selectCompanyByUserId = userId => squelPostgres
     .left_join(tableUsersCompanies.NAME, 'uc', `c.id = uc.${colsUsersCompanies.COMPANY_ID}`)
     .toString();
 
+const selectCompanyBySettlementAccount = account => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where(`${cols.SETTLEMENT_ACCOUNT} = '${account}'`)
+    .toString();
+
 module.exports = {
     insertCompany,
     updateCompany,
     selectCompanyByUserId,
+    selectCompanyBySettlementAccount,
 };

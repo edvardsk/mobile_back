@@ -27,6 +27,11 @@ const FINISH_REGISTRATION_STEP1_PERMISSIONS = [
     PERMISSIONS.REGISTRATION_SAVE_STEP_1,
 ];
 
+const FINISH_REGISTRATION_STEP2_PERMISSIONS = [
+    PERMISSIONS.FINISH_REGISTRATION,
+    PERMISSIONS.REGISTRATION_SAVE_STEP_2,
+];
+
 const CONFIRM_PHONE_NUMBER_PERMISSIONS = [
     PERMISSIONS.CONFIRM_PHONE_NUMBER,
 ];
@@ -35,6 +40,12 @@ const FINISH_REGISTRATION_STEP_1_TEXT_MAP_SCHEMES = {
     [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: ValidatorSchemes.finishRegistrationStep1Transporter,
     [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: ValidatorSchemes.finishRegistrationStep1Holder,
     [ROLES.CONFIRMED_EMAIL_AND_PHONE_FORWARDER]: ValidatorSchemes.finishRegistrationStep1Forwarder,
+};
+
+const FINISH_REGISTRATION_STEP_2_TEXT_MAP_SCHEMES = {
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: ValidatorSchemes.finishRegistrationStep2Transporter,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: ValidatorSchemes.finishRegistrationStep2Holder,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_FORWARDER]: ValidatorSchemes.finishRegistrationStep2Forwarder,
 };
 
 // const FINISH_REGISTRATION_STEP_1_FILES_MAP_SCHEMES = {
@@ -57,7 +68,8 @@ router.post(
 router.post(
     ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.POST,
     validate(ValidatorSchemes.registration),
-    registration.createUser);
+    registration.createUser
+);
 
 router.get(
     ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.ROLES.BASE + ROUTES.AUTH.REGISTRATION.ROLES.GET,
@@ -114,6 +126,13 @@ router.post(
     validate(({ role }) => FINISH_REGISTRATION_STEP_1_TEXT_MAP_SCHEMES[role]),
     // validate(({ role }) => FINISH_REGISTRATION_STEP_1_FILES_MAP_SCHEMES[role], 'files'),
     finishRegistration.finishRegistrationStep1,
+);
+
+router.post(
+    ROUTES.AUTH.FINISH_REGISTRATION.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['2'].BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['2'].POST,
+    isHasPermissions(FINISH_REGISTRATION_STEP2_PERMISSIONS), // permissions middleware
+    validate(({ role }) => FINISH_REGISTRATION_STEP_2_TEXT_MAP_SCHEMES[role]),
+    finishRegistration.finishRegistrationStep2,
 );
 
 module.exports = router;
