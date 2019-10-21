@@ -6,7 +6,6 @@ const colsUsers = SQL_TABLES.USERS.COLUMNS;
 const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
 const colsPhoneConfirmation = SQL_TABLES.PHONE_CONFIRMATION_CODES.COLUMNS;
 
-const UUID_VALIDATION_PATTER = '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$';
 const DIGITS_VALIDATION_PATTERN = '^\\d+$';
 const PASSWORD_VALIDATION_PATTERN = '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$';
 
@@ -37,28 +36,37 @@ const registration = {
         [colsUsers.EMAIL]: {
             type: 'string',
             format: 'email',
+            maxLength: 255,
         },
         [colsUsers.PASSWORD]: {
             type: 'string',
+            maxLength: 255,
             pattern: PASSWORD_VALIDATION_PATTERN,
+        },
+        [colsUsers.FULL_NAME]: {
+            type: 'string',
+            maxLength: 255,
         },
         [HOMELESS_COLUMNS.ROLE_ID]: {
             type: 'string',
-            pattern: UUID_VALIDATION_PATTER,
+            format: 'uuid',
+            roleExists: {},
+        },
+        [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
+            type: 'string',
+            format: 'uuid',
+            phonePrefixExists: {},
         },
         [HOMELESS_COLUMNS.PHONE_NUMBER]: {
             type: 'string',
             pattern: DIGITS_VALIDATION_PATTERN,
+            phoneNumberValid: {},
         },
-        [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
-            type: 'string',
-            pattern: UUID_VALIDATION_PATTER,
-            phonePrefixExists: {}
-        }
     },
     required: [
         colsUsers.EMAIL,
         colsUsers.PASSWORD,
+        colsUsers.FULL_NAME,
         HOMELESS_COLUMNS.ROLE_ID,
         HOMELESS_COLUMNS.PHONE_NUMBER,
         HOMELESS_COLUMNS.PHONE_PREFIX_ID,

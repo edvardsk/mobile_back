@@ -28,6 +28,7 @@ exports.up = function(knex) {
                 table.uuid('phone_prefix_id').references('phone_prefixes.id').notNull();
                 table.string('number', 10).notNull();
                 table.timestamp('created_at').defaultTo(knex.fn.now());
+                table.unique(['phone_prefix_id', 'number']);
             });
         })
         .then(function () {

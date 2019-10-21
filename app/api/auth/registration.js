@@ -25,13 +25,9 @@ const { formatRolesForResponse } = require('formatters/roles');
 const { formatPhoneNumberToSave } = require('formatters/phone-numbers');
 const { formatPhonePrefixesForResponse } = require('formatters/phone-prefixes');
 
-// helpers
-const { isValidPhoneNumber } = require('helpers/validators/phone-number');
-
 const createUser = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
     const colsRoles = SQL_TABLES.ROLES.COLUMNS;
-    const colsPhonePrefixes = SQL_TABLES.PHONE_PREFIXES.COLUMNS;
     try {
         const { body } = req;
         const phoneNumber = body.phone_number;
@@ -46,21 +42,10 @@ const createUser = async (req, res, next) => {
         const roleId = body[HOMELESS_COLUMNS.ROLE_ID];
         const role  = await RolesService.getRole(roleId);
 
-        if (!role) {
-            return reject(res, ERRORS.REGISTRATION.INVALID_ROLE_ID);
-        }
-
         const pendingRole = MAP_ROLES_FROM_CLIENT_TO_SERVER[role[colsRoles.NAME]];
 
         if (!pendingRole) {
             return reject(res, ERRORS.REGISTRATION.INVALID_ROLE_ID);
-        }
-
-        const phonePrefixRecord = await PhonePrefixesService.getRecord(phonePrefixId);
-        const phonePrefixName = phonePrefixRecord[colsPhonePrefixes.PREFIX];
-
-        if (!isValidPhoneNumber(phoneNumber, phonePrefixName)) {
-            return reject(res, ERRORS.VALIDATION.INVALID_PHONE_NUMBER);
         }
 
         const password = body[colsUsers.PASSWORD];

@@ -9,6 +9,7 @@ const UserRolesService = require('services/tables/users-to-roles');
 const { SQL_TABLES } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
 const { MAP_FROM_CONFIRMED_EMAIL_TO_CONFIRMED_PHONE } = require('constants/system');
+const { SUCCESS_CODES } = require('constants/http-codes');
 
 // helpers
 const { nextAllowedRequestForSendingCode } = require('helpers/phone-confirmation');
@@ -39,7 +40,7 @@ const sendCode = async (req, res, next) => {
             await PhoneConfirmationCodesService.prepareAndSaveRecord(userId);
         }
 
-        return success(res, {});
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
     } catch (error) {
         next(error);
     }
@@ -69,7 +70,7 @@ const confirmPhone = async (req, res, next) => {
 
         await UserRolesService.updateUserRole(userId, futureRole);
 
-        return success(res, {});
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
     } catch (error) {
         next(error);
     }
