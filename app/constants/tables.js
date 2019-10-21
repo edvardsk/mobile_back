@@ -3,9 +3,9 @@ const SQL_TABLES = {
         NAME: 'users',
         COLUMNS: {
             EMAIL: 'email',
+            FULL_NAME: 'full_name',
             PASSWORD: 'password',
             KEY: 'key',
-            FULL_NAME: 'full_name',
             CREATED_AT: 'created_at',
         },
     },
@@ -58,28 +58,14 @@ const SQL_TABLES = {
             EXPIRED_AT: 'expired_at',
         },
     },
-    FILE_LABELS: {
-        NAME: 'file_labels',
-        COLUMNS: {
-            NAME: 'name',
-            DESCRIPTION: 'description',
-            CREATED_AT: 'created_at',
-        },
-    },
     FILES: {
         NAME: 'files',
         COLUMNS: {
             NAME: 'name',
             URL: 'url',
+            TYPE: 'type',
             DESCRIPTION: 'description',
-            CREATED_AT: 'created_at',
-        },
-    },
-    FILES_TO_FILE_LABELS: {
-        NAME: 'files_to_file_labels',
-        COLUMNS: {
-            FILE_ID: 'file_id',
-            LABEL_ID: 'label_id',
+            EXPIRED_AT: 'expired_at',
             CREATED_AT: 'created_at',
         },
     },

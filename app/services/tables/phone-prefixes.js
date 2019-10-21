@@ -11,9 +11,9 @@ const getRecords = () => manyOrNone(selectRecords());
 
 const getRecord = id => oneOrNone(selectRecordById(id));
 
-const checkPhonePrefixExists = async (schema, id) => {
+const checkPhonePrefixExists = async (props, id) => {
     if (!isValidUUID(id)) {
-        return null;
+        return true; // will be caught by pattern
     }
     const prefix = await getRecord(id);
     return !!prefix;

@@ -9,6 +9,7 @@ const PhonePrefixesService = require('services/tables/phone-prefixes');
 const PhoneNumbersService = require('services/tables/phone-numbers');
 const CountriesService = require('services/tables/countries');
 const CompaniesService = require('services/tables/companies');
+const RolesService = require('services/tables/roles');
 
 // constants
 const { ERRORS } = require('constants/errors');
@@ -35,6 +36,18 @@ ajv.addKeyword('companyWithSettlementAccountExists', {
     async: true,
     type: 'string',
     validate: CompaniesService.checkCompanyWithSettlementAccountExists,
+});
+
+ajv.addKeyword('roleExists', {
+    async: true,
+    type: 'string',
+    validate: RolesService.checkRoleExists,
+});
+
+ajv.addKeyword('phoneNumberValid', {
+    async: true,
+    type: 'string',
+    validate: PhoneNumbersService.checkPhoneNumberValid,
 });
 
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {
