@@ -251,7 +251,7 @@ const finishRegistrationStep1SoleProprietorForwarderFunc = userId => ({
     additionalProperties: false,
 });
 
-const finishRegistrationStep2Transporter = {
+const finishRegistrationStep2TransporterFunc = userId => ({
     $async: true,
     properties: {
         [colsCompanies.LEGAL_ADDRESS]: {
@@ -263,7 +263,9 @@ const finishRegistrationStep2Transporter = {
             maxLength: 29,
             minLength: 20,
             pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
-            companyWithSettlementAccountExists: {},
+            companyWithSettlementAccountExists: {
+                userId,
+            },
         },
         [colsCompanies.POST_ADDRESS]: {
             type: 'string',
@@ -303,9 +305,9 @@ const finishRegistrationStep2Transporter = {
         colsCompanies.CONTRACT_SIGNER_FULL_NAME,
     ],
     additionalProperties: false,
-};
+});
 
-const finishRegistrationStep2Holder = {
+const finishRegistrationStep2HolderFunc = userId => ({
     $async: true,
     properties: {
         [colsCompanies.LEGAL_ADDRESS]: {
@@ -317,7 +319,9 @@ const finishRegistrationStep2Holder = {
             maxLength: 29,
             minLength: 20,
             pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
-            companyWithSettlementAccountExists: {},
+            companyWithSettlementAccountExists: {
+                userId,
+            },
         },
         [colsCompanies.POST_ADDRESS]: {
             type: 'string',
@@ -357,9 +361,9 @@ const finishRegistrationStep2Holder = {
         colsCompanies.CONTRACT_SIGNER_FULL_NAME,
     ],
     additionalProperties: false,
-};
+});
 
-const finishRegistrationStep2Forwarder = {
+const finishRegistrationStep2SoleProprietorForwarderFunc = userId => ({
     $async: true,
     properties: {
         [colsCompanies.LEGAL_ADDRESS]: {
@@ -371,7 +375,9 @@ const finishRegistrationStep2Forwarder = {
             maxLength: 29,
             minLength: 20,
             pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
-            companyWithSettlementAccountExists: {},
+            companyWithSettlementAccountExists: {
+                userId,
+            },
         },
         [colsCompanies.POST_ADDRESS]: {
             type: 'string',
@@ -401,7 +407,7 @@ const finishRegistrationStep2Forwarder = {
         colsCompanies.BANK_CODE,
     ],
     additionalProperties: false,
-};
+});
 
 const companyFilesTransporter = {
     properties: {
@@ -452,9 +458,9 @@ module.exports = {
     finishRegistrationStep1IndividualForwarderFunc,
     finishRegistrationStep1SoleProprietorForwarderFunc,
 
-    finishRegistrationStep2Transporter,
-    finishRegistrationStep2Holder,
-    finishRegistrationStep2Forwarder,
+    finishRegistrationStep2TransporterFunc,
+    finishRegistrationStep2HolderFunc,
+    finishRegistrationStep2SoleProprietorForwarderFunc,
 
     companyFilesTransporter,
     companyFilesHolder,

@@ -44,9 +44,9 @@ const FINISH_REGISTRATION_STEP_1_TEXT_MAP_SCHEMES = {
 };
 
 const FINISH_REGISTRATION_STEP_2_TEXT_MAP_SCHEMES = {
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: ValidatorSchemes.finishRegistrationStep2Transporter,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: ValidatorSchemes.finishRegistrationStep2Holder,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_FORWARDER]: ValidatorSchemes.finishRegistrationStep2Forwarder,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: ValidatorSchemes.finishRegistrationStep2TransporterFunc,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: ValidatorSchemes.finishRegistrationStep2HolderFunc,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep2SoleProprietorForwarderFunc,
 };
 
 // const FINISH_REGISTRATION_STEP_1_FILES_MAP_SCHEMES = {
@@ -132,7 +132,7 @@ router.post(
 router.post(
     ROUTES.AUTH.FINISH_REGISTRATION.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['2'].BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['2'].POST,
     isHasPermissions(FINISH_REGISTRATION_STEP2_PERMISSIONS), // permissions middleware
-    validate(({ role }) => FINISH_REGISTRATION_STEP_2_TEXT_MAP_SCHEMES[role]),
+    validate(({ role, userId }) => FINISH_REGISTRATION_STEP_2_TEXT_MAP_SCHEMES[role](userId)),
     finishRegistration.finishRegistrationStep2,
 );
 

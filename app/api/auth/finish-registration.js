@@ -90,13 +90,21 @@ const finishRegistrationStep2 = async (req, res, next) => {
     try {
         const { body } = req;
         const userId = res.locals.user.id;
+        const userPermissions = res.locals.permissions;
 
         const company = await CompaniesService.getCompanyByUserIdStrict(userId);
-
-        await TablesService.runTransaction([
+        let transactionList = [
             CompaniesService.updateCompanyAsTransaction(company.id, body),
-            UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.REGISTRATION_SAVE_STEP_3),
-        ]);
+        ];
+
+        if (!userPermissions.includes(PERMISSIONS.REGISTRATION_SAVE_STEP_3)) {
+            transactionList = [
+                ...transactionList,
+                UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.REGISTRATION_SAVE_STEP_3),
+            ];
+        }
+
+        await TablesService.runTransaction(transactionList);
 
         return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
     } catch (error) {

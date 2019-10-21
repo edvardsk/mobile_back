@@ -5,7 +5,7 @@ const {
     insertCompany,
     updateCompany,
     selectCompanyByUserId,
-    selectCompanyBySettlementAccount,
+    selectCompanyBySettlementAccountWithFirstOwner,
     selectCompanyByIdentityNumberWithFirstOwner,
 } = require('sql-helpers/companies');
 
@@ -15,7 +15,7 @@ const { HOMELESS_COLUMNS } = require('constants/tables');
 
 const getCompanyByUserId = userId => oneOrNone(selectCompanyByUserId(userId));
 
-const getCompanyBySettlementAccount = account => oneOrNone(selectCompanyBySettlementAccount(account));
+const getCompanyBySettlementAccountWithFirstOwner = account => oneOrNone(selectCompanyBySettlementAccountWithFirstOwner(account));
 
 const getCompanyByIdentityNumberWithFirstOwner = account => oneOrNone(selectCompanyByIdentityNumberWithFirstOwner(account));
 
@@ -25,9 +25,10 @@ const addCompanyAsTransaction = data => [insertCompany(data), OPERATIONS.ONE];
 
 const updateCompanyAsTransaction = (id, data) => [updateCompany(id, data), OPERATIONS.ONE];
 
-const checkCompanyWithSettlementAccountExists = async (props, account) => {
-    const company = await getCompanyBySettlementAccount(account);
-    return !company;
+const checkCompanyWithSettlementAccountExists = async (meta, account) => {
+    const company = await getCompanyBySettlementAccountWithFirstOwner(account);
+    const { userId } = meta;
+    return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId;
 };
 
 const checkCompanyWithIdentityNumberExists = async (meta, number) => {

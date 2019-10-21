@@ -32,10 +32,13 @@ const selectCompanyByUserId = userId => squelPostgres
     .left_join(tableUsersCompanies.NAME, 'uc', `c.id = uc.${colsUsersCompanies.COMPANY_ID}`)
     .toString();
 
-const selectCompanyBySettlementAccount = account => squelPostgres
+const selectCompanyBySettlementAccountWithFirstOwner = account => squelPostgres
     .select()
-    .from(table.NAME)
+    .from(table.NAME, 'c')
+    .field('c.*')
+    .field(`uc.${colsUsersCompanies.USER_ID}`, HOMELESS_COLUMNS.OWNER_ID)
     .where(`${cols.SETTLEMENT_ACCOUNT} = '${account}'`)
+    .left_join(tableUsersCompanies.NAME, 'uc', `c.id = uc.${colsUsersCompanies.COMPANY_ID}`)
     .toString();
 
 const selectCompanyByIdentityNumberWithFirstOwner = number => squelPostgres
@@ -51,6 +54,6 @@ module.exports = {
     insertCompany,
     updateCompany,
     selectCompanyByUserId,
-    selectCompanyBySettlementAccount,
+    selectCompanyBySettlementAccountWithFirstOwner,
     selectCompanyByIdentityNumberWithFirstOwner,
 };
