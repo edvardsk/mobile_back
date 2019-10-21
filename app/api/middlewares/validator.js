@@ -50,6 +50,12 @@ ajv.addKeyword('phoneNumberValid', {
     validate: PhoneNumbersService.checkPhoneNumberValid,
 });
 
+ajv.addKeyword('companyWithIdentityNumberExists', {
+    async: true,
+    type: 'string',
+    validate: CompaniesService.checkCompanyWithIdentityNumberExists,
+});
+
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {
     try {
         const data = get(req, pathToData);
@@ -57,6 +63,7 @@ const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next)
         if (typeof schemeOrGetter === 'function') {
             const params = {
                 role: res.locals.user.role,
+                userId: res.locals.user.id,
             };
             scheme = schemeOrGetter(params);
         } else {

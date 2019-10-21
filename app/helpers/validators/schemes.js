@@ -95,7 +95,7 @@ const authorization = {
     required: [colsUsers.EMAIL, colsUsers.PASSWORD],
 };
 
-const finishRegistrationStep1Transporter = {
+const finishRegistrationStep1TransporterFunc = userId => ({
     $async: true,
     properties: {
         [colsCompanies.NAME]: {
@@ -117,7 +117,11 @@ const finishRegistrationStep1Transporter = {
         },
         [colsCompanies.IDENTITY_NUMBER]: {
             type: 'string',
+            minLength: 9,
             maxLength: 12,
+            companyWithIdentityNumberExists: {
+                userId,
+            },
         },
         [colsCompanies.WEBSITE]: {
             type: 'string',
@@ -133,9 +137,9 @@ const finishRegistrationStep1Transporter = {
         colsCompanies.IDENTITY_NUMBER,
     ],
     additionalProperties: false,
-};
+});
 
-const finishRegistrationStep1Holder = {
+const finishRegistrationStep1HolderFunc = userId => ({
     $async: true,
     properties: {
         [colsCompanies.NAME]: {
@@ -157,12 +161,17 @@ const finishRegistrationStep1Holder = {
         },
         [colsCompanies.IDENTITY_NUMBER]: {
             type: 'string',
+            minLength: 9,
             maxLength: 12,
+            companyWithIdentityNumberExists: {
+                userId,
+            },
         },
         [colsCompanies.WEBSITE]: {
             type: 'string',
             maxLength: 255,
-        }
+            pattern: URL_VALIDATION_PATTERN,
+        },
     },
     required: [
         colsCompanies.NAME,
@@ -172,15 +181,40 @@ const finishRegistrationStep1Holder = {
         colsCompanies.IDENTITY_NUMBER,
     ],
     additionalProperties: false,
-};
+});
 
-const finishRegistrationStep1Forwarder = {
+const finishRegistrationStep1IndividualForwarderFunc = userId => ({
     $async: true,
     properties: {
-        [colsUsers.FULL_NAME]: {
+        [colsCompanies.COUNTRY_ID]: {
+            type: 'string',
+            format: 'uuid',
+            countryExists: {},
+        },
+        [colsCompanies.IDENTITY_NUMBER]: {
+            type: 'string',
+            minLength: 9,
+            maxLength: 12,
+            companyWithIdentityNumberExists: {
+                userId,
+            },
+        },
+        [colsCompanies.WEBSITE]: {
             type: 'string',
             maxLength: 255,
-        },
+            pattern: URL_VALIDATION_PATTERN,
+        }
+    },
+    required: [
+        colsCompanies.COUNTRY_ID,
+        colsCompanies.IDENTITY_NUMBER,
+    ],
+    additionalProperties: false,
+});
+
+const finishRegistrationStep1SoleProprietorForwarderFunc = userId => ({
+    $async: true,
+    properties: {
         [colsCompanies.NAME]: {
             type: 'string',
             maxLength: 255,
@@ -196,28 +230,26 @@ const finishRegistrationStep1Forwarder = {
         },
         [colsCompanies.IDENTITY_NUMBER]: {
             type: 'string',
+            minLength: 9,
             maxLength: 12,
+            companyWithIdentityNumberExists: {
+                userId,
+            },
         },
         [colsCompanies.WEBSITE]: {
             type: 'string',
             maxLength: 255,
+            pattern: URL_VALIDATION_PATTERN,
         }
     },
-    dependencies: {
-        [colsCompanies.NAME]: {
-            required: [colsCompanies.REGISTERED_AT],
-        },
-        [colsCompanies.REGISTERED_AT]: {
-            required: [colsCompanies.NAME],
-        },
-    },
     required: [
-        colsUsers.FULL_NAME,
+        colsCompanies.NAME,
+        colsCompanies.REGISTERED_AT,
         colsCompanies.COUNTRY_ID,
         colsCompanies.IDENTITY_NUMBER,
     ],
     additionalProperties: false,
-};
+});
 
 const finishRegistrationStep2Transporter = {
     $async: true,
@@ -415,9 +447,10 @@ module.exports = {
     registration,
     authorization,
 
-    finishRegistrationStep1Transporter,
-    finishRegistrationStep1Holder,
-    finishRegistrationStep1Forwarder,
+    finishRegistrationStep1TransporterFunc,
+    finishRegistrationStep1HolderFunc,
+    finishRegistrationStep1IndividualForwarderFunc,
+    finishRegistrationStep1SoleProprietorForwarderFunc,
 
     finishRegistrationStep2Transporter,
     finishRegistrationStep2Holder,

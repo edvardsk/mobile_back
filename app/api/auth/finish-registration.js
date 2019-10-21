@@ -31,30 +31,31 @@ const { AWS_S3_BUCKET_NAME } = process.env;
 const MAP_ROLES_AND_FORMATTERS_STEP_1 = {
     [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: FinishRegistrationFormatters.formatCompanyForTransporterToSave,
     [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: FinishRegistrationFormatters.formatCompanyForHolderToSave,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_FORWARDER]: FinishRegistrationFormatters.formatCompanyForForwarderToSave,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_INDIVIDUAL_FORWARDER]: FinishRegistrationFormatters.formatCompanyForIndividualForwarderToSave,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_SOLE_PROPRIETOR_FORWARDER]: FinishRegistrationFormatters.formatCompanyForSoleProprietorForwarderToSave,
+};
+
+const MAP_ROLES_TO_NEXT_PERMISSIONS_FOR_STEP_1 = {
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: PERMISSIONS.REGISTRATION_SAVE_STEP_2,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: PERMISSIONS.REGISTRATION_SAVE_STEP_2,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_INDIVIDUAL_FORWARDER]: PERMISSIONS.REGISTRATION_SAVE_STEP_3,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_SOLE_PROPRIETOR_FORWARDER]: PERMISSIONS.REGISTRATION_SAVE_STEP_2,
 };
 
 const finishRegistrationStep1 = async (req, res, next) => {
-    const colsUsers = SQL_TABLES.USERS.COLUMNS;
     try {
         const userId = res.locals.user.id;
         const userRole = res.locals.user.role;
         const userPermissions = res.locals.permissions;
 
         let transactionList = [];
-        if (userPermissions.includes(PERMISSIONS.REGISTRATION_SAVE_STEP_2)) {
+        if (userPermissions.includes(PERMISSIONS.REGISTRATION_SAVE_STEP_2) || userPermissions.includes(PERMISSIONS.REGISTRATION_SAVE_STEP_3)) {
             // update data
             const companyData = {
                 ...req.body,
             };
-            const userData = {};
 
             const company = await CompaniesService.getCompanyByUserIdStrict(userId);
-
-            if (userRole === ROLES.CONFIRMED_EMAIL_AND_PHONE_FORWARDER) {
-                userData[colsUsers.FULL_NAME] = companyData[colsUsers.FULL_NAME];
-                transactionList.push(UsersService.updateUserAsTransaction(userId, userData));
-            }
 
             transactionList = [
                 ...transactionList,
@@ -68,18 +69,11 @@ const finishRegistrationStep1 = async (req, res, next) => {
                 ...req.body,
                 id: companyId,
             };
-            const userData = {};
-
-            if (userRole === ROLES.CONFIRMED_EMAIL_AND_PHONE_FORWARDER) {
-                userData[colsUsers.FULL_NAME] = companyData[colsUsers.FULL_NAME];
-                delete companyData[colsUsers.FULL_NAME];
-                transactionList.push(UsersService.updateUserAsTransaction(userId, userData));
-            }
 
             transactionList = [
                 ...transactionList,
                 CompaniesService.addCompanyAsTransaction(companyData),
-                UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.REGISTRATION_SAVE_STEP_2),
+                UserPermissionsService.addUserPermissionAsTransaction(userId, MAP_ROLES_TO_NEXT_PERMISSIONS_FOR_STEP_1[userRole]),
                 UsersCompaniesService.addRecordAsTransaction(UsersCompaniesFormatters.formatRecordToSave(userId, companyId)),
             ];
         }

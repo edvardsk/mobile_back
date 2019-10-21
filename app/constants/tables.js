@@ -157,6 +157,7 @@ const HOMELESS_COLUMNS = {
     ROLE_ID: 'role_id',
     PHONE_NUMBER: 'phone_number',
     PHONE_PREFIX_ID: 'phone_prefix_id',
+    OWNER_ID: 'owner_id',
 };
 
 module.exports = {

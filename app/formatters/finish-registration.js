@@ -20,17 +20,23 @@ const formatCompanyForHolderToSave = data => ({
     [colsCompanies.WEBSITE]: data[colsCompanies.WEBSITE] || null,
 });
 
-const formatCompanyForForwarderToSave = data => ({
+const formatCompanyForIndividualForwarderToSave = data => ({
+    [colsCompanies.COUNTRY_ID]: data[colsCompanies.COUNTRY_ID],
+    [colsCompanies.IDENTITY_NUMBER]: data[colsCompanies.IDENTITY_NUMBER],
+    [colsCompanies.WEBSITE]: data[colsCompanies.WEBSITE] || null,
+});
+
+const formatCompanyForSoleProprietorForwarderToSave = data => ({
     [colsCompanies.COUNTRY_ID]: data[colsCompanies.COUNTRY_ID],
     [colsCompanies.IDENTITY_NUMBER]: data[colsCompanies.IDENTITY_NUMBER],
     [colsCompanies.WEBSITE]: data[colsCompanies.WEBSITE] || null,
     [colsCompanies.NAME]: data[colsCompanies.NAME] || null,
     [colsCompanies.REGISTERED_AT]: data[colsCompanies.REGISTERED_AT] || null,
-
 });
 
 module.exports = {
     formatCompanyForTransporterToSave,
     formatCompanyForHolderToSave,
-    formatCompanyForForwarderToSave,
+    formatCompanyForIndividualForwarderToSave,
+    formatCompanyForSoleProprietorForwarderToSave,
 };

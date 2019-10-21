@@ -1,5 +1,5 @@
 const squel = require('squel');
-const { SQL_TABLES } = require('constants/tables');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
 const squelPostgres = squel.useFlavour('postgres');
 
@@ -38,9 +38,19 @@ const selectCompanyBySettlementAccount = account => squelPostgres
     .where(`${cols.SETTLEMENT_ACCOUNT} = '${account}'`)
     .toString();
 
+const selectCompanyByIdentityNumberWithFirstOwner = number => squelPostgres
+    .select()
+    .from(table.NAME, 'c')
+    .field('c.*')
+    .field(`uc.${colsUsersCompanies.USER_ID}`, HOMELESS_COLUMNS.OWNER_ID)
+    .where(`${cols.IDENTITY_NUMBER} = '${number}'`)
+    .left_join(tableUsersCompanies.NAME, 'uc', `c.id = uc.${colsUsersCompanies.COMPANY_ID}`)
+    .toString();
+
 module.exports = {
     insertCompany,
     updateCompany,
     selectCompanyByUserId,
     selectCompanyBySettlementAccount,
+    selectCompanyByIdentityNumberWithFirstOwner,
 };

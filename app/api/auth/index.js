@@ -37,9 +37,10 @@ const CONFIRM_PHONE_NUMBER_PERMISSIONS = [
 ];
 
 const FINISH_REGISTRATION_STEP_1_TEXT_MAP_SCHEMES = {
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: ValidatorSchemes.finishRegistrationStep1Transporter,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: ValidatorSchemes.finishRegistrationStep1Holder,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_FORWARDER]: ValidatorSchemes.finishRegistrationStep1Forwarder,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: ValidatorSchemes.finishRegistrationStep1TransporterFunc,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: ValidatorSchemes.finishRegistrationStep1HolderFunc,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_INDIVIDUAL_FORWARDER]: ValidatorSchemes.finishRegistrationStep1IndividualForwarderFunc,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep1SoleProprietorForwarderFunc,
 };
 
 const FINISH_REGISTRATION_STEP_2_TEXT_MAP_SCHEMES = {
@@ -123,7 +124,7 @@ router.post(
     ROUTES.AUTH.FINISH_REGISTRATION.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['1'].BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['1'].POST,
     isHasPermissions(FINISH_REGISTRATION_STEP1_PERMISSIONS), // permissions middleware
     // formDataHandler(uploadData), // uploading files middleware
-    validate(({ role }) => FINISH_REGISTRATION_STEP_1_TEXT_MAP_SCHEMES[role]),
+    validate(({ role, userId }) => FINISH_REGISTRATION_STEP_1_TEXT_MAP_SCHEMES[role](userId)),
     // validate(({ role }) => FINISH_REGISTRATION_STEP_1_FILES_MAP_SCHEMES[role], 'files'),
     finishRegistration.finishRegistrationStep1,
 );

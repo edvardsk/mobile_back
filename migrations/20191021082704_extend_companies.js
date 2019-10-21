@@ -3,7 +3,7 @@ exports.up = function(knex) {
     return knex.schema.alterTable('companies', function(table) {
         table.string('ownership_type', 50);
         table.string('website');
-        table.timestamp('registered_at').notNull();
+        table.timestamp('registered_at');
         table.uuid('country_id').references('countries.id').notNull();
         table.string('identity_number', 12).unique().notNull();
         table.string('legal_address');

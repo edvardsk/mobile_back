@@ -6,14 +6,18 @@ const {
     updateCompany,
     selectCompanyByUserId,
     selectCompanyBySettlementAccount,
+    selectCompanyByIdentityNumberWithFirstOwner,
 } = require('sql-helpers/companies');
 
 // constants
 const { OPERATIONS } = require('constants/postgres');
+const { HOMELESS_COLUMNS } = require('constants/tables');
 
 const getCompanyByUserId = userId => oneOrNone(selectCompanyByUserId(userId));
 
 const getCompanyBySettlementAccount = account => oneOrNone(selectCompanyBySettlementAccount(account));
+
+const getCompanyByIdentityNumberWithFirstOwner = account => oneOrNone(selectCompanyByIdentityNumberWithFirstOwner(account));
 
 const getCompanyByUserIdStrict = userId => one(selectCompanyByUserId(userId));
 
@@ -26,10 +30,17 @@ const checkCompanyWithSettlementAccountExists = async (props, account) => {
     return !company;
 };
 
+const checkCompanyWithIdentityNumberExists = async (meta, number) => {
+    const company = await getCompanyByIdentityNumberWithFirstOwner(number);
+    const { userId } = meta;
+    return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId;
+};
+
 module.exports = {
     getCompanyByUserId,
     getCompanyByUserIdStrict,
     addCompanyAsTransaction,
     updateCompanyAsTransaction,
     checkCompanyWithSettlementAccountExists,
+    checkCompanyWithIdentityNumberExists,
 };
