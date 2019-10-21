@@ -5,6 +5,8 @@ exports.up = function(knex) {
         table.string('name').notNull();
         table.text('url').notNull();
         table.text('description');
+        table.string('type').notNull();
+        table.timestamp('expired_at');
         table.timestamp('created_at').defaultTo(knex.fn.now());
     });
 };

@@ -6,6 +6,8 @@ require('ajv-keywords')(ajv, 'instanceof');
 
 // services
 const PhonePrefixesService = require('services/tables/phone-prefixes');
+const PhoneNumbersService = require('services/tables/phone-numbers');
+const RolesService = require('services/tables/roles');
 
 // constants
 const { ERRORS } = require('constants/errors');
@@ -14,6 +16,18 @@ ajv.addKeyword('phonePrefixExists', {
     async: true,
     type: 'string',
     validate: PhonePrefixesService.checkPhonePrefixExists,
+});
+
+ajv.addKeyword('roleExists', {
+    async: true,
+    type: 'string',
+    validate: RolesService.checkRoleExists,
+});
+
+ajv.addKeyword('phoneNumberValid', {
+    async: true,
+    type: 'string',
+    validate: PhoneNumbersService.checkPhoneNumberValid,
 });
 
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {
@@ -41,7 +55,6 @@ const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next)
         } else if (!isValidData) {
             return reject(res, ERRORS.VALIDATION.ERROR, validate.errors);
         }
-
 
         next();
     } catch (error) {
