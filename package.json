@@ -14,7 +14,8 @@
     "remigrate": "npm run down-all && npm run up",
     "eslint": "./node_modules/.bin/eslint --ext .js --color ./ || exit 0",
     "eslint-fix": "./node_modules/.bin/eslint --ext .js --color ./ --fix",
-    "pre-commit-eslint": "./node_modules/.bin/eslint --ext .js --color ./"
+    "pre-commit-eslint": "./node_modules/.bin/eslint --ext .js --color ./",
+    "deploy": "eb deploy"
   },
   "dependencies": {
     "ajv": "^6.10.2",
