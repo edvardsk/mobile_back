@@ -9,6 +9,406 @@
 			"name": "Auth",
 			"item": [
 				{
+					"name": "Registration",
+					"item": [
+						{
+							"name": "Register transporter",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"transporter@mail.ru\",\n\t\"full_name\": \"Test Testovich\",\n\t\"password\": \"password1\",\n\t\"role_id\": \"cdf57c6a-094f-473d-ad5b-d207ec332541\",\n\t\"phone_number\": \"447654321\",\n\t\"phone_prefix_id\": \"{{phonePrefixId}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/registration",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"registration"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register holder",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"holder@mail.ru\",\n\t\"password\": \"password1\",\n\t\"full_name\": \"Holder Holderovich\",\n\t\"role_id\": \"c33a7f3c-0858-4597-a6c1-15c70d026545\",\n\t\"phone_number\": \"447654322\",\n\t\"phone_prefix_id\": \"{{phonePrefixId}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/registration",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"registration"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register individual forwarder",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"forwarderph@mail.ru\",\n\t\"password\": \"password1\",\n\t\"role_id\": \"1b40fb5f-63b4-468c-bb13-eae9a2a21d78\",\n\t\"full_name\": \"Forwarder Physicalovich\",\n\t\"phone_number\": \"337480313\",\n\t\"phone_prefix_id\": \"{{phonePrefixId}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/registration",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"registration"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register Sole Proprietor forwarder",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"forwarderip@mail.ru\",\n\t\"password\": \"password1\",\n\t\"full_name\": \"Forwarder Ipeshnicovich\",\n\t\"role_id\": \"8a33237d-e93f-4c5e-a257-796edc6a0c9b\",\n\t\"phone_number\": \"337480314\",\n\t\"phone_prefix_id\": \"{{phonePrefixId}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/registration",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"registration"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Authorization",
+					"item": [
+						{
+							"name": "Authorize transporter",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+										"exec": [
+											"const jsonData = JSON.parse(responseBody);",
+											"postman.setEnvironmentVariable (\"token\", jsonData.data.token);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"transporter@mail.ru\",\n\t\"password\": \"password1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/authorization",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"authorization"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Authorize holder",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+										"exec": [
+											"const jsonData = JSON.parse(responseBody);",
+											"postman.setEnvironmentVariable (\"token\", jsonData.data.token);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"holder@mail.ru\",\n\t\"password\": \"password1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/authorization",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"authorization"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Authorize individual forwarder",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+										"exec": [
+											"const jsonData = JSON.parse(responseBody);",
+											"postman.setEnvironmentVariable (\"token\", jsonData.data.token);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"forwarderph@mail.ru\",\n\t\"password\": \"password1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/authorization",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"authorization"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Authorize Sole Proprietor forwarder",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+										"exec": [
+											"const jsonData = JSON.parse(responseBody);",
+											"postman.setEnvironmentVariable (\"token\", jsonData.data.token);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"forwarderip@mail.ru\",\n\t\"password\": \"password1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/authorization",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"authorization"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "072f097c-ad39-4928-a1ce-2e138b4fcda6",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "a87f44f0-108f-4999-9da3-c4dcdedfcedc",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
 					"name": "Confirm phone number",
 					"item": [
 						{
@@ -118,90 +518,945 @@
 					"_postman_isSubFolder": true
 				},
 				{
-					"name": "Registration",
-					"event": [
+					"name": "Finish registration",
+					"item": [
 						{
-							"listen": "test",
-							"script": {
-								"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"email\": \"test@mail.ru\",\n\t\"password\": \"password1\",\n\t\"role_id\": \"4464a984-5836-4a2d-92bc-e739a9fd494e\",\n\t\"phone_number\": \"337480311\",\n\t\"phone_prefix_id\": \"BY\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+							"name": "Transporter",
+							"item": [
+								{
+									"name": "Step 1",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"postman postmanovich\",\n    \"ownership_type\": \"OOO\",\n    \"registered_at\": \"2018-03-03\",\n    \"identity_number\": \"23124223432\",\n    \"country_id\": \"{{countryId}}\",\n    \"website\": \"http://test.a.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/1",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"1"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Step 2",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"legal_address\": \"Minsk, st. Nizavisimosi 24, d 23\",\n    \"settlement_account\": \"2341245957482932152859214234\",\n    \"post_address\": \"Minsk, st. Nizavisimosi 25, d 25\",\n    \"bank_name\": \"ideabank\",\n    \"head_company_full_name\": \"Mr Admin Adminovich\",\n    \"bank_address\": \"Minsk, st. Nizavisimosi 26, d 26\",\n    \"bank_code\": \"123456789\",\n    \"contract_signer_full_name\": \"Contract Contractovich\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/2",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"2"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Step 3",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "state_registration_certificate_number",
+													"value": "RU.77.01.34.001.E.012440.08.12",
+													"type": "text"
+												},
+												{
+													"key": "state_registration_certificate_created_at",
+													"value": "2013-03-03",
+													"type": "text"
+												},
+												{
+													"key": "state_registration_certificate",
+													"type": "file",
+													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg"
+												},
+												{
+													"key": "residency_certificate",
+													"type": "file",
+													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.41.jpg"
+												},
+												{
+													"key": "test",
+													"type": "file",
+													"src": "/Users/qwerty/Downloads/2019-09-03 11.19.31.jpg"
+												},
+												{
+													"key": "kek",
+													"type": "file",
+													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg"
+												},
+												{
+													"key": "insurance_policy_created_at",
+													"value": "2014-04-04",
+													"type": "text"
+												},
+												{
+													"key": "insurance_policy_expired_at",
+													"value": "2014-05-05",
+													"type": "text"
+												},
+												{
+													"key": "insurance_company_name",
+													"value": "belgosstrakh",
+													"type": "text"
+												},
+												{
+													"key": "insurance_policy",
+													"type": "file",
+													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg"
+												}
+											],
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/3",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"3"
+											]
+										}
+									},
+									"response": []
 								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/registration",
-							"host": [
-								"{{url}}"
 							],
-							"path": [
-								"registration"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Authorization",
-					"event": [
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "e4d31495-5898-4c97-836d-0faee885727b",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "c8306673-14b9-49df-852d-29d2cff2244d",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
 						{
-							"listen": "test",
-							"script": {
-								"id": "0f2dc4c3-5070-41ab-8625-473e117b6a2b",
-								"exec": [
-									"const jsonData = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable (\"token\", jsonData.data.token);"
-								],
-								"type": "text/javascript"
-							}
+							"name": "Holder",
+							"item": [
+								{
+									"name": "Step 1",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"holder\",\n    \"ownership_type\": \"OOO\",\n    \"registered_at\": \"2018-03-03\",\n    \"identity_number\": \"23231323124\",\n    \"country_id\": \"{{countryId}}\",\n    \"website\": \"http://test.a.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/1",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"1"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Step 2",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"legal_address\": \"Minsk, st. Nizavisimosi 24, d 23\",\n    \"settlement_account\": \"2341245957482932152859214232\",\n    \"post_address\": \"Minsk, st. Nizavisimosi 25, d 25\",\n    \"bank_name\": \"ideabank\",\n    \"head_company_full_name\": \"Mr Admin Adminovich\",\n    \"bank_address\": \"Minsk, st. Nizavisimosi 26, d 26\",\n    \"bank_code\": \"123456789\",\n    \"contract_signer_full_name\": \"Contract Contractovich\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/2",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"2"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Step 3",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "state_registration_certificate_number",
+													"value": "RU.77.01.34.001.E.012440.08.13",
+													"type": "text"
+												},
+												{
+													"key": "state_registration_certificate_created_at",
+													"value": "2013-03-03",
+													"type": "text"
+												},
+												{
+													"key": "state_registration_certificate",
+													"type": "file",
+													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg"
+												}
+											],
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/3",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"3"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "e4d31495-5898-4c97-836d-0faee885727b",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "c8306673-14b9-49df-852d-29d2cff2244d",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Individual Forwarder",
+							"item": [
+								{
+									"name": "Step 1",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"identity_number\": \"23233213123\",\n    \"country_id\": \"{{countryId}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/1",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"1"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Step 2",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"legal_address\": \"Minsk, st. Nizavisimosi 24, d 23\",\n    \"settlement_account\": \"2341245957482932152859214235\",\n    \"post_address\": \"Minsk, st. Nizavisimosi 25, d 25\",\n    \"bank_name\": \"ideabank\",\n    \"bank_address\": \"Minsk, st. Nizavisimosi 26, d 26\",\n    \"bank_code\": \"123456789\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/2",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"2"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Step 3",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "passport_number",
+													"value": "MP11111",
+													"type": "text"
+												},
+												{
+													"key": "passport_issuing_authority",
+													"value": "RUVD",
+													"type": "text"
+												},
+												{
+													"key": "passport_created_at",
+													"value": "2016-06-06",
+													"type": "text"
+												},
+												{
+													"key": "passport_expired_at",
+													"value": "2017-07-07",
+													"type": "text"
+												},
+												{
+													"key": "passport",
+													"type": "file",
+													"src": "/Users/qwerty/Downloads/2019-09-03 11.19.31.jpg"
+												}
+											],
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/3",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"3"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "303ba9c1-52b3-479d-82c9-6704b90b9ca7",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "2a9b1b19-65d5-4b4b-b222-ed7b2283d51b",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Sole Proprietor Forwarder",
+							"item": [
+								{
+									"name": "Step 1",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"identity_number\": \"23233213124\",\n    \"country_id\": \"{{countryId}}\",\n    \"registered_at\": \"2018-03-03\",\n    \"name\": \"test\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/1",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"1"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Step 2",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"legal_address\": \"Minsk, st. Nizavisimosi 24, d 23\",\n    \"settlement_account\": \"2341245957482932152859214235\",\n    \"post_address\": \"Minsk, st. Nizavisimosi 25, d 25\",\n    \"bank_name\": \"ideabank\",\n    \"bank_address\": \"Minsk, st. Nizavisimosi 26, d 26\",\n    \"bank_code\": \"123456789\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/2",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"2"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Step 3",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "passport_number",
+													"value": "MP1111122",
+													"type": "text"
+												},
+												{
+													"key": "passport_issuing_authority",
+													"value": "RUVD",
+													"type": "text"
+												},
+												{
+													"key": "passport_created_at",
+													"value": "2016-06-06",
+													"type": "text"
+												},
+												{
+													"key": "passport_expired_at",
+													"value": "2017-07-07",
+													"type": "text"
+												},
+												{
+													"key": "passport",
+													"type": "file",
+													"src": "/Users/qwerty/Downloads/2019-09-03 11.19.31.jpg"
+												},
+												{
+													"key": "state_registration_certificate_number",
+													"value": "RU.77.01.34.001.E.012440.08.14",
+													"type": "text"
+												},
+												{
+													"key": "state_registration_certificate_created_at",
+													"value": "2013-03-03",
+													"type": "text"
+												},
+												{
+													"key": "state_registration_certificate",
+													"type": "file",
+													"src": "/Users/qwerty/Downloads/2019-09-03 11.19.31.jpg"
+												}
+											],
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/3",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"3"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "303ba9c1-52b3-479d-82c9-6704b90b9ca7",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "2a9b1b19-65d5-4b4b-b222-ed7b2283d51b",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
 						}
 					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"email\": \"test@mail.ru\",\n\t\"password\": \"password1\"\n}"
-						},
-						"url": {
-							"raw": "{{url}}/authorization",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"authorization"
-							]
-						}
-					},
-					"response": []
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				},
 				{
 					"name": "Confirm email",
@@ -235,7 +1490,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{url}}/confirm-email?hash=b8c35aa3-f9e9-426e-a6e3-16fe0c1b7bbb",
+							"raw": "{{url}}/confirm-email?hash=c9d5639b-d27d-483b-8fc0-01045c8af13c",
 							"host": [
 								"{{url}}"
 							],
@@ -245,7 +1500,7 @@
 							"query": [
 								{
 									"key": "hash",
-									"value": "b8c35aa3-f9e9-426e-a6e3-16fe0c1b7bbb"
+									"value": "c9d5639b-d27d-483b-8fc0-01045c8af13c"
 								}
 							]
 						}
@@ -275,13 +1530,18 @@
 							{
 								"key": "Content-Type",
 								"name": "Content-Type",
-								"type": "text",
-								"value": "application/json"
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"email\": \"test@mail.ru\"\n}"
+							"raw": "{\n\t\"email\": \"forwarder@mail.ru\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{url}}/forgot-password/reset",
@@ -319,16 +1579,21 @@
 							{
 								"key": "Content-Type",
 								"name": "Content-Type",
-								"type": "text",
-								"value": "application/json"
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"password\": \"password1\"\n}"
+							"raw": "{\n\t\"password\": \"password2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
-							"raw": "{{url}}/forgot-password/change?hash=f4433ac6-c1d5-46c0-8c29-82e1b0437ce7",
+							"raw": "{{url}}/forgot-password/change?hash=ef43756f-5dc4-49b7-985d-d62be22ccc63",
 							"host": [
 								"{{url}}"
 							],
@@ -339,7 +1604,7 @@
 							"query": [
 								{
 									"key": "hash",
-									"value": "f4433ac6-c1d5-46c0-8c29-82e1b0437ce7"
+									"value": "ef43756f-5dc4-49b7-985d-d62be22ccc63"
 								}
 							]
 						}
@@ -435,7 +1700,7 @@
 					"response": []
 				},
 				{
-					"name": "Finish registration",
+					"name": "Get countries for registration",
 					"event": [
 						{
 							"listen": "test",
@@ -448,6 +1713,9 @@
 							}
 						}
 					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -459,53 +1727,27 @@
 								}
 							]
 						},
-						"method": "POST",
+						"method": "GET",
 						"header": [
 							{
 								"key": "Content-Type",
 								"name": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"type": "text"
+								"type": "text",
+								"value": "application/json"
 							}
 						],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "companyName",
-									"value": "test company",
-									"type": "text"
-								},
-								{
-									"key": "passport",
-									"type": "file",
-									"src": [
-										"/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg",
-										"/Users/qwerty/Downloads/2019-09-03 11.19.31.jpg",
-										"/Users/qwerty/Downloads/190513_Briefing HEMRO App & IoT (2).pdf"
-									]
-								},
-								{
-									"key": "plan",
-									"type": "file",
-									"src": "/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg"
-								},
-								{
-									"key": "dsad",
-									"type": "file",
-									"src": "/Users/qwerty/Downloads/190513_Use Case descriptions (2).xlsx",
-									"disabled": true
-								}
-							]
+							"mode": "raw",
+							"raw": ""
 						},
 						"url": {
-							"raw": "{{url}}/finish-registration/role1",
+							"raw": "{{url}}/registration/countries",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
-								"finish-registration",
-								"role1"
+								"registration",
+								"countries"
 							]
 						}
 					},
@@ -557,116 +1799,6 @@
 						}
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "Invites",
-			"item": [
-				{
-					"name": "Invite user",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"email\": \"test@mail.ru\"\n}"
-						},
-						"url": {
-							"raw": "{{url}}/users",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"users"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Roles",
-			"item": [
-				{
-					"name": "Upgrade role",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"email\": \"test@mail.ru\"\n}"
-						},
-						"url": {
-							"raw": "{{url}}/roles/upgrade/{{role}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"roles",
-								"upgrade",
-								"{{role}}"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "afbd1f72-bbf6-4d4c-be6d-2c1f70fa6f46",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"id": "d1a270bc-4480-4d37-ac0d-40f011e1501f",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
 				}
 			]
 		}
