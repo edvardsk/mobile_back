@@ -37,7 +37,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"email\": \"transporter@mail.ru\",\n\t\"full_name\": \"Test Testovich\",\n\t\"password\": \"password1\",\n\t\"role_id\": \"cdf57c6a-094f-473d-ad5b-d207ec332541\",\n\t\"phone_number\": \"447654321\",\n\t\"phone_prefix_id\": \"{{phonePrefixId}}\"\n}",
+									"raw": "{\n\t\"email\": \"transporter@mail.ru\",\n\t\"full_name\": \"Transporter Transportovich\",\n\t\"password\": \"password1\",\n\t\"role_id\": \"cdf57c6a-094f-473d-ad5b-d207ec332541\",\n\t\"phone_number\": \"4423213222\",\n\t\"phone_prefix_id\": \"{{phonePrefixId}}\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -745,6 +745,63 @@
 												"finish-registration",
 												"steps",
 												"3"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Step 4",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"routes\": [\n        {\n            \"coordinates_from\": {\n                \"longitude\": \"23.3231233\",\n                \"latitude\": \"123.321321\"\n            },\n            \"coordinates_to\": {\n                \"longitude\": \"23.3231232\",\n                \"latitude\": \"123.321321\"\n            }\n        },\n        {\n            \"coordinates_from\": {\n                \"longitude\": \"23.3231233\",\n                \"latitude\": \"123.321321\"\n            },\n            \"coordinates_to\": {\n                \"longitude\": \"23.3231232\",\n                \"latitude\": \"123.321321\"\n            }\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/4",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"4"
 											]
 										}
 									},
