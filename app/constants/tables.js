@@ -178,6 +178,7 @@ const HOMELESS_COLUMNS = {
     PHONE_NUMBER: 'phone_number',
     PHONE_PREFIX_ID: 'phone_prefix_id',
     OWNER_ID: 'owner_id',
+    OTHER_ORGANIZATIONS: 'other_organizations',
 };
 
 module.exports = {

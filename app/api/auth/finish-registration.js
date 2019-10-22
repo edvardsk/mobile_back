@@ -7,6 +7,7 @@ const CryptService = require('services/crypto');
 const FilesService = require('services/tables/files');
 const UsersService = require('services/tables/users');
 const CompaniesService = require('services/tables/companies');
+const OtherOrganizationsService = require('services/tables/other-organizations');
 const CompaniesFilesService = require('services/tables/companies-to-files');
 const UsersCompaniesService = require('services/tables/users-to-companies');
 const UserPermissionsService = require('services/tables/users-to-permissions');
@@ -14,7 +15,7 @@ const TablesService = require('services/tables');
 const S3Service = require('services/aws/s3');
 
 // constants
-const { SQL_TABLES } = require('constants/tables');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ROLES, PERMISSIONS } = require('constants/system');
 const { SUCCESS_CODES } = require('constants/http-codes');
 
@@ -120,6 +121,7 @@ const finishRegistrationStep3 = async (req, res, next) => {
     const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
     const colsFiles = SQL_TABLES.FILES.COLUMNS;
     const colsCompaniesFiles = SQL_TABLES.COMPANIES_TO_FILES.COLUMNS;
+    const colsOtherOrganizations = SQL_TABLES.OTHER_ORGANIZATIONS.COLUMNS;
     try {
         const userId = res.locals.user.id;
         const userRole = res.locals.user.role;
@@ -194,10 +196,16 @@ const finishRegistrationStep3 = async (req, res, next) => {
 
             }, [[], []]);
 
-            await TablesService.runTransaction([
+            const deleteTransactionList = [
                 CompaniesFilesService.removeRecordsByCompanyIdAsTransaction(company.id),
-                FilesService.removeFilesByIdsAsTransaction(ids),
-            ]);
+                OtherOrganizationsService.removeRecordsByCompanyIdAsTransaction(company.id),
+            ];
+
+            if (ids.length) {
+                deleteTransactionList.push( FilesService.removeFilesByIdsAsTransaction(ids));
+            }
+
+            await TablesService.runTransaction(deleteTransactionList);
 
             await Promise.all(urls.map(url => {
                 const [bucket, path] = url.split('/');
@@ -224,6 +232,16 @@ const finishRegistrationStep3 = async (req, res, next) => {
 
         if (!isEmpty(companiesProps)) {
             transactionList.push(CompaniesService.updateCompanyAsTransaction(company.id, companiesProps));
+        }
+
+        const otherOrganizationsString = body[HOMELESS_COLUMNS.OTHER_ORGANIZATIONS];
+        if (otherOrganizationsString) {
+            const otherOrganizations = JSON.parse(otherOrganizationsString);
+            const otherOrganizationWithCompanyId = otherOrganizations.map(organization => ({
+                ...organization,
+                [colsOtherOrganizations.COMPANY_ID]: company.id,
+            }));
+            transactionList.push(OtherOrganizationsService.addRecordsAsTransaction(otherOrganizationWithCompanyId));
         }
 
         await TablesService.runTransaction(transactionList);

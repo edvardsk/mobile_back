@@ -12,12 +12,13 @@ const phoneConfirmation = require('./phone-confirmation');
 // constants
 const { ROUTES } = require('constants/routes');
 const { PERMISSIONS, ROLES } = require('constants/system');
+const { HOMELESS_COLUMNS } = require('constants/tables');
 const ValidatorSchemes = require('helpers/validators/schemes');
 
 // middlewares
 const { isHasPermissions, isAuthenticated } = require('api/middlewares');
 const { formDataHandler } = require('api/middlewares/files');
-const { validate } = require('api/middlewares/validator');
+const { validate, validateMultipartJSONProp } = require('api/middlewares/validator');
 
 const upload = multer();
 
@@ -153,6 +154,7 @@ router.post(
     isHasPermissions(FINISH_REGISTRATION_STEP3_PERMISSIONS), // permissions middleware
     formDataHandler(uploadData), // uploading files middleware
     validate(({ role, userId }) => FINISH_REGISTRATION_STEP_3_TEXT_MAP_SCHEMES[role](userId)),
+    validateMultipartJSONProp(ValidatorSchemes.otherOrganizations, `body.${HOMELESS_COLUMNS.OTHER_ORGANIZATIONS}`),
     validate(({ role }) => FINISH_REGISTRATION_STEP_3_FILES_MAP_SCHEMES[role], 'files'),
     finishRegistration.finishRegistrationStep3,
 );
