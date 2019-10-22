@@ -166,6 +166,15 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    ROUTES: {
+        NAME: 'routes',
+        COLUMNS: {
+            COMPANY_ID: 'company_id',
+            COORDINATES_FROM: 'coordinates_from',
+            COORDINATES_TO: 'coordinates_to',
+            CREATED_AT: 'created_at',
+        },
+    }
 };
 
 const NO_SQL_TABLES = {
@@ -179,6 +188,9 @@ const HOMELESS_COLUMNS = {
     PHONE_PREFIX_ID: 'phone_prefix_id',
     OWNER_ID: 'owner_id',
     OTHER_ORGANIZATIONS: 'other_organizations',
+    ROUTES: 'routes',
+    LONGITUDE: 'longitude',
+    LATITUDE: 'latitude',
 };
 
 module.exports = {

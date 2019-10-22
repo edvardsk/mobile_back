@@ -39,6 +39,11 @@ const FINISH_REGISTRATION_STEP3_PERMISSIONS = [
     PERMISSIONS.REGISTRATION_SAVE_STEP_3,
 ];
 
+const FINISH_REGISTRATION_STEP4_PERMISSIONS = [
+    PERMISSIONS.FINISH_REGISTRATION,
+    PERMISSIONS.REGISTRATION_SAVE_STEP_4,
+];
+
 const CONFIRM_PHONE_NUMBER_PERMISSIONS = [
     PERMISSIONS.CONFIRM_PHONE_NUMBER,
 ];
@@ -157,6 +162,13 @@ router.post(
     validateMultipartJSONProp(ValidatorSchemes.otherOrganizations, `body.${HOMELESS_COLUMNS.OTHER_ORGANIZATIONS}`),
     validate(({ role }) => FINISH_REGISTRATION_STEP_3_FILES_MAP_SCHEMES[role], 'files'),
     finishRegistration.finishRegistrationStep3,
+);
+
+router.post(
+    ROUTES.AUTH.FINISH_REGISTRATION.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['4'].BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['4'].POST,
+    isHasPermissions(FINISH_REGISTRATION_STEP4_PERMISSIONS), // permissions middleware
+    validate(ValidatorSchemes.finishRegistrationStep4),
+    finishRegistration.finishRegistrationStep4,
 );
 
 module.exports = router;
