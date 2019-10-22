@@ -786,7 +786,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"routes\": [\n        {\n            \"coordinates_from\": {\n                \"longitude\": \"23.3231233\",\n                \"latitude\": \"123.321321\"\n            },\n            \"coordinates_to\": {\n                \"longitude\": \"23.3231232\",\n                \"latitude\": \"123.321321\"\n            }\n        },\n        {\n            \"coordinates_from\": {\n                \"longitude\": \"23.3231233\",\n                \"latitude\": \"123.321321\"\n            },\n            \"coordinates_to\": {\n                \"longitude\": \"23.3231232\",\n                \"latitude\": \"123.321321\"\n            }\n        }\n    ]\n}",
+											"raw": "{\n    \"routes\": [\n        {\n            \"coordinates_from\": {\n                \"longitude\": \"23.3231233\",\n                \"latitude\": \"123.321321\"\n            },\n            \"coordinates_to\": {\n                \"longitude\": \"23.3231232\",\n                \"latitude\": \"123.321321\"\n            }\n        },\n        {\n            \"coordinates_from\": {\n                \"longitude\": \"3.3231233\",\n                \"latitude\": \"23.321321\"\n            },\n            \"coordinates_to\": {\n                \"longitude\": \"3.3231232\",\n                \"latitude\": \"23.321321\"\n            }\n        }\n    ]\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -802,6 +802,63 @@
 												"finish-registration",
 												"steps",
 												"4"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Step 5",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/5",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"5"
 											]
 										}
 									},
@@ -1027,6 +1084,63 @@
 										}
 									},
 									"response": []
+								},
+								{
+									"name": "Step 5",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/5",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"5"
+											]
+										}
+									},
+									"response": []
 								}
 							],
 							"event": [
@@ -1115,63 +1229,6 @@
 									"response": []
 								},
 								{
-									"name": "Step 2",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
-												"exec": [
-													""
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{token}}",
-													"type": "string"
-												}
-											]
-										},
-										"method": "POST",
-										"header": [
-											{
-												"key": "Content-Type",
-												"name": "Content-Type",
-												"type": "text",
-												"value": "application/json"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n    \"legal_address\": \"Minsk, st. Nizavisimosi 24, d 23\",\n    \"settlement_account\": \"2341245957482932152859214235\",\n    \"post_address\": \"Minsk, st. Nizavisimosi 25, d 25\",\n    \"bank_name\": \"ideabank\",\n    \"bank_address\": \"Minsk, st. Nizavisimosi 26, d 26\",\n    \"bank_code\": \"123456789\"\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{url}}/finish-registration/steps/2",
-											"host": [
-												"{{url}}"
-											],
-											"path": [
-												"finish-registration",
-												"steps",
-												"2"
-											]
-										}
-									},
-									"response": []
-								},
-								{
 									"name": "Step 3",
 									"event": [
 										{
@@ -1249,6 +1306,63 @@
 												"finish-registration",
 												"steps",
 												"3"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Step 5",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/5",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"5"
 											]
 										}
 									},
@@ -1490,6 +1604,63 @@
 												"finish-registration",
 												"steps",
 												"3"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Step 5",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/5",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"5"
 											]
 										}
 									},
