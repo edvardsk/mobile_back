@@ -12,9 +12,16 @@ const BASES = {
     ME: '/me',
     ROLES: '/roles',
     PHONE_PREFIXES: '/phone-prefixes',
+    COUNTRIES: '/countries',
     PHONE_NUMBERS: '/phone-numbers',
     SEND_CODE: '/send-code',
     CONFIRM_PRONE: '/confirm-phone',
+    STEPS: '/steps',
+    1: '/1',
+    2: '/2',
+    3: '/3',
+    4: '/4',
+    5: '/5',
 };
 
 const ROUTES = {
@@ -29,6 +36,10 @@ const ROUTES = {
             },
             PHONE_PREFIXES: {
                 BASE: BASES.PHONE_PREFIXES,
+                GET: '',
+            },
+            COUNTRIES: {
+                BASE: BASES.COUNTRIES,
                 GET: '',
             },
         },
@@ -53,6 +64,29 @@ const ROUTES = {
         },
         FINISH_REGISTRATION: {
             BASE: BASES.FINISH_REGISTRATION,
+            STEPS: {
+                BASE: BASES.STEPS,
+                1: {
+                    BASE: BASES['1'],
+                    POST: '',
+                },
+                2: {
+                    BASE: BASES['2'],
+                    POST: '',
+                },
+                3: {
+                    BASE: BASES['3'],
+                    POST: '',
+                },
+                4: {
+                    BASE: BASES['4'],
+                    POST: '',
+                },
+                5: {
+                    BASE: BASES['5'],
+                    POST: '',
+                },
+            }
         },
         PHONE_NUMBERS: {
             BASE: BASES.PHONE_NUMBERS,

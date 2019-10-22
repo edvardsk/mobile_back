@@ -8,6 +8,13 @@ const colsPhoneConfirmation = SQL_TABLES.PHONE_CONFIRMATION_CODES.COLUMNS;
 
 const DIGITS_VALIDATION_PATTERN = '^\\d+$';
 const PASSWORD_VALIDATION_PATTERN = '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$';
+const URL_VALIDATION_PATTERN = '^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#[\\]@!\\$&\'\\(\\)\\*\\+,;=.]+$';
+const LETTERS_AND_DIGITS_VALIDATION_PATTERN = '^[a-zA-Z0-9]*$';
+const STATE_REGISTRATION_CERTIFICATE_NUMBER_VALIDATION_PATTERN = '^[A-Z]{2}.[0-9]{2}.[0-9]{2}.[0-9]{2}.[0-9]{3}.[A-Z]{1}.[0-9]{6}.[0-9]{2}.[0-9]{2}$';
+
+const SUPPORTED_MIMTYPES = ['application/pdf', 'image/jpeg'];
+
+const POSTGRES_MAX_STRING_LENGTH = 255;
 
 // helpers
 const fileFormat = {
@@ -18,13 +25,17 @@ const fileFormat = {
                 fieldname: {
                     type: 'string',
                 },
-                originaname: {
+                originalname: {
                     type: 'string',
                 },
                 buffer: {
                     instanceof: 'Buffer',
                 },
+                mimetype: {
+                    enum: SUPPORTED_MIMTYPES,
+                },
             },
+            required: ['fieldname', 'originalname', 'buffer', 'mimetype']
         },
     ],
 };
@@ -36,16 +47,16 @@ const registration = {
         [colsUsers.EMAIL]: {
             type: 'string',
             format: 'email',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsUsers.PASSWORD]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
             pattern: PASSWORD_VALIDATION_PATTERN,
         },
         [colsUsers.FULL_NAME]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [HOMELESS_COLUMNS.ROLE_ID]: {
             type: 'string',
@@ -57,9 +68,15 @@ const registration = {
             format: 'uuid',
             phonePrefixExists: {},
         },
+        [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
+            type: 'string',
+            format: 'uuid',
+            phonePrefixExists: {},
+        },
         [HOMELESS_COLUMNS.PHONE_NUMBER]: {
             type: 'string',
             pattern: DIGITS_VALIDATION_PATTERN,
+            phoneNumberExists: {},
             phoneNumberValid: {},
         },
     },
@@ -87,58 +104,500 @@ const authorization = {
     required: [colsUsers.EMAIL, colsUsers.PASSWORD],
 };
 
-const companyFieldsTransporter = {
+const finishRegistrationStep1TransporterFunc = userId => ({
+    $async: true,
     properties: {
         [colsCompanies.NAME]: {
             type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
+        [colsCompanies.OWNERSHIP_TYPE]: {
+            type: 'string',
+            maxLength: 50,
+        },
+        [colsCompanies.REGISTERED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsCompanies.COUNTRY_ID]: {
+            type: 'string',
+            format: 'uuid',
+            countryExists: {},
+        },
+        [colsCompanies.IDENTITY_NUMBER]: {
+            type: 'string',
+            minLength: 9,
+            maxLength: 12,
+            companyWithIdentityNumberExists: {
+                userId,
+            },
+        },
+        [colsCompanies.WEBSITE]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+            pattern: URL_VALIDATION_PATTERN,
+        }
     },
-    required: [colsCompanies.NAME],
-};
+    required: [
+        colsCompanies.NAME,
+        colsCompanies.OWNERSHIP_TYPE,
+        colsCompanies.REGISTERED_AT,
+        colsCompanies.COUNTRY_ID,
+        colsCompanies.IDENTITY_NUMBER,
+    ],
+    additionalProperties: false,
+});
 
-const companyFieldsHolder = {
+const finishRegistrationStep1HolderFunc = userId => ({
+    $async: true,
     properties: {
         [colsCompanies.NAME]: {
             type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsCompanies.OWNERSHIP_TYPE]: {
+            type: 'string',
+            maxLength: 50,
+        },
+        [colsCompanies.REGISTERED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsCompanies.COUNTRY_ID]: {
+            type: 'string',
+            format: 'uuid',
+            countryExists: {},
+        },
+        [colsCompanies.IDENTITY_NUMBER]: {
+            type: 'string',
+            minLength: 9,
+            maxLength: 12,
+            companyWithIdentityNumberExists: {
+                userId,
+            },
+        },
+        [colsCompanies.WEBSITE]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+            pattern: URL_VALIDATION_PATTERN,
         },
     },
-    required: [colsCompanies.NAME],
-};
+    required: [
+        colsCompanies.NAME,
+        colsCompanies.OWNERSHIP_TYPE,
+        colsCompanies.REGISTERED_AT,
+        colsCompanies.COUNTRY_ID,
+        colsCompanies.IDENTITY_NUMBER,
+    ],
+    additionalProperties: false,
+});
 
-const companyFieldsForwarder = {
+const finishRegistrationStep1IndividualForwarderFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsCompanies.COUNTRY_ID]: {
+            type: 'string',
+            format: 'uuid',
+            countryExists: {},
+        },
+        [colsCompanies.IDENTITY_NUMBER]: {
+            type: 'string',
+            minLength: 9,
+            maxLength: 12,
+            companyWithIdentityNumberExists: {
+                userId,
+            },
+        },
+        [colsCompanies.WEBSITE]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+            pattern: URL_VALIDATION_PATTERN,
+        }
+    },
+    required: [
+        colsCompanies.COUNTRY_ID,
+        colsCompanies.IDENTITY_NUMBER,
+    ],
+    additionalProperties: false,
+});
+
+const finishRegistrationStep1SoleProprietorForwarderFunc = userId => ({
+    $async: true,
     properties: {
         [colsCompanies.NAME]: {
             type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsCompanies.REGISTERED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsCompanies.COUNTRY_ID]: {
+            type: 'string',
+            format: 'uuid',
+            countryExists: {},
+        },
+        [colsCompanies.IDENTITY_NUMBER]: {
+            type: 'string',
+            minLength: 9,
+            maxLength: 12,
+            companyWithIdentityNumberExists: {
+                userId,
+            },
+        },
+        [colsCompanies.WEBSITE]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+            pattern: URL_VALIDATION_PATTERN,
+        }
+    },
+    required: [
+        colsCompanies.NAME,
+        colsCompanies.REGISTERED_AT,
+        colsCompanies.COUNTRY_ID,
+        colsCompanies.IDENTITY_NUMBER,
+    ],
+    additionalProperties: false,
+});
+
+const finishRegistrationStep2TransporterFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsCompanies.LEGAL_ADDRESS]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsCompanies.SETTLEMENT_ACCOUNT]: {
+            type: 'string',
+            maxLength: 29,
+            minLength: 20,
+            pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
+            companyWithSettlementAccountExists: {
+                userId,
+            },
+        },
+        [colsCompanies.POST_ADDRESS]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsCompanies.BANK_NAME]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsCompanies.HEAD_COMPANY_FULL_NAME]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsCompanies.BANK_ADDRESS]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsCompanies.BANK_CODE]: {
+            type: 'string',
+            maxLength: 9,
+            minLength: 6,
+            pattern: DIGITS_VALIDATION_PATTERN,
+        },
+        [colsCompanies.CONTRACT_SIGNER_FULL_NAME]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
     },
-    required: [colsCompanies.NAME],
+    required: [
+        colsCompanies.LEGAL_ADDRESS,
+        colsCompanies.SETTLEMENT_ACCOUNT,
+        colsCompanies.POST_ADDRESS,
+        colsCompanies.BANK_NAME,
+        colsCompanies.HEAD_COMPANY_FULL_NAME,
+        colsCompanies.BANK_ADDRESS,
+        colsCompanies.BANK_CODE,
+        colsCompanies.CONTRACT_SIGNER_FULL_NAME,
+    ],
+    additionalProperties: false,
+});
+
+const finishRegistrationStep2HolderFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsCompanies.LEGAL_ADDRESS]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsCompanies.SETTLEMENT_ACCOUNT]: {
+            type: 'string',
+            maxLength: 29,
+            minLength: 20,
+            pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
+            companyWithSettlementAccountExists: {
+                userId,
+            },
+        },
+        [colsCompanies.POST_ADDRESS]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsCompanies.BANK_NAME]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsCompanies.HEAD_COMPANY_FULL_NAME]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsCompanies.BANK_ADDRESS]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsCompanies.BANK_CODE]: {
+            type: 'string',
+            maxLength: 9,
+            minLength: 6,
+            pattern: DIGITS_VALIDATION_PATTERN,
+        },
+        [colsCompanies.CONTRACT_SIGNER_FULL_NAME]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+    },
+    required: [
+        colsCompanies.LEGAL_ADDRESS,
+        colsCompanies.SETTLEMENT_ACCOUNT,
+        colsCompanies.POST_ADDRESS,
+        colsCompanies.BANK_NAME,
+        colsCompanies.HEAD_COMPANY_FULL_NAME,
+        colsCompanies.BANK_ADDRESS,
+        colsCompanies.BANK_CODE,
+        colsCompanies.CONTRACT_SIGNER_FULL_NAME,
+    ],
+    additionalProperties: false,
+});
+
+const finishRegistrationStep2SoleProprietorForwarderFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsCompanies.LEGAL_ADDRESS]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsCompanies.SETTLEMENT_ACCOUNT]: {
+            type: 'string',
+            maxLength: 29,
+            minLength: 20,
+            pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
+            companyWithSettlementAccountExists: {
+                userId,
+            },
+        },
+        [colsCompanies.POST_ADDRESS]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsCompanies.BANK_NAME]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsCompanies.BANK_ADDRESS]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsCompanies.BANK_CODE]: {
+            type: 'string',
+            maxLength: 9,
+            minLength: 6,
+            pattern: DIGITS_VALIDATION_PATTERN,
+        },
+    },
+    required: [
+        colsCompanies.LEGAL_ADDRESS,
+        colsCompanies.SETTLEMENT_ACCOUNT,
+        colsCompanies.POST_ADDRESS,
+        colsCompanies.BANK_NAME,
+        colsCompanies.BANK_ADDRESS,
+        colsCompanies.BANK_CODE,
+    ],
+    additionalProperties: false,
+});
+
+const finishRegistrationStep3TransporterFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: {
+            type: 'string',
+            pattern: STATE_REGISTRATION_CERTIFICATE_NUMBER_VALIDATION_PATTERN,
+            stateRegistrationCertificateNumberExists: {
+                userId,
+            },
+        },
+        [colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsCompanies.INSURANCE_POLICY_CREATED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsCompanies.INSURANCE_POLICY_EXPIRED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsCompanies.INSURANCE_COMPANY_NAME]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        dependencies: {
+            [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: {
+                required: [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT],
+            },
+            [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT]: {
+                required: [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT],
+            },
+        },
+    },
+    required: [
+        colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER,
+        colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT,
+        colsCompanies.INSURANCE_POLICY_CREATED_AT,
+        colsCompanies.INSURANCE_POLICY_EXPIRED_AT,
+        colsCompanies.INSURANCE_COMPANY_NAME,
+    ],
+    additionalProperties: false,
+});
+
+const finishRegistrationStep3TransporterFiles = {
+    patternProperties: {
+        '.': fileFormat,
+    },
+    required: ['state_registration_certificate', 'insurance_policy'],
 };
 
-const companyFilesTransporter = {
+const finishRegistrationStep3HolderFunc = userId => ({
+    $async: true,
     properties: {
-        passport: fileFormat,
-        plan: fileFormat,
+        [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: {
+            type: 'string',
+            pattern: STATE_REGISTRATION_CERTIFICATE_NUMBER_VALIDATION_PATTERN,
+            stateRegistrationCertificateNumberExists: {
+                userId,
+            },
+        },
+        [colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        dependencies: {
+            [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: {
+                required: [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT],
+            },
+            [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT]: {
+                required: [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT],
+            },
+        },
     },
-    required: ['passport', 'plan'],
+    required: [
+        colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER,
+        colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT,
+    ],
     additionalProperties: false,
+});
+
+const finishRegistrationStep3Holder = {
+    patternProperties: {
+        '.': fileFormat,
+    },
+    required: ['state_registration_certificate'],
 };
 
-const companyFilesHolder = {
+const finishRegistrationStep3IndividualForwarderFunc = userId => ({
+    $async: true,
     properties: {
-        passport: fileFormat,
-        plan: fileFormat,
+        [colsUsers.PASSPORT_NUMBER]: {
+            type: 'string',
+            pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
+            maxLength: 19,
+            passportNumberExists: {
+                userId,
+            },
+        },
+        [colsUsers.PASSPORT_ISSUING_AUTHORITY]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsUsers.PASSPORT_CREATED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsUsers.PASSPORT_EXPIRED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
     },
-    required: ['passport', 'plan'],
+    required: [
+        colsUsers.PASSPORT_NUMBER,
+        colsUsers.PASSPORT_ISSUING_AUTHORITY,
+        colsUsers.PASSPORT_CREATED_AT,
+        colsUsers.PASSPORT_EXPIRED_AT,
+    ],
     additionalProperties: false,
+});
+
+const finishRegistrationStep3IndividualForwarder = {
+    patternProperties: {
+        '.': fileFormat,
+    },
+    required: ['passport'],
 };
 
-const companyFilesForwarder = {
+const finishRegistrationStep3SoleProprietorForwarderFunc = userId => ({
+    $async: true,
     properties: {
-        passport: fileFormat,
-        plan: fileFormat,
+        [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: {
+            type: 'string',
+            pattern: STATE_REGISTRATION_CERTIFICATE_NUMBER_VALIDATION_PATTERN,
+            stateRegistrationCertificateNumberExists: {
+                userId,
+            },
+        },
+        [colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsUsers.PASSPORT_NUMBER]: {
+            type: 'string',
+            pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
+            maxLength: 19,
+            passportNumberExists: {
+                userId,
+            },
+        },
+        [colsUsers.PASSPORT_ISSUING_AUTHORITY]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsUsers.PASSPORT_CREATED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsUsers.PASSPORT_EXPIRED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
     },
-    required: ['passport', 'plan'],
+    required: [
+        colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER,
+        colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT,
+        colsUsers.PASSPORT_NUMBER,
+        colsUsers.PASSPORT_ISSUING_AUTHORITY,
+        colsUsers.PASSPORT_CREATED_AT,
+        colsUsers.PASSPORT_EXPIRED_AT,
+    ],
     additionalProperties: false,
+});
+
+const finishRegistrationStep3SoleProprietorForwarder = {
+    patternProperties: {
+        '.': fileFormat,
+    },
+    required: ['passport', 'state_registration_certificate'],
 };
 
 const confirmPhoneNumber = {
@@ -157,11 +616,27 @@ const confirmPhoneNumber = {
 module.exports = {
     registration,
     authorization,
-    companyFieldsTransporter,
-    companyFieldsHolder,
-    companyFieldsForwarder,
-    companyFilesTransporter,
-    companyFilesHolder,
-    companyFilesForwarder,
+
+    finishRegistrationStep1TransporterFunc,
+    finishRegistrationStep1HolderFunc,
+    finishRegistrationStep1IndividualForwarderFunc,
+    finishRegistrationStep1SoleProprietorForwarderFunc,
+
+    finishRegistrationStep2TransporterFunc,
+    finishRegistrationStep2HolderFunc,
+    finishRegistrationStep2SoleProprietorForwarderFunc,
+
+    finishRegistrationStep3TransporterFunc,
+    finishRegistrationStep3TransporterFiles,
+
+    finishRegistrationStep3HolderFunc,
+    finishRegistrationStep3Holder,
+
+    finishRegistrationStep3IndividualForwarderFunc,
+    finishRegistrationStep3IndividualForwarder,
+
+    finishRegistrationStep3SoleProprietorForwarderFunc,
+    finishRegistrationStep3SoleProprietorForwarder,
+
     confirmPhoneNumber,
 };

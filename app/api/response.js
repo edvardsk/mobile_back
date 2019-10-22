@@ -13,7 +13,6 @@ const reject = (res, type, error = '', code = ERROR_CODES.BAD_REQUEST) => {
         error: {
             type: type || '',
             message: error.message || error,
-            data: error.data || '',
         },
     };
 

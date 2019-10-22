@@ -6,6 +6,8 @@ const {
     selectUserByEmail,
     selectUserByEmailWithRole,
     selectUserRole,
+    updateUser,
+    selectUserByPassportNumber,
 } = require('sql-helpers/users');
 
 const { OPERATIONS } = require('constants/postgres');
@@ -25,6 +27,16 @@ const getUserRole = id => one(selectUserRole(id))
 
 const addUserAsTransaction = data => [insertUser(data), OPERATIONS.ONE];
 
+const updateUserAsTransaction = (id, data) => [updateUser(id, data), OPERATIONS.ONE];
+
+const getUserByPassportNumber = number => oneOrNone(selectUserByPassportNumber(number));
+
+const checkUserWithPassportNumberExists = async (meta, number) => {
+    const user = await getUserByPassportNumber(number);
+    const { userId } = meta;
+    return !user || user.id === userId;
+};
+
 module.exports = {
     addUser,
     getUser,
@@ -33,4 +45,6 @@ module.exports = {
     getUserByEmail,
     getUserRole,
     addUserAsTransaction,
+    updateUserAsTransaction,
+    checkUserWithPassportNumberExists,
 };

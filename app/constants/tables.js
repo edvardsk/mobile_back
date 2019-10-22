@@ -6,8 +6,11 @@ const SQL_TABLES = {
             FULL_NAME: 'full_name',
             PASSWORD: 'password',
             KEY: 'key',
-            IS_CONFIRMED: 'is_confirmed',
             CREATED_AT: 'created_at',
+            PASSPORT_NUMBER: 'passport_number',
+            PASSPORT_CREATED_AT: 'passport_created_at',
+            PASSPORT_EXPIRED_AT: 'passport_expired_at',
+            PASSPORT_ISSUING_AUTHORITY: 'passport_issuing_authority',
         },
     },
     EMAIL_CONFIRMATION_HASHES: {
@@ -70,10 +73,10 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
-    USERS_TO_FILES: {
-        NAME: 'users_to_files',
+    COMPANIES_TO_FILES: {
+        NAME: 'companies_to_files',
         COLUMNS: {
-            USER_ID: 'user_id',
+            COMPANY_ID: 'company_id',
             FILE_ID: 'file_id',
             CREATED_AT: 'created_at',
         },
@@ -82,8 +85,26 @@ const SQL_TABLES = {
         NAME: 'companies',
         COLUMNS: {
             NAME: 'name',
-            USER_ID: 'user_id',
-            DESCRIPTION: 'description',
+            COUNTRY_ID: 'country_id',
+            IDENTITY_NUMBER: 'identity_number',
+            OWNERSHIP_TYPE: 'ownership_type',
+            REGISTERED_AT: 'registered_at',
+            WEBSITE: 'website',
+            LEGAL_ADDRESS: 'legal_address',
+            SETTLEMENT_ACCOUNT: 'settlement_account',
+            POST_ADDRESS: 'post_address',
+            BANK_NAME: 'bank_name',
+            HEAD_COMPANY_FULL_NAME: 'head_company_full_name',
+            BANK_ADDRESS: 'bank_address',
+            BANK_CODE: 'bank_code',
+            CONTRACT_SIGNER_FULL_NAME: 'contract_signer_full_name',
+            STATE_REGISTRATION_CERTIFICATE_NUMBER: 'state_registration_certificate_number',
+            STATE_REGISTRATION_CERTIFICATE_CREATED_AT: 'state_registration_certificate_created_at',
+            INSURANCE_POLICY_CREATED_AT: 'insurance_policy_created_at',
+            INSURANCE_POLICY_EXPIRED_AT: 'insurance_policy_expired_at',
+            INSURANCE_COMPANY_NAME: 'insurance_company_name',
+            RESIDENCY_CERTIFICATE_CREATED_AT: 'residency_certificate_created_at',
+            RESIDENCY_CERTIFICATE_EXPIRED_AT: 'residency_certificate_expired_at',
             CREATED_AT: 'created_at',
         },
     },
@@ -112,7 +133,30 @@ const SQL_TABLES = {
             EXPIRED_AT: 'expired_at',
             CREATED_AT: 'created_at',
         },
-    }
+    },
+    USERS_TO_PERMISSIONS: {
+        NAME: 'users_to_permissions',
+        COLUMNS: {
+            USER_ID: 'user_id',
+            PERMISSION_ID: 'permission_id',
+            CREATED_AT: 'created_at',
+        },
+    },
+    COUNTRIES: {
+        NAME: 'countries',
+        COLUMNS: {
+            NAME: 'name',
+            CREATED_AT: 'created_at',
+        },
+    },
+    USERS_TO_COMPANIES: {
+        NAME: 'users_to_companies',
+        COLUMNS: {
+            USER_ID: 'user_id',
+            COMPANY_ID: 'company_id',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
@@ -124,6 +168,7 @@ const HOMELESS_COLUMNS = {
     ROLE_ID: 'role_id',
     PHONE_NUMBER: 'phone_number',
     PHONE_PREFIX_ID: 'phone_prefix_id',
+    OWNER_ID: 'owner_id',
 };
 
 module.exports = {

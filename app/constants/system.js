@@ -65,6 +65,11 @@ const PERMISSIONS = {
     RESET_PASSWORD: 'reset_password',
     CONFIRM_EMAIL: 'confirm_email',
     CONFIRM_PHONE_NUMBER: 'confirm_phone_number',
+    REGISTRATION_SAVE_STEP_1: 'registration_save_step_1',
+    REGISTRATION_SAVE_STEP_2: 'registration_save_step_2',
+    REGISTRATION_SAVE_STEP_3: 'registration_save_step_3',
+    REGISTRATION_SAVE_STEP_4: 'registration_save_step_4',
+    REGISTRATION_SAVE_STEP_5: 'registration_save_step_5',
 };
 
 const FILE_LABELS = {

@@ -67,6 +67,12 @@ const selectUserRole = id => squelPostgres
     .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
     .toString();
 
+const selectUserByPassportNumber = number => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where(`${cols.PASSPORT_NUMBER} = '${number}'`)
+    .toString();
+
 module.exports = {
     insertUser,
     selectUser,
@@ -75,4 +81,5 @@ module.exports = {
     selectUserByEmailWithRole,
     updateUser,
     selectUserRole,
+    selectUserByPassportNumber,
 };
