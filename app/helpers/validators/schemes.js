@@ -504,7 +504,7 @@ const finishRegistrationStep3Holder = {
     patternProperties: {
         '.': fileFormat,
     },
-    required: ['state_registration_certificate', 'residency_certificate'],
+    required: ['state_registration_certificate'],
 };
 
 const finishRegistrationStep3IndividualForwarderFunc = userId => ({
@@ -547,6 +547,59 @@ const finishRegistrationStep3IndividualForwarder = {
     required: ['passport'],
 };
 
+const finishRegistrationStep3SoleProprietorForwarderFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: {
+            type: 'string',
+            pattern: STATE_REGISTRATION_CERTIFICATE_NUMBER_VALIDATION_PATTERN,
+            stateRegistrationCertificateNumberExists: {
+                userId,
+            },
+        },
+        [colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsUsers.PASSPORT_NUMBER]: {
+            type: 'string',
+            pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
+            maxLength: 19,
+            passportNumberExists: {
+                userId,
+            },
+        },
+        [colsUsers.PASSPORT_ISSUING_AUTHORITY]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsUsers.PASSPORT_CREATED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsUsers.PASSPORT_EXPIRED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+    },
+    required: [
+        colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER,
+        colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT,
+        colsUsers.PASSPORT_NUMBER,
+        colsUsers.PASSPORT_ISSUING_AUTHORITY,
+        colsUsers.PASSPORT_CREATED_AT,
+        colsUsers.PASSPORT_EXPIRED_AT,
+    ],
+    additionalProperties: false,
+});
+
+const finishRegistrationStep3SoleProprietorForwarder = {
+    patternProperties: {
+        '.': fileFormat,
+    },
+    required: ['passport', 'state_registration_certificate'],
+};
+
 const confirmPhoneNumber = {
     properties: {
         [colsPhoneConfirmation.CODE]: {
@@ -581,6 +634,9 @@ module.exports = {
 
     finishRegistrationStep3IndividualForwarderFunc,
     finishRegistrationStep3IndividualForwarder,
+
+    finishRegistrationStep3SoleProprietorForwarderFunc,
+    finishRegistrationStep3SoleProprietorForwarder,
 
     confirmPhoneNumber,
 };
