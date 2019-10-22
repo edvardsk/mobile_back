@@ -102,6 +102,26 @@ const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next)
     }
 };
 
+const validateMultipartJSONProp = (scheme, path) => async (req, res, next) => {
+    try {
+        const data = get(req, path);
+        if (data) {
+            const prop = JSON.parse(data);
+            const validate = ajv.compile(scheme);
+            const isValidData = validate(prop);
+
+            if (!isValidData) {
+                return reject(res, ERRORS.VALIDATION.ERROR, validate.errors);
+            }
+        }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     validate,
+    validateMultipartJSONProp,
 };

@@ -5,6 +5,7 @@ const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
 const colsPhoneConfirmation = SQL_TABLES.PHONE_CONFIRMATION_CODES.COLUMNS;
+const colsOtherOrganizations = SQL_TABLES.OTHER_ORGANIZATIONS.COLUMNS;
 
 const DIGITS_VALIDATION_PATTERN = '^\\d+$';
 const PASSWORD_VALIDATION_PATTERN = '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$';
@@ -36,6 +37,27 @@ const fileFormat = {
                 },
             },
             required: ['fieldname', 'originalname', 'buffer', 'mimetype']
+        },
+    ],
+};
+
+const otherOrganizations = {
+    type: 'array',
+    items: [
+        {
+            properties: {
+                [colsOtherOrganizations.IDENTITY_NUMBER]: {
+                    type: 'string',
+                    minLength: 9,
+                    maxLength: 12,
+                },
+                [colsOtherOrganizations.NAME]: {
+                    type: 'string',
+                    maxLength: POSTGRES_MAX_STRING_LENGTH,
+                },
+            },
+            required: [colsOtherOrganizations.IDENTITY_NUMBER, colsOtherOrganizations.NAME],
+            additionalProperties: false,
         },
     ],
 };
@@ -88,6 +110,7 @@ const registration = {
         HOMELESS_COLUMNS.PHONE_NUMBER,
         HOMELESS_COLUMNS.PHONE_PREFIX_ID,
     ],
+    additionalProperties: false,
 };
 
 const authorization = {
@@ -102,6 +125,7 @@ const authorization = {
         },
     },
     required: [colsUsers.EMAIL, colsUsers.PASSWORD],
+    additionalProperties: false,
 };
 
 const finishRegistrationStep1TransporterFunc = userId => ({
@@ -136,7 +160,7 @@ const finishRegistrationStep1TransporterFunc = userId => ({
             type: 'string',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
             pattern: URL_VALIDATION_PATTERN,
-        }
+        },
     },
     required: [
         colsCompanies.NAME,
@@ -444,6 +468,9 @@ const finishRegistrationStep3TransporterFunc = userId => ({
             type: 'string',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
+        [HOMELESS_COLUMNS.OTHER_ORGANIZATIONS]: {
+            type: 'string',
+        },
         dependencies: {
             [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: {
                 required: [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT],
@@ -483,6 +510,9 @@ const finishRegistrationStep3HolderFunc = userId => ({
         [colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT]: {
             type: 'string',
             format: 'date',
+        },
+        [HOMELESS_COLUMNS.OTHER_ORGANIZATIONS]: {
+            type: 'string',
         },
         dependencies: {
             [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: {
@@ -639,4 +669,5 @@ module.exports = {
     finishRegistrationStep3SoleProprietorForwarder,
 
     confirmPhoneNumber,
+    otherOrganizations,
 };

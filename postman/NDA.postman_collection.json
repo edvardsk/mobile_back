@@ -723,6 +723,11 @@
 													"key": "insurance_policy",
 													"type": "file",
 													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg"
+												},
+												{
+													"key": "other_organizations",
+													"value": "[{\"identity_number\": \"2332322222\", \"name\": \"Test\"}]",
+													"type": "text"
 												}
 											],
 											"options": {
@@ -939,6 +944,11 @@
 													"key": "state_registration_certificate",
 													"type": "file",
 													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg"
+												},
+												{
+													"key": "other_organizations",
+													"value": "[{\"identity_number\": \"2332322222\", \"name\": \"Test\"}]",
+													"type": "text"
 												}
 											],
 											"options": {

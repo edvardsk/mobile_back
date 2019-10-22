@@ -3,8 +3,7 @@ const { SQL_TABLES } = require('constants/tables');
 
 const squelPostgres = squel.useFlavour('postgres');
 
-const table = SQL_TABLES.COMPANIES_TO_FILES;
-const tableFiles = SQL_TABLES.FILES;
+const table = SQL_TABLES.OTHER_ORGANIZATIONS;
 
 const cols = table.COLUMNS;
 
@@ -13,13 +12,6 @@ const insertRecords = values => squelPostgres
     .into(table.NAME)
     .setFieldsRows(values)
     .returning('*')
-    .toString();
-
-const selectFilesByCompanyId = companyId => squelPostgres
-    .select()
-    .from(table.NAME, 'cf')
-    .where(`cf.${cols.COMPANY_ID} = '${companyId}'`)
-    .left_join(tableFiles.NAME, 'f', `f.id = cf.${cols.FILE_ID}`)
     .toString();
 
 const deleteRecordsByCompanyId = companyId => squelPostgres
@@ -31,6 +23,5 @@ const deleteRecordsByCompanyId = companyId => squelPostgres
 
 module.exports = {
     insertRecords,
-    selectFilesByCompanyId,
     deleteRecordsByCompanyId,
 };
