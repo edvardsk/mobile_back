@@ -14,6 +14,14 @@ const insertFiles = values => {
         .toString();
 };
 
+const deleteFilesByIds = ids => squelPostgres
+    .delete()
+    .from(table.NAME)
+    .where('id IN ?', ids)
+    .returning('*')
+    .toString();
+
 module.exports = {
     insertFiles,
+    deleteFilesByIds,
 };

@@ -50,10 +50,20 @@ const selectCompanyByIdentityNumberWithFirstOwner = number => squelPostgres
     .left_join(tableUsersCompanies.NAME, 'uc', `c.id = uc.${colsUsersCompanies.COMPANY_ID}`)
     .toString();
 
+const selectCompanyByStateRegistrationCertificateNumberWithFirstOwner = number => squelPostgres
+    .select()
+    .from(table.NAME, 'c')
+    .field('c.*')
+    .field(`uc.${colsUsersCompanies.USER_ID}`, HOMELESS_COLUMNS.OWNER_ID)
+    .where(`${cols.STATE_REGISTRATION_CERTIFICATE_NUMBER} = '${number}'`)
+    .left_join(tableUsersCompanies.NAME, 'uc', `c.id = uc.${colsUsersCompanies.COMPANY_ID}`)
+    .toString();
+
 module.exports = {
     insertCompany,
     updateCompany,
     selectCompanyByUserId,
     selectCompanyBySettlementAccountWithFirstOwner,
     selectCompanyByIdentityNumberWithFirstOwner,
+    selectCompanyByStateRegistrationCertificateNumberWithFirstOwner,
 };

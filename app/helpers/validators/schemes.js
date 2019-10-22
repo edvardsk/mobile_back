@@ -10,6 +10,11 @@ const DIGITS_VALIDATION_PATTERN = '^\\d+$';
 const PASSWORD_VALIDATION_PATTERN = '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$';
 const URL_VALIDATION_PATTERN = '^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#[\\]@!\\$&\'\\(\\)\\*\\+,;=.]+$';
 const LETTERS_AND_DIGITS_VALIDATION_PATTERN = '^[a-zA-Z0-9]*$';
+const STATE_REGISTRATION_CERTIFICATE_NUMBER_VALIDATION_PATTERN = '^[A-Z]{2}.[0-9]{2}.[0-9]{2}.[0-9]{2}.[0-9]{3}.[A-Z]{1}.[0-9]{6}.[0-9]{2}.[0-9]{2}$';
+
+const SUPPORTED_MIMTYPES = ['application/pdf', 'image/jpeg'];
+
+const POSTGRES_MAX_STRING_LENGTH = 255;
 
 // helpers
 const fileFormat = {
@@ -20,13 +25,17 @@ const fileFormat = {
                 fieldname: {
                     type: 'string',
                 },
-                originaname: {
+                originalname: {
                     type: 'string',
                 },
                 buffer: {
                     instanceof: 'Buffer',
                 },
+                mimetype: {
+                    enum: SUPPORTED_MIMTYPES,
+                },
             },
+            required: ['fieldname', 'originalname', 'buffer', 'mimetype']
         },
     ],
 };
@@ -38,16 +47,16 @@ const registration = {
         [colsUsers.EMAIL]: {
             type: 'string',
             format: 'email',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsUsers.PASSWORD]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
             pattern: PASSWORD_VALIDATION_PATTERN,
         },
         [colsUsers.FULL_NAME]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [HOMELESS_COLUMNS.ROLE_ID]: {
             type: 'string',
@@ -100,7 +109,7 @@ const finishRegistrationStep1TransporterFunc = userId => ({
     properties: {
         [colsCompanies.NAME]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.OWNERSHIP_TYPE]: {
             type: 'string',
@@ -125,7 +134,7 @@ const finishRegistrationStep1TransporterFunc = userId => ({
         },
         [colsCompanies.WEBSITE]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
             pattern: URL_VALIDATION_PATTERN,
         }
     },
@@ -144,7 +153,7 @@ const finishRegistrationStep1HolderFunc = userId => ({
     properties: {
         [colsCompanies.NAME]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.OWNERSHIP_TYPE]: {
             type: 'string',
@@ -169,7 +178,7 @@ const finishRegistrationStep1HolderFunc = userId => ({
         },
         [colsCompanies.WEBSITE]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
             pattern: URL_VALIDATION_PATTERN,
         },
     },
@@ -201,7 +210,7 @@ const finishRegistrationStep1IndividualForwarderFunc = userId => ({
         },
         [colsCompanies.WEBSITE]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
             pattern: URL_VALIDATION_PATTERN,
         }
     },
@@ -217,7 +226,7 @@ const finishRegistrationStep1SoleProprietorForwarderFunc = userId => ({
     properties: {
         [colsCompanies.NAME]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.REGISTERED_AT]: {
             type: 'string',
@@ -238,7 +247,7 @@ const finishRegistrationStep1SoleProprietorForwarderFunc = userId => ({
         },
         [colsCompanies.WEBSITE]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
             pattern: URL_VALIDATION_PATTERN,
         }
     },
@@ -256,7 +265,7 @@ const finishRegistrationStep2TransporterFunc = userId => ({
     properties: {
         [colsCompanies.LEGAL_ADDRESS]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.SETTLEMENT_ACCOUNT]: {
             type: 'string',
@@ -269,19 +278,19 @@ const finishRegistrationStep2TransporterFunc = userId => ({
         },
         [colsCompanies.POST_ADDRESS]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.BANK_NAME]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.HEAD_COMPANY_FULL_NAME]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.BANK_ADDRESS]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.BANK_CODE]: {
             type: 'string',
@@ -291,7 +300,7 @@ const finishRegistrationStep2TransporterFunc = userId => ({
         },
         [colsCompanies.CONTRACT_SIGNER_FULL_NAME]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
     },
     required: [
@@ -312,7 +321,7 @@ const finishRegistrationStep2HolderFunc = userId => ({
     properties: {
         [colsCompanies.LEGAL_ADDRESS]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.SETTLEMENT_ACCOUNT]: {
             type: 'string',
@@ -325,19 +334,19 @@ const finishRegistrationStep2HolderFunc = userId => ({
         },
         [colsCompanies.POST_ADDRESS]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.BANK_NAME]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.HEAD_COMPANY_FULL_NAME]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.BANK_ADDRESS]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.BANK_CODE]: {
             type: 'string',
@@ -347,7 +356,7 @@ const finishRegistrationStep2HolderFunc = userId => ({
         },
         [colsCompanies.CONTRACT_SIGNER_FULL_NAME]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
     },
     required: [
@@ -368,7 +377,7 @@ const finishRegistrationStep2SoleProprietorForwarderFunc = userId => ({
     properties: {
         [colsCompanies.LEGAL_ADDRESS]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.SETTLEMENT_ACCOUNT]: {
             type: 'string',
@@ -381,15 +390,15 @@ const finishRegistrationStep2SoleProprietorForwarderFunc = userId => ({
         },
         [colsCompanies.POST_ADDRESS]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.BANK_NAME]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.BANK_ADDRESS]: {
             type: 'string',
-            maxLength: 255,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.BANK_CODE]: {
             type: 'string',
@@ -409,31 +418,41 @@ const finishRegistrationStep2SoleProprietorForwarderFunc = userId => ({
     additionalProperties: false,
 });
 
-const companyFilesTransporter = {
+const finishRegistrationStep3TransporterFunc = userId => ({
+    $async: true,
     properties: {
-        passport: fileFormat,
-        plan: fileFormat,
+        [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: {
+            type: 'string',
+            pattern: STATE_REGISTRATION_CERTIFICATE_NUMBER_VALIDATION_PATTERN,
+            stateRegistrationCertificateNumberExists: {
+                userId,
+            },
+        },
+        [colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        dependencies: {
+            [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: {
+                required: [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT],
+            },
+            [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT]: {
+                required: [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT],
+            },
+        },
     },
-    required: ['passport', 'plan'],
+    required: [
+        colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER,
+        colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT,
+    ],
     additionalProperties: false,
-};
+});
 
-const companyFilesHolder = {
-    properties: {
-        passport: fileFormat,
-        plan: fileFormat,
+const finishRegistrationStep3TransporterFiles = {
+    patternProperties: {
+        '.': fileFormat,
     },
-    required: ['passport', 'plan'],
-    additionalProperties: false,
-};
-
-const companyFilesForwarder = {
-    properties: {
-        passport: fileFormat,
-        plan: fileFormat,
-    },
-    required: ['passport', 'plan'],
-    additionalProperties: false,
+    required: ['state_registration_certificate', 'residency_certificate'],
 };
 
 const confirmPhoneNumber = {
@@ -462,9 +481,8 @@ module.exports = {
     finishRegistrationStep2HolderFunc,
     finishRegistrationStep2SoleProprietorForwarderFunc,
 
-    companyFilesTransporter,
-    companyFilesHolder,
-    companyFilesForwarder,
+    finishRegistrationStep3TransporterFunc,
+    finishRegistrationStep3TransporterFiles,
 
     confirmPhoneNumber,
 };

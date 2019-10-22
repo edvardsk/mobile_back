@@ -7,6 +7,10 @@ const SQL_TABLES = {
             PASSWORD: 'password',
             KEY: 'key',
             CREATED_AT: 'created_at',
+            PASSPORT_NUMBER: 'passport_number',
+            PASSPORT_CREATED_AT: 'passport_created_at',
+            PASSPORT_EXPIRED_AT: 'passport_expired_at',
+            PASSPORT_ISSUING_AUTHORITY: 'passport_issuing_authority',
         },
     },
     EMAIL_CONFIRMATION_HASHES: {
@@ -69,10 +73,10 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
-    USERS_TO_FILES: {
-        NAME: 'users_to_files',
+    COMPANIES_TO_FILES: {
+        NAME: 'companies_to_files',
         COLUMNS: {
-            USER_ID: 'user_id',
+            COMPANY_ID: 'company_id',
             FILE_ID: 'file_id',
             CREATED_AT: 'created_at',
         },
@@ -94,6 +98,13 @@ const SQL_TABLES = {
             BANK_ADDRESS: 'bank_address',
             BANK_CODE: 'bank_code',
             CONTRACT_SIGNER_FULL_NAME: 'contract_signer_full_name',
+            STATE_REGISTRATION_CERTIFICATE_NUMBER: 'state_registration_certificate_number',
+            STATE_REGISTRATION_CERTIFICATE_CREATED_AT: 'state_registration_certificate_created_at',
+            INSURANCE_POLICY_CREATED_AT: 'insurance_policy_created_at',
+            INSURANCE_POLICY_EXPIRED_AT: 'insurance_policy_expired_at',
+            INSURANCE_COMPANY_NAME: 'insurance_company_name',
+            RESIDENCY_CERTIFICATE_CREATED_AT: 'residency_certificate_created_at',
+            RESIDENCY_CERTIFICATE_EXPIRED_AT: 'residency_certificate_expired_at',
             CREATED_AT: 'created_at',
         },
     },

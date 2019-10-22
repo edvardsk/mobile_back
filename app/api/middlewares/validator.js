@@ -56,6 +56,12 @@ ajv.addKeyword('companyWithIdentityNumberExists', {
     validate: CompaniesService.checkCompanyWithIdentityNumberExists,
 });
 
+ajv.addKeyword('stateRegistrationCertificateNumberExists', {
+    async: true,
+    type: 'string',
+    validate: CompaniesService.checkCompanyWithStateRegistrationCertificateNumberExists,
+});
+
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {
     try {
         const data = get(req, pathToData);

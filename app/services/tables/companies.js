@@ -7,6 +7,7 @@ const {
     selectCompanyByUserId,
     selectCompanyBySettlementAccountWithFirstOwner,
     selectCompanyByIdentityNumberWithFirstOwner,
+    selectCompanyByStateRegistrationCertificateNumberWithFirstOwner,
 } = require('sql-helpers/companies');
 
 // constants
@@ -18,6 +19,10 @@ const getCompanyByUserId = userId => oneOrNone(selectCompanyByUserId(userId));
 const getCompanyBySettlementAccountWithFirstOwner = account => oneOrNone(selectCompanyBySettlementAccountWithFirstOwner(account));
 
 const getCompanyByIdentityNumberWithFirstOwner = account => oneOrNone(selectCompanyByIdentityNumberWithFirstOwner(account));
+
+const getCompanyByStateRegistrationCertificateNumberWithFirstOwner = number => (
+    oneOrNone(selectCompanyByStateRegistrationCertificateNumberWithFirstOwner(number)
+    ));
 
 const getCompanyByUserIdStrict = userId => one(selectCompanyByUserId(userId));
 
@@ -37,6 +42,12 @@ const checkCompanyWithIdentityNumberExists = async (meta, number) => {
     return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId;
 };
 
+const checkCompanyWithStateRegistrationCertificateNumberExists = async (meta, number) => {
+    const company = await getCompanyByStateRegistrationCertificateNumberWithFirstOwner(number);
+    const { userId } = meta;
+    return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId;
+};
+
 module.exports = {
     getCompanyByUserId,
     getCompanyByUserIdStrict,
@@ -44,4 +55,5 @@ module.exports = {
     updateCompanyAsTransaction,
     checkCompanyWithSettlementAccountExists,
     checkCompanyWithIdentityNumberExists,
+    checkCompanyWithStateRegistrationCertificateNumberExists,
 };

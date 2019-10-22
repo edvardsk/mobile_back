@@ -1,20 +1,16 @@
 const { success } = require('api/response');
 const uuid = require('uuid/v4');
+const { isEmpty } = require('lodash');
 
 // services
 const CryptService = require('services/crypto');
 const FilesService = require('services/tables/files');
 const UsersService = require('services/tables/users');
-const FileLabelsService = require('services/tables/file-labels');
-const FilesLabelsService = require('services/tables/files-to-labels');
-const UsersFilesService = require('services/tables/users-to-files');
 const CompaniesService = require('services/tables/companies');
+const CompaniesFilesService = require('services/tables/companies-to-files');
 const UsersCompaniesService = require('services/tables/users-to-companies');
-const PhoneConfirmationCodesService = require('services/tables/phone-confirmation-codes');
-const UserRolesService = require('services/tables/users-to-roles');
 const UserPermissionsService = require('services/tables/users-to-permissions');
 const TablesService = require('services/tables');
-const UsersRolesService = require('services/tables/users-to-roles');
 const S3Service = require('services/aws/s3');
 
 // constants
@@ -40,6 +36,13 @@ const MAP_ROLES_TO_NEXT_PERMISSIONS_FOR_STEP_1 = {
     [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: PERMISSIONS.REGISTRATION_SAVE_STEP_2,
     [ROLES.CONFIRMED_EMAIL_AND_PHONE_INDIVIDUAL_FORWARDER]: PERMISSIONS.REGISTRATION_SAVE_STEP_3,
     [ROLES.CONFIRMED_EMAIL_AND_PHONE_SOLE_PROPRIETOR_FORWARDER]: PERMISSIONS.REGISTRATION_SAVE_STEP_2,
+};
+
+const MAP_ROLES_TO_NEXT_PERMISSIONS_FOR_STEP_3 = {
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: PERMISSIONS.REGISTRATION_SAVE_STEP_4,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: PERMISSIONS.REGISTRATION_SAVE_STEP_5,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_INDIVIDUAL_FORWARDER]: PERMISSIONS.REGISTRATION_SAVE_STEP_5,
+    [ROLES.CONFIRMED_EMAIL_AND_PHONE_SOLE_PROPRIETOR_FORWARDER]: PERMISSIONS.REGISTRATION_SAVE_STEP_5,
 };
 
 const finishRegistrationStep1 = async (req, res, next) => {
@@ -112,7 +115,128 @@ const finishRegistrationStep2 = async (req, res, next) => {
     }
 };
 
+const finishRegistrationStep3 = async (req, res, next) => {
+    const colsUsers = SQL_TABLES.USERS.COLUMNS;
+    const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
+    const colsFiles = SQL_TABLES.FILES.COLUMNS;
+    const colsCompaniesFiles = SQL_TABLES.COMPANIES_TO_FILES.COLUMNS;
+    try {
+        const userId = res.locals.user.id;
+        const userRole = res.locals.user.role;
+        const userPermissions = res.locals.permissions;
+        const { body, files } = req;
+
+        const USER_PROPS = new Set([
+            colsUsers.PASSPORT_NUMBER,
+            colsUsers.PASSPORT_ISSUING_AUTHORITY,
+            colsUsers.PASSPORT_CREATED_AT,
+            colsUsers.PASSPORT_EXPIRED_AT
+        ]);
+
+        const COMPANY_PROPS = new Set([
+            colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER,
+            colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT,
+            colsCompanies.INSURANCE_POLICY_CREATED_AT,
+            colsCompanies.INSURANCE_POLICY_EXPIRED_AT,
+            colsCompanies.INSURANCE_COMPANY_NAME,
+            colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT,
+            colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT,
+        ]);
+
+        const usersProps = {};
+        const companiesProps = {};
+        Object.keys(body).forEach(key => {
+            if (USER_PROPS.has(key)) {
+                usersProps[key] = body[key];
+            } else if (COMPANY_PROPS.has(key)) {
+                companiesProps[key] = body[key];
+            }
+        });
+
+        const company = await CompaniesService.getCompanyByUserIdStrict(userId);
+
+        const dataToStore = Object.keys(files).reduce((acc, type) => {
+            const [dbFiles, dbCompaniesFiles, storageFiles] = acc;
+            files[type].forEach(file => {
+                const fileId = uuid();
+                dbFiles.push({
+                    id: fileId,
+                    [colsFiles.NAME]: file.originalname,
+                    [colsFiles.TYPE]: type,
+                    [colsFiles.URL]: CryptService.encrypt(`${AWS_S3_BUCKET_NAME}/${fileId}`),
+                });
+                dbCompaniesFiles.push({
+                    [colsCompaniesFiles.COMPANY_ID]: company.id,
+                    [colsCompaniesFiles.FILE_ID]: fileId,
+                });
+                storageFiles.push({
+                    bucket: AWS_S3_BUCKET_NAME,
+                    path: fileId,
+                    data: file.buffer,
+                });
+            });
+            return acc;
+        }, [[], [], []]);
+
+        const [dbFiles, dbCompaniesFiles, storageFiles] = dataToStore;
+
+        let transactionList = [];
+        if (userPermissions.includes(PERMISSIONS.REGISTRATION_SAVE_STEP_4) || userPermissions.includes(PERMISSIONS.REGISTRATION_SAVE_STEP_5)) {
+            // update data
+
+            const companyFiles = await CompaniesFilesService.getFilesByCompanyId(company.id);
+
+            const [ids, urls] = companyFiles.reduce((acc, file) => {
+                const [ids, urls] = acc;
+                ids.push(file.id);
+                urls.push(CryptService.decrypt(file[colsFiles.URL]));
+                return acc;
+
+            }, [[], []]);
+
+            await TablesService.runTransaction([
+                CompaniesFilesService.removeRecordsByCompanyIdAsTransaction(company.id),
+                FilesService.removeFilesByIdsAsTransaction(ids),
+            ]);
+
+            await Promise.all(urls.map(url => {
+                const [bucket, path] = url.split('/');
+                return S3Service.deleteObject(bucket, path);
+            }));
+
+            transactionList = [
+                FilesService.addFilesAsTransaction(dbFiles),
+                CompaniesFilesService.addRecordsAsTransaction(dbCompaniesFiles),
+                CompaniesService.updateCompanyAsTransaction(company.id, companiesProps),
+            ];
+        } else {
+            // insert data
+
+            transactionList = [
+                FilesService.addFilesAsTransaction(dbFiles),
+                CompaniesFilesService.addRecordsAsTransaction(dbCompaniesFiles),
+                UserPermissionsService.addUserPermissionAsTransaction(userId, MAP_ROLES_TO_NEXT_PERMISSIONS_FOR_STEP_3[userRole]),
+                CompaniesService.updateCompanyAsTransaction(company.id, companiesProps),
+            ];
+        }
+
+        if (!isEmpty(usersProps)) {
+            transactionList.push(UsersService.updateUserAsTransaction(userId, usersProps));
+        }
+
+        await TablesService.runTransaction(transactionList);
+        await Promise.all(storageFiles.map(({ bucket, path, data }) => {
+            return S3Service.putObject(bucket, path, data);
+        }));
+
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     finishRegistrationStep1,
     finishRegistrationStep2,
+    finishRegistrationStep3,
 };
