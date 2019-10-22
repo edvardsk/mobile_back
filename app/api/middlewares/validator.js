@@ -5,6 +5,7 @@ const ajv = new Ajv({ allErrors: true });
 require('ajv-keywords')(ajv, 'instanceof');
 
 // services
+const UsersService = require('services/tables/users');
 const PhonePrefixesService = require('services/tables/phone-prefixes');
 const PhoneNumbersService = require('services/tables/phone-numbers');
 const CountriesService = require('services/tables/countries');
@@ -60,6 +61,12 @@ ajv.addKeyword('stateRegistrationCertificateNumberExists', {
     async: true,
     type: 'string',
     validate: CompaniesService.checkCompanyWithStateRegistrationCertificateNumberExists,
+});
+
+ajv.addKeyword('passportNumberExists', {
+    async: true,
+    type: 'string',
+    validate: UsersService.checkUserWithPassportNumberExists,
 });
 
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {

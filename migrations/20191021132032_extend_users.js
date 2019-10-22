@@ -1,7 +1,7 @@
 
 exports.up = function(knex) {
     return knex.schema.alterTable('users', function(table) {
-        table.string('passport_number', 19);
+        table.string('passport_number', 19).unique();
         table.string('passport_issuing_authority');
         table.timestamp('passport_created_at');
         table.timestamp('passport_expired_at');

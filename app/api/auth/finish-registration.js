@@ -207,7 +207,6 @@ const finishRegistrationStep3 = async (req, res, next) => {
             transactionList = [
                 FilesService.addFilesAsTransaction(dbFiles),
                 CompaniesFilesService.addRecordsAsTransaction(dbCompaniesFiles),
-                CompaniesService.updateCompanyAsTransaction(company.id, companiesProps),
             ];
         } else {
             // insert data
@@ -216,12 +215,15 @@ const finishRegistrationStep3 = async (req, res, next) => {
                 FilesService.addFilesAsTransaction(dbFiles),
                 CompaniesFilesService.addRecordsAsTransaction(dbCompaniesFiles),
                 UserPermissionsService.addUserPermissionAsTransaction(userId, MAP_ROLES_TO_NEXT_PERMISSIONS_FOR_STEP_3[userRole]),
-                CompaniesService.updateCompanyAsTransaction(company.id, companiesProps),
             ];
         }
 
         if (!isEmpty(usersProps)) {
             transactionList.push(UsersService.updateUserAsTransaction(userId, usersProps));
+        }
+
+        if (!isEmpty(companiesProps)) {
+            transactionList.push(CompaniesService.updateCompanyAsTransaction(company.id, companiesProps));
         }
 
         await TablesService.runTransaction(transactionList);

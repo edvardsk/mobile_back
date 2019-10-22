@@ -432,6 +432,58 @@ const finishRegistrationStep3TransporterFunc = userId => ({
             type: 'string',
             format: 'date',
         },
+        [colsCompanies.INSURANCE_POLICY_CREATED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsCompanies.INSURANCE_POLICY_EXPIRED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsCompanies.INSURANCE_COMPANY_NAME]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        dependencies: {
+            [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: {
+                required: [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT],
+            },
+            [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT]: {
+                required: [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT],
+            },
+        },
+    },
+    required: [
+        colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER,
+        colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT,
+        colsCompanies.INSURANCE_POLICY_CREATED_AT,
+        colsCompanies.INSURANCE_POLICY_EXPIRED_AT,
+        colsCompanies.INSURANCE_COMPANY_NAME,
+    ],
+    additionalProperties: false,
+});
+
+const finishRegistrationStep3TransporterFiles = {
+    patternProperties: {
+        '.': fileFormat,
+    },
+    required: ['state_registration_certificate', 'insurance_policy'],
+};
+
+const finishRegistrationStep3HolderFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: {
+            type: 'string',
+            pattern: STATE_REGISTRATION_CERTIFICATE_NUMBER_VALIDATION_PATTERN,
+            stateRegistrationCertificateNumberExists: {
+                userId,
+            },
+        },
+        [colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
         dependencies: {
             [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: {
                 required: [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT],
@@ -448,11 +500,51 @@ const finishRegistrationStep3TransporterFunc = userId => ({
     additionalProperties: false,
 });
 
-const finishRegistrationStep3TransporterFiles = {
+const finishRegistrationStep3Holder = {
     patternProperties: {
         '.': fileFormat,
     },
     required: ['state_registration_certificate', 'residency_certificate'],
+};
+
+const finishRegistrationStep3IndividualForwarderFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsUsers.PASSPORT_NUMBER]: {
+            type: 'string',
+            pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
+            maxLength: 19,
+            passportNumberExists: {
+                userId,
+            },
+        },
+        [colsUsers.PASSPORT_ISSUING_AUTHORITY]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsUsers.PASSPORT_CREATED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsUsers.PASSPORT_EXPIRED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+    },
+    required: [
+        colsUsers.PASSPORT_NUMBER,
+        colsUsers.PASSPORT_ISSUING_AUTHORITY,
+        colsUsers.PASSPORT_CREATED_AT,
+        colsUsers.PASSPORT_EXPIRED_AT,
+    ],
+    additionalProperties: false,
+});
+
+const finishRegistrationStep3IndividualForwarder = {
+    patternProperties: {
+        '.': fileFormat,
+    },
+    required: ['passport'],
 };
 
 const confirmPhoneNumber = {
@@ -483,6 +575,12 @@ module.exports = {
 
     finishRegistrationStep3TransporterFunc,
     finishRegistrationStep3TransporterFiles,
+
+    finishRegistrationStep3HolderFunc,
+    finishRegistrationStep3Holder,
+
+    finishRegistrationStep3IndividualForwarderFunc,
+    finishRegistrationStep3IndividualForwarder,
 
     confirmPhoneNumber,
 };
