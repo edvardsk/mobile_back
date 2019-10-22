@@ -288,9 +288,28 @@ const finishRegistrationStep4 = async (req, res, next) => {
     }
 };
 
+const finishRegistrationStep5 = async (req, res, next) => {
+    try {
+        const userId = res.locals.user.id;
+        const permissionsToRemove = [
+            PERMISSIONS.REGISTRATION_SAVE_STEP_1,
+            PERMISSIONS.REGISTRATION_SAVE_STEP_2,
+            PERMISSIONS.REGISTRATION_SAVE_STEP_3,
+            PERMISSIONS.REGISTRATION_SAVE_STEP_4,
+            PERMISSIONS.REGISTRATION_SAVE_STEP_5,
+        ];
+
+        await UserPermissionsService.removeUserPermissions(userId, permissionsToRemove);
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     finishRegistrationStep1,
     finishRegistrationStep2,
     finishRegistrationStep3,
     finishRegistrationStep4,
+    finishRegistrationStep5,
 };

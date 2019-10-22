@@ -1,8 +1,9 @@
-const { one, manyOrNone } = require('db');
+const { one, manyOrNone, many } = require('db');
 const {
     insertUserPermission,
     deleteUserPermission,
     selectUserPermissions,
+    deleteUserPermissions,
 } = require('sql-helpers/users-to-permissions');
 
 const { OPERATIONS } = require('constants/postgres');
@@ -10,6 +11,8 @@ const { OPERATIONS } = require('constants/postgres');
 const addUserPermission = (id, permission) => one(insertUserPermission(id, permission));
 
 const removeUserPermission = (id, permission) => one(deleteUserPermission(id, permission));
+
+const removeUserPermissions = (id, permissions) => many(deleteUserPermissions(id, permissions));
 
 const addUserPermissionAsTransaction = (id, permission) => [insertUserPermission(id, permission), OPERATIONS.ONE];
 
@@ -20,5 +23,6 @@ module.exports = {
     addUserPermission,
     addUserPermissionAsTransaction,
     removeUserPermission,
+    removeUserPermissions,
     getUserPermissions,
 };

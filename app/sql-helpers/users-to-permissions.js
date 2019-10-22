@@ -27,7 +27,21 @@ const insertUserPermission = (userId, permission) => squelPostgres
 const deleteUserPermission = (userId, permission) => squelPostgres
     .delete()
     .from(table.NAME)
-    .where(`${cols.ROLE_ID} = (SELECT id from ${tablePermissions.NAME} WHERE ${colsPermissions.NAME} = '${permission}')`)
+    .where(`${cols.PERMISSION_ID} = (SELECT id from ${tablePermissions.NAME} WHERE ${colsPermissions.NAME} = '${permission}')`)
+    .where(`${cols.USER_ID} = '${userId}'`)
+    .returning('*')
+    .toString();
+
+const deleteUserPermissions = (userId, permissions) => squelPostgres
+    .delete()
+    .from(table.NAME)
+    .where(
+        `${cols.PERMISSION_ID} IN ? `,
+        squel
+            .select()
+            .field('id')
+            .from(tablePermissions.NAME)
+            .where(`${colsPermissions.NAME} IN ?`, permissions))
     .where(`${cols.USER_ID} = '${userId}'`)
     .returning('*')
     .toString();
@@ -44,4 +58,5 @@ module.exports = {
     insertUserPermission,
     deleteUserPermission,
     selectUserPermissions,
+    deleteUserPermissions,
 };

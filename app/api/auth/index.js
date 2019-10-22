@@ -44,6 +44,11 @@ const FINISH_REGISTRATION_STEP4_PERMISSIONS = [
     PERMISSIONS.REGISTRATION_SAVE_STEP_4,
 ];
 
+const FINISH_REGISTRATION_STEP5_PERMISSIONS = [
+    PERMISSIONS.FINISH_REGISTRATION,
+    PERMISSIONS.REGISTRATION_SAVE_STEP_5,
+];
+
 const CONFIRM_PHONE_NUMBER_PERMISSIONS = [
     PERMISSIONS.CONFIRM_PHONE_NUMBER,
 ];
@@ -169,6 +174,12 @@ router.post(
     isHasPermissions(FINISH_REGISTRATION_STEP4_PERMISSIONS), // permissions middleware
     validate(ValidatorSchemes.finishRegistrationStep4),
     finishRegistration.finishRegistrationStep4,
+);
+
+router.post(
+    ROUTES.AUTH.FINISH_REGISTRATION.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['5'].BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['5'].POST,
+    isHasPermissions(FINISH_REGISTRATION_STEP5_PERMISSIONS), // permissions middleware
+    finishRegistration.finishRegistrationStep5,
 );
 
 module.exports = router;
