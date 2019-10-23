@@ -474,6 +474,14 @@ const finishRegistrationStep3TransporterFunc = userId => ({
         [HOMELESS_COLUMNS.OTHER_ORGANIZATIONS]: {
             type: 'string',
         },
+        [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
         dependencies: {
             [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: {
                 required: [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT],
@@ -516,6 +524,14 @@ const finishRegistrationStep3HolderFunc = userId => ({
         },
         [HOMELESS_COLUMNS.OTHER_ORGANIZATIONS]: {
             type: 'string',
+        },
+        [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT]: {
+            type: 'string',
+            format: 'date',
         },
         dependencies: {
             [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: {
