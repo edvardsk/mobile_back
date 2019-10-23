@@ -7,6 +7,7 @@ const CryptService = require('services/crypto');
 const FilesService = require('services/tables/files');
 const UsersService = require('services/tables/users');
 const CompaniesService = require('services/tables/companies');
+const RoutesService = require('services/tables/routes');
 const OtherOrganizationsService = require('services/tables/other-organizations');
 const CompaniesFilesService = require('services/tables/companies-to-files');
 const UsersCompaniesService = require('services/tables/users-to-companies');
@@ -22,6 +23,8 @@ const { SUCCESS_CODES } = require('constants/http-codes');
 // formatters
 const UsersCompaniesFormatters = require('formatters/users-to-companies');
 const FinishRegistrationFormatters = require('formatters/finish-registration');
+const { formatGeoDataValuesToSave } = require('formatters/geo');
+const { formatRoutesToSave } = require('formatters/routes');
 
 const { AWS_S3_BUCKET_NAME } = process.env;
 
@@ -255,8 +258,58 @@ const finishRegistrationStep3 = async (req, res, next) => {
     }
 };
 
+const finishRegistrationStep4 = async (req, res, next) => {
+    try {
+        const userId = res.locals.user.id;
+        const userPermissions = res.locals.permissions;
+        const { body } = req;
+        const coordinates = formatGeoDataValuesToSave(body.routes);
+
+        const company = await CompaniesService.getCompanyByUserIdStrict(userId);
+
+        const routes = formatRoutesToSave(coordinates, company.id);
+
+        const transactionsList = [];
+        if (userPermissions.includes(PERMISSIONS.REGISTRATION_SAVE_STEP_5)) {
+            // update
+            transactionsList.push(RoutesService.removeRecordsByCompanyIdAsTransaction(company.id));
+        } else {
+            // insert
+            transactionsList.push(UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.REGISTRATION_SAVE_STEP_5));
+        }
+
+        transactionsList.push(RoutesService.addRecordsAsTransaction(routes));
+
+        await TablesService.runTransaction(transactionsList);
+
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const finishRegistrationStep5 = async (req, res, next) => {
+    try {
+        const userId = res.locals.user.id;
+        const permissionsToRemove = [
+            PERMISSIONS.REGISTRATION_SAVE_STEP_1,
+            PERMISSIONS.REGISTRATION_SAVE_STEP_2,
+            PERMISSIONS.REGISTRATION_SAVE_STEP_3,
+            PERMISSIONS.REGISTRATION_SAVE_STEP_4,
+            PERMISSIONS.REGISTRATION_SAVE_STEP_5,
+        ];
+
+        await UserPermissionsService.removeUserPermissions(userId, permissionsToRemove);
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     finishRegistrationStep1,
     finishRegistrationStep2,
     finishRegistrationStep3,
+    finishRegistrationStep4,
+    finishRegistrationStep5,
 };

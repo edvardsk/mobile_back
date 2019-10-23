@@ -37,7 +37,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"email\": \"transporter@mail.ru\",\n\t\"full_name\": \"Test Testovich\",\n\t\"password\": \"password1\",\n\t\"role_id\": \"cdf57c6a-094f-473d-ad5b-d207ec332541\",\n\t\"phone_number\": \"447654321\",\n\t\"phone_prefix_id\": \"{{phonePrefixId}}\"\n}",
+									"raw": "{\n\t\"email\": \"transporter@mail.ru\",\n\t\"full_name\": \"Transporter Transportovich\",\n\t\"password\": \"password1\",\n\t\"role_id\": \"cdf57c6a-094f-473d-ad5b-d207ec332541\",\n\t\"phone_number\": \"4423213222\",\n\t\"phone_prefix_id\": \"{{phonePrefixId}}\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -677,15 +677,18 @@
 												{
 													"key": "state_registration_certificate_number",
 													"value": "RU.77.01.34.001.E.012440.08.12",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "state_registration_certificate_created_at",
 													"value": "2013-03-03",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "state_registration_certificate",
+													"description": "required",
 													"type": "file",
 													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg"
 												},
@@ -695,38 +698,42 @@
 													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.41.jpg"
 												},
 												{
-													"key": "test",
-													"type": "file",
-													"src": "/Users/qwerty/Downloads/2019-09-03 11.19.31.jpg"
-												},
-												{
-													"key": "kek",
-													"type": "file",
-													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg"
-												},
-												{
 													"key": "insurance_policy_created_at",
 													"value": "2014-04-04",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "insurance_policy_expired_at",
 													"value": "2014-05-05",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "insurance_company_name",
 													"value": "belgosstrakh",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "insurance_policy",
+													"description": "required",
 													"type": "file",
 													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg"
 												},
 												{
 													"key": "other_organizations",
 													"value": "[{\"identity_number\": \"2332322222\", \"name\": \"Test\"}]",
+													"type": "text"
+												},
+												{
+													"key": "residency_certificate_created_at",
+													"value": "2018-04-04",
+													"type": "text"
+												},
+												{
+													"key": "residency_certificate_expired_at",
+													"value": "2019-04-04",
 													"type": "text"
 												}
 											],
@@ -745,6 +752,120 @@
 												"finish-registration",
 												"steps",
 												"3"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Step 4",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"routes\": [\n        {\n            \"coordinates_from\": {\n                \"longitude\": \"23.3231233\",\n                \"latitude\": \"123.321321\"\n            },\n            \"coordinates_to\": {\n                \"longitude\": \"23.3231232\",\n                \"latitude\": \"123.321321\"\n            }\n        },\n        {\n            \"coordinates_from\": {\n                \"longitude\": \"3.3231233\",\n                \"latitude\": \"23.321321\"\n            },\n            \"coordinates_to\": {\n                \"longitude\": \"3.3231232\",\n                \"latitude\": \"23.321321\"\n            }\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/4",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"4"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Step 5",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/5",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"5"
 											]
 										}
 									},
@@ -933,21 +1054,39 @@
 												{
 													"key": "state_registration_certificate_number",
 													"value": "RU.77.01.34.001.E.012440.08.13",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "state_registration_certificate_created_at",
 													"value": "2013-03-03",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "state_registration_certificate",
+													"description": "required",
 													"type": "file",
 													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg"
 												},
 												{
 													"key": "other_organizations",
 													"value": "[{\"identity_number\": \"2332322222\", \"name\": \"Test\"}]",
+													"type": "text"
+												},
+												{
+													"key": "residency_certificate",
+													"type": "file",
+													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.41.jpg"
+												},
+												{
+													"key": "residency_certificate_created_at",
+													"value": "2013-04-04",
+													"type": "text"
+												},
+												{
+													"key": "residency_certificate_expired_at",
+													"value": "2015-05-05",
 													"type": "text"
 												}
 											],
@@ -966,6 +1105,63 @@
 												"finish-registration",
 												"steps",
 												"3"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Step 5",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/5",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"5"
 											]
 										}
 									},
@@ -1058,63 +1254,6 @@
 									"response": []
 								},
 								{
-									"name": "Step 2",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
-												"exec": [
-													""
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{token}}",
-													"type": "string"
-												}
-											]
-										},
-										"method": "POST",
-										"header": [
-											{
-												"key": "Content-Type",
-												"name": "Content-Type",
-												"type": "text",
-												"value": "application/json"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n    \"legal_address\": \"Minsk, st. Nizavisimosi 24, d 23\",\n    \"settlement_account\": \"2341245957482932152859214235\",\n    \"post_address\": \"Minsk, st. Nizavisimosi 25, d 25\",\n    \"bank_name\": \"ideabank\",\n    \"bank_address\": \"Minsk, st. Nizavisimosi 26, d 26\",\n    \"bank_code\": \"123456789\"\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{url}}/finish-registration/steps/2",
-											"host": [
-												"{{url}}"
-											],
-											"path": [
-												"finish-registration",
-												"steps",
-												"2"
-											]
-										}
-									},
-									"response": []
-								},
-								{
 									"name": "Step 3",
 									"event": [
 										{
@@ -1154,25 +1293,30 @@
 												{
 													"key": "passport_number",
 													"value": "MP11111",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "passport_issuing_authority",
 													"value": "RUVD",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "passport_created_at",
 													"value": "2016-06-06",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "passport_expired_at",
 													"value": "2017-07-07",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "passport",
+													"description": "required",
 													"type": "file",
 													"src": "/Users/qwerty/Downloads/2019-09-03 11.19.31.jpg"
 												}
@@ -1192,6 +1336,63 @@
 												"finish-registration",
 												"steps",
 												"3"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Step 5",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/5",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"5"
 											]
 										}
 									},
@@ -1380,40 +1581,48 @@
 												{
 													"key": "passport_number",
 													"value": "MP1111122",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "passport_issuing_authority",
 													"value": "RUVD",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "passport_created_at",
 													"value": "2016-06-06",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "passport_expired_at",
 													"value": "2017-07-07",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "passport",
+													"description": "required",
 													"type": "file",
 													"src": "/Users/qwerty/Downloads/2019-09-03 11.19.31.jpg"
 												},
 												{
 													"key": "state_registration_certificate_number",
 													"value": "RU.77.01.34.001.E.012440.08.14",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "state_registration_certificate_created_at",
 													"value": "2013-03-03",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "state_registration_certificate",
+													"description": "required",
 													"type": "file",
 													"src": "/Users/qwerty/Downloads/2019-09-03 11.19.31.jpg"
 												}
@@ -1433,6 +1642,63 @@
 												"finish-registration",
 												"steps",
 												"3"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Step 5",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/finish-registration/steps/5",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"finish-registration",
+												"steps",
+												"5"
 											]
 										}
 									},
@@ -1811,6 +2077,81 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Conditions and terms",
+			"item": [
+				{
+					"name": "Get conditions and terms",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "file",
+							"file": {
+								"src": ""
+							}
+						},
+						"url": {
+							"raw": "{{url}}/conditions-terms",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"conditions-terms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add conditions and terms",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "file",
+							"file": {
+								"src": "/Users/qwerty/Downloads/Test.docx"
+							}
+						},
+						"url": {
+							"raw": "{{url}}/conditions-terms",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"conditions-terms"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
 		}
 	]
 }

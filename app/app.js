@@ -17,6 +17,11 @@ const debug = Debug('config-setup-backend:log');
 app.use(cors());
 app.use(logger('dev'));
 app.use(bodyParser.json({ type: 'application/json' }));
+app.use(bodyParser.raw({
+    type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    limit: '2mb',
+}));
+
 app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, 'public')));

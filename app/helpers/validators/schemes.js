@@ -1,17 +1,20 @@
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
+const { DOCUMENTS } = require('constants/files');
 
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
 const colsPhoneConfirmation = SQL_TABLES.PHONE_CONFIRMATION_CODES.COLUMNS;
 const colsOtherOrganizations = SQL_TABLES.OTHER_ORGANIZATIONS.COLUMNS;
+const colsRoutes = SQL_TABLES.ROUTES.COLUMNS;
 
 const DIGITS_VALIDATION_PATTERN = '^\\d+$';
 const PASSWORD_VALIDATION_PATTERN = '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$';
 const URL_VALIDATION_PATTERN = '^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#[\\]@!\\$&\'\\(\\)\\*\\+,;=.]+$';
 const LETTERS_AND_DIGITS_VALIDATION_PATTERN = '^[a-zA-Z0-9]*$';
 const STATE_REGISTRATION_CERTIFICATE_NUMBER_VALIDATION_PATTERN = '^[A-Z]{2}.[0-9]{2}.[0-9]{2}.[0-9]{2}.[0-9]{3}.[A-Z]{1}.[0-9]{6}.[0-9]{2}.[0-9]{2}$';
+const DOUBLE_NUMBER_VALIDATION_PATTERN = '^-?[0-9]+\\.[0-9]+$';
 
 const SUPPORTED_MIMTYPES = ['application/pdf', 'image/jpeg'];
 
@@ -60,6 +63,7 @@ const otherOrganizations = {
             additionalProperties: false,
         },
     ],
+    uniqueItems: true,
 };
 // helpers
 
@@ -471,6 +475,14 @@ const finishRegistrationStep3TransporterFunc = userId => ({
         [HOMELESS_COLUMNS.OTHER_ORGANIZATIONS]: {
             type: 'string',
         },
+        [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
         dependencies: {
             [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: {
                 required: [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT],
@@ -494,7 +506,7 @@ const finishRegistrationStep3TransporterFiles = {
     patternProperties: {
         '.': fileFormat,
     },
-    required: ['state_registration_certificate', 'insurance_policy'],
+    required: [DOCUMENTS.STATE_REGISTRATION_CERTIFICATE, DOCUMENTS.INSURANCE_POLICY],
 };
 
 const finishRegistrationStep3HolderFunc = userId => ({
@@ -513,6 +525,14 @@ const finishRegistrationStep3HolderFunc = userId => ({
         },
         [HOMELESS_COLUMNS.OTHER_ORGANIZATIONS]: {
             type: 'string',
+        },
+        [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT]: {
+            type: 'string',
+            format: 'date',
         },
         dependencies: {
             [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: {
@@ -534,7 +554,7 @@ const finishRegistrationStep3Holder = {
     patternProperties: {
         '.': fileFormat,
     },
-    required: ['state_registration_certificate'],
+    required: [DOCUMENTS.STATE_REGISTRATION_CERTIFICATE],
 };
 
 const finishRegistrationStep3IndividualForwarderFunc = userId => ({
@@ -574,7 +594,7 @@ const finishRegistrationStep3IndividualForwarder = {
     patternProperties: {
         '.': fileFormat,
     },
-    required: ['passport'],
+    required: [DOCUMENTS.PASSPORT],
 };
 
 const finishRegistrationStep3SoleProprietorForwarderFunc = userId => ({
@@ -627,7 +647,53 @@ const finishRegistrationStep3SoleProprietorForwarder = {
     patternProperties: {
         '.': fileFormat,
     },
-    required: ['passport', 'state_registration_certificate'],
+    required: [DOCUMENTS.PASSPORT, DOCUMENTS.STATE_REGISTRATION_CERTIFICATE],
+};
+
+const finishRegistrationStep4 = {
+    properties: {
+        [HOMELESS_COLUMNS.ROUTES]: {
+            type: 'array',
+            items: [
+                {
+                    properties: {
+                        [colsRoutes.COORDINATES_FROM]: {
+                            properties: {
+                                [HOMELESS_COLUMNS.LATITUDE]: {
+                                    type: 'string',
+                                    pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
+                                },
+                                [HOMELESS_COLUMNS.LONGITUDE]: {
+                                    type: 'string',
+                                    pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
+                                },
+                            },
+                            required: [HOMELESS_COLUMNS.LATITUDE, HOMELESS_COLUMNS.LONGITUDE],
+                        },
+                        [colsRoutes.COORDINATES_TO]: {
+                            properties: {
+                                [HOMELESS_COLUMNS.LATITUDE]: {
+                                    type: 'string',
+                                    pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
+                                },
+                                [HOMELESS_COLUMNS.LONGITUDE]: {
+                                    type: 'string',
+                                    pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
+                                },
+                            },
+                            required: [HOMELESS_COLUMNS.LATITUDE, HOMELESS_COLUMNS.LONGITUDE],
+                        },
+                    },
+                    required: [colsRoutes.COORDINATES_FROM, colsRoutes.COORDINATES_TO],
+                },
+            ],
+            uniqueItems: true,
+        }
+    },
+    required: [
+        HOMELESS_COLUMNS.ROUTES,
+    ],
+    additionalProperties: false,
 };
 
 const confirmPhoneNumber = {
@@ -667,6 +733,8 @@ module.exports = {
 
     finishRegistrationStep3SoleProprietorForwarderFunc,
     finishRegistrationStep3SoleProprietorForwarder,
+
+    finishRegistrationStep4,
 
     confirmPhoneNumber,
     otherOrganizations,

@@ -38,6 +38,7 @@ const ERRORS = {
     VALIDATION: {
         ERROR: 'validation.error',
         INVALID_PHONE_NUMBER: 'validation.invalid_phone_number',
+        FILE_ERROR: 'validation.file_error',
     },
     PHONE_CONFIRMATION: {
         TOO_OFTEN: 'phone_confirmation.too_often',
