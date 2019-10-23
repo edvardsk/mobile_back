@@ -677,15 +677,18 @@
 												{
 													"key": "state_registration_certificate_number",
 													"value": "RU.77.01.34.001.E.012440.08.12",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "state_registration_certificate_created_at",
 													"value": "2013-03-03",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "state_registration_certificate",
+													"description": "required",
 													"type": "file",
 													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg"
 												},
@@ -695,38 +698,42 @@
 													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.41.jpg"
 												},
 												{
-													"key": "test",
-													"type": "file",
-													"src": "/Users/qwerty/Downloads/2019-09-03 11.19.31.jpg"
-												},
-												{
-													"key": "kek",
-													"type": "file",
-													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg"
-												},
-												{
 													"key": "insurance_policy_created_at",
 													"value": "2014-04-04",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "insurance_policy_expired_at",
 													"value": "2014-05-05",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "insurance_company_name",
 													"value": "belgosstrakh",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "insurance_policy",
+													"description": "required",
 													"type": "file",
 													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg"
 												},
 												{
 													"key": "other_organizations",
 													"value": "[{\"identity_number\": \"2332322222\", \"name\": \"Test\"}]",
+													"type": "text"
+												},
+												{
+													"key": "residency_certificate_created_at",
+													"value": "2018-04-04",
+													"type": "text"
+												},
+												{
+													"key": "residency_certificate_expired_at",
+													"value": "2019-04-04",
 													"type": "text"
 												}
 											],
@@ -1047,21 +1054,39 @@
 												{
 													"key": "state_registration_certificate_number",
 													"value": "RU.77.01.34.001.E.012440.08.13",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "state_registration_certificate_created_at",
 													"value": "2013-03-03",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "state_registration_certificate",
+													"description": "required",
 													"type": "file",
 													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.51.jpg"
 												},
 												{
 													"key": "other_organizations",
 													"value": "[{\"identity_number\": \"2332322222\", \"name\": \"Test\"}]",
+													"type": "text"
+												},
+												{
+													"key": "residency_certificate",
+													"type": "file",
+													"src": "/Users/qwerty/Downloads/2019-08-18 11.33.41.jpg"
+												},
+												{
+													"key": "residency_certificate_created_at",
+													"value": "2013-04-04",
+													"type": "text"
+												},
+												{
+													"key": "residency_certificate_expired_at",
+													"value": "2015-05-05",
 													"type": "text"
 												}
 											],
@@ -1268,25 +1293,30 @@
 												{
 													"key": "passport_number",
 													"value": "MP11111",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "passport_issuing_authority",
 													"value": "RUVD",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "passport_created_at",
 													"value": "2016-06-06",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "passport_expired_at",
 													"value": "2017-07-07",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "passport",
+													"description": "required",
 													"type": "file",
 													"src": "/Users/qwerty/Downloads/2019-09-03 11.19.31.jpg"
 												}
@@ -1551,40 +1581,48 @@
 												{
 													"key": "passport_number",
 													"value": "MP1111122",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "passport_issuing_authority",
 													"value": "RUVD",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "passport_created_at",
 													"value": "2016-06-06",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "passport_expired_at",
 													"value": "2017-07-07",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "passport",
+													"description": "required",
 													"type": "file",
 													"src": "/Users/qwerty/Downloads/2019-09-03 11.19.31.jpg"
 												},
 												{
 													"key": "state_registration_certificate_number",
 													"value": "RU.77.01.34.001.E.012440.08.14",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "state_registration_certificate_created_at",
 													"value": "2013-03-03",
+													"description": "required",
 													"type": "text"
 												},
 												{
 													"key": "state_registration_certificate",
+													"description": "required",
 													"type": "file",
 													"src": "/Users/qwerty/Downloads/2019-09-03 11.19.31.jpg"
 												}
