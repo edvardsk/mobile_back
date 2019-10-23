@@ -100,6 +100,7 @@ const SQL_TABLES = {
             CONTRACT_SIGNER_FULL_NAME: 'contract_signer_full_name',
             STATE_REGISTRATION_CERTIFICATE_NUMBER: 'state_registration_certificate_number',
             STATE_REGISTRATION_CERTIFICATE_CREATED_AT: 'state_registration_certificate_created_at',
+            INSURANCE_POLICY_NUMBER: 'insurance_policy_number',
             INSURANCE_POLICY_CREATED_AT: 'insurance_policy_created_at',
             INSURANCE_POLICY_EXPIRED_AT: 'insurance_policy_expired_at',
             INSURANCE_COMPANY_NAME: 'insurance_company_name',
