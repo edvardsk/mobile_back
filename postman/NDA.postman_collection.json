@@ -2039,6 +2039,81 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Conditions and terms",
+			"item": [
+				{
+					"name": "Get conditions and terms",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "file",
+							"file": {
+								"src": ""
+							}
+						},
+						"url": {
+							"raw": "{{url}}/conditions-terms",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"conditions-terms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add conditions and terms",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "file",
+							"file": {
+								"src": "/Users/qwerty/Downloads/Test.docx"
+							}
+						},
+						"url": {
+							"raw": "{{url}}/conditions-terms",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"conditions-terms"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
 		}
 	]
 }
