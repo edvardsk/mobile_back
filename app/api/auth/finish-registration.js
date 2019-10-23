@@ -141,6 +141,7 @@ const finishRegistrationStep3 = async (req, res, next) => {
         const COMPANY_PROPS = new Set([
             colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER,
             colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT,
+            colsCompanies.INSURANCE_POLICY_NUMBER,
             colsCompanies.INSURANCE_POLICY_CREATED_AT,
             colsCompanies.INSURANCE_POLICY_EXPIRED_AT,
             colsCompanies.INSURANCE_COMPANY_NAME,

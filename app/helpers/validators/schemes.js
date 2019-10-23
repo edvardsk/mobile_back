@@ -460,6 +460,11 @@ const finishRegistrationStep3TransporterFunc = userId => ({
             type: 'string',
             format: 'date',
         },
+        [colsCompanies.INSURANCE_POLICY_NUMBER]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+            pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
+        },
         [colsCompanies.INSURANCE_POLICY_CREATED_AT]: {
             type: 'string',
             format: 'date',
@@ -495,6 +500,7 @@ const finishRegistrationStep3TransporterFunc = userId => ({
     required: [
         colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER,
         colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT,
+        colsCompanies.INSURANCE_POLICY_NUMBER,
         colsCompanies.INSURANCE_POLICY_CREATED_AT,
         colsCompanies.INSURANCE_POLICY_EXPIRED_AT,
         colsCompanies.INSURANCE_COMPANY_NAME,
