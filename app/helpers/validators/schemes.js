@@ -1,6 +1,7 @@
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
+const { DOCUMENTS } = require('constants/files');
 
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
@@ -505,7 +506,7 @@ const finishRegistrationStep3TransporterFiles = {
     patternProperties: {
         '.': fileFormat,
     },
-    required: ['state_registration_certificate', 'insurance_policy'],
+    required: [DOCUMENTS.STATE_REGISTRATION_CERTIFICATE, DOCUMENTS.INSURANCE_POLICY],
 };
 
 const finishRegistrationStep3HolderFunc = userId => ({
@@ -553,7 +554,7 @@ const finishRegistrationStep3Holder = {
     patternProperties: {
         '.': fileFormat,
     },
-    required: ['state_registration_certificate'],
+    required: [DOCUMENTS.STATE_REGISTRATION_CERTIFICATE],
 };
 
 const finishRegistrationStep3IndividualForwarderFunc = userId => ({
@@ -593,7 +594,7 @@ const finishRegistrationStep3IndividualForwarder = {
     patternProperties: {
         '.': fileFormat,
     },
-    required: ['passport'],
+    required: [DOCUMENTS.PASSPORT],
 };
 
 const finishRegistrationStep3SoleProprietorForwarderFunc = userId => ({
@@ -646,7 +647,7 @@ const finishRegistrationStep3SoleProprietorForwarder = {
     patternProperties: {
         '.': fileFormat,
     },
-    required: ['passport', 'state_registration_certificate'],
+    required: [DOCUMENTS.PASSPORT, DOCUMENTS.STATE_REGISTRATION_CERTIFICATE],
 };
 
 const finishRegistrationStep4 = {
