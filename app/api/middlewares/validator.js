@@ -3,6 +3,7 @@ const { get } = require('lodash');
 const { reject } = require('api/response');
 const ajv = new Ajv({ allErrors: true });
 require('ajv-keywords')(ajv, 'instanceof');
+const fileType = require('file-type');
 
 // services
 const UsersService = require('services/tables/users');
@@ -121,7 +122,37 @@ const validateMultipartJSONProp = (scheme, path) => async (req, res, next) => {
     }
 };
 
+const validateFileType = expectedFileTypes => async (req, res, next) => {
+    try {
+        const { body } = req;
+        if (!Buffer.isBuffer(body)) {
+            return reject(res, ERRORS.VALIDATION.FILE_ERROR, { expectedFileTypes });
+        }
+        const detectedFileType = fileType(body);
+        if (!expectedFileTypes.includes(get(detectedFileType, 'ext'))) {
+            return reject(res, ERRORS.VALIDATION.FILE_ERROR, { expectedFileTypes });
+        }
+
+
+        // const data = get(req, path);
+        // if (data) {
+        //     const prop = JSON.parse(data);
+        //     const validate = ajv.compile(scheme);
+        //     const isValidData = validate(prop);
+        //
+        //     if (!isValidData) {
+        //         return reject(res, ERRORS.VALIDATION.ERROR, validate.errors);
+        //     }
+        // }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     validate,
     validateMultipartJSONProp,
+    validateFileType,
 };

@@ -22,6 +22,7 @@ const BASES = {
     3: '/3',
     4: '/4',
     5: '/5',
+    CONDITIONS_TERMS: '/conditions-terms',
 };
 
 const ROUTES = {
@@ -107,6 +108,11 @@ const ROUTES = {
             BASE: BASES.ME,
             GET: '',
         }
+    },
+    CONDITIONS_TERMS: {
+        BASE: BASES.CONDITIONS_TERMS,
+        GET: '',
+        POST: '',
     },
 };
 
