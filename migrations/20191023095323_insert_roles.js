@@ -62,6 +62,13 @@ exports.down = function(knex) {
             .del()
     )))
         .then(function () {
+            return Promise.all(ROLES.map(() => (
+                knex('users_to_permissions')
+                    .whereIn('permission_id', PERMISSIONS.map(permission => permission.id))
+                    .del()
+            )));
+        })
+        .then(function () {
             return Promise.all(ROLES.map(role => (
                 knex('roles')
                     .where('id', role.id)

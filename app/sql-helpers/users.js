@@ -78,13 +78,18 @@ const selectUserByPassportNumber = number => squelPostgres
     .where(`${cols.PASSPORT_NUMBER} = '${number}'`)
     .toString();
 
-const selectUsersByPermission = permission => squelPostgres
+const selectUsersWithRoleByPermission = permission => squelPostgres
     .select()
-    .field('u.*')
+    .field('u.id')
+    .field(`u.${cols.EMAIL}`)
+    .field(`u.${cols.FULL_NAME}`)
+    .field(`r.${colsRoles.NAME}`, HOMELESS_COLUMNS.ROLE)
     .from(table.NAME, 'u')
     .where(`p.${colsPermissions.NAME} = '${permission}'`)
     .join(tableUsersPermissions.NAME, 'up', `up.${colsUsersPermissions.USER_ID} = u.id`)
     .join(tablePermissions.NAME, 'p', `p.id = up.${colsUsersPermissions.PERMISSION_ID}`)
+    .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
+    .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
     .toString();
 
 module.exports = {
@@ -96,5 +101,5 @@ module.exports = {
     updateUser,
     selectUserRole,
     selectUserByPassportNumber,
-    selectUsersByPermission,
+    selectUsersWithRoleByPermission,
 };

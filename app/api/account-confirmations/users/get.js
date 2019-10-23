@@ -8,7 +8,7 @@ const { PERMISSIONS } = require('constants/system');
 
 const getListUsers = async (req, res, next) => {
     try {
-        const users = await UsersService.getUsersByPermission(PERMISSIONS.EXPECT_REGISTRATION_CONFIRMATION);
+        const users = await UsersService.getUsersWithRoleByPermission(PERMISSIONS.EXPECT_REGISTRATION_CONFIRMATION);
 
         return success(res, { users });
     } catch (error) {

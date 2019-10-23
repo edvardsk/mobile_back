@@ -15,7 +15,8 @@
     "eslint": "./node_modules/.bin/eslint --ext .js --color ./ || exit 0",
     "eslint-fix": "./node_modules/.bin/eslint --ext .js --color ./ --fix",
     "pre-commit-eslint": "./node_modules/.bin/eslint --ext .js --color ./",
-    "deploy": "eb deploy LogistlabServer-env --timeout 20"
+    "deploy": "eb deploy LogistlabServer-env --timeout 20",
+    "add-admin-seed": "knex seed:run --specific=add-admin.js"
   },
   "dependencies": {
     "ajv": "^6.10.2",
