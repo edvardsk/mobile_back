@@ -18,6 +18,10 @@ const PERMISSIONS = [
         id: '731d9ff3-d72f-4d29-8a25-ce98a1184eb4',
         name: 'accept_registration'
     },
+    {
+        id: 'e805f0fe-b734-4b1e-a3f6-64a7e1a445d2',
+        name: 'expect_registration_confirmation',
+    },
 ];
 
 const ALL_PERMISSIONS = [

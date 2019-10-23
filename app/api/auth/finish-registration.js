@@ -299,7 +299,13 @@ const finishRegistrationStep5 = async (req, res, next) => {
             PERMISSIONS.REGISTRATION_SAVE_STEP_5,
         ];
 
-        await UserPermissionsService.removeUserPermissions(userId, permissionsToRemove);
+        const transactionsList = [
+            UserPermissionsService.removeUserPermissionsAsTransaction(userId, permissionsToRemove),
+            UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.EXPECT_REGISTRATION_CONFIRMATION),
+        ];
+
+        await TablesService.runTransaction(transactionsList);
+
         return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
     } catch (error) {
         next(error);
