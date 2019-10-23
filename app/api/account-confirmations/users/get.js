@@ -1,8 +1,16 @@
 const { success } = require('api/response');
 
+// services
+const UsersService = require('services/tables/users');
+
+// constants
+const { PERMISSIONS } = require('constants/system');
+
 const getListUsers = async (req, res, next) => {
     try {
-        return success(res, {});
+        const users = await UsersService.getUsersByPermission(PERMISSIONS.EXPECT_REGISTRATION_CONFIRMATION);
+
+        return success(res, { users });
     } catch (error) {
         next(error);
     }
