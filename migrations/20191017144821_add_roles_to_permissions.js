@@ -1,5 +1,6 @@
 const { ROLES } = require('./20191017143230_add_roles');
 const { PERMISSIONS } = require('./20191017144540_add_permissions');
+const { getRolesToPermissionsForDb } = require('../app/formatters/system');
 
 const ROLES_WITH_PERMISSIONS = [
     ['unconfirmed_transporter', [
@@ -75,20 +76,6 @@ const ROLES_WITH_PERMISSIONS = [
     ]],
 ];
 
-const getRolesToPermissionsForDb = () => (
-    ROLES_WITH_PERMISSIONS.reduce((acc, roleWithPermissions) => {
-        const [role, permissions] = roleWithPermissions;
-        const result = permissions.map(permission => ({
-            role_id: ROLES.find(({ name }) => name === role).id,
-            permission_id: PERMISSIONS.find(({ name }) => name === permission).id,
-        }));
-        return [
-            ...result,
-            ...acc,
-        ];
-    }, [])
-);
-
 exports.up = function(knex) {
     return knex.schema.createTable('roles_to_permissions', function(table) {
         table.uuid('id').defaultTo(knex.raw('uuid_generate_v4()')).primary().unique();
@@ -98,7 +85,7 @@ exports.up = function(knex) {
         table.unique(['role_id', 'permission_id']);
     })
         .then(function () {
-            return knex.batchInsert('roles_to_permissions', getRolesToPermissionsForDb());
+            return knex.batchInsert('roles_to_permissions', getRolesToPermissionsForDb(ROLES, PERMISSIONS, ROLES_WITH_PERMISSIONS));
         });
 };
 

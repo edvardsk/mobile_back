@@ -18,6 +18,9 @@ const ROLES = {
     HOLDER: 'holder',
     INDIVIDUAL_FORWARDER: 'individual_forwarder',
     SOLE_PROPRIETOR_FORWARDER: 'sole_proprietor_forwarder',
+
+    ADMIN: 'admin',
+    MANAGER: 'manager',
 };
 
 const MAP_FROM_UNCONFIRMED_TO_CONFIRMED_EMAIL_ROLE = {
@@ -70,12 +73,7 @@ const PERMISSIONS = {
     REGISTRATION_SAVE_STEP_3: 'registration_save_step_3',
     REGISTRATION_SAVE_STEP_4: 'registration_save_step_4',
     REGISTRATION_SAVE_STEP_5: 'registration_save_step_5',
-};
-
-const FILE_LABELS = {
-    PASSPORT: 'passport',
-    PLAN: 'plan',
-    REPORT: 'report',
+    ACCEPT_REGISTRATION: 'accept_registration',
 };
 
 module.exports = {
@@ -87,5 +85,4 @@ module.exports = {
     MAP_FROM_CONFIRMED_EMAIL_TO_CONFIRMED_PHONE,
     MAP_FROM_PENDING_ROLE_TO_MAIN,
     UNCONFIRMED_EMAIL_ROLES,
-    FILE_LABELS,
 };
