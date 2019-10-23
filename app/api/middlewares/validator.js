@@ -133,18 +133,6 @@ const validateFileType = expectedFileTypes => async (req, res, next) => {
             return reject(res, ERRORS.VALIDATION.FILE_ERROR, { expectedFileTypes });
         }
 
-
-        // const data = get(req, path);
-        // if (data) {
-        //     const prop = JSON.parse(data);
-        //     const validate = ajv.compile(scheme);
-        //     const isValidData = validate(prop);
-        //
-        //     if (!isValidData) {
-        //         return reject(res, ERRORS.VALIDATION.ERROR, validate.errors);
-        //     }
-        // }
-
         next();
     } catch (error) {
         next(error);
