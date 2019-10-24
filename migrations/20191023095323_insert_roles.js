@@ -83,3 +83,5 @@ exports.down = function(knex) {
             )));
         });
 };
+
+exports.ROLES = ROLES;
