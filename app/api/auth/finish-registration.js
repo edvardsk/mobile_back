@@ -255,6 +255,7 @@ const finishRegistrationStep3 = async (req, res, next) => {
 
         return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
     } catch (error) {
+        console.log(error);
         next(error);
     }
 };
