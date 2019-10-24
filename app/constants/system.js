@@ -75,6 +75,7 @@ const PERMISSIONS = {
     REGISTRATION_SAVE_STEP_5: 'registration_save_step_5',
     ACCEPT_REGISTRATION: 'accept_registration',
     EXPECT_REGISTRATION_CONFIRMATION: 'expect_registration_confirmation',
+    INVITE_MANAGER: 'invite_manager',
 };
 
 module.exports = {

@@ -175,7 +175,16 @@ const SQL_TABLES = {
             COORDINATES_TO: 'coordinates_to',
             CREATED_AT: 'created_at',
         },
-    }
+    },
+    INVITES: {
+        NAME: 'invites',
+        COLUMNS: {
+            user_id: 'user_id',
+            COORDINATES_FROM: 'coordinates_from',
+            COORDINATES_TO: 'coordinates_to',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {

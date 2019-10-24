@@ -24,6 +24,8 @@ const BASES = {
     5: '/5',
     CONDITIONS_TERMS: '/conditions-terms',
     ACCOUNT_CONFIRMATIONS: '/account-confirmations',
+    INVITES: '/invites',
+    MANAGER: '/manager',
 };
 
 const IDS = {
@@ -126,6 +128,13 @@ const ROUTES = {
             GET_ALL: '',
             GET: IDS.USER_ID,
             POST: IDS.USER_ID,
+        },
+    },
+    INVITES: {
+        BASE: BASES.INVITES,
+        MANAGER: {
+            BASE: BASES.MANAGER,
+            POST: '',
         },
     },
 };
