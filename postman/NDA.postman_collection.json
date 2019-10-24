@@ -37,7 +37,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"email\": \"transporter@mail.ru\",\n\t\"full_name\": \"Transporter Transportovich\",\n\t\"password\": \"password1\",\n\t\"role_id\": \"cdf57c6a-094f-473d-ad5b-d207ec332541\",\n\t\"phone_number\": \"4423213222\",\n\t\"phone_prefix_id\": \"{{phonePrefixId}}\"\n}",
+									"raw": "{\n\t\"email\": \"transporter@mail.ru\",\n\t\"full_name\": \"Test Testovich\",\n\t\"password\": \"password1\",\n\t\"role_id\": \"cdf57c6a-094f-473d-ad5b-d207ec332541\",\n\t\"phone_number\": \"007654321\",\n\t\"phone_prefix_id\": \"{{phonePrefixId}}\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -364,6 +364,98 @@
 								"body": {
 									"mode": "raw",
 									"raw": "{\n\t\"email\": \"forwarderip@mail.ru\",\n\t\"password\": \"password1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/authorization",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"authorization"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Authorize Admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+										"exec": [
+											"const jsonData = JSON.parse(responseBody);",
+											"postman.setEnvironmentVariable (\"token\", jsonData.data.token);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"admin@mail.ru\",\n\t\"password\": \"password1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/authorization",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"authorization"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Authorize Manager",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "43c2f830-5b49-4f9e-8daf-0240591a8b7f",
+										"exec": [
+											"const jsonData = JSON.parse(responseBody);",
+											"postman.setEnvironmentVariable (\"token\", jsonData.data.token);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"admin@mail.ru\",\n\t\"password\": \"password1\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -734,6 +826,11 @@
 												{
 													"key": "residency_certificate_expired_at",
 													"value": "2019-04-04",
+													"type": "text"
+												},
+												{
+													"key": "insurance_policy_number",
+													"value": "eb3213131231232",
 													"type": "text"
 												}
 											],
@@ -1232,7 +1329,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"identity_number\": \"23233213123\",\n    \"country_id\": \"{{countryId}}\"\n}",
+											"raw": "{\n    \"identity_number\": \"23231323127\",\n    \"country_id\": \"{{countryId}}\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -1736,156 +1833,222 @@
 				},
 				{
 					"name": "Confirm email",
-					"event": [
+					"item": [
 						{
-							"listen": "test",
-							"script": {
-								"id": "0f2dc4c3-5070-41ab-8625-473e117b6a2b",
-								"exec": [
-									""
+							"name": "Confirm email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0f2dc4c3-5070-41ab-8625-473e117b6a2b",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
 								],
-								"type": "text/javascript"
-							}
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{url}}/confirm-email?hash=53e9148c-cd96-4039-9141-2c4189221c33",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"confirm-email"
+									],
+									"query": [
+										{
+											"key": "hash",
+											"value": "53e9148c-cd96-4039-9141-2c4189221c33"
+										}
+									]
+								},
+								"description": "Use for confirm email only with hash (for transporter, holder and both forwarders)."
+							},
+							"response": []
+						},
+						{
+							"name": "Confirm email Advanced",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0f2dc4c3-5070-41ab-8625-473e117b6a2b",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"password\": \"password1\"\n}"
+								},
+								"url": {
+									"raw": "{{url}}/confirm-email/advanced?hash=d1b80028-17e0-46b6-a05e-8a3a96d7a833",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"confirm-email",
+										"advanced"
+									],
+									"query": [
+										{
+											"key": "hash",
+											"value": "d1b80028-17e0-46b6-a05e-8a3a96d7a833"
+										}
+									]
+								},
+								"description": "Confirmation email for Manager and other users with setting password"
+							},
+							"response": []
 						}
 					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{url}}/confirm-email?hash=c9d5639b-d27d-483b-8fc0-01045c8af13c",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"confirm-email"
-							],
-							"query": [
-								{
-									"key": "hash",
-									"value": "c9d5639b-d27d-483b-8fc0-01045c8af13c"
-								}
-							]
-						}
-					},
-					"response": []
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				},
 				{
-					"name": "Reset password",
-					"event": [
+					"name": "Forgot password",
+					"item": [
 						{
-							"listen": "test",
-							"script": {
-								"id": "0f2dc4c3-5070-41ab-8625-473e117b6a2b",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"email\": \"forwarder@mail.ru\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/forgot-password/reset",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"forgot-password",
-								"reset"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Change password",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "0f2dc4c3-5070-41ab-8625-473e117b6a2b",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"password\": \"password2\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/forgot-password/change?hash=ef43756f-5dc4-49b7-985d-d62be22ccc63",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"forgot-password",
-								"change"
-							],
-							"query": [
+							"name": "Reset password",
+							"event": [
 								{
-									"key": "hash",
-									"value": "ef43756f-5dc4-49b7-985d-d62be22ccc63"
+									"listen": "test",
+									"script": {
+										"id": "0f2dc4c3-5070-41ab-8625-473e117b6a2b",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
 								}
-							]
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"forwarder@mail.ru\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/forgot-password/reset",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"forgot-password",
+										"reset"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Change password",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0f2dc4c3-5070-41ab-8625-473e117b6a2b",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"password\": \"password2\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/forgot-password/change?hash=ef43756f-5dc4-49b7-985d-d62be22ccc63",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"forgot-password",
+										"change"
+									],
+									"query": [
+										{
+											"key": "hash",
+											"value": "ef43756f-5dc4-49b7-985d-d62be22ccc63"
+										}
+									]
+								}
+							},
+							"response": []
 						}
-					},
-					"response": []
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				},
 				{
 					"name": "Get roles for registration",
@@ -2083,9 +2246,6 @@
 			"item": [
 				{
 					"name": "Get conditions and terms",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -2099,12 +2259,6 @@
 						},
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "file",
-							"file": {
-								"src": ""
-							}
-						},
 						"url": {
 							"raw": "{{url}}/conditions-terms",
 							"host": [
@@ -2149,6 +2303,207 @@
 						}
 					},
 					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Account confirmations",
+			"item": [
+				{
+					"name": "Users",
+					"item": [
+						{
+							"name": "Get list users expecting confirmation",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/account-confirmations/users",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"account-confirmations",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all user info",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/account-confirmations/users/{{userId}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"account-confirmations",
+										"users",
+										"{{userId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Accept account",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/account-confirmations/users/{{userId}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"account-confirmations",
+										"users",
+										"{{userId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Invites",
+			"item": [
+				{
+					"name": "Manager",
+					"item": [
+						{
+							"name": "Invite manager",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"manager@mail.ru\",\n\t\"full_name\": \"Manager Managerovich\",\n\t\"phone_number\": \"442321323\",\n\t\"phone_prefix_id\": \"{{phonePrefixId}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/invites/manager",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"invites",
+										"manager"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Resend invite",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"manager@mail.ru\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/invites/resend",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"invites",
+										"resend"
+									]
+								},
+								"description": "Resend email with invite"
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				}
 			],
 			"protocolProfileBehavior": {}
