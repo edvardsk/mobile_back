@@ -1,4 +1,4 @@
-const { one, oneOrNone } = require('db');
+const { one, oneOrNone, manyOrNone } = require('db');
 const {
     insertUser,
     selectUser,
@@ -8,6 +8,7 @@ const {
     selectUserRole,
     updateUser,
     selectUserByPassportNumber,
+    selectUsersWithRoleByPermission,
 } = require('sql-helpers/users');
 
 const { OPERATIONS } = require('constants/postgres');
@@ -37,6 +38,8 @@ const checkUserWithPassportNumberExists = async (meta, number) => {
     return !user || user.id === userId;
 };
 
+const getUsersWithRoleByPermission = permission => manyOrNone(selectUsersWithRoleByPermission(permission));
+
 module.exports = {
     addUser,
     getUser,
@@ -47,4 +50,5 @@ module.exports = {
     addUserAsTransaction,
     updateUserAsTransaction,
     checkUserWithPassportNumberExists,
+    getUsersWithRoleByPermission,
 };

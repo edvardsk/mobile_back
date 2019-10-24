@@ -2,6 +2,7 @@ const { manyOrNone, oneOrNone } = require('db');
 const {
     selectRecords,
     selectRecordById,
+    selectRecordByCode,
 } = require('sql-helpers/phone-prefixes');
 
 // helpers
@@ -10,6 +11,8 @@ const { isValidUUID } = require('helpers/validators');
 const getRecords = () => manyOrNone(selectRecords());
 
 const getRecord = id => oneOrNone(selectRecordById(id));
+
+const getRecordByCode = code => oneOrNone(selectRecordByCode(code));
 
 const checkPhonePrefixExists = async (props, id) => {
     if (!isValidUUID(id)) {
@@ -22,5 +25,6 @@ const checkPhonePrefixExists = async (props, id) => {
 module.exports = {
     getRecords,
     getRecord,
+    getRecordByCode,
     checkPhonePrefixExists,
 };

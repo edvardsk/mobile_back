@@ -4,12 +4,17 @@ const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const squelPostgres = squel.useFlavour('postgres');
 
 const table = SQL_TABLES.USERS;
-const tableUsersRoles = SQL_TABLES.USERS_TO_ROLES;
 const tableRoles = SQL_TABLES.ROLES;
+const tablePermissions = SQL_TABLES.PERMISSIONS;
+const tableUsersRoles = SQL_TABLES.USERS_TO_ROLES;
+const tableUsersPermissions = SQL_TABLES.USERS_TO_PERMISSIONS;
+
 
 const cols = table.COLUMNS;
-const colsUsersRoles = tableUsersRoles.COLUMNS;
 const colsRoles = tableRoles.COLUMNS;
+const colsPermissions = tablePermissions.COLUMNS;
+const colsUsersRoles = tableUsersRoles.COLUMNS;
+const colsUsersPermissions = tableUsersPermissions.COLUMNS;
 
 const insertUser = values => squelPostgres
     .insert()
@@ -73,6 +78,20 @@ const selectUserByPassportNumber = number => squelPostgres
     .where(`${cols.PASSPORT_NUMBER} = '${number}'`)
     .toString();
 
+const selectUsersWithRoleByPermission = permission => squelPostgres
+    .select()
+    .field('u.id')
+    .field(`u.${cols.EMAIL}`)
+    .field(`u.${cols.FULL_NAME}`)
+    .field(`r.${colsRoles.NAME}`, HOMELESS_COLUMNS.ROLE)
+    .from(table.NAME, 'u')
+    .where(`p.${colsPermissions.NAME} = '${permission}'`)
+    .join(tableUsersPermissions.NAME, 'up', `up.${colsUsersPermissions.USER_ID} = u.id`)
+    .join(tablePermissions.NAME, 'p', `p.id = up.${colsUsersPermissions.PERMISSION_ID}`)
+    .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
+    .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
+    .toString();
+
 module.exports = {
     insertUser,
     selectUser,
@@ -82,4 +101,5 @@ module.exports = {
     updateUser,
     selectUserRole,
     selectUserByPassportNumber,
+    selectUsersWithRoleByPermission,
 };

@@ -14,6 +14,8 @@ const removeUserPermission = (id, permission) => one(deleteUserPermission(id, pe
 
 const removeUserPermissions = (id, permissions) => many(deleteUserPermissions(id, permissions));
 
+const removeUserPermissionsAsTransaction = (id, permissions) => [deleteUserPermissions(id, permissions), OPERATIONS.MANY];
+
 const addUserPermissionAsTransaction = (id, permission) => [insertUserPermission(id, permission), OPERATIONS.ONE];
 
 const getUserPermissions = userId => manyOrNone(selectUserPermissions(userId))
@@ -24,5 +26,6 @@ module.exports = {
     addUserPermissionAsTransaction,
     removeUserPermission,
     removeUserPermissions,
+    removeUserPermissionsAsTransaction,
     getUserPermissions,
 };
