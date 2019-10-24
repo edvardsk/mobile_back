@@ -18,6 +18,8 @@ router.post(
     ROUTES.INVITES.MANAGER.BASE + ROUTES.INVITES.MANAGER.POST,
     isHasPermissions([PERMISSIONS.INVITE_MANAGER]),
     validate(ValidatorSchemes.inviteManager),
+    validate(ValidatorSchemes.inviteManagerAsync),
+    validate(ValidatorSchemes.phoneNumberWithPrefixAsync),
     post.inviteManager
 );
 
@@ -25,6 +27,7 @@ router.post(
     ROUTES.INVITES.RESEND.BASE + ROUTES.INVITES.RESEND.POST,
     isHasPermissions([PERMISSIONS.BASIC_INVITES]),
     validate(ValidatorSchemes.requiredEmail),
+    validate(ValidatorSchemes.requiredEmailAsync),
     post.resendInvite
 );
 

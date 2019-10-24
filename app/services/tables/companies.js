@@ -30,19 +30,19 @@ const addCompanyAsTransaction = data => [insertCompany(data), OPERATIONS.ONE];
 
 const updateCompanyAsTransaction = (id, data) => [updateCompany(id, data), OPERATIONS.ONE];
 
-const checkCompanyWithSettlementAccountExists = async (meta, account) => {
+const checkCompanyWithSettlementAccountExistsOpposite = async (meta, account) => {
     const company = await getCompanyBySettlementAccountWithFirstOwner(account);
     const { userId } = meta;
     return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId;
 };
 
-const checkCompanyWithIdentityNumberExists = async (meta, number) => {
+const checkCompanyWithIdentityNumberExistsOpposite = async (meta, number) => {
     const company = await getCompanyByIdentityNumberWithFirstOwner(number);
     const { userId } = meta;
     return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId;
 };
 
-const checkCompanyWithStateRegistrationCertificateNumberExists = async (meta, number) => {
+const checkCompanyWithStateRegistrationCertificateNumberExistsOpposite = async (meta, number) => {
     const company = await getCompanyByStateRegistrationCertificateNumberWithFirstOwner(number);
     const { userId } = meta;
     return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId;
@@ -53,7 +53,7 @@ module.exports = {
     getCompanyByUserIdStrict,
     addCompanyAsTransaction,
     updateCompanyAsTransaction,
-    checkCompanyWithSettlementAccountExists,
-    checkCompanyWithIdentityNumberExists,
-    checkCompanyWithStateRegistrationCertificateNumberExists,
+    checkCompanyWithSettlementAccountExistsOpposite,
+    checkCompanyWithIdentityNumberExistsOpposite,
+    checkCompanyWithStateRegistrationCertificateNumberExistsOpposite,
 };

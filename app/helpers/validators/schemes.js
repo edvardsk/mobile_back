@@ -68,7 +68,6 @@ const otherOrganizations = {
 // helpers
 
 const registration = {
-    $async: true,
     properties: {
         [colsUsers.EMAIL]: {
             type: 'string',
@@ -87,18 +86,14 @@ const registration = {
         [HOMELESS_COLUMNS.ROLE_ID]: {
             type: 'string',
             format: 'uuid',
-            roleExists: {},
         },
         [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
             type: 'string',
             format: 'uuid',
-            phonePrefixExists: {},
         },
         [HOMELESS_COLUMNS.PHONE_NUMBER]: {
             type: 'string',
             pattern: DIGITS_VALIDATION_PATTERN,
-            phoneNumberExists: {},
-            phoneNumberValid: {},
         },
     },
     required: [
@@ -110,6 +105,45 @@ const registration = {
         HOMELESS_COLUMNS.PHONE_PREFIX_ID,
     ],
     additionalProperties: false,
+};
+
+const registrationAsync = {
+    $async: true,
+    properties: {
+        [colsUsers.EMAIL]: {
+            email_exists: {},
+        },
+        [HOMELESS_COLUMNS.ROLE_ID]: {
+            role_not_exist: {},
+        },
+        [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
+            phone_prefix_not_exist: {},
+        },
+        [HOMELESS_COLUMNS.PHONE_NUMBER]: {
+            phone_number_exists: {},
+        },
+    },
+    required: [
+        colsUsers.EMAIL,
+        HOMELESS_COLUMNS.ROLE_ID,
+        HOMELESS_COLUMNS.PHONE_PREFIX_ID,
+        HOMELESS_COLUMNS.PHONE_NUMBER,
+    ],
+    additionalProperties: true,
+};
+
+const phoneNumberWithPrefixAsync = {
+    $async: true,
+    properties: {
+        [HOMELESS_COLUMNS.PHONE_NUMBER]: {
+            phone_number_not_valid: {},
+        },
+    },
+    required: [
+        HOMELESS_COLUMNS.PHONE_PREFIX_ID,
+        HOMELESS_COLUMNS.PHONE_NUMBER,
+    ],
+    additionalProperties: true,
 };
 
 const authorization = {
@@ -127,8 +161,7 @@ const authorization = {
     additionalProperties: false,
 };
 
-const finishRegistrationStep1TransporterFunc = userId => ({
-    $async: true,
+const finishRegistrationStep1Transporter = {
     properties: {
         [colsCompanies.NAME]: {
             type: 'string',
@@ -145,15 +178,11 @@ const finishRegistrationStep1TransporterFunc = userId => ({
         [colsCompanies.COUNTRY_ID]: {
             type: 'string',
             format: 'uuid',
-            countryExists: {},
         },
         [colsCompanies.IDENTITY_NUMBER]: {
             type: 'string',
             minLength: 9,
             maxLength: 12,
-            companyWithIdentityNumberExists: {
-                userId,
-            },
         },
         [colsCompanies.WEBSITE]: {
             type: 'string',
@@ -169,10 +198,24 @@ const finishRegistrationStep1TransporterFunc = userId => ({
         colsCompanies.IDENTITY_NUMBER,
     ],
     additionalProperties: false,
+};
+
+const finishRegistrationStep1TransporterAsyncFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsCompanies.COUNTRY_ID]: {
+            country_not_exist: {},
+        },
+        [colsCompanies.IDENTITY_NUMBER]: {
+            company_with_identity_number_exists: {
+                userId,
+            },
+        },
+    },
+    additionalProperties: true,
 });
 
-const finishRegistrationStep1HolderFunc = userId => ({
-    $async: true,
+const finishRegistrationStep1Holder = {
     properties: {
         [colsCompanies.NAME]: {
             type: 'string',
@@ -189,15 +232,11 @@ const finishRegistrationStep1HolderFunc = userId => ({
         [colsCompanies.COUNTRY_ID]: {
             type: 'string',
             format: 'uuid',
-            countryExists: {},
         },
         [colsCompanies.IDENTITY_NUMBER]: {
             type: 'string',
             minLength: 9,
             maxLength: 12,
-            companyWithIdentityNumberExists: {
-                userId,
-            },
         },
         [colsCompanies.WEBSITE]: {
             type: 'string',
@@ -213,23 +252,33 @@ const finishRegistrationStep1HolderFunc = userId => ({
         colsCompanies.IDENTITY_NUMBER,
     ],
     additionalProperties: false,
+};
+
+const finishRegistrationStep1HolderAsyncFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsCompanies.COUNTRY_ID]: {
+            country_not_exist: {},
+        },
+        [colsCompanies.IDENTITY_NUMBER]: {
+            company_with_identity_number_exists: {
+                userId,
+            },
+        },
+    },
+    additionalProperties: true,
 });
 
-const finishRegistrationStep1IndividualForwarderFunc = userId => ({
-    $async: true,
+const finishRegistrationStep1IndividualForwarder = {
     properties: {
         [colsCompanies.COUNTRY_ID]: {
             type: 'string',
             format: 'uuid',
-            countryExists: {},
         },
         [colsCompanies.IDENTITY_NUMBER]: {
             type: 'string',
             minLength: 9,
             maxLength: 12,
-            companyWithIdentityNumberExists: {
-                userId,
-            },
         },
         [colsCompanies.WEBSITE]: {
             type: 'string',
@@ -242,10 +291,24 @@ const finishRegistrationStep1IndividualForwarderFunc = userId => ({
         colsCompanies.IDENTITY_NUMBER,
     ],
     additionalProperties: false,
+};
+
+const finishRegistrationStep1IndividualForwarderAsyncFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsCompanies.COUNTRY_ID]: {
+            country_not_exist: {},
+        },
+        [colsCompanies.IDENTITY_NUMBER]: {
+            company_with_identity_number_exists: {
+                userId,
+            },
+        },
+    },
+    additionalProperties: true,
 });
 
-const finishRegistrationStep1SoleProprietorForwarderFunc = userId => ({
-    $async: true,
+const finishRegistrationStep1SoleProprietorForwarder = {
     properties: {
         [colsCompanies.NAME]: {
             type: 'string',
@@ -258,15 +321,11 @@ const finishRegistrationStep1SoleProprietorForwarderFunc = userId => ({
         [colsCompanies.COUNTRY_ID]: {
             type: 'string',
             format: 'uuid',
-            countryExists: {},
         },
         [colsCompanies.IDENTITY_NUMBER]: {
             type: 'string',
             minLength: 9,
             maxLength: 12,
-            companyWithIdentityNumberExists: {
-                userId,
-            },
         },
         [colsCompanies.WEBSITE]: {
             type: 'string',
@@ -281,10 +340,24 @@ const finishRegistrationStep1SoleProprietorForwarderFunc = userId => ({
         colsCompanies.IDENTITY_NUMBER,
     ],
     additionalProperties: false,
+};
+
+const finishRegistrationStep1SoleProprietorForwarderAsyncFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsCompanies.COUNTRY_ID]: {
+            country_not_exist: {},
+        },
+        [colsCompanies.IDENTITY_NUMBER]: {
+            company_with_identity_number_exists: {
+                userId,
+            },
+        },
+    },
+    additionalProperties: true,
 });
 
-const finishRegistrationStep2TransporterFunc = userId => ({
-    $async: true,
+const finishRegistrationStep2Transporter = {
     properties: {
         [colsCompanies.LEGAL_ADDRESS]: {
             type: 'string',
@@ -295,9 +368,6 @@ const finishRegistrationStep2TransporterFunc = userId => ({
             maxLength: 29,
             minLength: 20,
             pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
-            companyWithSettlementAccountExists: {
-                userId,
-            },
         },
         [colsCompanies.POST_ADDRESS]: {
             type: 'string',
@@ -337,10 +407,21 @@ const finishRegistrationStep2TransporterFunc = userId => ({
         colsCompanies.CONTRACT_SIGNER_FULL_NAME,
     ],
     additionalProperties: false,
+};
+
+const finishRegistrationStep2TransporterAsyncFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsCompanies.SETTLEMENT_ACCOUNT]: {
+            company_with_settlement_account_exists: {
+                userId,
+            },
+        },
+    },
+    additionalProperties: true,
 });
 
-const finishRegistrationStep2HolderFunc = userId => ({
-    $async: true,
+const finishRegistrationStep2Holder = {
     properties: {
         [colsCompanies.LEGAL_ADDRESS]: {
             type: 'string',
@@ -351,9 +432,6 @@ const finishRegistrationStep2HolderFunc = userId => ({
             maxLength: 29,
             minLength: 20,
             pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
-            companyWithSettlementAccountExists: {
-                userId,
-            },
         },
         [colsCompanies.POST_ADDRESS]: {
             type: 'string',
@@ -393,10 +471,21 @@ const finishRegistrationStep2HolderFunc = userId => ({
         colsCompanies.CONTRACT_SIGNER_FULL_NAME,
     ],
     additionalProperties: false,
+};
+
+const finishRegistrationStep2HolderAsyncFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsCompanies.SETTLEMENT_ACCOUNT]: {
+            company_with_settlement_account_exists: {
+                userId,
+            },
+        },
+    },
+    additionalProperties: true,
 });
 
-const finishRegistrationStep2SoleProprietorForwarderFunc = userId => ({
-    $async: true,
+const finishRegistrationStep2SoleProprietorForwarder = {
     properties: {
         [colsCompanies.LEGAL_ADDRESS]: {
             type: 'string',
@@ -407,9 +496,6 @@ const finishRegistrationStep2SoleProprietorForwarderFunc = userId => ({
             maxLength: 29,
             minLength: 20,
             pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
-            companyWithSettlementAccountExists: {
-                userId,
-            },
         },
         [colsCompanies.POST_ADDRESS]: {
             type: 'string',
@@ -439,17 +525,25 @@ const finishRegistrationStep2SoleProprietorForwarderFunc = userId => ({
         colsCompanies.BANK_CODE,
     ],
     additionalProperties: false,
+};
+
+const finishRegistrationStep2SoleProprietorForwarderAsyncFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsCompanies.SETTLEMENT_ACCOUNT]: {
+            company_with_settlement_account_exists: {
+                userId,
+            },
+        },
+    },
+    additionalProperties: true,
 });
 
-const finishRegistrationStep3TransporterFunc = userId => ({
-    $async: true,
+const finishRegistrationStep3Transporter = {
     properties: {
         [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: {
             type: 'string',
             pattern: STATE_REGISTRATION_CERTIFICATE_NUMBER_VALIDATION_PATTERN,
-            stateRegistrationCertificateNumberExists: {
-                userId,
-            },
         },
         [colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT]: {
             type: 'string',
@@ -501,6 +595,18 @@ const finishRegistrationStep3TransporterFunc = userId => ({
         colsCompanies.INSURANCE_COMPANY_NAME,
     ],
     additionalProperties: false,
+};
+
+const finishRegistrationStep3TransporterAsyncFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: {
+            state_registration_certificate_number_exists: {
+                userId,
+            },
+        },
+    },
+    additionalProperties: true,
 });
 
 const finishRegistrationStep3TransporterFiles = {
@@ -510,15 +616,11 @@ const finishRegistrationStep3TransporterFiles = {
     required: [DOCUMENTS.STATE_REGISTRATION_CERTIFICATE, DOCUMENTS.INSURANCE_POLICY],
 };
 
-const finishRegistrationStep3HolderFunc = userId => ({
-    $async: true,
+const finishRegistrationStep3Holder = {
     properties: {
         [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: {
             type: 'string',
             pattern: STATE_REGISTRATION_CERTIFICATE_NUMBER_VALIDATION_PATTERN,
-            stateRegistrationCertificateNumberExists: {
-                userId,
-            },
         },
         [colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT]: {
             type: 'string',
@@ -549,25 +651,33 @@ const finishRegistrationStep3HolderFunc = userId => ({
         colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT,
     ],
     additionalProperties: false,
+};
+
+const finishRegistrationStep3HolderAsyncFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: {
+            state_registration_certificate_number_exists: {
+                userId,
+            },
+        },
+    },
+    additionalProperties: true,
 });
 
-const finishRegistrationStep3Holder = {
+const finishRegistrationStep3HolderFiles = {
     patternProperties: {
         '.': fileFormat,
     },
     required: [DOCUMENTS.STATE_REGISTRATION_CERTIFICATE],
 };
 
-const finishRegistrationStep3IndividualForwarderFunc = userId => ({
-    $async: true,
+const finishRegistrationStep3IndividualForwarder = {
     properties: {
         [colsUsers.PASSPORT_NUMBER]: {
             type: 'string',
             pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
             maxLength: 19,
-            passportNumberExists: {
-                userId,
-            },
         },
         [colsUsers.PASSPORT_ISSUING_AUTHORITY]: {
             type: 'string',
@@ -589,24 +699,32 @@ const finishRegistrationStep3IndividualForwarderFunc = userId => ({
         colsUsers.PASSPORT_EXPIRED_AT,
     ],
     additionalProperties: false,
+};
+
+const finishRegistrationStep3IndividualForwarderAsyncFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsUsers.PASSPORT_NUMBER]: {
+            passport_number_exists: {
+                userId,
+            },
+        },
+    },
+    additionalProperties: true,
 });
 
-const finishRegistrationStep3IndividualForwarder = {
+const finishRegistrationStep3IndividualForwarderFiles = {
     patternProperties: {
         '.': fileFormat,
     },
     required: [DOCUMENTS.PASSPORT],
 };
 
-const finishRegistrationStep3SoleProprietorForwarderFunc = userId => ({
-    $async: true,
+const finishRegistrationStep3SoleProprietorForwarder = {
     properties: {
         [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: {
             type: 'string',
             pattern: STATE_REGISTRATION_CERTIFICATE_NUMBER_VALIDATION_PATTERN,
-            stateRegistrationCertificateNumberExists: {
-                userId,
-            },
         },
         [colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT]: {
             type: 'string',
@@ -616,9 +734,6 @@ const finishRegistrationStep3SoleProprietorForwarderFunc = userId => ({
             type: 'string',
             pattern: LETTERS_AND_DIGITS_VALIDATION_PATTERN,
             maxLength: 19,
-            passportNumberExists: {
-                userId,
-            },
         },
         [colsUsers.PASSPORT_ISSUING_AUTHORITY]: {
             type: 'string',
@@ -642,9 +757,26 @@ const finishRegistrationStep3SoleProprietorForwarderFunc = userId => ({
         colsUsers.PASSPORT_EXPIRED_AT,
     ],
     additionalProperties: false,
+};
+
+const finishRegistrationStep3SoleProprietorForwarderAsyncFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: {
+            state_registration_certificate_number_exists: {
+                userId,
+            },
+        },
+        [colsUsers.PASSPORT_NUMBER]: {
+            passport_number_exists: {
+                userId,
+            },
+        },
+    },
+    additionalProperties: true,
 });
 
-const finishRegistrationStep3SoleProprietorForwarder = {
+const finishRegistrationStep3SoleProprietorForwarderFiles = {
     patternProperties: {
         '.': fileFormat,
     },
@@ -711,13 +843,11 @@ const confirmPhoneNumber = {
 };
 
 const inviteManager = {
-    $async: true,
     properties: {
         [colsUsers.EMAIL]: {
             type: 'string',
             format: 'email',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
-            emailExists: {},
         },
         [colsUsers.FULL_NAME]: {
             type: 'string',
@@ -726,13 +856,10 @@ const inviteManager = {
         [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
             type: 'string',
             format: 'uuid',
-            phonePrefixExists: {},
         },
         [HOMELESS_COLUMNS.PHONE_NUMBER]: {
             type: 'string',
             pattern: DIGITS_VALIDATION_PATTERN,
-            phoneNumberExists: {},
-            phoneNumberValid: {},
         },
     },
     required: [
@@ -742,6 +869,22 @@ const inviteManager = {
         HOMELESS_COLUMNS.PHONE_NUMBER,
     ],
     additionalProperties: false,
+};
+
+const inviteManagerAsync = {
+    $async: true,
+    properties: {
+        [colsUsers.EMAIL]: {
+            email_exists: {},
+        },
+        [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
+            phonePrefixExists: {},
+        },
+        [HOMELESS_COLUMNS.PHONE_NUMBER]: {
+            phone_number_exists: {},
+        },
+    },
+    additionalProperties: true,
 };
 
 const requiredPassword = {
@@ -759,7 +902,6 @@ const requiredPassword = {
 };
 
 const requiredEmail = {
-    $async: true,
     properties: {
         [colsUsers.EMAIL]: {
             type: 'string',
@@ -773,30 +915,58 @@ const requiredEmail = {
     additionalProperties: false,
 };
 
+const requiredEmailAsync = {
+    $async: true,
+    properties: {
+        [colsUsers.EMAIL]: {
+            email_not_exists: {},
+        },
+    },
+    required: [
+        colsUsers.EMAIL,
+    ],
+    additionalProperties: false,
+};
+
 module.exports = {
     registration,
+    registrationAsync,
+
+    phoneNumberWithPrefixAsync,
+
     authorization,
 
-    finishRegistrationStep1TransporterFunc,
-    finishRegistrationStep1HolderFunc,
-    finishRegistrationStep1IndividualForwarderFunc,
-    finishRegistrationStep1SoleProprietorForwarderFunc,
+    finishRegistrationStep1Transporter,
+    finishRegistrationStep1TransporterAsyncFunc,
+    finishRegistrationStep1Holder,
+    finishRegistrationStep1HolderAsyncFunc,
+    finishRegistrationStep1IndividualForwarder,
+    finishRegistrationStep1IndividualForwarderAsyncFunc,
+    finishRegistrationStep1SoleProprietorForwarder,
+    finishRegistrationStep1SoleProprietorForwarderAsyncFunc,
 
-    finishRegistrationStep2TransporterFunc,
-    finishRegistrationStep2HolderFunc,
-    finishRegistrationStep2SoleProprietorForwarderFunc,
+    finishRegistrationStep2Transporter,
+    finishRegistrationStep2TransporterAsyncFunc,
+    finishRegistrationStep2Holder,
+    finishRegistrationStep2HolderAsyncFunc,
+    finishRegistrationStep2SoleProprietorForwarder,
+    finishRegistrationStep2SoleProprietorForwarderAsyncFunc,
 
-    finishRegistrationStep3TransporterFunc,
+    finishRegistrationStep3Transporter,
+    finishRegistrationStep3TransporterAsyncFunc,
     finishRegistrationStep3TransporterFiles,
 
-    finishRegistrationStep3HolderFunc,
     finishRegistrationStep3Holder,
+    finishRegistrationStep3HolderAsyncFunc,
+    finishRegistrationStep3HolderFiles,
 
-    finishRegistrationStep3IndividualForwarderFunc,
     finishRegistrationStep3IndividualForwarder,
+    finishRegistrationStep3IndividualForwarderAsyncFunc,
+    finishRegistrationStep3IndividualForwarderFiles,
 
-    finishRegistrationStep3SoleProprietorForwarderFunc,
     finishRegistrationStep3SoleProprietorForwarder,
+    finishRegistrationStep3SoleProprietorForwarderAsyncFunc,
+    finishRegistrationStep3SoleProprietorForwarderFiles,
 
     finishRegistrationStep4,
 
@@ -804,7 +974,9 @@ module.exports = {
     otherOrganizations,
 
     inviteManager,
+    inviteManagerAsync,
 
     requiredPassword,
     requiredEmail,
+    requiredEmailAsync,
 };

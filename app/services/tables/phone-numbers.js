@@ -34,9 +34,6 @@ const checkPhoneNumberExists = async (props, number, schema, currentPropsName, d
 const checkPhoneNumberValid = async (props, number, schema, key, data) => {
     const phonePrefixId = data[HOMELESS_COLUMNS.PHONE_PREFIX_ID];
     const phonePrefixRecord = await PhonePrefixesService.getRecord(phonePrefixId);
-    if (!phonePrefixRecord) {
-        return true; // will be caught other validator
-    }
     const phonePrefixName = phonePrefixRecord[colsPhonePrefixes.PREFIX];
 
     return isValidPhoneNumber(number, phonePrefixName);

@@ -16,61 +16,67 @@ const RolesService = require('services/tables/roles');
 // constants
 const { ERRORS } = require('constants/errors');
 
-ajv.addKeyword('phonePrefixExists', {
+ajv.addKeyword('phone_prefix_not_exist', {
     async: true,
     type: 'string',
-    validate: PhonePrefixesService.checkPhonePrefixExists,
+    validate: PhonePrefixesService.checkPhonePrefixExistsOpposite,
 });
 
-ajv.addKeyword('phoneNumberExists', {
+ajv.addKeyword('phone_number_exists', {
     async: true,
     type: 'string',
     validate: PhoneNumbersService.checkPhoneNumberExists,
 });
 
-ajv.addKeyword('countryExists', {
+ajv.addKeyword('country_not_exist', {
     async: true,
     type: 'string',
     validate: CountriesService.checkCountryExists,
 });
 
-ajv.addKeyword('companyWithSettlementAccountExists', {
+ajv.addKeyword('company_with_settlement_account_exists', {
     async: true,
     type: 'string',
-    validate: CompaniesService.checkCompanyWithSettlementAccountExists,
+    validate: CompaniesService.checkCompanyWithSettlementAccountExistsOpposite,
 });
 
-ajv.addKeyword('roleExists', {
+ajv.addKeyword('role_not_exist', {
     async: true,
     type: 'string',
-    validate: RolesService.checkRoleExists,
+    validate: RolesService.checkRoleExistsOpposite,
 });
 
-ajv.addKeyword('phoneNumberValid', {
+ajv.addKeyword('phone_number_not_valid', {
     async: true,
     type: 'string',
     validate: PhoneNumbersService.checkPhoneNumberValid,
 });
 
-ajv.addKeyword('companyWithIdentityNumberExists', {
+ajv.addKeyword('company_with_identity_number_exists', {
     async: true,
     type: 'string',
-    validate: CompaniesService.checkCompanyWithIdentityNumberExists,
+    validate: CompaniesService.checkCompanyWithIdentityNumberExistsOpposite,
 });
 
-ajv.addKeyword('stateRegistrationCertificateNumberExists', {
+ajv.addKeyword('state_registration_certificate_number_exists', {
     async: true,
     type: 'string',
-    validate: CompaniesService.checkCompanyWithStateRegistrationCertificateNumberExists,
+    validate: CompaniesService.checkCompanyWithStateRegistrationCertificateNumberExistsOpposite,
 });
 
-ajv.addKeyword('passportNumberExists', {
+ajv.addKeyword('passport_number_exists', {
     async: true,
     type: 'string',
-    validate: UsersService.checkUserWithPassportNumberExists,
+    validate: UsersService.checkUserWithPassportNumberExistsOpposite,
 });
 
-ajv.addKeyword('emailExists', {
+ajv.addKeyword('email_exists', {
+    async: true,
+    type: 'string',
+    validate: UsersService.checkUserWithEmailExistsOpposite,
+});
+
+ajv.addKeyword('email_not_exists', {
     async: true,
     type: 'string',
     validate: UsersService.checkUserWithEmailExists,
@@ -79,6 +85,7 @@ ajv.addKeyword('emailExists', {
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {
     try {
         const data = get(req, pathToData);
+
         let scheme;
         if (typeof schemeOrGetter === 'function') {
             const params = {

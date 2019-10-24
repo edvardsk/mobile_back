@@ -34,15 +34,20 @@ const getUserByPassportNumber = number => oneOrNone(selectUserByPassportNumber(n
 
 const getUsersWithRoleByPermission = permission => manyOrNone(selectUsersWithRoleByPermission(permission));
 
-const checkUserWithPassportNumberExists = async (meta, number) => {
+const checkUserWithPassportNumberExistsOpposite = async (meta, number) => {
     const user = await getUserByPassportNumber(number);
     const { userId } = meta;
     return !user || user.id === userId;
 };
 
-const checkUserWithEmailExists = async (meta, email) => {
+const checkUserWithEmailExistsOpposite = async (meta, email) => {
     const user = await getUserByEmail(email);
     return !user;
+};
+
+const checkUserWithEmailExists = async (meta, email) => {
+    const user = await getUserByEmail(email);
+    return !!user;
 };
 
 module.exports = {
@@ -55,6 +60,7 @@ module.exports = {
     addUserAsTransaction,
     updateUserAsTransaction,
     getUsersWithRoleByPermission,
-    checkUserWithPassportNumberExists,
+    checkUserWithPassportNumberExistsOpposite,
+    checkUserWithEmailExistsOpposite,
     checkUserWithEmailExists,
 };
