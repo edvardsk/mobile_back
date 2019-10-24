@@ -32,13 +32,18 @@ const updateUserAsTransaction = (id, data) => [updateUser(id, data), OPERATIONS.
 
 const getUserByPassportNumber = number => oneOrNone(selectUserByPassportNumber(number));
 
+const getUsersWithRoleByPermission = permission => manyOrNone(selectUsersWithRoleByPermission(permission));
+
 const checkUserWithPassportNumberExists = async (meta, number) => {
     const user = await getUserByPassportNumber(number);
     const { userId } = meta;
     return !user || user.id === userId;
 };
 
-const getUsersWithRoleByPermission = permission => manyOrNone(selectUsersWithRoleByPermission(permission));
+const checkUserWithEmailExists = async (meta, email) => {
+    const user = await getUserByEmail(email);
+    return !user;
+};
 
 module.exports = {
     addUser,
@@ -49,6 +54,7 @@ module.exports = {
     getUserRole,
     addUserAsTransaction,
     updateUserAsTransaction,
-    checkUserWithPassportNumberExists,
     getUsersWithRoleByPermission,
+    checkUserWithPassportNumberExists,
+    checkUserWithEmailExists,
 };

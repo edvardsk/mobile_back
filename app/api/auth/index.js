@@ -13,6 +13,8 @@ const phoneConfirmation = require('./phone-confirmation');
 const { ROUTES } = require('constants/routes');
 const { PERMISSIONS, ROLES } = require('constants/system');
 const { HOMELESS_COLUMNS } = require('constants/tables');
+
+// helpers
 const ValidatorSchemes = require('helpers/validators/schemes');
 
 // middlewares
@@ -114,7 +116,13 @@ router.get(
 
 
 // confirm email
-router.post(ROUTES.AUTH.CONFIRM_EMAIL.BASE + ROUTES.AUTH.CONFIRM_EMAIL.GET, emailConfirmation.confirmEmail);
+router.post(ROUTES.AUTH.CONFIRM_EMAIL.BASE + ROUTES.AUTH.CONFIRM_EMAIL.POST, emailConfirmation.confirmEmail);
+
+router.post(
+    ROUTES.AUTH.CONFIRM_EMAIL.BASE + ROUTES.AUTH.CONFIRM_EMAIL.ADVANCED.BASE + ROUTES.AUTH.CONFIRM_EMAIL.ADVANCED.POST,
+    validate(ValidatorSchemes.requiredPassword),
+    emailConfirmation.advancedConfirmEmail
+);
 
 
 // forgot password

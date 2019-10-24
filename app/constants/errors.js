@@ -11,6 +11,7 @@ const ERRORS = {
         INVALID_EMAIL_OR_PASSWORD: 'authorization.invalid_email_or_password',
         UNCONFIRMED_EMAIL: 'authorization.unconfirmed_email',
         INVALID_HASH: 'authorization.invalid_hash',
+        EXPIRED_HASH: 'authorization.expired_hash',
         INVALID_EMAIL_FORMAT: 'authorization.invalid_email_format',
         INVALID_PASSWORD_FORMAT: 'authorization.invalid_password_format',
         USER_CONFIRMED_EMAIL: 'authorization.user_confirmed_email',

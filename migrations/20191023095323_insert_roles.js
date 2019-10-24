@@ -70,6 +70,13 @@ exports.down = function(knex) {
         })
         .then(function () {
             return Promise.all(ROLES.map(role => (
+                knex('users_to_roles')
+                    .where('role_id', role.id)
+                    .del()
+            )));
+        })
+        .then(function () {
+            return Promise.all(ROLES.map(role => (
                 knex('roles')
                     .where('id', role.id)
                     .del()

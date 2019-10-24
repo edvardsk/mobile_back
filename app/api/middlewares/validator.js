@@ -70,6 +70,12 @@ ajv.addKeyword('passportNumberExists', {
     validate: UsersService.checkUserWithPassportNumberExists,
 });
 
+ajv.addKeyword('emailExists', {
+    async: true,
+    type: 'string',
+    validate: UsersService.checkUserWithEmailExists,
+});
+
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {
     try {
         const data = get(req, pathToData);

@@ -18,6 +18,8 @@ const SQL_TABLES = {
         COLUMNS: {
             USER_ID: 'user_id',
             HASH: 'hash',
+            USED: 'used',
+            EXPIRED_AT: 'expired_at',
             CREATED_AT: 'created_at',
         },
     },
@@ -171,15 +173,6 @@ const SQL_TABLES = {
         NAME: 'routes',
         COLUMNS: {
             COMPANY_ID: 'company_id',
-            COORDINATES_FROM: 'coordinates_from',
-            COORDINATES_TO: 'coordinates_to',
-            CREATED_AT: 'created_at',
-        },
-    },
-    INVITES: {
-        NAME: 'invites',
-        COLUMNS: {
-            user_id: 'user_id',
             COORDINATES_FROM: 'coordinates_from',
             COORDINATES_TO: 'coordinates_to',
             CREATED_AT: 'created_at',

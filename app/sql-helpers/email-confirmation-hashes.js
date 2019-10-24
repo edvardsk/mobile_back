@@ -25,8 +25,17 @@ const deleteRecordById = id => squelPostgres
     .returning('*')
     .toString();
 
+const updateRecordById = (id, values) => squelPostgres
+    .update()
+    .table(table.NAME)
+    .setFields(values)
+    .where(`id = '${id}'`)
+    .returning('*')
+    .toString();
+
 module.exports = {
     insertRecord,
     selectRecordByHash,
     deleteRecordById,
+    updateRecordById,
 };

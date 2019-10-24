@@ -94,11 +94,6 @@ const registration = {
             format: 'uuid',
             phonePrefixExists: {},
         },
-        [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
-            type: 'string',
-            format: 'uuid',
-            phonePrefixExists: {},
-        },
         [HOMELESS_COLUMNS.PHONE_NUMBER]: {
             type: 'string',
             pattern: DIGITS_VALIDATION_PATTERN,
@@ -715,6 +710,54 @@ const confirmPhoneNumber = {
     additionalProperties: false,
 };
 
+const inviteManager = {
+    $async: true,
+    properties: {
+        [colsUsers.EMAIL]: {
+            type: 'string',
+            format: 'email',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+            emailExists: {},
+        },
+        [colsUsers.FULL_NAME]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
+            type: 'string',
+            format: 'uuid',
+            phonePrefixExists: {},
+        },
+        [HOMELESS_COLUMNS.PHONE_NUMBER]: {
+            type: 'string',
+            pattern: DIGITS_VALIDATION_PATTERN,
+            phoneNumberExists: {},
+            phoneNumberValid: {},
+        },
+    },
+    required: [
+        colsUsers.EMAIL,
+        colsUsers.FULL_NAME,
+        HOMELESS_COLUMNS.PHONE_PREFIX_ID,
+        HOMELESS_COLUMNS.PHONE_NUMBER,
+    ],
+    additionalProperties: false,
+};
+
+const requiredPassword = {
+    properties: {
+        [colsUsers.PASSWORD]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+            pattern: PASSWORD_VALIDATION_PATTERN,
+        },
+    },
+    required: [
+        colsUsers.PASSWORD,
+    ],
+    additionalProperties: false,
+};
+
 module.exports = {
     registration,
     authorization,
@@ -744,4 +787,8 @@ module.exports = {
 
     confirmPhoneNumber,
     otherOrganizations,
+
+    inviteManager,
+
+    requiredPassword,
 };
