@@ -41,7 +41,7 @@ const createUser = async (req, res, next) => {
         }
 
         const roleId = body[HOMELESS_COLUMNS.ROLE_ID];
-        const role  = await RolesService.getRole(roleId);
+        const role = await RolesService.getRole(roleId);
 
         const pendingRole = MAP_ROLES_FROM_CLIENT_TO_SERVER[role[colsRoles.NAME]];
 
@@ -64,7 +64,7 @@ const createUser = async (req, res, next) => {
             PhoneNumbersService.addRecordAsTransaction(formatPhoneNumberToSave(userId, phonePrefixId, phoneNumber)),
         ]);
 
-        await MailService.sendConfirmationEmail(email, confirmationHash);
+        await MailService.sendConfirmationEmail(email, confirmationHash, role[colsRoles.NAME]);
 
         return success(res, {}, SUCCESS_CODES.CREATED);
     } catch (error) {
