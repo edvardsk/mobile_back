@@ -61,6 +61,15 @@ const inviteManager = async (req, res, next) => {
     }
 };
 
+const resendInvite = async (req, res, next) => {
+    try {
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     inviteManager,
+    resendInvite,
 };

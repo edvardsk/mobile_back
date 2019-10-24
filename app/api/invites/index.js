@@ -21,4 +21,11 @@ router.post(
     post.inviteManager
 );
 
+router.post(
+    ROUTES.INVITES.RESEND.BASE + ROUTES.INVITES.RESEND.POST,
+    isHasPermissions([PERMISSIONS.BASIC_INVITES]),
+    validate(ValidatorSchemes.requiredEmail),
+    post.resendInvite
+);
+
 module.exports = router;

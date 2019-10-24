@@ -79,6 +79,7 @@ const PERMISSIONS = {
     ACCEPT_REGISTRATION: 'accept_registration',
     EXPECT_REGISTRATION_CONFIRMATION: 'expect_registration_confirmation',
     INVITE_MANAGER: 'invite_manager',
+    BASIC_INVITES: 'basic_invites',
 };
 
 module.exports = {

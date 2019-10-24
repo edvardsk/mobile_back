@@ -18,11 +18,16 @@ const NEW_PERMISSIONS = [
         id: 'cb42b59e-edb1-42d7-87d6-ff0e4f2a33cf',
         name: 'invite_manager',
     },
+    {
+        id: 'd6472646-78eb-44b3-bd2f-399692beb53f',
+        name: 'basic_invites',
+    },
 ];
 
 const ROLES_WITH_PERMISSIONS = [
     ['admin', [
         'invite_manager',
+        'basic_invites',
     ]],
     ['unconfirmed_manager', [
         'confirm_email',

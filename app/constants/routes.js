@@ -27,6 +27,7 @@ const BASES = {
     ACCOUNT_CONFIRMATIONS: '/account-confirmations',
     INVITES: '/invites',
     MANAGER: '/manager',
+    RESEND: '/resend',
 };
 
 const IDS = {
@@ -139,6 +140,10 @@ const ROUTES = {
         BASE: BASES.INVITES,
         MANAGER: {
             BASE: BASES.MANAGER,
+            POST: '',
+        },
+        RESEND: {
+            BASE: BASES.RESEND,
             POST: '',
         },
     },

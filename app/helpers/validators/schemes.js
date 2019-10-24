@@ -758,6 +758,21 @@ const requiredPassword = {
     additionalProperties: false,
 };
 
+const requiredEmail = {
+    $async: true,
+    properties: {
+        [colsUsers.EMAIL]: {
+            type: 'string',
+            format: 'email',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+    },
+    required: [
+        colsUsers.EMAIL,
+    ],
+    additionalProperties: false,
+};
+
 module.exports = {
     registration,
     authorization,
@@ -791,4 +806,5 @@ module.exports = {
     inviteManager,
 
     requiredPassword,
+    requiredEmail,
 };
