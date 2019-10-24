@@ -4,17 +4,11 @@ const {
     selectRoleById,
 } = require('sql-helpers/roles');
 
-// helpers
-const { isValidUUID } = require('helpers/validators');
-
 const getRolesByNames = names => manyOrNone(selectRolesByNames(names));
 
 const getRole = id => oneOrNone(selectRoleById(id));
 
-const checkRoleExists = async (props, id) => {
-    if (!isValidUUID(id)) {
-        return true; // will be caught by pattern
-    }
+const checkRoleExistsOpposite = async (props, id) => {
     const role = await getRole(id);
     return !!role;
 };
@@ -22,5 +16,5 @@ const checkRoleExists = async (props, id) => {
 module.exports = {
     getRolesByNames,
     getRole,
-    checkRoleExists,
+    checkRoleExistsOpposite,
 };

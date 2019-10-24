@@ -37,7 +37,7 @@ const sender = new Email({
     },
 });
 
-const sendConfirmationEmail = (email, hash) => {
+const sendConfirmationEmail = (email, hash, role) => {
     const config = {
         template: 'confirm-email',
         message: {
@@ -45,7 +45,7 @@ const sendConfirmationEmail = (email, hash) => {
         },
         locals: {
             title: CONFIRM_EMAIL_TITLE,
-            link: formatConfirmationEmailUrl(hash),
+            link: formatConfirmationEmailUrl(hash, role),
         },
     };
     return sender.send(config);

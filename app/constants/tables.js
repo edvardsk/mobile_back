@@ -18,6 +18,8 @@ const SQL_TABLES = {
         COLUMNS: {
             USER_ID: 'user_id',
             HASH: 'hash',
+            USED: 'used',
+            EXPIRED_AT: 'expired_at',
             CREATED_AT: 'created_at',
         },
     },
@@ -175,7 +177,7 @@ const SQL_TABLES = {
             COORDINATES_TO: 'coordinates_to',
             CREATED_AT: 'created_at',
         },
-    }
+    },
 };
 
 const NO_SQL_TABLES = {

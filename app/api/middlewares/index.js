@@ -65,7 +65,7 @@ const isHasPermissions = (permissions = []) => (req, res, next) => {
     try {
         const userPermissions = res.locals.permissions;
         if (!permissions.every(permission => userPermissions.includes(permission))) {
-            return reject(res, ERRORS.SYSTEM.FORBIDDEN, {}, ERROR_CODES.FORBIDDEN);
+            return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
         }
         next();
     } catch (error) {

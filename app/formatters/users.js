@@ -25,8 +25,14 @@ const formatUserWithPermissionsForResponse = (user, permissions) => ({
     permissions,
 });
 
+const formatPasswordDataToUpdate = data => ({
+    [cols.PASSWORD]: data.hash,
+    [cols.KEY]: data.key,
+});
+
 module.exports = {
     formatUserForSaving,
     formatUserForResponse,
     formatUserWithPermissionsForResponse,
+    formatPasswordDataToUpdate,
 };

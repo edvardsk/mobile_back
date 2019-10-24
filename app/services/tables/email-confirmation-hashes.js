@@ -1,12 +1,10 @@
-const { one, oneOrNone, tx } = require('db');
+const { one, oneOrNone } = require('db');
 const {
     insertRecord,
     selectRecordByHash,
     deleteRecordById,
+    updateRecordById,
 } = require('sql-helpers/email-confirmation-hashes');
-const {
-    updateUserRoleByUserId,
-} = require('sql-helpers/users-to-roles');
 
 const { OPERATIONS } = require('constants/postgres');
 
@@ -16,18 +14,14 @@ const getRecordByHash = hash => oneOrNone(selectRecordByHash(hash));
 
 const deleteRecord = id => one(deleteRecordById(id));
 
-const confirmEmail = (id, userId, role) => tx(t => {
-    const q1 = t.one(deleteRecordById(id));
-    const q2 = t.one(updateUserRoleByUserId(userId, role));
-    return t.batch([q1, q2]);
-});
-
 const addRecordAsTransaction = data => [insertRecord(data), OPERATIONS.ONE];
+
+const updateRecordAsTransaction = (id, data) => [updateRecordById(id, data), OPERATIONS.ONE];
 
 module.exports = {
     addRecord,
     getRecordByHash,
     deleteRecord,
-    confirmEmail,
     addRecordAsTransaction,
+    updateRecordAsTransaction,
 };

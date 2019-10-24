@@ -4,6 +4,7 @@ const BASES = {
     REGISTRATION: '/registration',
     AUTHORIZATION: '/authorization',
     CONFIRM_EMAIL: '/confirm-email',
+    ADVANCED: '/advanced',
     FORGOT_PASSWORD: '/forgot-password',
     RESET: '/reset',
     CHANGE: '/change',
@@ -24,6 +25,9 @@ const BASES = {
     5: '/5',
     CONDITIONS_TERMS: '/conditions-terms',
     ACCOUNT_CONFIRMATIONS: '/account-confirmations',
+    INVITES: '/invites',
+    MANAGER: '/manager',
+    RESEND: '/resend',
 };
 
 const IDS = {
@@ -55,7 +59,11 @@ const ROUTES = {
         },
         CONFIRM_EMAIL: {
             BASE: BASES.CONFIRM_EMAIL,
-            GET: '',
+            POST: '',
+            ADVANCED: {
+                BASE: BASES.ADVANCED,
+                POST: '',
+            }
         },
         FORGOT_PASSWORD: {
             BASE: BASES.FORGOT_PASSWORD,
@@ -128,6 +136,17 @@ const ROUTES = {
             POST: IDS.USER_ID,
         },
     },
+    INVITES: {
+        BASE: BASES.INVITES,
+        MANAGER: {
+            BASE: BASES.MANAGER,
+            POST: '',
+        },
+        RESEND: {
+            BASE: BASES.RESEND,
+            POST: '',
+        },
+    },
 };
 
 const ALLOWED_ROUTES = {
@@ -142,7 +161,8 @@ const ALLOWED_ROUTES = {
         API_PREFIX + ROUTES.AUTH.FORGOT_PASSWORD.BASE + ROUTES.AUTH.FORGOT_PASSWORD.RESET.BASE + ROUTES.AUTH.FORGOT_PASSWORD.RESET.POST,
         API_PREFIX + ROUTES.AUTH.FORGOT_PASSWORD.BASE + ROUTES.AUTH.FORGOT_PASSWORD.CHANGE.BASE + ROUTES.AUTH.FORGOT_PASSWORD.CHANGE.POST,
 
-        API_PREFIX + ROUTES.AUTH.CONFIRM_EMAIL.BASE + ROUTES.AUTH.CONFIRM_EMAIL.GET,
+        API_PREFIX + ROUTES.AUTH.CONFIRM_EMAIL.BASE + ROUTES.AUTH.CONFIRM_EMAIL.POST,
+        API_PREFIX + ROUTES.AUTH.CONFIRM_EMAIL.BASE + ROUTES.AUTH.CONFIRM_EMAIL.ADVANCED.BASE + ROUTES.AUTH.CONFIRM_EMAIL.ADVANCED.POST,
     ]),
     PUT: new Set([
 
