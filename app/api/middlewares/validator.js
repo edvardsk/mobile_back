@@ -61,6 +61,12 @@ ajv.addKeyword('company_with_identity_number_exists', {
     validate: CompaniesService.checkCompanyWithIdentityNumberExistsOpposite,
 });
 
+ajv.addKeyword('company_with_name_exists', {
+    async: true,
+    type: 'string',
+    validate: CompaniesService.checkCompanyWithNameExistsOpposite,
+});
+
 ajv.addKeyword('state_registration_certificate_number_exists', {
     async: true,
     type: 'string',
