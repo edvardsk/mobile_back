@@ -238,9 +238,8 @@ const finishRegistrationStep3 = async (req, res, next) => {
             transactionList.push(CompaniesService.updateCompanyAsTransaction(company.id, companiesProps));
         }
 
-        const otherOrganizationsString = body[HOMELESS_COLUMNS.OTHER_ORGANIZATIONS];
-        if (otherOrganizationsString) {
-            const otherOrganizations = JSON.parse(otherOrganizationsString);
+        const otherOrganizations = body[HOMELESS_COLUMNS.OTHER_ORGANIZATIONS];
+        if (Array.isArray(otherOrganizations)) {
             const otherOrganizationWithCompanyId = otherOrganizations.map(organization => ({
                 ...organization,
                 [colsOtherOrganizations.COMPANY_ID]: company.id,
@@ -255,7 +254,6 @@ const finishRegistrationStep3 = async (req, res, next) => {
 
         return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
     } catch (error) {
-        console.log(error);
         next(error);
     }
 };
