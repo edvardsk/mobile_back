@@ -36,6 +36,8 @@ router.get(
 router.post(
     ROUTES.ACCOUNT_CONFIRMATIONS.USERS.BASE + ROUTES.ACCOUNT_CONFIRMATIONS.USERS.POST,
     isHasPermissions([PERMISSIONS.ACCEPT_REGISTRATION]),
+    validate(ValidationSchemes.requiredUserId, 'params'),
+    validate(ValidationSchemes.requiredExistingUserWithIdAsync, 'params'),
     postUsers.confirmAccount,
 );
 
