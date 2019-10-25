@@ -1866,7 +1866,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{url}}/confirm-email?hash=53e9148c-cd96-4039-9141-2c4189221c33",
+									"raw": "{{url}}/confirm-email?hash=fe820d38-f439-4509-8d21-30061815cef2",
 									"host": [
 										"{{url}}"
 									],
@@ -1876,7 +1876,7 @@
 									"query": [
 										{
 											"key": "hash",
-											"value": "53e9148c-cd96-4039-9141-2c4189221c33"
+											"value": "fe820d38-f439-4509-8d21-30061815cef2"
 										}
 									]
 								},
@@ -1916,7 +1916,7 @@
 									"raw": "{\n\t\"password\": \"password1\"\n}"
 								},
 								"url": {
-									"raw": "{{url}}/confirm-email/advanced?hash=d1b80028-17e0-46b6-a05e-8a3a96d7a833",
+									"raw": "{{url}}/confirm-email/advanced?hash=fe820d38-f439-4509-8d21-30061815cef2",
 									"host": [
 										"{{url}}"
 									],
@@ -1927,7 +1927,7 @@
 									"query": [
 										{
 											"key": "hash",
-											"value": "d1b80028-17e0-46b6-a05e-8a3a96d7a833"
+											"value": "fe820d38-f439-4509-8d21-30061815cef2"
 										}
 									]
 								},
@@ -2436,7 +2436,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"email\": \"manager@mail.ru\",\n\t\"full_name\": \"Manager Managerovich\",\n\t\"phone_number\": \"442321323\",\n\t\"phone_prefix_id\": \"{{phonePrefixId}}\"\n}",
+									"raw": "{\n\t\"email\": \"manager2@mail.ru\",\n\t\"full_name\": \"Manager Managerovich\",\n\t\"phone_number\": \"447423322\",\n\t\"phone_prefix_id\": \"{{phonePrefixId}}\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -2480,7 +2480,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"email\": \"manager@mail.ru\"\n}",
+									"raw": "{\n\t\"email\": \"manager2@mail.ru\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
