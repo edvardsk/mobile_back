@@ -44,6 +44,24 @@ const fileFormat = {
     ],
 };
 
+const requiredUserId = {
+    properties: {
+        userId: {
+            type: 'string',
+            format: 'uuid',
+        },
+    },
+};
+
+const requiredExistingUserWithIdAsync = {
+    $async: true,
+    properties: {
+        userId: {
+            user_with_id_not_exist: {},
+        },
+    },
+};
+
 const otherOrganizations = {
     type: 'array',
     items: [
@@ -934,6 +952,9 @@ const requiredEmailAsync = {
 };
 
 module.exports = {
+    requiredUserId,
+    requiredExistingUserWithIdAsync,
+
     registration,
     registrationAsync,
 
