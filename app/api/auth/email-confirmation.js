@@ -80,7 +80,7 @@ const advancedConfirmEmail = async (req, res, next) => {
             return reject(res, ERRORS.AUTHORIZATION.INVALID_HASH);
         }
 
-        if (new Date(hashFromDb[colsEmailConfirmation]) < new Date()) {
+        if (new Date(hashFromDb[colsEmailConfirmation.EXPIRED_AT]) < new Date()) {
             return reject(res, ERRORS.AUTHORIZATION.EXPIRED_HASH);
         }
 

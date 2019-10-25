@@ -8,13 +8,14 @@ const tableRoles = SQL_TABLES.ROLES;
 const tablePermissions = SQL_TABLES.PERMISSIONS;
 const tableUsersRoles = SQL_TABLES.USERS_TO_ROLES;
 const tableUsersPermissions = SQL_TABLES.USERS_TO_PERMISSIONS;
-
+const tableEmailConfirmationHashes = SQL_TABLES.EMAIL_CONFIRMATION_HASHES;
 
 const cols = table.COLUMNS;
 const colsRoles = tableRoles.COLUMNS;
 const colsPermissions = tablePermissions.COLUMNS;
 const colsUsersRoles = tableUsersRoles.COLUMNS;
 const colsUsersPermissions = tableUsersPermissions.COLUMNS;
+const colsEmailConfirmationHashes = tableEmailConfirmationHashes.COLUMNS;
 
 const insertUser = values => squelPostgres
     .insert()
@@ -92,6 +93,19 @@ const selectUsersWithRoleByPermission = permission => squelPostgres
     .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
     .toString();
 
+const selectUserWithRoleAndConfirmationHash = email => squelPostgres
+    .select()
+    .field(`r.${colsRoles.NAME}`, HOMELESS_COLUMNS.ROLE)
+    .field(`e.${colsEmailConfirmationHashes.USED}`)
+    .field(`e.${colsEmailConfirmationHashes.CREATED_AT}`)
+    .field(`e.${colsEmailConfirmationHashes.EXPIRED_AT}`)
+    .from(table.NAME, 'u')
+    .where(`u.${cols.EMAIL} = '${email}'`)
+    .left_join(tableEmailConfirmationHashes.NAME, 'e', `u.id = e.${colsEmailConfirmationHashes.USER_ID}`)
+    .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
+    .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
+    .toString();
+
 module.exports = {
     insertUser,
     selectUser,
@@ -102,4 +116,5 @@ module.exports = {
     selectUserRole,
     selectUserByPassportNumber,
     selectUsersWithRoleByPermission,
+    selectUserWithRoleAndConfirmationHash,
 };
