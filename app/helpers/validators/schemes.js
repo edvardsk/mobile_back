@@ -63,6 +63,7 @@ const otherOrganizations = {
             additionalProperties: false,
         },
     ],
+    minItems: 1,
     uniqueItems: true,
 };
 // helpers
@@ -539,6 +540,14 @@ const finishRegistrationStep2SoleProprietorForwarderAsyncFunc = userId => ({
     additionalProperties: true,
 });
 
+const modifyOtherOrganizations = {
+    properties: {
+        [HOMELESS_COLUMNS.OTHER_ORGANIZATIONS]: {
+            parse_string_to_json: {},
+        },
+    },
+};
+
 const finishRegistrationStep3Transporter = {
     properties: {
         [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: {
@@ -566,9 +575,7 @@ const finishRegistrationStep3Transporter = {
             type: 'string',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
-        [HOMELESS_COLUMNS.OTHER_ORGANIZATIONS]: {
-            type: 'string',
-        },
+        [HOMELESS_COLUMNS.OTHER_ORGANIZATIONS]: otherOrganizations,
         [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: {
             type: 'string',
             format: 'date',
@@ -626,9 +633,7 @@ const finishRegistrationStep3Holder = {
             type: 'string',
             format: 'date',
         },
-        [HOMELESS_COLUMNS.OTHER_ORGANIZATIONS]: {
-            type: 'string',
-        },
+        [HOMELESS_COLUMNS.OTHER_ORGANIZATIONS]: otherOrganizations,
         [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: {
             type: 'string',
             format: 'date',
@@ -979,4 +984,6 @@ module.exports = {
     requiredPassword,
     requiredEmail,
     requiredEmailAsync,
+
+    modifyOtherOrganizations,
 };

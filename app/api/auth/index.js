@@ -12,7 +12,6 @@ const phoneConfirmation = require('./phone-confirmation');
 // constants
 const { ROUTES } = require('constants/routes');
 const { PERMISSIONS, ROLES } = require('constants/system');
-const { HOMELESS_COLUMNS } = require('constants/tables');
 
 // helpers
 const ValidatorSchemes = require('helpers/validators/schemes');
@@ -20,7 +19,7 @@ const ValidatorSchemes = require('helpers/validators/schemes');
 // middlewares
 const { isHasPermissions, isAuthenticated } = require('api/middlewares');
 const { formDataHandler } = require('api/middlewares/files');
-const { validate, validateMultipartJSONProp } = require('api/middlewares/validator');
+const { validate } = require('api/middlewares/validator');
 
 const upload = multer();
 
@@ -195,9 +194,9 @@ router.post(
     ROUTES.AUTH.FINISH_REGISTRATION.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['3'].BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['3'].POST,
     isHasPermissions(FINISH_REGISTRATION_STEP3_PERMISSIONS), // permissions middleware
     formDataHandler(uploadData), // uploading files middleware
+    validate(ValidatorSchemes.modifyOtherOrganizations),
     validate(({ role }) => FINISH_REGISTRATION_STEP_3_TEXT_MAP_SCHEMES[role]),
     validate(({ role, userId }) => FINISH_REGISTRATION_STEP_3_TEXT_MAP_SCHEMES_ASYNC[role](userId)),
-    validateMultipartJSONProp(ValidatorSchemes.otherOrganizations, `body.${HOMELESS_COLUMNS.OTHER_ORGANIZATIONS}`),
     validate(({ role }) => FINISH_REGISTRATION_STEP_3_FILES_MAP_SCHEMES[role], 'files'),
     finishRegistration.finishRegistrationStep3,
 );

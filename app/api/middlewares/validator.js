@@ -16,6 +16,9 @@ const RolesService = require('services/tables/roles');
 // constants
 const { ERRORS } = require('constants/errors');
 
+// helpers
+const { parseStringToJson } = require('helpers/validators/custom');
+
 ajv.addKeyword('phone_prefix_not_exist', {
     async: true,
     type: 'string',
@@ -82,6 +85,12 @@ ajv.addKeyword('email_not_exists', {
     validate: UsersService.checkUserWithEmailExists,
 });
 
+ajv.addKeyword('parse_string_to_json', {
+    modifying: true,
+    schema: false,
+    validate: parseStringToJson,
+});
+
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {
     try {
         const data = get(req, pathToData);
@@ -116,25 +125,6 @@ const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next)
     }
 };
 
-const validateMultipartJSONProp = (scheme, path) => async (req, res, next) => {
-    try {
-        const data = get(req, path);
-        if (data) {
-            const prop = JSON.parse(data);
-            const validate = ajv.compile(scheme);
-            const isValidData = validate(prop);
-
-            if (!isValidData) {
-                return reject(res, ERRORS.VALIDATION.ERROR, validate.errors);
-            }
-        }
-
-        next();
-    } catch (error) {
-        next(error);
-    }
-};
-
 const validateFileType = expectedFileTypes => async (req, res, next) => {
     try {
         const { body } = req;
@@ -154,6 +144,5 @@ const validateFileType = expectedFileTypes => async (req, res, next) => {
 
 module.exports = {
     validate,
-    validateMultipartJSONProp,
     validateFileType,
 };
