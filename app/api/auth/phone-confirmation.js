@@ -10,7 +10,11 @@ const TablesService = require('services/tables');
 // constants
 const { SQL_TABLES } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
-const { MAP_FROM_CONFIRMED_EMAIL_TO_CONFIRMED_PHONE, PERMISSIONS } = require('constants/system');
+const {
+    MAP_FROM_CONFIRMED_EMAIL_TO_CONFIRMED_PHONE,
+    MAP_FROM_PENDING_ROLE_TO_MAIN,
+    PERMISSIONS,
+} = require('constants/system');
 const { SUCCESS_CODES } = require('constants/http-codes');
 
 // helpers
@@ -68,12 +72,17 @@ const confirmPhone = async (req, res, next) => {
         //     return reject(res, ERRORS.PHONE_CONFIRMATION.INVALID_CODE);
         // }
 
+        let transactionsList = [];
+        const mustContinueRegistration = MAP_FROM_PENDING_ROLE_TO_MAIN[role];
+        if (mustContinueRegistration) {
+            transactionsList.push(UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.REGISTRATION_SAVE_STEP_1));
+        }
+
         const futureRole = MAP_FROM_CONFIRMED_EMAIL_TO_CONFIRMED_PHONE[role];
 
-        await TablesService.runTransaction([
-            UserRolesService.updateUserRoleAsTransaction(userId, futureRole),
-            UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.REGISTRATION_SAVE_STEP_1),
-        ]);
+        transactionsList.push(UserRolesService.updateUserRoleAsTransaction(userId, futureRole));
+
+        await TablesService.runTransaction(transactionsList);
 
         return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
     } catch (error) {

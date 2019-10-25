@@ -2,6 +2,12 @@ const express = require('express');
 
 const router = express.Router();
 
+// middlewares
+const { isHasPermissions } = require('api/middlewares');
+
+// constants
+const { PERMISSIONS } = require('constants/system');
+
 // routes
 const getUsers = require('./users/get');
 const postUsers = require('./users/post');
@@ -11,16 +17,19 @@ const { ROUTES } = require('constants/routes');
 
 router.get(
     ROUTES.ACCOUNT_CONFIRMATIONS.USERS.BASE + ROUTES.ACCOUNT_CONFIRMATIONS.USERS.GET_ALL,
+    isHasPermissions([PERMISSIONS.ACCEPT_REGISTRATION]),
     getUsers.getListUsers,
 );
 
 router.get(
     ROUTES.ACCOUNT_CONFIRMATIONS.USERS.BASE + ROUTES.ACCOUNT_CONFIRMATIONS.USERS.GET,
+    isHasPermissions([PERMISSIONS.ACCEPT_REGISTRATION]),
     getUsers.getAllUserData,
 );
 
 router.post(
     ROUTES.ACCOUNT_CONFIRMATIONS.USERS.BASE + ROUTES.ACCOUNT_CONFIRMATIONS.USERS.POST,
+    isHasPermissions([PERMISSIONS.ACCEPT_REGISTRATION]),
     postUsers.confirmAccount,
 );
 
