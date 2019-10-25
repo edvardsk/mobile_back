@@ -212,6 +212,11 @@ const finishRegistrationStep1TransporterAsyncFunc = userId => ({
                 userId,
             },
         },
+        [colsCompanies.NAME]: {
+            company_with_name_exists: {
+                userId,
+            },
+        },
     },
     additionalProperties: true,
 });
@@ -263,6 +268,11 @@ const finishRegistrationStep1HolderAsyncFunc = userId => ({
         },
         [colsCompanies.IDENTITY_NUMBER]: {
             company_with_identity_number_exists: {
+                userId,
+            },
+        },
+        [colsCompanies.NAME]: {
+            company_with_name_exists: {
                 userId,
             },
         },
