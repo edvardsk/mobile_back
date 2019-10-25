@@ -72,13 +72,13 @@ const confirmPhone = async (req, res, next) => {
         //     return reject(res, ERRORS.PHONE_CONFIRMATION.INVALID_CODE);
         // }
 
+        const futureRole = MAP_FROM_CONFIRMED_EMAIL_TO_CONFIRMED_PHONE[role];
+
         let transactionsList = [];
-        const mustContinueRegistration = MAP_FROM_PENDING_ROLE_TO_MAIN[role];
+        const mustContinueRegistration = MAP_FROM_PENDING_ROLE_TO_MAIN[futureRole];
         if (mustContinueRegistration) {
             transactionsList.push(UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.REGISTRATION_SAVE_STEP_1));
         }
-
-        const futureRole = MAP_FROM_CONFIRMED_EMAIL_TO_CONFIRMED_PHONE[role];
 
         transactionsList.push(UserRolesService.updateUserRoleAsTransaction(userId, futureRole));
 
