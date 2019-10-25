@@ -47,6 +47,12 @@ const ERRORS = {
         SEND_CODE_FIRST: 'phone_confirmation.send_code_first',
         CODE_HAS_EXPIRED: 'phone_confirmation.code_has_expired',
     },
+    INVITES: {
+        HASH_USED: 'invites.hash_used',
+        HASH_EXPIRED: 'invites.hash_expired',
+        ALREADY_CONFIRMED: 'invites.already_confirmed',
+        TOO_OFTEN: 'invites.too_often',
+    },
 };
 
 class PaginationError extends Error {
