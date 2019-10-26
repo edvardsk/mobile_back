@@ -7,20 +7,26 @@ const { isHasPermissions } = require('api/middlewares');
 const { validate } = require('api/middlewares/validator');
 
 // constants
-const { PERMISSIONS } = require('constants/system');
+const { PERMISSIONS, ROLES } = require('constants/system');
 
 // helpers
 const ValidatorSchemes = require('helpers/validators/schemes');
 
 const router = express.Router();
 
+const INVITE_USER_MAP_PERMISSIONS = {
+    [ROLES.MANAGER]: [PERMISSIONS.INVITE_MANAGER],
+    [ROLES.DISPATCHER]: [PERMISSIONS.INVITE_DISPATCHER],
+};
+
 router.post(
-    ROUTES.INVITES.MANAGER.BASE + ROUTES.INVITES.MANAGER.POST,
-    isHasPermissions([PERMISSIONS.INVITE_MANAGER]),
-    validate(ValidatorSchemes.inviteManager),
-    validate(ValidatorSchemes.inviteManagerAsync),
+    ROUTES.INVITES.POST,
+    validate(ValidatorSchemes.inviteUserRolesParams, 'params'),
+    isHasPermissions(({ params }) => INVITE_USER_MAP_PERMISSIONS[params.role]),
+    validate(ValidatorSchemes.inviteUser),
+    validate(ValidatorSchemes.inviteUserAsync),
     validate(ValidatorSchemes.phoneNumberWithPrefixAsync),
-    post.inviteManager
+    post.inviteUser
 );
 
 router.post(

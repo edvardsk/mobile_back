@@ -36,7 +36,7 @@ const MAP_ALLOWED_ROLES_TO_RESEND = {
     ]),
 };
 
-const inviteManager = async (req, res, next) => {
+const inviteUser = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
     try {
         const { body } = req;
@@ -119,6 +119,6 @@ const resendInvite = async (req, res, next) => {
 };
 
 module.exports = {
-    inviteManager,
+    inviteUser,
     resendInvite,
 };

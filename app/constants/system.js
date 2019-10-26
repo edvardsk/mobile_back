@@ -25,6 +25,7 @@ const ROLES = {
 
     ADMIN: 'admin',
     MANAGER: 'manager',
+    DISPATCHER: 'dispatcher',
 };
 
 const MAP_FROM_UNCONFIRMED_TO_CONFIRMED_EMAIL_ROLE = {

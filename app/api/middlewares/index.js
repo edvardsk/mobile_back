@@ -57,8 +57,18 @@ const isAuthenticated = async (req, res) => {
     }
 };
 
-const isHasPermissions = (permissions = []) => (req, res, next) => {
+const isHasPermissions = (permissionsOrGetter = []) => (req, res, next) => {
     try {
+        let permissions;
+        if (typeof permissionsOrGetter === 'function') {
+            const params = {
+                params: req.params,
+            };
+            permissions = permissionsOrGetter(params);
+
+        } else {
+            permissions = permissionsOrGetter;
+        }
         const userPermissions = res.locals.permissions;
         if (!permissions.every(permission => userPermissions.includes(permission))) {
             return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);

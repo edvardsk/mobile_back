@@ -2,6 +2,7 @@
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { DOCUMENTS } = require('constants/files');
+const { ROLES } = require('constants/system');
 
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
@@ -872,7 +873,7 @@ const confirmPhoneNumber = {
     additionalProperties: false,
 };
 
-const inviteManager = {
+const inviteUser = {
     properties: {
         [colsUsers.EMAIL]: {
             type: 'string',
@@ -901,7 +902,7 @@ const inviteManager = {
     additionalProperties: false,
 };
 
-const inviteManagerAsync = {
+const inviteUserAsync = {
     $async: true,
     properties: {
         [colsUsers.EMAIL]: {
@@ -958,6 +959,18 @@ const requiredEmailAsync = {
     additionalProperties: false,
 };
 
+const inviteUserRolesParams = {
+    properties: {
+        role: {
+            type: 'string',
+            enum: [ROLES.MANAGER, ROLES.DISPATCHER],
+        },
+    },
+    required: [
+        'role'
+    ],
+};
+
 module.exports = {
     requiredUserId,
     requiredExistingUserWithIdAsync,
@@ -1006,12 +1019,13 @@ module.exports = {
     confirmPhoneNumber,
     otherOrganizations,
 
-    inviteManager,
-    inviteManagerAsync,
+    inviteUser,
+    inviteUserAsync,
 
     requiredPassword,
     requiredEmail,
     requiredEmailAsync,
 
     modifyOtherOrganizations,
+    inviteUserRolesParams,
 };
