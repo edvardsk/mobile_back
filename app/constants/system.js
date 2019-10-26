@@ -4,12 +4,14 @@ const ROLES = {
     UNCONFIRMED_INDIVIDUAL_FORWARDER: 'unconfirmed_individual_forwarder',
     UNCONFIRMED_SOLE_PROPRIETOR_FORWARDER: 'unconfirmed_sole_proprietor_forwarder',
     UNCONFIRMED_MANAGER: 'unconfirmed_manager',
+    UNCONFIRMED_DISPATCHER: 'unconfirmed_dispatcher',
 
     CONFIRMED_EMAIL_TRANSPORTER: 'confirmed_email_transporter',
     CONFIRMED_EMAIL_HOLDER: 'confirmed_email_holder',
     CONFIRMED_EMAIL_INDIVIDUAL_FORWARDER: 'confirmed_email_individual_forwarder',
     CONFIRMED_EMAIL_SOLE_PROPRIETOR_FORWARDER: 'confirmed_email_sole_proprietor_forwarder',
     CONFIRMED_EMAIL_MANAGER: 'confirmed_email_manager',
+    CONFIRMED_EMAIL_DISPATCHER: 'confirmed_email_dispatcher',
 
     CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER: 'confirmed_email_and_phone_transporter',
     CONFIRMED_EMAIL_AND_PHONE_HOLDER: 'confirmed_email_and_phone_holder',
@@ -80,7 +82,10 @@ const PERMISSIONS = {
     REGISTRATION_SAVE_STEP_5: 'registration_save_step_5',
     ACCEPT_REGISTRATION: 'accept_registration',
     EXPECT_REGISTRATION_CONFIRMATION: 'expect_registration_confirmation',
+
     INVITE_MANAGER: 'invite_manager',
+    INVITE_DISPATCHER: 'invite_dispatcher',
+    INVITE_TRANSPORTER: 'invite_transporter',
     BASIC_INVITES: 'basic_invites',
 };
 
