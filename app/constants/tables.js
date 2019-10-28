@@ -17,6 +17,7 @@ const SQL_TABLES = {
         NAME: 'email_confirmation_hashes',
         COLUMNS: {
             USER_ID: 'user_id',
+            INITIATOR_ID: 'initiator_id',
             HASH: 'hash',
             USED: 'used',
             EXPIRED_AT: 'expired_at',

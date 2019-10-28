@@ -39,6 +39,7 @@ const MAP_ALLOWED_ROLES_TO_RESEND = {
 const inviteUser = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
     try {
+        const currentUserId = res.locals.user.id;
         const { body } = req;
         const phoneNumber = body.phone_number;
         const phonePrefixId = body.phone_prefix_id;
@@ -59,7 +60,7 @@ const inviteUser = async (req, res, next) => {
         await TableService.runTransaction([
             UsersService.addUserAsTransaction(data),
             UsersRolesService.addUserRoleAsTransaction(userId, role),
-            EmailConfirmationService.addRecordAsTransaction(formatRecordToSave(userId, confirmationHash, inviteExpirationDate)),
+            EmailConfirmationService.addRecordAsTransaction(formatRecordToSave(userId, confirmationHash, currentUserId, inviteExpirationDate)),
             PhoneNumbersService.addRecordAsTransaction(formatPhoneNumberToSave(userId, phonePrefixId, phoneNumber)),
         ]);
 
@@ -74,6 +75,7 @@ const inviteUser = async (req, res, next) => {
 const resendInvite = async (req, res, next) => {
     const colsEmailConfirmationHashes = SQL_TABLES.EMAIL_CONFIRMATION_HASHES.COLUMNS;
     try {
+        const currentUserId = res.locals.user.id;
         const currentUserRole = res.locals.user.role;
         const { email } = req.body;
 
@@ -101,7 +103,7 @@ const resendInvite = async (req, res, next) => {
 
         await TableService.runTransaction([
             EmailConfirmationService.updateRecordAsTransaction(latestHash.id, hashRecordToUpdate),
-            EmailConfirmationService.addRecordAsTransaction(formatRecordToSave(user.id, confirmationHash, inviteExpirationDate)),
+            EmailConfirmationService.addRecordAsTransaction(formatRecordToSave(user.id, confirmationHash, currentUserId, inviteExpirationDate)),
         ]);
 
         const MAP_UNCONFIRMED_TO_BASIC_ROLES = {
