@@ -31,9 +31,12 @@ const {
 const MAP_ALLOWED_ROLES_TO_RESEND = {
     [ROLES.ADMIN]: new Set([
         ROLES.UNCONFIRMED_MANAGER,
-        ROLES.CONFIRMED_EMAIL_MANAGER,
-        ROLES.MANAGER,
     ]),
+};
+
+const MAP_FROM_MAON_ROLE_TO_UNCOMFIRMED = {
+    [ROLES.DISPATCHER]: ROLES.UNCONFIRMED_DISPATCHER,
+    [ROLES.MANAGER]: ROLES.UNCONFIRMED_MANAGER,
 };
 
 const inviteUser = async (req, res, next) => {
@@ -41,11 +44,11 @@ const inviteUser = async (req, res, next) => {
     try {
         const currentUserId = res.locals.user.id;
         const { body } = req;
+        const { role } = req.params;
+        const uncomfirmedRole = MAP_FROM_MAON_ROLE_TO_UNCOMFIRMED[role];
         const phoneNumber = body.phone_number;
         const phonePrefixId = body.phone_prefix_id;
         const email = body[colsUsers.EMAIL];
-
-        const role = ROLES.UNCONFIRMED_MANAGER;
 
         const password = uuid();
         const { hash, key } = await CryptService.hashPassword(password);
@@ -59,12 +62,12 @@ const inviteUser = async (req, res, next) => {
 
         await TableService.runTransaction([
             UsersService.addUserAsTransaction(data),
-            UsersRolesService.addUserRoleAsTransaction(userId, role),
+            UsersRolesService.addUserRoleAsTransaction(userId, uncomfirmedRole),
             EmailConfirmationService.addRecordAsTransaction(formatRecordToSave(userId, confirmationHash, currentUserId, inviteExpirationDate)),
             PhoneNumbersService.addRecordAsTransaction(formatPhoneNumberToSave(userId, phonePrefixId, phoneNumber)),
         ]);
 
-        await MailService.sendConfirmationEmail(email, confirmationHash, ROLES.MANAGER);
+        await MailService.sendConfirmationEmail(email, confirmationHash, role);
 
         return success(res, {}, SUCCESS_CODES.CREATED);
     } catch (error) {

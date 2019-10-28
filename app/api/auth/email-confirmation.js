@@ -78,6 +78,7 @@ const confirmEmail = async (req, res, next) => {
 const advancedConfirmEmail = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
     const colsEmailConfirmation = SQL_TABLES.EMAIL_CONFIRMATION_HASHES.COLUMNS;
+    const colsUsersCompanies = SQL_TABLES.USERS_TO_COMPANIES.COLUMNS;
     try {
         const { body } = req;
         const { hash } = req.query;
@@ -125,8 +126,8 @@ const advancedConfirmEmail = async (req, res, next) => {
 
         if (SET_ROLES_TO_APPLY_COMPANY.has(userRole)) {
             const initiatorId = hashFromDb[colsEmailConfirmation.INITIATOR_ID];
-            const company = await UsersCompaniesService.getRecordByUserIdStrict(initiatorId);
-            transactionList.push(UsersCompaniesService.addRecordAsTransaction(formatRecordToSave(userId, company.id)));
+            const userToCompany = await UsersCompaniesService.getRecordByUserIdStrict(initiatorId);
+            transactionList.push(UsersCompaniesService.addRecordAsTransaction(formatRecordToSave(userId, userToCompany[colsUsersCompanies.COMPANY_ID])));
         }
 
         await TablesService.runTransaction(transactionList);

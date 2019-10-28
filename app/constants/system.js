@@ -89,6 +89,9 @@ const PERMISSIONS = {
     ACCEPT_REGISTRATION: 'accept_registration',
     EXPECT_REGISTRATION_CONFIRMATION: 'expect_registration_confirmation',
 
+    FREEZE_DISPATCHER: 'freeze_dispatcher',
+    UNFREEZE_DISPATCHER: 'unfreeze_dispatcher',
+
     INVITE_MANAGER: 'invite_manager',
     INVITE_DISPATCHER: 'invite_dispatcher',
     INVITE_TRANSPORTER: 'invite_transporter',

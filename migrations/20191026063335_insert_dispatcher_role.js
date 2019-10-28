@@ -1,4 +1,5 @@
 const FIRST_PERMISSIONS = require('./20191017144540_add_permissions').PERMISSIONS;
+const FIRST_ROLES = require('./20191017143230_add_roles').ROLES;
 const { getRolesToPermissionsForDb } = require('../app/formatters/system');
 
 
@@ -26,11 +27,24 @@ const PERMISSIONS = [
         id: '779c7292-6af1-485b-9b21-0fef3c30f228',
         name: 'invite_transporter',
     },
+    {
+        id: '0349faf3-1907-4f69-820a-5142754409e5',
+        name: 'freeze_dispatcher',
+    },
+    {
+        id: '95134d45-e16e-4a71-8712-0df5fc3972ac',
+        name: 'unfreeze_dispatcher',
+    },
 ];
 
 const ALL_PERMISSIONS = [
     ...FIRST_PERMISSIONS,
     ...PERMISSIONS,
+];
+
+const ALL_ROLES = [
+    ...FIRST_ROLES,
+    ...ROLES,
 ];
 
 const ROLES_WITH_PERMISSIONS = [
@@ -46,9 +60,15 @@ const ROLES_WITH_PERMISSIONS = [
         'authorization',
         'reset_password',
     ]],
+    ['transporter', [
+        'invite_transporter',
+        'invite_dispatcher',
+        'freeze_dispatcher',
+        'unfreeze_dispatcher',
+    ]],
 ];
 
-const allRolesWithPermissions = getRolesToPermissionsForDb(ROLES, ALL_PERMISSIONS, ROLES_WITH_PERMISSIONS);
+const allRolesWithPermissions = getRolesToPermissionsForDb(ALL_ROLES, ALL_PERMISSIONS, ROLES_WITH_PERMISSIONS);
 
 exports.up = function(knex) {
     return knex.batchInsert('roles', ROLES)

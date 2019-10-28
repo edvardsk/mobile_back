@@ -139,7 +139,10 @@ const ROUTES = {
     },
     INVITES: {
         BASE: BASES.INVITES,
-        POST: IDS.ROLE,
+        ROLES: {
+            BASE: BASES.ROLES,
+            POST: IDS.ROLE,
+        },
         RESEND: {
             BASE: BASES.RESEND,
             POST: '',

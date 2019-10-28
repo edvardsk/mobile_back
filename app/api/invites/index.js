@@ -20,7 +20,7 @@ const INVITE_USER_MAP_PERMISSIONS = {
 };
 
 router.post(
-    ROUTES.INVITES.POST,
+    ROUTES.INVITES.ROLES.BASE + ROUTES.INVITES.ROLES.POST,
     validate(ValidatorSchemes.inviteUserRolesParams, 'params'),
     isHasPermissions(({ params }) => INVITE_USER_MAP_PERMISSIONS[params.role]),
     validate(ValidatorSchemes.inviteUser),
