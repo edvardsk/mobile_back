@@ -13,7 +13,12 @@ const MailService = require('services/mail');
 const { ERRORS } = require('constants/errors');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SUCCESS_CODES, ERROR_CODES } = require('constants/http-codes');
-const { ROLES, MAP_UNCONFIRMED_TO_BASIC_ROLES } = require('constants/system');
+const {
+    ROLES,
+    MAP_UNCONFIRMED_TO_BASIC_ROLES,
+    MAP_ALLOWED_ROLES_TO_RESEND_EMAIL,
+
+} = require('constants/system');
 
 // formatters
 const { formatRecordToSave } = require('formatters/email-confirmation');
@@ -23,18 +28,6 @@ const {
     INVITE_EXPIRATION_UNIT,
     INVITE_EXPIRATION_VALUE,
 } = process.env;
-
-const MAP_ALLOWED_ROLES_TO_RESEND = {
-    [ROLES.ADMIN]: new Set([
-        ROLES.UNCONFIRMED_MANAGER,
-    ]),
-    [ROLES.TRANSPORTER]: new Set([
-        ROLES.UNCONFIRMED_DISPATCHER,
-    ]),
-    [ROLES.HOLDER]: new Set([
-        ROLES.UNCONFIRMED_LOGISTICIAN,
-    ]),
-};
 
 const resendInvite = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
@@ -46,7 +39,7 @@ const resendInvite = async (req, res, next) => {
 
         const user = await UsersService.getUserWithRole(userId);
 
-        const allowedRolesObject = MAP_ALLOWED_ROLES_TO_RESEND[currentUserRole];
+        const allowedRolesObject = MAP_ALLOWED_ROLES_TO_RESEND_EMAIL[currentUserRole];
         if (!allowedRolesObject || !allowedRolesObject.has(user[HOMELESS_COLUMNS.ROLE])) {
             return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
         }

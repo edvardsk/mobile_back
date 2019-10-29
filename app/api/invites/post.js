@@ -15,7 +15,10 @@ const MailService = require('services/mail');
 // constants
 const { SQL_TABLES } = require('constants/tables');
 const { SUCCESS_CODES } = require('constants/http-codes');
-const { ROLES } = require('constants/system');
+const {
+    MAP_FROM_MAIN_ROLE_TO_UNCONFIRMED,
+    SET_ROLES_TO_APPLY_COMPANY_FOR_INVITE,
+} = require('constants/system');
 
 // formatters
 const UsersFormatters = require('formatters/users');
@@ -27,17 +30,6 @@ const {
     INVITE_EXPIRATION_UNIT,
     INVITE_EXPIRATION_VALUE,
 } = process.env;
-
-const MAP_FROM_MAIN_ROLE_TO_UNCONFIRMED = {
-    [ROLES.DISPATCHER]: ROLES.UNCONFIRMED_DISPATCHER,
-    [ROLES.LOGISTICIAN]: ROLES.UNCONFIRMED_LOGISTICIAN,
-    [ROLES.MANAGER]: ROLES.UNCONFIRMED_MANAGER,
-};
-
-const SET_ROLES_TO_APPLY_COMPANY = new Set([
-    ROLES.UNCONFIRMED_DISPATCHER,
-    ROLES.UNCONFIRMED_LOGISTICIAN,
-]);
 
 const inviteUser = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
@@ -70,7 +62,7 @@ const inviteUser = async (req, res, next) => {
             PhoneNumbersService.addRecordAsTransaction(phoneNumberData),
         ];
 
-        if (SET_ROLES_TO_APPLY_COMPANY.has(unconfirmedRole)) {
+        if (SET_ROLES_TO_APPLY_COMPANY_FOR_INVITE.has(unconfirmedRole)) {
             const userToCompany = await UsersCompaniesService.getRecordByUserIdStrict(currentUserId);
             const userCompanyData = UsersCompaniesFormatters.formatRecordToSave(userId, userToCompany[colsUsersCompanies.COMPANY_ID]);
             transactionList.push(UsersCompaniesService.addRecordAsTransaction(userCompanyData));
