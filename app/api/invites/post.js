@@ -28,13 +28,15 @@ const {
     INVITE_EXPIRATION_VALUE,
 } = process.env;
 
-const MAP_FROM_MAON_ROLE_TO_UNCOMFIRMED = {
+const MAP_FROM_MAIN_ROLE_TO_UNCONFIRMED = {
     [ROLES.DISPATCHER]: ROLES.UNCONFIRMED_DISPATCHER,
+    [ROLES.LOGISTICIAN]: ROLES.UNCONFIRMED_LOGISTICIAN,
     [ROLES.MANAGER]: ROLES.UNCONFIRMED_MANAGER,
 };
 
 const SET_ROLES_TO_APPLY_COMPANY = new Set([
     ROLES.UNCONFIRMED_DISPATCHER,
+    ROLES.UNCONFIRMED_LOGISTICIAN,
 ]);
 
 const inviteUser = async (req, res, next) => {
@@ -44,7 +46,7 @@ const inviteUser = async (req, res, next) => {
         const currentUserId = res.locals.user.id;
         const { body } = req;
         const { role } = req.params;
-        const unconfirmedRole = MAP_FROM_MAON_ROLE_TO_UNCOMFIRMED[role];
+        const unconfirmedRole = MAP_FROM_MAIN_ROLE_TO_UNCONFIRMED[role];
         const phoneNumber = body.phone_number;
         const phonePrefixId = body.phone_prefix_id;
         const email = body[colsUsers.EMAIL];
