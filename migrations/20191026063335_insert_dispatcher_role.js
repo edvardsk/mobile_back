@@ -25,10 +25,6 @@ const PERMISSIONS = [
         name: 'invite_dispatcher'
     },
     {
-        id: '779c7292-6af1-485b-9b21-0fef3c30f228',
-        name: 'invite_transporter',
-    },
-    {
         id: '0349faf3-1907-4f69-820a-5142754409e5',
         name: 'freeze_dispatcher',
     },
@@ -63,7 +59,6 @@ const ROLES_WITH_PERMISSIONS = [
         'reset_password',
     ]],
     ['transporter', [
-        'invite_transporter',
         'invite_dispatcher',
         'freeze_dispatcher',
         'unfreeze_dispatcher',

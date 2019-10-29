@@ -99,7 +99,6 @@ const PERMISSIONS = {
 
     INVITE_MANAGER: 'invite_manager',
     INVITE_DISPATCHER: 'invite_dispatcher',
-    INVITE_TRANSPORTER: 'invite_transporter',
     BASIC_INVITES: 'basic_invites',
 };
 
