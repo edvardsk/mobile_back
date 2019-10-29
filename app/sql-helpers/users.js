@@ -1,4 +1,5 @@
 const squel = require('squel');
+const { get } = require('lodash');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
 const squelPostgres = squel.useFlavour('postgres');
@@ -112,30 +113,53 @@ const selectUserWithRoleAndConfirmationHash = email => squelPostgres
     .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
     .toString();
 
-const selectUsersByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc) => squelPostgres
-    .select()
-    .field('u.*')
-    .field(`r.${colsRoles.NAME}`, HOMELESS_COLUMNS.ROLE)
-    .field(`CONCAT(php.${colsPhonePrefixes.CODE}, phn.${colsPhoneNumbers.NUMBER})::bigint`, HOMELESS_COLUMNS.FULL_PHONE_NUMBER)
-    .from(table.NAME, 'u')
-    .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
-    .left_join(tableUsersCompanies.NAME, 'uc', `u.id = uc.${colsUsersCompanies.USER_ID}`)
-    .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
-    .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
-    .left_join(tablePhoneNumbers.NAME, 'phn', `phn.${colsPhoneNumbers.USER_ID} = u.id`)
-    .left_join(tablePhonePrefixes.NAME, 'php', `php.id = phn.${colsPhoneNumbers.PHONE_PREFIX_ID}`)
-    .order(sortColumn, asc)
-    .limit(limit)
-    .offset(offset)
-    .toString();
+const selectUsersByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => {
+    let expression = squelPostgres
+        .select()
+        .field('u.*')
+        .field(`r.${colsRoles.NAME}`, HOMELESS_COLUMNS.ROLE)
+        .field(`CONCAT(php.${colsPhonePrefixes.CODE}, phn.${colsPhoneNumbers.NUMBER})::bigint`, HOMELESS_COLUMNS.FULL_PHONE_NUMBER)
+        .from(table.NAME, 'u')
+        .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`);
 
-const selectCountUsersByCompanyId = (companyId) => squelPostgres
-    .select()
-    .field('COUNT(u.id)')
-    .from(table.NAME, 'u')
-    .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
-    .left_join(tableUsersCompanies.NAME, 'uc', `u.id = uc.${colsUsersCompanies.USER_ID}`)
-    .toString();
+    expression = setFilter(expression, filter);
+    return expression
+        .left_join(tableUsersCompanies.NAME, 'uc', `u.id = uc.${colsUsersCompanies.USER_ID}`)
+        .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
+        .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
+        .left_join(tablePhoneNumbers.NAME, 'phn', `phn.${colsPhoneNumbers.USER_ID} = u.id`)
+        .left_join(tablePhonePrefixes.NAME, 'php', `php.id = phn.${colsPhoneNumbers.PHONE_PREFIX_ID}`)
+        .order(sortColumn, asc)
+        .limit(limit)
+        .offset(offset)
+        .toString();
+};
+
+const selectCountUsersByCompanyId = (companyId, filter) => {
+    let expression = squelPostgres
+        .select()
+        .field('COUNT(u.id)')
+        .from(table.NAME, 'u')
+        .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`);
+
+    expression = setFilter(expression, filter);
+    return expression
+        .left_join(tableUsersCompanies.NAME, 'uc', `u.id = uc.${colsUsersCompanies.USER_ID}`)
+        .toString();
+};
+
+const setFilter = (expression, filteringObject) => {
+    const filteringObjectSQLExpressions = [
+        [cols.FULL_NAME, `${cols.FULL_NAME}::text ILIKE '%${filteringObject[cols.FULL_NAME]}%'`],
+    ];
+
+    for (let [key, exp] of filteringObjectSQLExpressions) {
+        if (get(filteringObject, key) !== undefined) {
+            expression = expression.where(exp);
+        }
+    }
+    return expression;
+};
 
 module.exports = {
     insertUser,

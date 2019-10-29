@@ -1034,6 +1034,28 @@ const companyEmployeesSortColumnQuery = {
     }
 };
 
+const modifyCompanyEmployeesFilterQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.FILTER]: {
+            parse_string_to_json: {},
+        },
+    },
+};
+
+const companyEmployeesFilterQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.FILTER]: {
+            type: 'object',
+            properties: {
+                [colsUsers.FULL_NAME]: {
+                    type: 'string',
+                },
+            },
+            additionalProperties: false,
+        },
+    },
+};
+
 module.exports = {
     requiredUserId,
     requiredExistingUserWithIdAsync,
@@ -1097,4 +1119,6 @@ module.exports = {
     basePaginationModifyQuery,
     baseSortingSortingDirectionQuery,
     companyEmployeesSortColumnQuery,
+    modifyCompanyEmployeesFilterQuery,
+    companyEmployeesFilterQuery,
 };

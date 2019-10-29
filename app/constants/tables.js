@@ -196,6 +196,7 @@ const HOMELESS_COLUMNS = {
     LONGITUDE: 'longitude',
     LATITUDE: 'latitude',
     FULL_PHONE_NUMBER: 'full_phone_number',
+    FILTER: 'filter',
 };
 
 module.exports = {

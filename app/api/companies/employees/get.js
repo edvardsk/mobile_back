@@ -1,4 +1,5 @@
 const { success } = require('api/response');
+const { get } = require('lodash');
 
 // services
 const UsersService = require('services/tables/users');
@@ -32,12 +33,14 @@ const getListEmployees = async (req, res, next) => {
             asc,
         } = getParams(req, paginationOptions);
 
+        const filter = get(req, 'query.filter', {});
+
         const userCompany = await UsersCompaniesService.getRecordByUserIdStrict(userId);
         const companyId = userCompany[colsUsersCompanies.COMPANY_ID];
 
         const [users, usersCount] = await Promise.all([
-            UsersService.getUsersByCompanyIdPaginationSorting(companyId, limit, limit * page, sortColumn, asc),
-            UsersService.getCountUsersByCompanyId(companyId)
+            UsersService.getUsersByCompanyIdPaginationSorting(companyId, limit, limit * page, sortColumn, asc, filter),
+            UsersService.getCountUsersByCompanyId(companyId, filter)
         ]);
 
         const result = formatPaginationDataForResponse(

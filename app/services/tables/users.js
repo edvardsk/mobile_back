@@ -39,12 +39,12 @@ const getUsersWithRoleByPermission = permission => manyOrNone(selectUsersWithRol
 
 const getUserWithRoleAndConfirmationHashStrict = email => one(selectUserWithRoleAndConfirmationHash(email));
 
-const getUsersByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc) => (
-    manyOrNone(selectUsersByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc))
+const getUsersByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
+    manyOrNone(selectUsersByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
 );
 
-const getCountUsersByCompanyId = (companyId) => (
-    one(selectCountUsersByCompanyId(companyId))
+const getCountUsersByCompanyId = (companyId, filter) => (
+    one(selectCountUsersByCompanyId(companyId, filter))
         .then(({ count }) => +count)
 );
 

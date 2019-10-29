@@ -2,7 +2,7 @@ const { PAGINATION_PARAMS, SORTING_PARAMS, SORTING_DIRECTIONS } = require('const
 
 const formatPaginationDataForResponse = (values, countValues, limit, page, sort, asc) => ({
     values,
-    countValues,
+    count_values: countValues,
     [PAGINATION_PARAMS.PAGE]: page,
     [PAGINATION_PARAMS.LIMIT]: limit,
     pages: Math.ceil(countValues / limit),

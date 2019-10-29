@@ -23,6 +23,8 @@ router.get(
     validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
     validate(ValidatorSchemes.baseSortingSortingDirectionQuery, 'query'),
     validate(ValidatorSchemes.companyEmployeesSortColumnQuery, 'query'),
+    validate(ValidatorSchemes.modifyCompanyEmployeesFilterQuery, 'query'),
+    validate(ValidatorSchemes.companyEmployeesFilterQuery, 'query'),
     getEmployees.getListEmployees,
 );
 
