@@ -30,9 +30,18 @@ const formatPasswordDataToUpdate = data => ({
     [cols.KEY]: data.key,
 });
 
+const formatUserWithPhoneAndRole = data => ({
+    id: data.id,
+    [cols.EMAIL]: data[cols.EMAIL],
+    [cols.FULL_NAME]: data[cols.FULL_NAME],
+    [HOMELESS_COLUMNS.ROLE]: data[HOMELESS_COLUMNS.ROLE],
+    [HOMELESS_COLUMNS.FULL_PHONE_NUMBER]: data[HOMELESS_COLUMNS.FULL_PHONE_NUMBER],
+});
+
 module.exports = {
     formatUserForSaving,
     formatUserForResponse,
     formatUserWithPermissionsForResponse,
     formatPasswordDataToUpdate,
+    formatUserWithPhoneAndRole,
 };

@@ -146,6 +146,8 @@ const PERMISSIONS = {
     INVITE_DISPATCHER: 'invite_dispatcher',
     INVITE_LOGISTICIAN: 'invite_logistician',
     BASIC_INVITES: 'basic_invites',
+
+    READ_EMPLOYEES: 'read_employees',
 };
 
 module.exports = {
