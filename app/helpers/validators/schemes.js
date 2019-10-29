@@ -51,6 +51,22 @@ const fileFormat = {
     ],
 };
 
+const coordinatesFormat = {
+    properties: {
+        [HOMELESS_COLUMNS.LATITUDE]: {
+            type: 'string',
+            pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
+        },
+        [HOMELESS_COLUMNS.LONGITUDE]: {
+            type: 'string',
+            pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
+        },
+    },
+    required: [HOMELESS_COLUMNS.LATITUDE, HOMELESS_COLUMNS.LONGITUDE],
+    additionalProperties: false,
+};
+// helpers
+
 const requiredUserId = {
     properties: {
         userId: {
@@ -94,7 +110,6 @@ const otherOrganizations = {
     minItems: 1,
     uniqueItems: true,
 };
-// helpers
 
 const registration = {
     properties: {
@@ -398,6 +413,7 @@ const finishRegistrationStep1SoleProprietorForwarderAsyncFunc = userId => ({
 
 const finishRegistrationStep2Transporter = {
     properties: {
+        [colsCompanies.LEGAL_CITY_COORDINATES]: coordinatesFormat,
         [colsCompanies.LEGAL_ADDRESS]: {
             type: 'string',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
@@ -420,6 +436,10 @@ const finishRegistrationStep2Transporter = {
             type: 'string',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
+        [colsCompanies.BANK_COUNTRY_ID]: {
+            type: 'string',
+            format: 'uuid',
+        },
         [colsCompanies.BANK_ADDRESS]: {
             type: 'string',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
@@ -436,6 +456,7 @@ const finishRegistrationStep2Transporter = {
         },
     },
     required: [
+        colsCompanies.LEGAL_CITY_COORDINATES,
         colsCompanies.LEGAL_ADDRESS,
         colsCompanies.SETTLEMENT_ACCOUNT,
         colsCompanies.POST_ADDRESS,
@@ -456,12 +477,16 @@ const finishRegistrationStep2TransporterAsyncFunc = userId => ({
                 userId,
             },
         },
+        [colsCompanies.BANK_COUNTRY_ID]: {
+            country_not_exist: {},
+        },
     },
     additionalProperties: true,
 });
 
 const finishRegistrationStep2Holder = {
     properties: {
+        [colsCompanies.LEGAL_CITY_COORDINATES]: coordinatesFormat,
         [colsCompanies.LEGAL_ADDRESS]: {
             type: 'string',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
@@ -520,12 +545,16 @@ const finishRegistrationStep2HolderAsyncFunc = userId => ({
                 userId,
             },
         },
+        [colsCompanies.BANK_COUNTRY_ID]: {
+            country_not_exist: {},
+        },
     },
     additionalProperties: true,
 });
 
 const finishRegistrationStep2SoleProprietorForwarder = {
     properties: {
+        [colsCompanies.LEGAL_CITY_COORDINATES]: coordinatesFormat,
         [colsCompanies.LEGAL_ADDRESS]: {
             type: 'string',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
@@ -574,9 +603,22 @@ const finishRegistrationStep2SoleProprietorForwarderAsyncFunc = userId => ({
                 userId,
             },
         },
+        [colsCompanies.BANK_COUNTRY_ID]: {
+            country_not_exist: {},
+        },
     },
     additionalProperties: true,
 });
+
+const settlementAccountAsync = {
+    $async: true,
+    properties: {
+        [colsCompanies.SETTLEMENT_ACCOUNT]: {
+            not_valid_settlement_account: {},
+        },
+    },
+    additionalProperties: true,
+};
 
 const modifyOtherOrganizations = {
     properties: {
@@ -830,32 +872,8 @@ const finishRegistrationStep4 = {
             items: [
                 {
                     properties: {
-                        [colsRoutes.COORDINATES_FROM]: {
-                            properties: {
-                                [HOMELESS_COLUMNS.LATITUDE]: {
-                                    type: 'string',
-                                    pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
-                                },
-                                [HOMELESS_COLUMNS.LONGITUDE]: {
-                                    type: 'string',
-                                    pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
-                                },
-                            },
-                            required: [HOMELESS_COLUMNS.LATITUDE, HOMELESS_COLUMNS.LONGITUDE],
-                        },
-                        [colsRoutes.COORDINATES_TO]: {
-                            properties: {
-                                [HOMELESS_COLUMNS.LATITUDE]: {
-                                    type: 'string',
-                                    pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
-                                },
-                                [HOMELESS_COLUMNS.LONGITUDE]: {
-                                    type: 'string',
-                                    pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
-                                },
-                            },
-                            required: [HOMELESS_COLUMNS.LATITUDE, HOMELESS_COLUMNS.LONGITUDE],
-                        },
+                        [colsRoutes.COORDINATES_FROM]: coordinatesFormat,
+                        [colsRoutes.COORDINATES_TO]: coordinatesFormat,
                     },
                     required: [colsRoutes.COORDINATES_FROM, colsRoutes.COORDINATES_TO],
                 },
@@ -1082,6 +1100,8 @@ module.exports = {
     finishRegistrationStep2HolderAsyncFunc,
     finishRegistrationStep2SoleProprietorForwarder,
     finishRegistrationStep2SoleProprietorForwarderAsyncFunc,
+
+    settlementAccountAsync,
 
     finishRegistrationStep3Transporter,
     finishRegistrationStep3TransporterAsyncFunc,

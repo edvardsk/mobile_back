@@ -187,6 +187,7 @@ router.post(
     isHasPermissions(FINISH_REGISTRATION_STEP2_PERMISSIONS), // permissions middleware
     validate(({ role }) => FINISH_REGISTRATION_STEP_2_TEXT_MAP_SCHEMES[role]),
     validate(({ role, userId }) => FINISH_REGISTRATION_STEP_2_TEXT_MAP_SCHEMES_ASYNC[role](userId)),
+    validate(ValidatorSchemes.settlementAccountAsync),
     finishRegistration.finishRegistrationStep2,
 );
 
