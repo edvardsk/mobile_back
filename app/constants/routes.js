@@ -30,6 +30,8 @@ const BASES = {
     RESEND: '/resend',
     COMPANIES: '/companies',
     EMPLOYEES: '/employees',
+    FREEZE: '/freeze',
+    UNFREEZE: '/unfreeze',
 };
 
 const IDS = {
@@ -124,7 +126,15 @@ const ROUTES = {
         ME: {
             BASE: BASES.ME,
             GET: '',
-        }
+        },
+        FREEZE: {
+            BASE: IDS.USER_ID + BASES.FREEZE,
+            POST: '',
+        },
+        UNFREEZE: {
+            BASE: IDS.USER_ID + BASES.UNFREEZE,
+            POST: '',
+        },
     },
     CONDITIONS_TERMS: {
         BASE: BASES.CONDITIONS_TERMS,

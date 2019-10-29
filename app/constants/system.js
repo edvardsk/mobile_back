@@ -136,11 +136,13 @@ const PERMISSIONS = {
     ACCEPT_REGISTRATION: 'accept_registration',
     EXPECT_REGISTRATION_CONFIRMATION: 'expect_registration_confirmation',
 
+    FREEZE_MANAGER: 'freeze_manager',
+    FREEZE_TRANSPORTER: 'freeze_transporter',
+    FREEZE_HOLDER: 'freeze_holder',
+    FREEZE_INDIVIDUAL_FORWARDER: 'freeze_individual_forwarder',
+    FREEZE_SOLE_PROPRIETOR_FORWARDER: 'freeze_sole_proprietor_forwarder',
     FREEZE_DISPATCHER: 'freeze_dispatcher',
-    UNFREEZE_DISPATCHER: 'unfreeze_dispatcher',
     FREEZE_LOGISTICIAN: 'freeze_logistician',
-    UNFREEZE_LOGISTICIAN: 'unfreeze_logistician',
-
 
     INVITE_MANAGER: 'invite_manager',
     INVITE_DISPATCHER: 'invite_dispatcher',

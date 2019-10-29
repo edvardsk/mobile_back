@@ -3,7 +3,6 @@ const LATEST_PERMISSIONS = require('./20191024092329_insert_permissions').PERMIS
 const FIRST_ROLES = require('./20191017143230_add_roles').ROLES;
 const { getRolesToPermissionsForDb } = require('../app/formatters/system');
 
-
 const ROLES = [
     {
         id: 'c5ddc74b-0148-4e39-a225-d4504a482cd3',
@@ -66,6 +65,10 @@ const ROLES_WITH_PERMISSIONS = [
     ]],
 ];
 
+exports.ROLES = ROLES;
+
+exports.PERMISSIONS = PERMISSIONS;
+
 const allRolesWithPermissions = getRolesToPermissionsForDb(ALL_ROLES, ALL_PERMISSIONS, ROLES_WITH_PERMISSIONS);
 
 exports.up = function(knex) {
@@ -107,5 +110,3 @@ exports.down = function(knex) {
             )));
         });
 };
-
-exports.ROLES = ROLES;
