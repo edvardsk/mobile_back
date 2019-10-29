@@ -974,6 +974,18 @@ const inviteUserRolesParams = {
     ],
 };
 
+const requiredMeParams = {
+    properties: {
+        me: {
+            type: 'string',
+            enum: ['me'],
+        },
+    },
+    required: [
+        'me'
+    ],
+};
+
 module.exports = {
     requiredUserId,
     requiredExistingUserWithIdAsync,
@@ -1031,4 +1043,5 @@ module.exports = {
 
     modifyOtherOrganizations,
     inviteUserRolesParams,
+    requiredMeParams,
 };

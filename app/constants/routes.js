@@ -28,11 +28,14 @@ const BASES = {
     INVITES: '/invites',
     MANAGER: '/manager',
     RESEND: '/resend',
+    COMPANIES: '/companies',
+    EMPLOYEES: '/employees',
 };
 
 const IDS = {
     USER_ID: '/:userId',
     ROLE: '/:role',
+    ME: '/:me',
 };
 
 const ROUTES = {
@@ -151,6 +154,14 @@ const ROUTES = {
             }
         },
     },
+    COMPANIES: {
+        BASE: BASES.COMPANIES,
+        EMPLOYEES: {
+            BASE: IDS.ME + BASES.EMPLOYEES,
+            GET_ALL: '',
+        },
+    },
+
 };
 
 const ALLOWED_ROUTES = {
