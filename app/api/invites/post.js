@@ -15,7 +15,10 @@ const MailService = require('services/mail');
 // constants
 const { SQL_TABLES } = require('constants/tables');
 const { SUCCESS_CODES } = require('constants/http-codes');
-const { ROLES } = require('constants/system');
+const {
+    MAP_FROM_MAIN_ROLE_TO_UNCONFIRMED,
+    SET_ROLES_TO_APPLY_COMPANY_FOR_INVITE,
+} = require('constants/system');
 
 // formatters
 const UsersFormatters = require('formatters/users');
@@ -28,15 +31,6 @@ const {
     INVITE_EXPIRATION_VALUE,
 } = process.env;
 
-const MAP_FROM_MAON_ROLE_TO_UNCOMFIRMED = {
-    [ROLES.DISPATCHER]: ROLES.UNCONFIRMED_DISPATCHER,
-    [ROLES.MANAGER]: ROLES.UNCONFIRMED_MANAGER,
-};
-
-const SET_ROLES_TO_APPLY_COMPANY = new Set([
-    ROLES.UNCONFIRMED_DISPATCHER,
-]);
-
 const inviteUser = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
     const colsUsersCompanies = SQL_TABLES.USERS_TO_COMPANIES.COLUMNS;
@@ -44,7 +38,7 @@ const inviteUser = async (req, res, next) => {
         const currentUserId = res.locals.user.id;
         const { body } = req;
         const { role } = req.params;
-        const unconfirmedRole = MAP_FROM_MAON_ROLE_TO_UNCOMFIRMED[role];
+        const unconfirmedRole = MAP_FROM_MAIN_ROLE_TO_UNCONFIRMED[role];
         const phoneNumber = body.phone_number;
         const phonePrefixId = body.phone_prefix_id;
         const email = body[colsUsers.EMAIL];
@@ -68,7 +62,7 @@ const inviteUser = async (req, res, next) => {
             PhoneNumbersService.addRecordAsTransaction(phoneNumberData),
         ];
 
-        if (SET_ROLES_TO_APPLY_COMPANY.has(unconfirmedRole)) {
+        if (SET_ROLES_TO_APPLY_COMPANY_FOR_INVITE.has(unconfirmedRole)) {
             const userToCompany = await UsersCompaniesService.getRecordByUserIdStrict(currentUserId);
             const userCompanyData = UsersCompaniesFormatters.formatRecordToSave(userId, userToCompany[colsUsersCompanies.COMPANY_ID]);
             transactionList.push(UsersCompaniesService.addRecordAsTransaction(userCompanyData));

@@ -11,24 +11,17 @@ const CryptService = require('services/crypto');
 // constants
 const { SQL_TABLES } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
-const { MAP_FROM_UNCONFIRMED_TO_CONFIRMED_EMAIL_ROLE, PERMISSIONS, ROLES } = require('constants/system');
+const {
+    PERMISSIONS,
+    MAP_FROM_UNCONFIRMED_TO_CONFIRMED_EMAIL_ROLE,
+    SET_ALLOWED_ROLES_FOR_EMAIL_CONFIRMATION,
+    SET_ALLOWED_ROLES_FOR_ADVANCED_EMAIL_CONFIRMATION,
+} = require('constants/system');
 const { SUCCESS_CODES, ERROR_CODES } = require('constants/http-codes');
 
 // formatters
 const { formatUsedRecordToUpdate } = require('formatters/email-confirmation');
 const { formatPasswordDataToUpdate } = require('formatters/users');
-
-const SET_ALLOWED_ROLES_FOR_EMAIL_CONFIRMATION = new Set([
-    ROLES.UNCONFIRMED_TRANSPORTER,
-    ROLES.UNCONFIRMED_HOLDER,
-    ROLES.UNCONFIRMED_INDIVIDUAL_FORWARDER,
-    ROLES.UNCONFIRMED_SOLE_PROPRIETOR_FORWARDER,
-]);
-
-const SET_ALLOWED_ROLES_FOR_ADVANCED_EMAIL_CONFIRMATION = new Set([
-    ROLES.UNCONFIRMED_MANAGER,
-    ROLES.UNCONFIRMED_DISPATCHER,
-]);
 
 const confirmEmail = async (req, res, next) => {
     const colsEmailConfirmation = SQL_TABLES.EMAIL_CONFIRMATION_HASHES.COLUMNS;

@@ -966,7 +966,7 @@ const inviteUserRolesParams = {
     properties: {
         role: {
             type: 'string',
-            enum: [ROLES.MANAGER, ROLES.DISPATCHER],
+            enum: [ROLES.MANAGER, ROLES.DISPATCHER, ROLES.LOGISTICIAN],
         },
     },
     required: [
