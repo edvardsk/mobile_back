@@ -81,26 +81,23 @@ const advancedConfirmEmail = async (req, res, next) => {
             return reject(res, ERRORS.AUTHORIZATION.INVALID_HASH);
         }
 
+        const userId = hashFromDb[colsEmailConfirmation.USER_ID];
+
+        const [userRole, permissions] = await Promise.all([
+            UsersService.getUserRole(userId),
+            RolesPermissionsService.getUserPermissions(userId),
+        ]);
+
+        if (!SET_ALLOWED_ROLES_FOR_ADVANCED_EMAIL_CONFIRMATION.has(userRole)) {
+            return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
+        }
+
         if (new Date(hashFromDb[colsEmailConfirmation.EXPIRED_AT]) < new Date()) {
             return reject(res, ERRORS.AUTHORIZATION.EXPIRED_HASH);
         }
 
-        if (hashFromDb[colsEmailConfirmation.USED]) {
+        if (hashFromDb[colsEmailConfirmation.USED] || !permissions.includes(PERMISSIONS.CONFIRM_EMAIL)) {
             return reject(res, ERRORS.AUTHORIZATION.USER_CONFIRMED_EMAIL);
-        }
-
-        const userId = hashFromDb[colsEmailConfirmation.USER_ID];
-
-        const permissions = await RolesPermissionsService.getUserPermissions(userId);
-
-        if (!permissions.includes(PERMISSIONS.CONFIRM_EMAIL)) {
-            return reject(res, ERRORS.AUTHORIZATION.USER_CONFIRMED_EMAIL);
-        }
-
-        const userRole = await UsersService.getUserRole(userId);
-
-        if (!SET_ALLOWED_ROLES_FOR_ADVANCED_EMAIL_CONFIRMATION.has(userRole)) {
-            return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
         }
 
         const upgradedRole = MAP_FROM_UNCONFIRMED_TO_CONFIRMED_EMAIL_ROLE[userRole];

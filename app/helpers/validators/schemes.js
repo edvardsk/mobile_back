@@ -912,7 +912,7 @@ const inviteUserAsync = {
             email_exists: {},
         },
         [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
-            phonePrefixExists: {},
+            phone_prefix_not_exist: {},
         },
         [HOMELESS_COLUMNS.PHONE_NUMBER]: {
             phone_number_exists: {},

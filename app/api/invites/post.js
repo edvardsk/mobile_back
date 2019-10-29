@@ -18,9 +18,10 @@ const { SUCCESS_CODES } = require('constants/http-codes');
 const { ROLES } = require('constants/system');
 
 // formatters
-const { formatUserForSaving } = require('formatters/users');
-const { formatRecordToSave } = require('formatters/email-confirmation');
-const { formatPhoneNumberToSave } = require('formatters/phone-numbers');
+const UsersFormatters = require('formatters/users');
+const EmailConfirmationFormatters = require('formatters/email-confirmation');
+const UsersCompaniesFormatters = require('formatters/users-to-companies');
+const PhoneNumbersFormatters = require('formatters/phone-numbers');
 
 const {
     INVITE_EXPIRATION_UNIT,
@@ -54,20 +55,23 @@ const inviteUser = async (req, res, next) => {
         const userId = uuid();
         const confirmationHash = uuid();
 
-        const data = formatUserForSaving(userId, body, hash, key);
+        const data = UsersFormatters.formatUserForSaving(userId, body, hash, key);
 
         const inviteExpirationDate = moment().add(+INVITE_EXPIRATION_VALUE, INVITE_EXPIRATION_UNIT).toISOString();
+        const emailConfirmationData = EmailConfirmationFormatters.formatRecordToSave(userId, confirmationHash, currentUserId, inviteExpirationDate);
+        const phoneNumberData = PhoneNumbersFormatters.formatPhoneNumberToSave(userId, phonePrefixId, phoneNumber);
 
         const transactionList = [
             UsersService.addUserAsTransaction(data),
             UsersRolesService.addUserRoleAsTransaction(userId, unconfirmedRole),
-            EmailConfirmationService.addRecordAsTransaction(formatRecordToSave(userId, confirmationHash, currentUserId, inviteExpirationDate)),
-            PhoneNumbersService.addRecordAsTransaction(formatPhoneNumberToSave(userId, phonePrefixId, phoneNumber)),
+            EmailConfirmationService.addRecordAsTransaction(emailConfirmationData),
+            PhoneNumbersService.addRecordAsTransaction(phoneNumberData),
         ];
 
         if (SET_ROLES_TO_APPLY_COMPANY.has(unconfirmedRole)) {
             const userToCompany = await UsersCompaniesService.getRecordByUserIdStrict(currentUserId);
-            transactionList.push(UsersCompaniesService.addRecordAsTransaction(formatRecordToSave(userId, userToCompany[colsUsersCompanies.COMPANY_ID])));
+            const userCompanyData = UsersCompaniesFormatters.formatRecordToSave(userId, userToCompany[colsUsersCompanies.COMPANY_ID]);
+            transactionList.push(UsersCompaniesService.addRecordAsTransaction(userCompanyData));
         }
 
         await TableService.runTransaction(transactionList);

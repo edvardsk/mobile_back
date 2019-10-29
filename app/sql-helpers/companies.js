@@ -4,9 +4,11 @@ const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const squelPostgres = squel.useFlavour('postgres');
 
 const table = SQL_TABLES.COMPANIES;
+const tableUsers = SQL_TABLES.USERS;
 const tableUsersCompanies = SQL_TABLES.USERS_TO_COMPANIES;
 
 const cols = table.COLUMNS;
+const colsUsers = tableUsers.COLUMNS;
 const colsUsersCompanies = tableUsersCompanies.COLUMNS;
 
 const insertCompany = values => squelPostgres
@@ -39,6 +41,9 @@ const selectCompanyBySettlementAccountWithFirstOwner = account => squelPostgres
     .field(`uc.${colsUsersCompanies.USER_ID}`, HOMELESS_COLUMNS.OWNER_ID)
     .where(`${cols.SETTLEMENT_ACCOUNT} = '${account}'`)
     .left_join(tableUsersCompanies.NAME, 'uc', `c.id = uc.${colsUsersCompanies.COMPANY_ID}`)
+    .left_join(tableUsers.NAME, 'u', `u.id = uc.${colsUsersCompanies.USER_ID}`)
+    .order(colsUsers.CREATED_AT, true)
+    .limit(1)
     .toString();
 
 const selectCompanyByIdentityNumberWithFirstOwner = number => squelPostgres
@@ -48,6 +53,9 @@ const selectCompanyByIdentityNumberWithFirstOwner = number => squelPostgres
     .field(`uc.${colsUsersCompanies.USER_ID}`, HOMELESS_COLUMNS.OWNER_ID)
     .where(`${cols.IDENTITY_NUMBER} = '${number}'`)
     .left_join(tableUsersCompanies.NAME, 'uc', `c.id = uc.${colsUsersCompanies.COMPANY_ID}`)
+    .left_join(tableUsers.NAME, 'u', `u.id = uc.${colsUsersCompanies.USER_ID}`)
+    .order(colsUsers.CREATED_AT, true)
+    .limit(1)
     .toString();
 
 const selectCompanyByNameWithFirstOwner = name => squelPostgres
@@ -57,6 +65,9 @@ const selectCompanyByNameWithFirstOwner = name => squelPostgres
     .field(`uc.${colsUsersCompanies.USER_ID}`, HOMELESS_COLUMNS.OWNER_ID)
     .where(`${cols.NAME} = '${name}'`)
     .left_join(tableUsersCompanies.NAME, 'uc', `c.id = uc.${colsUsersCompanies.COMPANY_ID}`)
+    .left_join(tableUsers.NAME, 'u', `u.id = uc.${colsUsersCompanies.USER_ID}`)
+    .order(colsUsers.CREATED_AT, true)
+    .limit(1)
     .toString();
 
 const selectCompanyByStateRegistrationCertificateNumberWithFirstOwner = number => squelPostgres
@@ -66,6 +77,9 @@ const selectCompanyByStateRegistrationCertificateNumberWithFirstOwner = number =
     .field(`uc.${colsUsersCompanies.USER_ID}`, HOMELESS_COLUMNS.OWNER_ID)
     .where(`${cols.STATE_REGISTRATION_CERTIFICATE_NUMBER} = '${number}'`)
     .left_join(tableUsersCompanies.NAME, 'uc', `c.id = uc.${colsUsersCompanies.COMPANY_ID}`)
+    .left_join(tableUsers.NAME, 'u', `u.id = uc.${colsUsersCompanies.USER_ID}`)
+    .order(colsUsers.CREATED_AT, true)
+    .limit(1)
     .toString();
 
 module.exports = {
