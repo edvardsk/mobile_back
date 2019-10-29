@@ -12,6 +12,7 @@ const {
     selectUserWithRoleAndConfirmationHash,
     selectUsersByCompanyIdPaginationSorting,
     selectCountUsersByCompanyId,
+    selectUserWithRoleAndFreezingStatus,
 } = require('sql-helpers/users');
 
 const { OPERATIONS } = require('constants/postgres');
@@ -38,6 +39,8 @@ const getUserByPassportNumber = number => oneOrNone(selectUserByPassportNumber(n
 const getUsersWithRoleByPermission = permission => manyOrNone(selectUsersWithRoleByPermission(permission));
 
 const getUserWithRoleAndConfirmationHashStrict = email => one(selectUserWithRoleAndConfirmationHash(email));
+
+const getUserForAuthentication = id => oneOrNone(selectUserWithRoleAndFreezingStatus(id));
 
 const getUsersByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
     manyOrNone(selectUsersByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
@@ -82,6 +85,7 @@ module.exports = {
     getUserWithRoleAndConfirmationHashStrict,
     getUsersByCompanyIdPaginationSorting,
     getCountUsersByCompanyId,
+    getUserForAuthentication,
 
     checkUserWithPassportNumberExistsOpposite,
     checkUserWithEmailExistsOpposite,

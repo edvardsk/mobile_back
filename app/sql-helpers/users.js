@@ -13,6 +13,7 @@ const tableUsersCompanies = SQL_TABLES.USERS_TO_COMPANIES;
 const tablePhoneNumbers = SQL_TABLES.PHONE_NUMBERS;
 const tablePhonePrefixes = SQL_TABLES.PHONE_PREFIXES;
 const tableEmailConfirmationHashes = SQL_TABLES.EMAIL_CONFIRMATION_HASHES;
+const tableFreezingHistory = SQL_TABLES.FREEZING_HISTORY;
 
 const cols = table.COLUMNS;
 const colsRoles = tableRoles.COLUMNS;
@@ -23,6 +24,7 @@ const colsUsersCompanies = tableUsersCompanies.COLUMNS;
 const colsPhoneNumbers = tablePhoneNumbers.COLUMNS;
 const colsPhonePrefixes = tablePhonePrefixes.COLUMNS;
 const colsEmailConfirmationHashes = tableEmailConfirmationHashes.COLUMNS;
+const colsFreezingHistory = tableFreezingHistory.COLUMNS;
 
 const insertUser = values => squelPostgres
     .insert()
@@ -161,6 +163,20 @@ const setFilter = (expression, filteringObject) => {
     return expression;
 };
 
+const selectUserWithRoleAndFreezingStatus = id => squelPostgres
+    .select()
+    .from(table.NAME, 'u')
+    .field('u.*')
+    .field('r.name', HOMELESS_COLUMNS.ROLE)
+    .field(`fh.${colsFreezingHistory.FREEZED}`)
+    .where(`u.id = '${id}'`)
+    .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
+    .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
+    .left_join(tableFreezingHistory.NAME, 'fh', `fh.${colsFreezingHistory.TARGET_ID} = u.id`)
+    .order(`fh.${colsFreezingHistory.CREATED_AT}`, false)
+    .limit(1)
+    .toString();
+
 module.exports = {
     insertUser,
     selectUser,
@@ -174,4 +190,5 @@ module.exports = {
     selectUserWithRoleAndConfirmationHash,
     selectUsersByCompanyIdPaginationSorting,
     selectCountUsersByCompanyId,
+    selectUserWithRoleAndFreezingStatus,
 };

@@ -179,6 +179,15 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    FREEZING_HISTORY: {
+        NAME: 'freezing_history',
+        COLUMNS: {
+            TARGET_ID: 'target_id',
+            INITIATOR_ID: 'initiator_id',
+            FREEZED: 'freezed',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {

@@ -10,6 +10,7 @@ const PermissionsService = require('services/tables/permissions');
 const { ERRORS } = require('constants/errors');
 const { ALLOWED_ROUTES } = require('constants/routes');
 const { ERROR_CODES } = require('constants/http-codes');
+const { SQL_TABLES } = require('constants/tables');
 
 // helpers
 const { extractToken } = require('helpers');
@@ -26,6 +27,7 @@ const isAuthenticated = async (req, res) => {
     if (isAllowedRoute(req)) {
         return req.next();
     } else {
+        const colsFreezingHistory = SQL_TABLES.FREEZING_HISTORY.COLUMNS;
         try {
             const token = extractToken(req);
             const isTokenValid = TokenService.verifyJWToken(token);
@@ -36,10 +38,14 @@ const isAuthenticated = async (req, res) => {
                 return reject(res, ERRORS.AUTHENTICATION.INVALID_TOKEN);
             }
 
-            const user = await UsersService.getUserWithRole(userId);
+            const user = await UsersService.getUserForAuthentication(userId);
 
             if (!user) {
                 return reject(res, ERRORS.AUTHENTICATION.INVALID_TOKEN);
+            }
+
+            if (user[colsFreezingHistory.FREEZED]) {
+                return reject(res, ERRORS.AUTHENTICATION.FREEZED, {}, ERROR_CODES.FORBIDDEN);
             }
 
             const permissions = await PermissionsService.getAllUserPermissions(user.id);

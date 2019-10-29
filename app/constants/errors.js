@@ -19,6 +19,7 @@ const ERRORS = {
     AUTHENTICATION: {
         INVALID_TOKEN: 'authentication.invalid_token',
         EXPIRED_TOKEN: 'authentication.expired_token',
+        FREEZED: 'authentication.freezed',
     },
     SYSTEM: {
         ERROR: 'system.error',
