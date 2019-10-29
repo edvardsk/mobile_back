@@ -19,6 +19,10 @@ router.get(
     ROUTES.COMPANIES.EMPLOYEES.BASE + ROUTES.COMPANIES.EMPLOYEES.GET_ALL,
     isHasPermissions([PERMISSIONS.READ_EMPLOYEES]),
     validate(ValidatorSchemes.requiredMeParams, 'params'),
+    validate(ValidatorSchemes.basePaginationQuery, 'query'),
+    validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
+    validate(ValidatorSchemes.baseSortingSortingDirectionQuery, 'query'),
+    validate(ValidatorSchemes.companyEmployeesSortColumnQuery, 'query'),
     getEmployees.getListEmployees,
 );
 

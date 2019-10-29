@@ -10,6 +10,8 @@ const {
     selectUserByPassportNumber,
     selectUsersWithRoleByPermission,
     selectUserWithRoleAndConfirmationHash,
+    selectUsersByCompanyIdPaginationSorting,
+    selectCountUsersByCompanyId,
 } = require('sql-helpers/users');
 
 const { OPERATIONS } = require('constants/postgres');
@@ -36,6 +38,15 @@ const getUserByPassportNumber = number => oneOrNone(selectUserByPassportNumber(n
 const getUsersWithRoleByPermission = permission => manyOrNone(selectUsersWithRoleByPermission(permission));
 
 const getUserWithRoleAndConfirmationHashStrict = email => one(selectUserWithRoleAndConfirmationHash(email));
+
+const getUsersByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc) => (
+    manyOrNone(selectUsersByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc))
+);
+
+const getCountUsersByCompanyId = (companyId) => (
+    one(selectCountUsersByCompanyId(companyId))
+        .then(({ count }) => +count)
+);
 
 const checkUserWithPassportNumberExistsOpposite = async (meta, number) => {
     const user = await getUserByPassportNumber(number);
@@ -69,6 +80,8 @@ module.exports = {
     updateUserAsTransaction,
     getUsersWithRoleByPermission,
     getUserWithRoleAndConfirmationHashStrict,
+    getUsersByCompanyIdPaginationSorting,
+    getCountUsersByCompanyId,
 
     checkUserWithPassportNumberExistsOpposite,
     checkUserWithEmailExistsOpposite,

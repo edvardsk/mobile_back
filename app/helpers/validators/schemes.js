@@ -3,6 +3,12 @@
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { DOCUMENTS } = require('constants/files');
 const { ROLES } = require('constants/system');
+const {
+    PAGINATION_PARAMS,
+    SORTING_PARAMS,
+    SORTING_DIRECTIONS,
+    COMPANY_EMPLOYEES_SORT_COLUMNS,
+} = require('constants/pagination-sorting');
 
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
@@ -986,6 +992,48 @@ const requiredMeParams = {
     ],
 };
 
+const basePaginationQuery = {
+    properties: {
+        [PAGINATION_PARAMS.PAGE]: {
+            type: 'string',
+            pattern: DIGITS_VALIDATION_PATTERN,
+        },
+        [PAGINATION_PARAMS.LIMIT]: {
+            type: 'string',
+            pattern: DIGITS_VALIDATION_PATTERN,
+        },
+    },
+};
+
+const basePaginationModifyQuery = {
+    properties: {
+        [PAGINATION_PARAMS.PAGE]: {
+            parse_pagination_options: {},
+        },
+        [PAGINATION_PARAMS.LIMIT]: {
+            parse_pagination_options: {},
+        },
+    },
+};
+
+const baseSortingSortingDirectionQuery = {
+    properties: {
+        [SORTING_PARAMS.SORT_DIRECTION]: {
+            type: 'string',
+            enum: [SORTING_DIRECTIONS.ASC, SORTING_DIRECTIONS.DESC],
+        },
+    },
+};
+
+const companyEmployeesSortColumnQuery = {
+    properties: {
+        [SORTING_PARAMS.SORT_COLUMN]: {
+            type: 'string',
+            enum: COMPANY_EMPLOYEES_SORT_COLUMNS,
+        }
+    }
+};
+
 module.exports = {
     requiredUserId,
     requiredExistingUserWithIdAsync,
@@ -1044,4 +1092,9 @@ module.exports = {
     modifyOtherOrganizations,
     inviteUserRolesParams,
     requiredMeParams,
+
+    basePaginationQuery,
+    basePaginationModifyQuery,
+    baseSortingSortingDirectionQuery,
+    companyEmployeesSortColumnQuery,
 };

@@ -8,6 +8,9 @@ const tableRoles = SQL_TABLES.ROLES;
 const tablePermissions = SQL_TABLES.PERMISSIONS;
 const tableUsersRoles = SQL_TABLES.USERS_TO_ROLES;
 const tableUsersPermissions = SQL_TABLES.USERS_TO_PERMISSIONS;
+const tableUsersCompanies = SQL_TABLES.USERS_TO_COMPANIES;
+const tablePhoneNumbers = SQL_TABLES.PHONE_NUMBERS;
+const tablePhonePrefixes = SQL_TABLES.PHONE_PREFIXES;
 const tableEmailConfirmationHashes = SQL_TABLES.EMAIL_CONFIRMATION_HASHES;
 
 const cols = table.COLUMNS;
@@ -15,6 +18,9 @@ const colsRoles = tableRoles.COLUMNS;
 const colsPermissions = tablePermissions.COLUMNS;
 const colsUsersRoles = tableUsersRoles.COLUMNS;
 const colsUsersPermissions = tableUsersPermissions.COLUMNS;
+const colsUsersCompanies = tableUsersCompanies.COLUMNS;
+const colsPhoneNumbers = tablePhoneNumbers.COLUMNS;
+const colsPhonePrefixes = tablePhonePrefixes.COLUMNS;
 const colsEmailConfirmationHashes = tableEmailConfirmationHashes.COLUMNS;
 
 const insertUser = values => squelPostgres
@@ -106,6 +112,31 @@ const selectUserWithRoleAndConfirmationHash = email => squelPostgres
     .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
     .toString();
 
+const selectUsersByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc) => squelPostgres
+    .select()
+    .field('u.*')
+    .field(`r.${colsRoles.NAME}`, HOMELESS_COLUMNS.ROLE)
+    .field(`CONCAT(php.${colsPhonePrefixes.CODE}, phn.${colsPhoneNumbers.NUMBER})::bigint`, HOMELESS_COLUMNS.FULL_PHONE_NUMBER)
+    .from(table.NAME, 'u')
+    .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
+    .left_join(tableUsersCompanies.NAME, 'uc', `u.id = uc.${colsUsersCompanies.USER_ID}`)
+    .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
+    .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
+    .left_join(tablePhoneNumbers.NAME, 'phn', `phn.${colsPhoneNumbers.USER_ID} = u.id`)
+    .left_join(tablePhonePrefixes.NAME, 'php', `php.id = phn.${colsPhoneNumbers.PHONE_PREFIX_ID}`)
+    .order(sortColumn, asc)
+    .limit(limit)
+    .offset(offset)
+    .toString();
+
+const selectCountUsersByCompanyId = (companyId) => squelPostgres
+    .select()
+    .field('COUNT(u.id)')
+    .from(table.NAME, 'u')
+    .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
+    .left_join(tableUsersCompanies.NAME, 'uc', `u.id = uc.${colsUsersCompanies.USER_ID}`)
+    .toString();
+
 module.exports = {
     insertUser,
     selectUser,
@@ -117,4 +148,6 @@ module.exports = {
     selectUserByPassportNumber,
     selectUsersWithRoleByPermission,
     selectUserWithRoleAndConfirmationHash,
+    selectUsersByCompanyIdPaginationSorting,
+    selectCountUsersByCompanyId,
 };

@@ -17,7 +17,7 @@ const RolesService = require('services/tables/roles');
 const { ERRORS } = require('constants/errors');
 
 // helpers
-const { parseStringToJson } = require('helpers/validators/custom');
+const { parseStringToJson, parsePaginationOptions } = require('helpers/validators/custom');
 
 ajv.addKeyword('phone_prefix_not_exist', {
     async: true,
@@ -95,6 +95,12 @@ ajv.addKeyword('parse_string_to_json', {
     modifying: true,
     schema: false,
     validate: parseStringToJson,
+});
+
+ajv.addKeyword('parse_pagination_options', {
+    modifying: true,
+    schema: false,
+    validate: parsePaginationOptions,
 });
 
 ajv.addKeyword('user_with_id_not_exist', {
