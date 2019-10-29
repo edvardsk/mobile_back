@@ -25,6 +25,7 @@ const UsersCompaniesFormatters = require('formatters/users-to-companies');
 const FinishRegistrationFormatters = require('formatters/finish-registration');
 const { formatGeoDataValuesToSave } = require('formatters/geo');
 const { formatRoutesToSave } = require('formatters/routes');
+const { formatCompanyDataOnStep2 } = require('formatters/companies');
 
 const { AWS_S3_BUCKET_NAME } = process.env;
 
@@ -100,15 +101,15 @@ const finishRegistrationStep2 = async (req, res, next) => {
         const userPermissions = res.locals.permissions;
 
         const company = await CompaniesService.getCompanyByUserIdStrict(userId);
-        let transactionList = [
-            CompaniesService.updateCompanyAsTransaction(company.id, body),
+
+        const companyData = formatCompanyDataOnStep2(body);
+
+        const transactionList = [
+            CompaniesService.updateCompanyAsTransaction(company.id, companyData),
         ];
 
         if (!userPermissions.includes(PERMISSIONS.REGISTRATION_SAVE_STEP_3)) {
-            transactionList = [
-                ...transactionList,
-                UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.REGISTRATION_SAVE_STEP_3),
-            ];
+            transactionList.push(UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.REGISTRATION_SAVE_STEP_3));
         }
 
         await TablesService.runTransaction(transactionList);

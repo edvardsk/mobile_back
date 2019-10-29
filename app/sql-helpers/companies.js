@@ -1,5 +1,6 @@
 const squel = require('squel');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
+const { Geo } = require('constants/instances');
 
 const squelPostgres = squel.useFlavour('postgres');
 
@@ -10,6 +11,10 @@ const tableUsersCompanies = SQL_TABLES.USERS_TO_COMPANIES;
 const cols = table.COLUMNS;
 const colsUsers = tableUsers.COLUMNS;
 const colsUsersCompanies = tableUsersCompanies.COLUMNS;
+
+squelPostgres.registerValueHandler(Geo, function(value) {
+    return value.toString();
+});
 
 const insertCompany = values => squelPostgres
     .insert()
