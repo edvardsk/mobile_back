@@ -22,7 +22,20 @@ const insertRecord = values => {
         .toString();
 };
 
+const selectRecordByTwoUsersIds = (user1, user2) => squelPostgres
+    .select()
+    .from(table.NAME, 'a')
+    .where(`${cols.USER_ID} = '${user1}'`)
+    .union(
+        squelPostgres
+            .select()
+            .from(table.NAME, 'b')
+            .where(`${cols.USER_ID} = '${user2}'`)
+    )
+    .toString();
+
 module.exports = {
     selectRecordByUserId,
     insertRecord,
+    selectRecordByTwoUsersIds,
 };

@@ -1,4 +1,5 @@
 const FIRST_PERMISSIONS = require('./20191017144540_add_permissions').PERMISSIONS;
+const LATEST_PERMISSIONS = require('./20191024092329_insert_permissions').PERMISSIONS;
 const FIRST_ROLES = require('./20191017143230_add_roles').ROLES;
 const { getRolesToPermissionsForDb } = require('../app/formatters/system');
 
@@ -39,6 +40,7 @@ const PERMISSIONS = [
 
 const ALL_PERMISSIONS = [
     ...FIRST_PERMISSIONS,
+    ...LATEST_PERMISSIONS,
     ...PERMISSIONS,
 ];
 
@@ -65,6 +67,7 @@ const ROLES_WITH_PERMISSIONS = [
         'invite_dispatcher',
         'freeze_dispatcher',
         'unfreeze_dispatcher',
+        'basic_invites',
     ]],
 ];
 

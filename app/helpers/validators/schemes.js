@@ -52,6 +52,9 @@ const requiredUserId = {
             format: 'uuid',
         },
     },
+    required: [
+        'userId',
+    ]
 };
 
 const requiredExistingUserWithIdAsync = {

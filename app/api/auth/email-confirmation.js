@@ -5,7 +5,6 @@ const UsersService = require('services/tables/users');
 const EmailConfirmationService = require('services/tables/email-confirmation-hashes');
 const RolesPermissionsService = require('services/tables/roles-to-permissions');
 const UsersRolesService = require('services/tables/users-to-roles');
-const UsersCompaniesService = require('services/tables/users-to-companies');
 const TablesService = require('services/tables');
 const CryptService = require('services/crypto');
 
@@ -18,7 +17,6 @@ const { SUCCESS_CODES, ERROR_CODES } = require('constants/http-codes');
 // formatters
 const { formatUsedRecordToUpdate } = require('formatters/email-confirmation');
 const { formatPasswordDataToUpdate } = require('formatters/users');
-const { formatRecordToSave } = require('formatters/users-to-companies');
 
 const SET_ALLOWED_ROLES_FOR_EMAIL_CONFIRMATION = new Set([
     ROLES.UNCONFIRMED_TRANSPORTER,
@@ -29,10 +27,6 @@ const SET_ALLOWED_ROLES_FOR_EMAIL_CONFIRMATION = new Set([
 
 const SET_ALLOWED_ROLES_FOR_ADVANCED_EMAIL_CONFIRMATION = new Set([
     ROLES.UNCONFIRMED_MANAGER,
-    ROLES.UNCONFIRMED_DISPATCHER,
-]);
-
-const SET_ROLES_TO_APPLY_COMPANY = new Set([
     ROLES.UNCONFIRMED_DISPATCHER,
 ]);
 
@@ -78,7 +72,6 @@ const confirmEmail = async (req, res, next) => {
 const advancedConfirmEmail = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
     const colsEmailConfirmation = SQL_TABLES.EMAIL_CONFIRMATION_HASHES.COLUMNS;
-    const colsUsersCompanies = SQL_TABLES.USERS_TO_COMPANIES.COLUMNS;
     try {
         const { body } = req;
         const { hash } = req.query;
@@ -123,12 +116,6 @@ const advancedConfirmEmail = async (req, res, next) => {
             EmailConfirmationService.updateRecordAsTransaction(hashFromDb.id, emailData),
             UsersRolesService.updateUserRoleAsTransaction(userId, upgradedRole),
         ];
-
-        if (SET_ROLES_TO_APPLY_COMPANY.has(userRole)) {
-            const initiatorId = hashFromDb[colsEmailConfirmation.INITIATOR_ID];
-            const userToCompany = await UsersCompaniesService.getRecordByUserIdStrict(initiatorId);
-            transactionList.push(UsersCompaniesService.addRecordAsTransaction(formatRecordToSave(userId, userToCompany[colsUsersCompanies.COMPANY_ID])));
-        }
 
         await TablesService.runTransaction(transactionList);
 

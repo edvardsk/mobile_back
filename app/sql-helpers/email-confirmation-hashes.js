@@ -51,10 +51,23 @@ const selectLatestRecordByUserEmail = email => squelPostgres
     .limit(1)
     .toString();
 
+const selectLatestRecordByUserId = userId => squelPostgres
+    .select()
+    .field('e.*')
+    .from(table.NAME, 'e')
+    .where(`u.id = '${userId}'`)
+    .left_join(tableUsers.NAME, 'u', `u.id = e.${cols.USER_ID}`)
+    .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
+    .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
+    .order(cols.CREATED_AT, false)
+    .limit(1)
+    .toString();
+
 module.exports = {
     insertRecord,
     selectRecordByHash,
     deleteRecordById,
     updateRecordById,
     selectLatestRecordByUserEmail,
+    selectLatestRecordByUserId,
 };

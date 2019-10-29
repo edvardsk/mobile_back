@@ -1,6 +1,7 @@
 const express = require('express');
 const { ROUTES } = require('constants/routes');
 const post = require('./post');
+const postUsers = require('./users/post');
 
 // middlewares
 const { isHasPermissions } = require('api/middlewares');
@@ -30,11 +31,11 @@ router.post(
 );
 
 router.post(
-    ROUTES.INVITES.RESEND.BASE + ROUTES.INVITES.RESEND.POST,
+    ROUTES.INVITES.RESEND.BASE + ROUTES.INVITES.RESEND.USERS.BASE + ROUTES.INVITES.RESEND.USERS.POST,
     isHasPermissions([PERMISSIONS.BASIC_INVITES]),
-    validate(ValidatorSchemes.requiredEmail),
-    validate(ValidatorSchemes.requiredEmailAsync),
-    post.resendInvite
+    validate(ValidatorSchemes.requiredUserId, 'params'),
+    validate(ValidatorSchemes.requiredExistingUserWithIdAsync, 'params'),
+    postUsers.resendInvite
 );
 
 module.exports = router;

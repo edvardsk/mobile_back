@@ -51,6 +51,8 @@ const ALL_PERMISSIONS = [
 
 const allRolesWithPermissions = getRolesToPermissionsForDb(ALL_ROLES, ALL_PERMISSIONS, ROLES_WITH_PERMISSIONS);
 
+exports.PERMISSIONS = NEW_PERMISSIONS;
+
 exports.up = function(knex) {
     return knex.batchInsert('roles', NEW_ROLES)
         .then(function () {

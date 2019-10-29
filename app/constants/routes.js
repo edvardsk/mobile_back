@@ -145,7 +145,10 @@ const ROUTES = {
         },
         RESEND: {
             BASE: BASES.RESEND,
-            POST: '',
+            USERS: {
+                BASE: BASES.USERS,
+                POST: IDS.USER_ID,
+            }
         },
     },
 };
