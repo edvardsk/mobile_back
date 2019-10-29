@@ -32,6 +32,7 @@ const BASES = {
 
 const IDS = {
     USER_ID: '/:userId',
+    ROLE: '/:role',
 };
 
 const ROUTES = {
@@ -138,13 +139,16 @@ const ROUTES = {
     },
     INVITES: {
         BASE: BASES.INVITES,
-        MANAGER: {
-            BASE: BASES.MANAGER,
-            POST: '',
+        ROLES: {
+            BASE: BASES.ROLES,
+            POST: IDS.ROLE,
         },
         RESEND: {
             BASE: BASES.RESEND,
-            POST: '',
+            USERS: {
+                BASE: BASES.USERS,
+                POST: IDS.USER_ID,
+            }
         },
     },
 };

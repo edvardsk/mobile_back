@@ -53,6 +53,9 @@ const ERRORS = {
         ALREADY_CONFIRMED: 'invites.already_confirmed',
         TOO_OFTEN: 'invites.too_often',
     },
+    ACCOUNT_CONFIRMATIONS: {
+        PROHIBITED: 'account_confirmations.prohibited',
+    },
 };
 
 class PaginationError extends Error {

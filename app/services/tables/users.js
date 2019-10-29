@@ -53,6 +53,11 @@ const checkUserWithEmailExists = async (meta, email) => {
     return !!user;
 };
 
+const checkUserWithIdExists = async (meta, id) => {
+    const user = await getUser(id);
+    return !!user;
+};
+
 module.exports = {
     addUser,
     getUser,
@@ -68,4 +73,5 @@ module.exports = {
     checkUserWithPassportNumberExistsOpposite,
     checkUserWithEmailExistsOpposite,
     checkUserWithEmailExists,
+    checkUserWithIdExists,
 };

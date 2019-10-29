@@ -97,6 +97,12 @@ ajv.addKeyword('parse_string_to_json', {
     validate: parseStringToJson,
 });
 
+ajv.addKeyword('user_with_id_not_exist', {
+    async: true,
+    type: 'string',
+    validate: UsersService.checkUserWithIdExists,
+});
+
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {
     try {
         const data = get(req, pathToData);

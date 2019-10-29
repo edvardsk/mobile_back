@@ -27,6 +27,7 @@ const SET_ALLOWED_ROLES_FOR_EMAIL_CONFIRMATION = new Set([
 
 const SET_ALLOWED_ROLES_FOR_ADVANCED_EMAIL_CONFIRMATION = new Set([
     ROLES.UNCONFIRMED_MANAGER,
+    ROLES.UNCONFIRMED_DISPATCHER,
 ]);
 
 const confirmEmail = async (req, res, next) => {
@@ -80,26 +81,23 @@ const advancedConfirmEmail = async (req, res, next) => {
             return reject(res, ERRORS.AUTHORIZATION.INVALID_HASH);
         }
 
+        const userId = hashFromDb[colsEmailConfirmation.USER_ID];
+
+        const [userRole, permissions] = await Promise.all([
+            UsersService.getUserRole(userId),
+            RolesPermissionsService.getUserPermissions(userId),
+        ]);
+
+        if (!SET_ALLOWED_ROLES_FOR_ADVANCED_EMAIL_CONFIRMATION.has(userRole)) {
+            return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
+        }
+
         if (new Date(hashFromDb[colsEmailConfirmation.EXPIRED_AT]) < new Date()) {
             return reject(res, ERRORS.AUTHORIZATION.EXPIRED_HASH);
         }
 
-        if (hashFromDb[colsEmailConfirmation.USED]) {
+        if (hashFromDb[colsEmailConfirmation.USED] || !permissions.includes(PERMISSIONS.CONFIRM_EMAIL)) {
             return reject(res, ERRORS.AUTHORIZATION.USER_CONFIRMED_EMAIL);
-        }
-
-        const userId = hashFromDb[colsEmailConfirmation.USER_ID];
-
-        const permissions = await RolesPermissionsService.getUserPermissions(userId);
-
-        if (!permissions.includes(PERMISSIONS.CONFIRM_EMAIL)) {
-            return reject(res, ERRORS.AUTHORIZATION.USER_CONFIRMED_EMAIL);
-        }
-
-        const userRole = await UsersService.getUserRole(userId);
-
-        if (!SET_ALLOWED_ROLES_FOR_ADVANCED_EMAIL_CONFIRMATION.has(userRole)) {
-            return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
         }
 
         const upgradedRole = MAP_FROM_UNCONFIRMED_TO_CONFIRMED_EMAIL_ROLE[userRole];
@@ -110,11 +108,13 @@ const advancedConfirmEmail = async (req, res, next) => {
         const passwordObject = await CryptService.hashPassword(password);
         const passwordData = formatPasswordDataToUpdate(passwordObject);
 
-        await TablesService.runTransaction([
+        const transactionList = [
             UsersService.updateUserAsTransaction(userId, passwordData),
             EmailConfirmationService.updateRecordAsTransaction(hashFromDb.id, emailData),
             UsersRolesService.updateUserRoleAsTransaction(userId, upgradedRole),
-        ]);
+        ];
+
+        await TablesService.runTransaction(transactionList);
 
         return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
     } catch (error) {

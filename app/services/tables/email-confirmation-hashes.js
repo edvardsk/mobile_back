@@ -5,6 +5,7 @@ const {
     deleteRecordById,
     updateRecordById,
     selectLatestRecordByUserEmail,
+    selectLatestRecordByUserId,
 } = require('sql-helpers/email-confirmation-hashes');
 
 const { OPERATIONS } = require('constants/postgres');
@@ -21,6 +22,8 @@ const updateRecordAsTransaction = (id, data) => [updateRecordById(id, data), OPE
 
 const getLatestHashByUserEmailStrict = email => one(selectLatestRecordByUserEmail(email));
 
+const getLatestHashByUserIdlStrict = userId => one(selectLatestRecordByUserId(userId));
+
 module.exports = {
     addRecord,
     getRecordByHash,
@@ -28,4 +31,5 @@ module.exports = {
     addRecordAsTransaction,
     updateRecordAsTransaction,
     getLatestHashByUserEmailStrict,
+    getLatestHashByUserIdlStrict,
 };
