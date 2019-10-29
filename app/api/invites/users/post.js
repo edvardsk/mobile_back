@@ -31,6 +31,9 @@ const MAP_ALLOWED_ROLES_TO_RESEND = {
     [ROLES.TRANSPORTER]: new Set([
         ROLES.UNCONFIRMED_DISPATCHER,
     ]),
+    [ROLES.HOLDER]: new Set([
+        ROLES.UNCONFIRMED_LOGISTICIAN,
+    ]),
 };
 
 const resendInvite = async (req, res, next) => {
@@ -44,7 +47,7 @@ const resendInvite = async (req, res, next) => {
         const user = await UsersService.getUserWithRole(userId);
 
         const allowedRolesObject = MAP_ALLOWED_ROLES_TO_RESEND[currentUserRole];
-        if (!allowedRolesObject.has(user[HOMELESS_COLUMNS.ROLE])) {
+        if (!allowedRolesObject || !allowedRolesObject.has(user[HOMELESS_COLUMNS.ROLE])) {
             return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
         }
 
