@@ -40,10 +40,11 @@ router.get(
 );
 
 router.get(
-    ROUTES.COMPANIES.FILES.BASE + ROUTES.COMPANIES.FILES.GET_ALL,
+    ROUTES.COMPANIES.FILES.BASE + ROUTES.COMPANIES.FILES.GROUPS.BASE + ROUTES.COMPANIES.FILES.GROUPS.GET,
     isHasPermissions([PERMISSIONS.READ_LEGAL_DATA]),
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
-    getFiles.getNonCustomFiles,
+    validate(ValidatorSchemes.listFilesGroupParams, 'params'),
+    getFiles.getGroupFiles,
 );
 
 module.exports = router;

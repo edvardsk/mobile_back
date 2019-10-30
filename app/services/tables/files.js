@@ -15,7 +15,7 @@ const addFilesAsTransaction = data => [insertFiles(data), OPERATIONS.MANY_OR_NON
 
 const getFilesByCompanyId = companyId => manyOrNone(selectFilesByCompanyId(companyId));
 
-const getFilesByCompanyIdAndTypes = (companyId, types) => manyOrNone(selectFilesByCompanyIdAndTypes(companyId, types));
+const getFilesByCompanyIdAndTypes = (companyId, types, notPrefix) => manyOrNone(selectFilesByCompanyIdAndTypes(companyId, types, notPrefix));
 
 const removeFilesByIdsAsTransaction = ids => [deleteFilesByIds(ids), OPERATIONS.MANY_OR_NONE];
 

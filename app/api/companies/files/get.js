@@ -10,7 +10,7 @@ const CryptoService = require('services/crypto');
 // constants
 const { ERRORS } = require('constants/errors');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
-const { DOCUMENTS } = require('constants/files');
+const { DOCUMENTS, FILES_GROUPS } = require('constants/files');
 const { ROLES } = require('constants/system');
 
 // formatters
@@ -32,13 +32,13 @@ const MAP_ROLES_TO_LIST_NON_CUSTOM_FILES = {
     [ROLES.SOLE_PROPRIETOR_FORWARDER]: [DOCUMENTS.PASSPORT, DOCUMENTS.STATE_REGISTRATION_CERTIFICATE],
 };
 
-const getNonCustomFiles = async (req, res, next) => {
+const getGroupFiles = async (req, res, next) => {
     const colsFiles = SQL_TABLES.FILES.COLUMNS;
     try {
         const currentUserId = res.locals.user.id;
         const isControlRole = res.locals.user.isControlRole;
 
-        const { meOrId } = req.params;
+        const { meOrId, fileGroup } = req.params;
 
         let company;
         let firstUserInCompanyData;
@@ -58,7 +58,9 @@ const getNonCustomFiles = async (req, res, next) => {
 
         const listNonCustomFileTypes = MAP_ROLES_TO_LIST_NON_CUSTOM_FILES[userRole];
 
-        const files = await FilesService.getFilesByCompanyIdAndTypes(company.id, listNonCustomFileTypes);
+        const notPrefix = fileGroup === FILES_GROUPS.CUSTOM ? 'NOT' : '';
+
+        const files = await FilesService.getFilesByCompanyIdAndTypes(company.id, listNonCustomFileTypes, notPrefix);
 
         const decryptedFiles = files.map(file => {
             const url = CryptoService.decrypt(file[colsFiles.URL]);
@@ -87,5 +89,5 @@ const getNonCustomFiles = async (req, res, next) => {
 };
 
 module.exports = {
-    getNonCustomFiles,
+    getGroupFiles,
 };
