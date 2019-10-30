@@ -4,9 +4,6 @@ const { success } = require('api/response');
 const CompaniesService = require('services/tables/companies');
 const UsersService = require('services/tables/users');
 
-// helpers
-const { isValidUUID } = require('helpers/validators');
-
 // formatters
 const {
     formatLegalDataForTransporterAndHolderForResponse,
@@ -41,17 +38,13 @@ const getLegalData = async (req, res, next) => {
 
         const { meOrId } = req.params;
         let company;
-
-        if (isValidUUID(meOrId)) {
-            company = await CompaniesService.getCompany(meOrId);
-        } else {
-            company = await CompaniesService.getCompanyByUserId(currentUserId);
-        }
-
         let userData;
+
         if (isControlRole) {
+            company = await CompaniesService.getCompany(meOrId);
             userData = await UsersService.getFirstUserInCompanyStrict(company.id);
         } else {
+            company = await CompaniesService.getCompanyByUserId(currentUserId);
             userData = {
                 ...res.locals.user,
             };
