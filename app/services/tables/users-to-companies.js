@@ -1,4 +1,4 @@
-const { one, manyOrNone } = require('db');
+const { one, many } = require('db');
 
 // sql-helpers
 const {
@@ -9,11 +9,16 @@ const {
 
 // constants
 const { OPERATIONS } = require('constants/postgres');
+const { SQL_TABLES } = require('constants/tables');
 
 const getRecordByUserIdStrict = userId => one(selectRecordByUserId(userId));
 
-const isUsersFromOneCompany = (user1, user2) => manyOrNone(selectRecordByTwoUsersIds(user1, user2))
-    .then(records => records.length === 2);
+const isUsersFromOneCompany = (user1, user2) => many(selectRecordByTwoUsersIds(user1, user2))
+    .then(records => {
+        const colsUsersCompanies = SQL_TABLES.USERS_TO_COMPANIES.COLUMNS;
+        const [userCompany1, userCompany2] = records;
+        return userCompany1 && userCompany2 && userCompany1[colsUsersCompanies.COMPANY_ID] === userCompany2[colsUsersCompanies.COMPANY_ID];
+    });
 
 const addRecordAsTransaction = data => [insertRecord(data), OPERATIONS.ONE];
 
