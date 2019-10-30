@@ -3,6 +3,7 @@ const { get } = require('lodash');
 const { reject } = require('api/response');
 const ajv = new Ajv({ allErrors: true });
 require('ajv-keywords')(ajv, 'instanceof');
+require('ajv-errors')(ajv);
 const fileType = require('file-type');
 
 // services
@@ -107,6 +108,12 @@ ajv.addKeyword('user_with_id_not_exist', {
     async: true,
     type: 'string',
     validate: UsersService.checkUserWithIdExists,
+});
+
+ajv.addKeyword('not_valid_settlement_account', {
+    async: true,
+    type: 'string',
+    validate: CompaniesService.validateSettlementAccount,
 });
 
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {

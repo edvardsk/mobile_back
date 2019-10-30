@@ -1,4 +1,4 @@
-const  { oneOrNone, manyOrNone } = require('db');
+const  { one, oneOrNone, manyOrNone } = require('db');
 
 // sql-helpers
 const {
@@ -7,6 +7,8 @@ const {
 } = require('sql-helpers/countries');
 
 const getCountry = id => oneOrNone(selectCountryById(id));
+
+const getCountryStrict = id => one(selectCountryById(id));
 
 const getCountries = () => manyOrNone(selectCountries());
 
@@ -17,6 +19,7 @@ const checkCountryExists = async (schema, id) => {
 
 module.exports = {
     getCountry,
+    getCountryStrict,
     getCountries,
     checkCountryExists,
 };

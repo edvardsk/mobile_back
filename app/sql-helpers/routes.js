@@ -1,18 +1,19 @@
 const squel = require('squel');
 const { SQL_TABLES } = require('constants/tables');
-
-const { isValidUUID } = require('helpers/validators');
+const { Geo } = require('constants/instances');
 
 const squelPostgres = squel.useFlavour('postgres');
+
+squelPostgres.registerValueHandler(Geo, function(value) {
+    return value.toString();
+});
 
 const table = SQL_TABLES.ROUTES;
 
 const cols = table.COLUMNS;
 
 const insertRecords = values => squelPostgres
-    .insert({
-        stringFormatter: str => isValidUUID(str) ? `'${str}'` : str,
-    })
+    .insert()
     .into(table.NAME)
     .setFieldsRows(values)
     .returning('*')

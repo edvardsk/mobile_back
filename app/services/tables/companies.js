@@ -11,9 +11,21 @@ const {
     selectCompanyByStateRegistrationCertificateNumberWithFirstOwner,
 } = require('sql-helpers/companies');
 
+// services
+const CountriesService = require('./countries');
+
 // constants
 const { OPERATIONS } = require('constants/postgres');
-const { HOMELESS_COLUMNS } = require('constants/tables');
+const { HOMELESS_COLUMNS, SQL_TABLES } = require('constants/tables');
+
+const MAP_COUNTRIES_AND_SETTLEMENT_ACCOUNT_LENGTH = {
+    belarus: 28,
+    ukraine: 29,
+    russia: 20,
+};
+
+const cols = SQL_TABLES.COMPANIES.COLUMNS;
+const colsCountries = SQL_TABLES.COUNTRIES.COLUMNS;
 
 const getCompanyByUserId = userId => oneOrNone(selectCompanyByUserId(userId));
 
@@ -57,6 +69,13 @@ const checkCompanyWithStateRegistrationCertificateNumberExistsOpposite = async (
     return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId;
 };
 
+const validateSettlementAccount = async (props, account, schema, key, data) => {
+    const country = await CountriesService.getCountryStrict(data[cols.BANK_COUNTRY_ID]);
+    const countryName = country[colsCountries.NAME];
+    const accountLength = MAP_COUNTRIES_AND_SETTLEMENT_ACCOUNT_LENGTH[countryName];
+    return accountLength === account.length;
+};
+
 module.exports = {
     getCompanyByUserId,
     getCompanyByUserIdStrict,
@@ -66,4 +85,5 @@ module.exports = {
     checkCompanyWithIdentityNumberExistsOpposite,
     checkCompanyWithNameExistsOpposite,
     checkCompanyWithStateRegistrationCertificateNumberExistsOpposite,
+    validateSettlementAccount,
 };
