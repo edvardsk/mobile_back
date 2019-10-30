@@ -3,6 +3,7 @@ const { get } = require('lodash');
 const { reject } = require('api/response');
 const ajv = new Ajv({ allErrors: true });
 require('ajv-keywords')(ajv, 'instanceof');
+require('ajv-errors')(ajv);
 const fileType = require('file-type');
 
 // services
