@@ -33,6 +33,7 @@ const BASES = {
     LEGAL_DATA: '/legal-data',
     FREEZE: '/freeze',
     UNFREEZE: '/unfreeze',
+    FILES: '/files',
 };
 
 const IDS = {
@@ -175,7 +176,11 @@ const ROUTES = {
         LEGAL_DATA: {
             BASE: IDS.ME_OR_ID + BASES.LEGAL_DATA,
             GET: '',
-        }
+        },
+        FILES: {
+            BASE: IDS.ME_OR_ID + BASES.FILES,
+            GET_ALL: '',
+        },
     },
 
 };

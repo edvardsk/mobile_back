@@ -67,9 +67,20 @@ const deleteObject = (
     });
 });
 
+const getSignedUrl = (bucketName, fileName) => new Promise((resolve) => {
+    const params = {
+        Bucket: bucketName,
+        Key: fileName,
+        Expires: 300,
+    };
+    const url = s3.getSignedUrl('getObject', params);
+    resolve(url);
+});
+
 module.exports = {
     getObject,
     putObject,
     headObject,
     deleteObject,
+    getSignedUrl,
 };

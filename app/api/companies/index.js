@@ -2,6 +2,7 @@ const express = require('express');
 const { ROUTES } = require('constants/routes');
 const getEmployees = require('./employees/get');
 const getData = require('./data/get');
+const getFiles = require('./files/get');
 
 // middlewares
 const { isHasPermissions } = require('api/middlewares');
@@ -36,6 +37,13 @@ router.get(
     isHasPermissions([PERMISSIONS.READ_LEGAL_DATA]),
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     getData.getLegalData,
+);
+
+router.get(
+    ROUTES.COMPANIES.FILES.BASE + ROUTES.COMPANIES.FILES.GET_ALL,
+    isHasPermissions([PERMISSIONS.READ_LEGAL_DATA]),
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    getFiles.getNonCustomFiles,
 );
 
 module.exports = router;
