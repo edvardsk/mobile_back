@@ -24,6 +24,12 @@ const ROLES_WITH_PERMISSIONS = [
     ['holder', [
         'read_legal_info',
     ]],
+    ['individual_forwarder', [
+        'read_legal_info',
+    ]],
+    ['sole_proprietor_forwarder', [
+        'read_legal_info',
+    ]],
     ['dispatcher', [
         'read_legal_info',
     ]],

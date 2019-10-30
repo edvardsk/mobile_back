@@ -12,7 +12,6 @@ const { PERMISSIONS } = require('constants/system');
 
 // helpers
 const ValidatorSchemes = require('helpers/validators/schemes');
-const { isControlRole } = require('helpers');
 
 const router = express.Router();
 
@@ -35,7 +34,7 @@ router.get(
 router.get(
     ROUTES.COMPANIES.LEGAL_DATA.BASE + ROUTES.COMPANIES.LEGAL_DATA.GET,
     isHasPermissions([PERMISSIONS.READ_LEGAL_DATA]),
-    validate(({ role }) => isControlRole(role) ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     getData.getLegalData,
 );
 

@@ -14,6 +14,7 @@ const {
     selectUsersByCompanyIdPaginationSorting,
     selectCountUsersByCompanyId,
     selectUserWithRoleAndFreezingStatus,
+    selectFirstInCompanyByCompanyId,
 } = require('sql-helpers/users');
 
 const { OPERATIONS } = require('constants/postgres');
@@ -56,6 +57,10 @@ const getCountUsersByCompanyId = (companyId, filter) => (
         .then(({ count }) => +count)
 );
 
+const getFirstUserInCompanyStrict = companyId => (
+    one(selectFirstInCompanyByCompanyId(companyId))
+);
+
 const checkUserWithPassportNumberExistsOpposite = async (meta, number) => {
     const user = await getUserByPassportNumber(number);
     const { userId } = meta;
@@ -93,6 +98,7 @@ module.exports = {
     getCountUsersByCompanyId,
     getUserForAuthentication,
     getUserWithRoleAndFreezingData,
+    getFirstUserInCompanyStrict,
 
     checkUserWithPassportNumberExistsOpposite,
     checkUserWithEmailExistsOpposite,

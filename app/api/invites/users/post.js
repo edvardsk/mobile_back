@@ -23,9 +23,6 @@ const {
 const { formatRecordToSave } = require('formatters/email-confirmation');
 const { formatExpiredRecordToUpdate } = require('formatters/email-confirmation');
 
-// helpers
-const { isControlRole } = require('helpers');
-
 const {
     INVITE_EXPIRATION_UNIT,
     INVITE_EXPIRATION_VALUE,
@@ -37,6 +34,7 @@ const resendInvite = async (req, res, next) => {
     try {
         const currentUserId = res.locals.user.id;
         const currentUserRole = res.locals.user.role;
+        const isControlRole = res.locals.user.isControlRole;
         const { userId } = req.params;
 
         const user = await UsersService.getUserWithRole(userId);
@@ -46,7 +44,7 @@ const resendInvite = async (req, res, next) => {
             return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
         }
 
-        if (!isControlRole(currentUserRole)) {
+        if (!isControlRole) {
             const isFromOneCompany = await UsersCompaniesService.isUsersFromOneCompany(currentUserId, user.id);
             if (!isFromOneCompany) {
                 return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
