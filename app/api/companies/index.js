@@ -19,7 +19,7 @@ const router = express.Router();
 router.get(
     ROUTES.COMPANIES.EMPLOYEES.BASE + ROUTES.COMPANIES.EMPLOYEES.GET_ALL,
     isHasPermissions([PERMISSIONS.READ_EMPLOYEES]),
-    validate(ValidatorSchemes.requiredMeParams, 'params'),
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     validate(ValidatorSchemes.basePaginationQuery, 'query'),
     validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
     validate(ValidatorSchemes.baseSortingSortingDirectionQuery, 'query'),

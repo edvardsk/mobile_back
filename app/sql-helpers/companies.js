@@ -38,9 +38,9 @@ const selectCompanyById = id => squelPostgres
     .field('c.*')
     .field(`ct.${colsCountries.NAME}`, HOMELESS_COLUMNS.BANK_COUNTRY)
     .field(`ST_AsText(${cols.LEGAL_CITY_COORDINATES})`, cols.LEGAL_CITY_COORDINATES)
+    .where(`c.id = '${id}'`)
     .from(table.NAME, 'c')
     .left_join(tableCountries.NAME, 'ct', `ct.id = c.${cols.BANK_COUNTRY_ID} `)
-    .where(`id = '${id}'`)
     .toString();
 
 const selectCompanyByUserId = userId => squelPostgres

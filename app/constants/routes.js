@@ -169,7 +169,7 @@ const ROUTES = {
     COMPANIES: {
         BASE: BASES.COMPANIES,
         EMPLOYEES: {
-            BASE: IDS.ME + BASES.EMPLOYEES,
+            BASE: IDS.ME_OR_ID + BASES.EMPLOYEES,
             GET_ALL: '',
         },
         LEGAL_DATA: {
