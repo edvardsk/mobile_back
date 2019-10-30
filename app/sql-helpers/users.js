@@ -65,6 +65,21 @@ const selectUserByEmailWithRole = email => squelPostgres
     .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
     .toString();
 
+const selectUserByEmailWithRoleAndFreezingStatus = email => squelPostgres
+    .select()
+    .from(table.NAME, 'u')
+    .field('u.*')
+    .field('r.name', HOMELESS_COLUMNS.ROLE)
+    .field(`fh.${colsFreezingHistory.FREEZED}`)
+    .field(`fh.${colsFreezingHistory.INITIATOR_ID}`)
+    .where(`u.${cols.EMAIL} = '${email}'`)
+    .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
+    .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
+    .left_join(tableFreezingHistory.NAME, 'fh', `fh.${colsFreezingHistory.TARGET_ID} = u.id`)
+    .order(`fh.${colsFreezingHistory.CREATED_AT}`, false)
+    .limit(1)
+    .toString();
+
 const updateUser = (id, data) => squelPostgres
     .update()
     .table(table.NAME)
@@ -184,6 +199,7 @@ module.exports = {
     selectUserWithRole,
     selectUserByEmail,
     selectUserByEmailWithRole,
+    selectUserByEmailWithRoleAndFreezingStatus,
     updateUser,
     selectUserRole,
     selectUserByPassportNumber,

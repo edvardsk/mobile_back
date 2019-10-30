@@ -3,6 +3,7 @@ const { success, reject } = require('api/response');
 // services
 const UsersService = require('services/tables/users');
 const FreezingHistoryService = require('services/tables/freezing-history');
+const UsersCompaniesService = require('services/tables/users-to-companies');
 
 // constants
 const { ERROR_CODES } = require('constants/http-codes');
@@ -15,15 +16,26 @@ const {
 // formatters
 const { formatRecordToSave } = require('formatters/freezing-history');
 
+// helpers
+const { isControlRole } = require('helpers');
+
 const freezeUser = async (req, res, next) => {
     const colsFreezingHistory = SQL_TABLES.FREEZING_HISTORY.COLUMNS;
     try {
         const currentUserId = res.locals.user.id;
+        const currentUserRole = res.locals.user.role;
         const currentUserPermissions = res.locals.permissions;
         const { userId } = req.params;
         const user = await UsersService.getUserWithRoleAndFreezingData(userId);
         if (!user) {
             return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
+        }
+
+        if (!isControlRole(currentUserRole)) {
+            const isFromOneCompany = await UsersCompaniesService.isUsersFromOneCompany(currentUserId, user.id);
+            if (!isFromOneCompany) {
+                return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
+            }
         }
 
         if (user[colsFreezingHistory.FREEZED]) {

@@ -5,6 +5,7 @@ const {
     selectUserWithRole,
     selectUserByEmail,
     selectUserByEmailWithRole,
+    selectUserByEmailWithRoleAndFreezingStatus,
     selectUserRole,
     updateUser,
     selectUserByPassportNumber,
@@ -26,6 +27,8 @@ const getUserWithRole = id => oneOrNone(selectUserWithRole(id));
 const getUserByEmail = email => oneOrNone(selectUserByEmail(email));
 
 const getUserByEmailWithRole = email => oneOrNone(selectUserByEmailWithRole(email));
+
+const getUserByEmailWithRoleAndFreezingData = email => oneOrNone(selectUserByEmailWithRoleAndFreezingStatus(email));
 
 const getUserRole = id => one(selectUserRole(id))
     .then(({ name }) => name);
@@ -79,6 +82,7 @@ module.exports = {
     getUser,
     getUserWithRole,
     getUserByEmailWithRole,
+    getUserByEmailWithRoleAndFreezingData,
     getUserByEmail,
     getUserRole,
     addUserAsTransaction,

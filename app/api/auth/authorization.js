@@ -15,14 +15,19 @@ const { PERMISSIONS } = require('constants/system');
 
 const createToken = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
+    const colsFreezingHistory = SQL_TABLES.FREEZING_HISTORY.COLUMNS;
     try {
         const password = get(req.body, 'password');
         const email = get(req.body, 'email');
 
-        const user = await UsersService.getUserByEmail(email);
+        const user = await UsersService.getUserByEmailWithRoleAndFreezingData(email);
 
         if (!user) {
             return reject(res, ERRORS.AUTHORIZATION.INVALID_EMAIL_OR_PASSWORD, {}, ERROR_CODES.UNAUTHORIZED);
+        }
+
+        if (user[colsFreezingHistory.FREEZED]) {
+            return reject(res, ERRORS.AUTHORIZATION.FREEZED, {}, ERROR_CODES.FORBIDDEN);
         }
 
         const { hash } = await CryptService.hashPassword(password, user[colsUsers.KEY]);
