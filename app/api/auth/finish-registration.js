@@ -165,11 +165,14 @@ const finishRegistrationStep3 = async (req, res, next) => {
             const [dbFiles, dbCompaniesFiles, storageFiles] = acc;
             files[type].forEach(file => {
                 const fileId = uuid();
+                const fileHash = uuid();
+                const filePath = `${fileHash}${file.originalname}`;
+                const fileUrl = `${AWS_S3_BUCKET_NAME}/${filePath}`;
                 dbFiles.push({
                     id: fileId,
                     [colsFiles.NAME]: file.originalname,
                     [colsFiles.TYPE]: type,
-                    [colsFiles.URL]: CryptService.encrypt(`${AWS_S3_BUCKET_NAME}/${fileId}`),
+                    [colsFiles.URL]: CryptService.encrypt(fileUrl),
                 });
                 dbCompaniesFiles.push({
                     [colsCompaniesFiles.COMPANY_ID]: company.id,
@@ -177,8 +180,9 @@ const finishRegistrationStep3 = async (req, res, next) => {
                 });
                 storageFiles.push({
                     bucket: AWS_S3_BUCKET_NAME,
-                    path: fileId,
+                    path: filePath,
                     data: file.buffer,
+                    contentType: file.mimetype,
                 });
             });
             return acc;
@@ -248,8 +252,8 @@ const finishRegistrationStep3 = async (req, res, next) => {
         }
 
         await TablesService.runTransaction(transactionList);
-        await Promise.all(storageFiles.map(({ bucket, path, data }) => {
-            return S3Service.putObject(bucket, path, data);
+        await Promise.all(storageFiles.map(({ bucket, path, data, contentType }) => {
+            return S3Service.putObject(bucket, path, data, contentType);
         }));
 
         return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
