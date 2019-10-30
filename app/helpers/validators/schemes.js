@@ -616,6 +616,12 @@ const settlementAccountAsync = {
         [colsCompanies.SETTLEMENT_ACCOUNT]: {
             not_valid_settlement_account: {},
         },
+
+    },
+    errorMessage: {
+        properties: {
+            [colsCompanies.SETTLEMENT_ACCOUNT]: 'invalid for selected country',
+        },
     },
     additionalProperties: true,
 };
