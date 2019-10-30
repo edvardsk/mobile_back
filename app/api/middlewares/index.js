@@ -51,7 +51,7 @@ const isAuthenticated = async (req, res) => {
             const permissions = await PermissionsService.getAllUserPermissions(user.id);
 
             res.locals.user = user;
-            res.locals.permissions = permissions;
+            res.locals.permissions = new Set(permissions);
             return req.next();
         } catch (error) {
             logger.error(error);
@@ -76,7 +76,7 @@ const isHasPermissions = (permissionsOrGetter = []) => (req, res, next) => {
             permissions = permissionsOrGetter;
         }
         const userPermissions = res.locals.permissions;
-        if (!permissions.every(permission => userPermissions.includes(permission))) {
+        if (!permissions.every(permission => userPermissions.has(permission))) {
             return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
         }
         next();

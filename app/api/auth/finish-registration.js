@@ -56,7 +56,7 @@ const finishRegistrationStep1 = async (req, res, next) => {
         const userPermissions = res.locals.permissions;
 
         let transactionList = [];
-        if (userPermissions.includes(PERMISSIONS.REGISTRATION_SAVE_STEP_2) || userPermissions.includes(PERMISSIONS.REGISTRATION_SAVE_STEP_3)) {
+        if (userPermissions.has(PERMISSIONS.REGISTRATION_SAVE_STEP_2) || userPermissions.has(PERMISSIONS.REGISTRATION_SAVE_STEP_3)) {
             // update data
             const companyData = {
                 ...req.body,
@@ -104,7 +104,7 @@ const finishRegistrationStep2 = async (req, res, next) => {
             CompaniesService.updateCompanyAsTransaction(company.id, body),
         ];
 
-        if (!userPermissions.includes(PERMISSIONS.REGISTRATION_SAVE_STEP_3)) {
+        if (!userPermissions.has(PERMISSIONS.REGISTRATION_SAVE_STEP_3)) {
             transactionList = [
                 ...transactionList,
                 UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.REGISTRATION_SAVE_STEP_3),
@@ -187,7 +187,7 @@ const finishRegistrationStep3 = async (req, res, next) => {
         const [dbFiles, dbCompaniesFiles, storageFiles] = dataToStore;
 
         let transactionList = [];
-        if (userPermissions.includes(PERMISSIONS.REGISTRATION_SAVE_STEP_4) || userPermissions.includes(PERMISSIONS.REGISTRATION_SAVE_STEP_5)) {
+        if (userPermissions.has(PERMISSIONS.REGISTRATION_SAVE_STEP_4) || userPermissions.has(PERMISSIONS.REGISTRATION_SAVE_STEP_5)) {
             // update data
 
             const companyFiles = await CompaniesFilesService.getFilesByCompanyId(company.id);
@@ -270,7 +270,7 @@ const finishRegistrationStep4 = async (req, res, next) => {
         const routes = formatRoutesToSave(coordinates, company.id);
 
         const transactionsList = [];
-        if (userPermissions.includes(PERMISSIONS.REGISTRATION_SAVE_STEP_5)) {
+        if (userPermissions.has(PERMISSIONS.REGISTRATION_SAVE_STEP_5)) {
             // update
             transactionsList.push(RoutesService.removeRecordsByCompanyIdAsTransaction(company.id));
         } else {

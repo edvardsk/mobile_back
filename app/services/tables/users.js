@@ -42,6 +42,8 @@ const getUserWithRoleAndConfirmationHashStrict = email => one(selectUserWithRole
 
 const getUserForAuthentication = id => oneOrNone(selectUserWithRoleAndFreezingStatus(id));
 
+const getUserWithRoleAndFreezingData = id => oneOrNone(selectUserWithRoleAndFreezingStatus(id));
+
 const getUsersByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
     manyOrNone(selectUsersByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
 );
@@ -86,6 +88,7 @@ module.exports = {
     getUsersByCompanyIdPaginationSorting,
     getCountUsersByCompanyId,
     getUserForAuthentication,
+    getUserWithRoleAndFreezingData,
 
     checkUserWithPassportNumberExistsOpposite,
     checkUserWithEmailExistsOpposite,

@@ -169,6 +169,7 @@ const selectUserWithRoleAndFreezingStatus = id => squelPostgres
     .field('u.*')
     .field('r.name', HOMELESS_COLUMNS.ROLE)
     .field(`fh.${colsFreezingHistory.FREEZED}`)
+    .field(`fh.${colsFreezingHistory.INITIATOR_ID}`)
     .where(`u.id = '${id}'`)
     .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
     .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)

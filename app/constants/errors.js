@@ -57,6 +57,9 @@ const ERRORS = {
     ACCOUNT_CONFIRMATIONS: {
         PROHIBITED: 'account_confirmations.prohibited',
     },
+    FREEZING: {
+        FREEZED: 'freezing.freezed',
+    },
 };
 
 class PaginationError extends Error {

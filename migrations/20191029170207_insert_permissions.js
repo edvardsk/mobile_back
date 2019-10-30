@@ -24,6 +24,10 @@ const PERMISSIONS = [
         id: '9dd3ce61-d3e7-4a33-a586-c76fa969c2de',
         name: 'freeze_manager',
     },
+    {
+        id: '55f8f03e-92b4-4414-a30f-d506d44ad078',
+        name: 'freeze_admin',
+    },
 ];
 
 const ROLES_WITH_PERMISSIONS = [

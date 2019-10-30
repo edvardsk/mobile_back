@@ -9,7 +9,7 @@ const TablesService = require('services/tables');
 const CryptService = require('services/crypto');
 
 // constants
-const { SQL_TABLES } = require('constants/tables');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
 const {
     PERMISSIONS,
@@ -25,6 +25,7 @@ const { formatPasswordDataToUpdate } = require('formatters/users');
 
 const confirmEmail = async (req, res, next) => {
     const colsEmailConfirmation = SQL_TABLES.EMAIL_CONFIRMATION_HASHES.COLUMNS;
+    const colsFreezingHistory = SQL_TABLES.FREEZING_HISTORY.COLUMNS;
     try {
         const { hash } = req.query;
 
@@ -41,7 +42,13 @@ const confirmEmail = async (req, res, next) => {
             return reject(res, ERRORS.AUTHORIZATION.USER_CONFIRMED_EMAIL);
         }
 
-        const userRole = await UsersService.getUserRole(userId);
+        const user = await UsersService.getUserWithRoleAndFreezingData(userId);
+
+        if (user[colsFreezingHistory.FREEZED]) {
+            return reject(res, ERRORS.AUTHENTICATION.FREEZED, {}, ERROR_CODES.FORBIDDEN);
+        }
+
+        const userRole = user[HOMELESS_COLUMNS.ROLE];
 
         if (!SET_ALLOWED_ROLES_FOR_EMAIL_CONFIRMATION.has(userRole)) {
             return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
@@ -65,6 +72,7 @@ const confirmEmail = async (req, res, next) => {
 const advancedConfirmEmail = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
     const colsEmailConfirmation = SQL_TABLES.EMAIL_CONFIRMATION_HASHES.COLUMNS;
+    const colsFreezingHistory = SQL_TABLES.FREEZING_HISTORY.COLUMNS;
     try {
         const { body } = req;
         const { hash } = req.query;
@@ -76,10 +84,16 @@ const advancedConfirmEmail = async (req, res, next) => {
 
         const userId = hashFromDb[colsEmailConfirmation.USER_ID];
 
-        const [userRole, permissions] = await Promise.all([
-            UsersService.getUserRole(userId),
+        const [user, permissions] = await Promise.all([
+            UsersService.getUserWithRoleAndFreezingData(userId),
             RolesPermissionsService.getUserPermissions(userId),
         ]);
+
+        if (user[colsFreezingHistory.FREEZED]) {
+            return reject(res, ERRORS.AUTHENTICATION.FREEZED, {}, ERROR_CODES.FORBIDDEN);
+        }
+
+        const userRole = user[HOMELESS_COLUMNS.ROLE];
 
         if (!SET_ALLOWED_ROLES_FOR_ADVANCED_EMAIL_CONFIRMATION.has(userRole)) {
             return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
