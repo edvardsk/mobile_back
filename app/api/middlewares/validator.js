@@ -1,7 +1,7 @@
 const Ajv = require('ajv');
 const { get } = require('lodash');
 const { reject } = require('api/response');
-const ajv = new Ajv({ allErrors: true });
+const ajv = new Ajv({ allErrors: true, jsonPointers: true });
 require('ajv-keywords')(ajv, 'instanceof');
 require('ajv-errors')(ajv);
 const fileType = require('file-type');

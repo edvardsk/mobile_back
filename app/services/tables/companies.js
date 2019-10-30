@@ -85,6 +85,7 @@ const validateSettlementAccount = async (props, account, schema, key, data) => {
 };
 
 module.exports = {
+    getCompany,
     getCompanyByUserId,
     getCompanyByUserIdStrict,
     addCompanyAsTransaction,
