@@ -1,6 +1,7 @@
 const express = require('express');
 const { ROUTES } = require('constants/routes');
 const getEmployees = require('./employees/get');
+const getData = require('./data/get');
 
 // middlewares
 const { isHasPermissions } = require('api/middlewares');
@@ -11,6 +12,7 @@ const { PERMISSIONS } = require('constants/system');
 
 // helpers
 const ValidatorSchemes = require('helpers/validators/schemes');
+const { isControlRole } = require('helpers');
 
 const router = express.Router();
 
@@ -26,6 +28,15 @@ router.get(
     validate(ValidatorSchemes.modifyCompanyEmployeesFilterQuery, 'query'),
     validate(ValidatorSchemes.companyEmployeesFilterQuery, 'query'),
     getEmployees.getListEmployees,
+);
+
+
+// data
+router.get(
+    ROUTES.COMPANIES.LEGAL_DATA.BASE + ROUTES.COMPANIES.LEGAL_DATA.GET,
+    isHasPermissions([PERMISSIONS.READ_LEGAL_DATA]),
+    validate(({ role }) => isControlRole(role) ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    getData.getLegalData,
 );
 
 module.exports = router;

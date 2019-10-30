@@ -151,6 +151,7 @@ const PERMISSIONS = {
     BASIC_INVITES: 'basic_invites',
 
     READ_EMPLOYEES: 'read_employees',
+    READ_LEGAL_DATA: 'read_legal_info',
 };
 
 const MAP_ROLES_TO_FREEZING_PERMISSIONS = {

@@ -116,6 +116,12 @@ ajv.addKeyword('not_valid_settlement_account', {
     validate: CompaniesService.validateSettlementAccount,
 });
 
+ajv.addKeyword('company_with_id_not_exist', {
+    async: true,
+    type: 'string',
+    validate: CompaniesService.checkCompanyWithIdExists,
+});
+
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {
     try {
         const data = get(req, pathToData);

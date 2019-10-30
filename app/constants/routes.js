@@ -30,6 +30,7 @@ const BASES = {
     RESEND: '/resend',
     COMPANIES: '/companies',
     EMPLOYEES: '/employees',
+    LEGAL_DATA: '/legal-data',
     FREEZE: '/freeze',
     UNFREEZE: '/unfreeze',
 };
@@ -38,6 +39,7 @@ const IDS = {
     USER_ID: '/:userId',
     ROLE: '/:role',
     ME: '/:me',
+    ME_OR_ID: '/:meOrId',
 };
 
 const ROUTES = {
@@ -170,6 +172,10 @@ const ROUTES = {
             BASE: IDS.ME + BASES.EMPLOYEES,
             GET_ALL: '',
         },
+        LEGAL_DATA: {
+            BASE: IDS.ME_OR_ID + BASES.LEGAL_DATA,
+            GET: '',
+        }
     },
 
 };

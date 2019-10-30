@@ -1004,6 +1004,30 @@ const inviteUserRolesParams = {
     ],
 };
 
+const meOrIdRequiredMeParams = {
+    properties: {
+        meOrId: {
+            type: 'string',
+            enum: ['me'],
+        },
+    },
+    required: [
+        'meOrId'
+    ],
+};
+
+const meOrIdRequiredIdParams = {
+    properties: {
+        meOrId: {
+            type: 'string',
+            format: 'uuid',
+        },
+    },
+    required: [
+        'meOrId'
+    ],
+};
+
 const requiredMeParams = {
     properties: {
         me: {
@@ -1140,6 +1164,8 @@ module.exports = {
     modifyOtherOrganizations,
     inviteUserRolesParams,
     requiredMeParams,
+    meOrIdRequiredMeParams,
+    meOrIdRequiredIdParams,
 
     basePaginationQuery,
     basePaginationModifyQuery,

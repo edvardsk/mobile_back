@@ -31,6 +31,12 @@ const updateCompany = (id, values) => squelPostgres
     .returning('*')
     .toString();
 
+const selectCompanyById = id => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where(`id = '${id}'`)
+    .toString();
+
 const selectCompanyByUserId = userId => squelPostgres
     .select()
     .from(table.NAME, 'c')
@@ -90,6 +96,7 @@ const selectCompanyByStateRegistrationCertificateNumberWithFirstOwner = number =
 module.exports = {
     insertCompany,
     updateCompany,
+    selectCompanyById,
     selectCompanyByUserId,
     selectCompanyBySettlementAccountWithFirstOwner,
     selectCompanyByIdentityNumberWithFirstOwner,
