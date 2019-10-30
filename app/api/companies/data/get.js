@@ -1,4 +1,4 @@
-const { success } = require('api/response');
+const { success, reject } = require('api/response');
 
 // services
 const CompaniesService = require('services/tables/companies');
@@ -15,6 +15,7 @@ const {
 const {
     ROLES,
 } = require('constants/system');
+const { ERRORS } = require('constants/errors');
 const { HOMELESS_COLUMNS } = require('constants/tables');
 
 const MAP_ROLE_TO_FORMATTER = {
@@ -42,6 +43,9 @@ const getLegalData = async (req, res, next) => {
 
         if (isControlRole) {
             company = await CompaniesService.getCompany(meOrId);
+            if (!company) {
+                return reject(res, ERRORS.COMPANIES.INVALID_COMPANY_ID);
+            }
             userData = await UsersService.getFirstUserInCompanyStrict(company.id);
         } else {
             company = await CompaniesService.getCompanyByUserId(currentUserId);

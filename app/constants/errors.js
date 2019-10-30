@@ -35,8 +35,8 @@ const ERRORS = {
         UPLOADING_ERROR: 'files.uploading_error',
         TOO_MUCH_FILES: 'files.too_much_files',
     },
-    COMPANY: {
-        VALIDATION_ERROR: 'company.validation_error',
+    COMPANIES: {
+        INVALID_COMPANY_ID: 'companies.invalid_company_id',
     },
     VALIDATION: {
         ERROR: 'validation.error',
