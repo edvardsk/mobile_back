@@ -23,6 +23,7 @@ const { SUCCESS_CODES } = require('constants/http-codes');
 // formatters
 const UsersCompaniesFormatters = require('formatters/users-to-companies');
 const FinishRegistrationFormatters = require('formatters/finish-registration');
+const { formatStoringFile } = require('formatters/files');
 const { formatGeoDataValuesToSave } = require('formatters/geo');
 const { formatRoutesToSave } = require('formatters/routes');
 const { formatCompanyDataOnStep2 } = require('formatters/companies');
@@ -167,7 +168,7 @@ const finishRegistrationStep3 = async (req, res, next) => {
                 const fileId = uuid();
                 const fileHash = uuid();
                 const filePath = `${fileHash}${file.originalname}`;
-                const fileUrl = `${AWS_S3_BUCKET_NAME}/${filePath}`;
+                const fileUrl = formatStoringFile(AWS_S3_BUCKET_NAME, filePath);
                 dbFiles.push({
                     id: fileId,
                     [colsFiles.NAME]: file.originalname,

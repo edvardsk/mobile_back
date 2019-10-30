@@ -5,7 +5,8 @@ const FILES_TYPES = {
 const DOCUMENTS = {
     PASSPORT: 'passport',
     STATE_REGISTRATION_CERTIFICATE: 'state_registration_certificate',
-    INSURANCE_POLICY: 'insurance_policy'
+    INSURANCE_POLICY: 'insurance_policy',
+    RESIDENCY_CERTIFICATE: 'residency_certificate',
 };
 
 module.exports = {
