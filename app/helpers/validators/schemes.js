@@ -462,6 +462,7 @@ const finishRegistrationStep2Transporter = {
         colsCompanies.POST_ADDRESS,
         colsCompanies.BANK_NAME,
         colsCompanies.HEAD_COMPANY_FULL_NAME,
+        colsCompanies.BANK_COUNTRY_ID,
         colsCompanies.BANK_ADDRESS,
         colsCompanies.BANK_CODE,
         colsCompanies.CONTRACT_SIGNER_FULL_NAME,
@@ -509,6 +510,10 @@ const finishRegistrationStep2Holder = {
             type: 'string',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
+        [colsCompanies.BANK_COUNTRY_ID]: {
+            type: 'string',
+            format: 'uuid',
+        },
         [colsCompanies.BANK_ADDRESS]: {
             type: 'string',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
@@ -530,6 +535,7 @@ const finishRegistrationStep2Holder = {
         colsCompanies.POST_ADDRESS,
         colsCompanies.BANK_NAME,
         colsCompanies.HEAD_COMPANY_FULL_NAME,
+        colsCompanies.BANK_COUNTRY_ID,
         colsCompanies.BANK_ADDRESS,
         colsCompanies.BANK_CODE,
         colsCompanies.CONTRACT_SIGNER_FULL_NAME,
@@ -573,6 +579,10 @@ const finishRegistrationStep2SoleProprietorForwarder = {
             type: 'string',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
+        [colsCompanies.BANK_COUNTRY_ID]: {
+            type: 'string',
+            format: 'uuid',
+        },
         [colsCompanies.BANK_ADDRESS]: {
             type: 'string',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
@@ -589,6 +599,7 @@ const finishRegistrationStep2SoleProprietorForwarder = {
         colsCompanies.SETTLEMENT_ACCOUNT,
         colsCompanies.POST_ADDRESS,
         colsCompanies.BANK_NAME,
+        colsCompanies.BANK_COUNTRY_ID,
         colsCompanies.BANK_ADDRESS,
         colsCompanies.BANK_CODE,
     ],
