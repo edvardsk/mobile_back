@@ -202,7 +202,7 @@ const selectFirstInCompanyByCompanyId = companyId => squelPostgres
     .left_join(tableUsersCompanies.NAME, 'uc', `uc.${colsUsersCompanies.USER_ID} = u.id`)
     .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
     .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
-    .order(`uc.${colsUsersCompanies.CREATED_AT}`, false)
+    .order(`uc.${colsUsersCompanies.CREATED_AT}`, true)
     .limit(1)
     .toString();
 

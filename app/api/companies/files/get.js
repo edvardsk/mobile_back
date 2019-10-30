@@ -41,22 +41,20 @@ const getNonCustomFiles = async (req, res, next) => {
         const { meOrId } = req.params;
 
         let company;
-        let userData;
+        let firstUserInCompanyData;
 
         if (isControlRole) {
             company = await CompaniesService.getCompany(meOrId);
             if (!company) {
                 return reject(res, ERRORS.COMPANIES.INVALID_COMPANY_ID);
             }
-            userData = await UsersService.getFirstUserInCompanyStrict(company.id);
+            firstUserInCompanyData = await UsersService.getFirstUserInCompanyStrict(company.id);
         } else {
             company = await CompaniesService.getCompanyByUserId(currentUserId);
-            userData = {
-                ...res.locals.user,
-            };
+            firstUserInCompanyData = await UsersService.getFirstUserInCompanyStrict(company.id);
         }
 
-        const userRole = userData[HOMELESS_COLUMNS.ROLE];
+        const userRole = firstUserInCompanyData[HOMELESS_COLUMNS.ROLE];
 
         const listNonCustomFileTypes = MAP_ROLES_TO_LIST_NON_CUSTOM_FILES[userRole];
 
