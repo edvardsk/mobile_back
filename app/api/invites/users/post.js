@@ -14,7 +14,6 @@ const { ERRORS } = require('constants/errors');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SUCCESS_CODES, ERROR_CODES } = require('constants/http-codes');
 const {
-    ROLES,
     MAP_UNCONFIRMED_TO_BASIC_ROLES,
     MAP_ALLOWED_ROLES_TO_RESEND_EMAIL,
 
@@ -23,6 +22,9 @@ const {
 // formatters
 const { formatRecordToSave } = require('formatters/email-confirmation');
 const { formatExpiredRecordToUpdate } = require('formatters/email-confirmation');
+
+// helpers
+const { isControlRole } = require('helpers');
 
 const {
     INVITE_EXPIRATION_UNIT,
@@ -44,9 +46,11 @@ const resendInvite = async (req, res, next) => {
             return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
         }
 
-        const isFromOneCompany = await UsersCompaniesService.isUsersFromOneCompany(currentUserId, user.id);
-        if (!isFromOneCompany && currentUserRole !== ROLES.ADMIN && currentUserRole !== ROLES.MANAGER) {
-            return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
+        if (!isControlRole(currentUserRole)) {
+            const isFromOneCompany = await UsersCompaniesService.isUsersFromOneCompany(currentUserId, user.id);
+            if (!isFromOneCompany) {
+                return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
+            }
         }
 
         const latestHash = await EmailConfirmationService.getLatestHashByUserIdlStrict(userId);

@@ -5,6 +5,7 @@ const {
     selectUserWithRole,
     selectUserByEmail,
     selectUserByEmailWithRole,
+    selectUserByEmailWithRoleAndFreezingStatus,
     selectUserRole,
     updateUser,
     selectUserByPassportNumber,
@@ -12,6 +13,7 @@ const {
     selectUserWithRoleAndConfirmationHash,
     selectUsersByCompanyIdPaginationSorting,
     selectCountUsersByCompanyId,
+    selectUserWithRoleAndFreezingStatus,
 } = require('sql-helpers/users');
 
 const { OPERATIONS } = require('constants/postgres');
@@ -26,6 +28,8 @@ const getUserByEmail = email => oneOrNone(selectUserByEmail(email));
 
 const getUserByEmailWithRole = email => oneOrNone(selectUserByEmailWithRole(email));
 
+const getUserByEmailWithRoleAndFreezingData = email => oneOrNone(selectUserByEmailWithRoleAndFreezingStatus(email));
+
 const getUserRole = id => one(selectUserRole(id))
     .then(({ name }) => name);
 
@@ -38,6 +42,10 @@ const getUserByPassportNumber = number => oneOrNone(selectUserByPassportNumber(n
 const getUsersWithRoleByPermission = permission => manyOrNone(selectUsersWithRoleByPermission(permission));
 
 const getUserWithRoleAndConfirmationHashStrict = email => one(selectUserWithRoleAndConfirmationHash(email));
+
+const getUserForAuthentication = id => oneOrNone(selectUserWithRoleAndFreezingStatus(id));
+
+const getUserWithRoleAndFreezingData = id => oneOrNone(selectUserWithRoleAndFreezingStatus(id));
 
 const getUsersByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
     manyOrNone(selectUsersByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
@@ -74,6 +82,7 @@ module.exports = {
     getUser,
     getUserWithRole,
     getUserByEmailWithRole,
+    getUserByEmailWithRoleAndFreezingData,
     getUserByEmail,
     getUserRole,
     addUserAsTransaction,
@@ -82,6 +91,8 @@ module.exports = {
     getUserWithRoleAndConfirmationHashStrict,
     getUsersByCompanyIdPaginationSorting,
     getCountUsersByCompanyId,
+    getUserForAuthentication,
+    getUserWithRoleAndFreezingData,
 
     checkUserWithPassportNumberExistsOpposite,
     checkUserWithEmailExistsOpposite,

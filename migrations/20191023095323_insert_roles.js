@@ -42,6 +42,8 @@ const ROLES_WITH_PERMISSIONS = [
     ]],
 ];
 
+exports.ROLES = ROLES;
+
 const allRolesWithPermissions = getRolesToPermissionsForDb(ROLES, ALL_PERMISSIONS, ROLES_WITH_PERMISSIONS);
 
 exports.up = function(knex) {

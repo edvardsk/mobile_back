@@ -15,10 +15,12 @@ const ERRORS = {
         INVALID_EMAIL_FORMAT: 'authorization.invalid_email_format',
         INVALID_PASSWORD_FORMAT: 'authorization.invalid_password_format',
         USER_CONFIRMED_EMAIL: 'authorization.user_confirmed_email',
+        FREEZED: 'authorization.freezed',
     },
     AUTHENTICATION: {
         INVALID_TOKEN: 'authentication.invalid_token',
         EXPIRED_TOKEN: 'authentication.expired_token',
+        FREEZED: 'authentication.freezed',
     },
     SYSTEM: {
         ERROR: 'system.error',
@@ -55,6 +57,11 @@ const ERRORS = {
     },
     ACCOUNT_CONFIRMATIONS: {
         PROHIBITED: 'account_confirmations.prohibited',
+    },
+    FREEZING: {
+        FREEZED: 'freezing.freezed',
+        NOT_FREEZED: 'freezing.not_freezed',
+        NOT_ENOUGH_POWER: 'freezing.not_enough_power',
     },
 };
 
