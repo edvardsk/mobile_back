@@ -25,12 +25,12 @@ const deleteFilesByIds = ids => squelPostgres
     .returning('*')
     .toString();
 
-const selectFilesByCompanyIdAndTypes = (companyId, types) => squelPostgres
+const selectFilesByCompanyIdAndTypes = (companyId, types, notPrefix) => squelPostgres
     .select()
     .from(table.NAME, 'f')
     .field('f.*')
     .where(`cf.${colsCompaniesFiles.COMPANY_ID} = '${companyId}'`)
-    .where(`f.${cols.TYPE} IN ?`, types)
+    .where(`f.${cols.TYPE} ${notPrefix} IN ?`, types)
     .left_join(tableCompaniesFiles.NAME, 'cf', `cf.${colsCompaniesFiles.FILE_ID} = f.id`)
     .toString();
 

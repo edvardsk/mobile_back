@@ -34,6 +34,7 @@ const BASES = {
     FREEZE: '/freeze',
     UNFREEZE: '/unfreeze',
     FILES: '/files',
+    GROUPS: '/groups',
 };
 
 const IDS = {
@@ -41,6 +42,7 @@ const IDS = {
     ROLE: '/:role',
     ME: '/:me',
     ME_OR_ID: '/:meOrId',
+    FILE_GROUP: '/:fileGroup',
 };
 
 const ROUTES = {
@@ -169,6 +171,7 @@ const ROUTES = {
     },
     COMPANIES: {
         BASE: BASES.COMPANIES,
+        GET: IDS.ME_OR_ID,
         EMPLOYEES: {
             BASE: IDS.ME_OR_ID + BASES.EMPLOYEES,
             GET_ALL: '',
@@ -179,7 +182,10 @@ const ROUTES = {
         },
         FILES: {
             BASE: IDS.ME_OR_ID + BASES.FILES,
-            GET_ALL: '',
+            GROUPS: {
+                BASE: BASES.GROUPS,
+                GET: IDS.FILE_GROUP,
+            }
         },
     },
 

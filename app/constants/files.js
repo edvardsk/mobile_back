@@ -9,7 +9,13 @@ const DOCUMENTS = {
     RESIDENCY_CERTIFICATE: 'residency_certificate',
 };
 
+const FILES_GROUPS = {
+    BASIC: 'basic',
+    CUSTOM: 'custom',
+};
+
 module.exports = {
     FILES_TYPES,
     DOCUMENTS,
+    FILES_GROUPS,
 };
