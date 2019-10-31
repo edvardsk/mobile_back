@@ -22,24 +22,24 @@ const confirmAccount = async (req, res, next) => {
             return reject(res, ERRORS.ACCOUNT_CONFIRMATIONS.PROHIBITED);
         }
 
-        const transactionsList = [
-            UserPermissionsService.removeUserPermissionAsTransaction(userId, PERMISSIONS.EXPECT_REGISTRATION_CONFIRMATION),
-        ];
+        // const transactionsList = [
+        //     UserPermissionsService.removeUserPermissionAsTransaction(userId, PERMISSIONS.EXPECT_REGISTRATION_CONFIRMATION),
+        // ];
+        //
+        // if (userPermissions.includes(PERMISSIONS.FINISH_REGISTRATION)) {
+        //     const userWithRole = await UsersService.getUserWithRole(userId);
+        //     const userRole = userWithRole[HOMELESS_COLUMNS.ROLE];
+        //     const nextUserRole = MAP_FROM_PENDING_ROLE_TO_MAIN[userRole];
+        //
+        //     if (!nextUserRole) {
+        //         return reject(res, ERRORS.SYSTEM.ERROR);
+        //     }
+        //     transactionsList.push(
+        //         UserRolesService.updateUserRoleAsTransaction(userId, nextUserRole)
+        //     );
+        // }
 
-        if (userPermissions.includes(PERMISSIONS.FINISH_REGISTRATION)) {
-            const userWithRole = await UsersService.getUserWithRole(userId);
-            const userRole = userWithRole[HOMELESS_COLUMNS.ROLE];
-            const nextUserRole = MAP_FROM_PENDING_ROLE_TO_MAIN[userRole];
-
-            if (!nextUserRole) {
-                return reject(res, ERRORS.SYSTEM.ERROR);
-            }
-            transactionsList.push(
-                UserRolesService.updateUserRoleAsTransaction(userId, nextUserRole)
-            );
-        }
-
-        await TablesService.runTransaction(transactionsList);
+        // await TablesService.runTransaction(transactionsList);
 
         return success(res, {});
     } catch (error) {
