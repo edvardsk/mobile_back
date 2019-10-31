@@ -93,6 +93,7 @@ const SQL_TABLES = {
             OWNERSHIP_TYPE: 'ownership_type',
             REGISTERED_AT: 'registered_at',
             WEBSITE: 'website',
+            LEGAL_CITY_NAME: 'legal_city_name',
             LEGAL_CITY_COORDINATES: 'legal_city_coordinates',
             LEGAL_ADDRESS: 'legal_address',
             SETTLEMENT_ACCOUNT: 'settlement_account',
