@@ -171,6 +171,7 @@ const ROUTES = {
     },
     COMPANIES: {
         BASE: BASES.COMPANIES,
+        GET: IDS.ME_OR_ID,
         EMPLOYEES: {
             BASE: IDS.ME_OR_ID + BASES.EMPLOYEES,
             GET_ALL: '',
