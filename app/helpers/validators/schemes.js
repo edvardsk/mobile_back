@@ -414,6 +414,10 @@ const finishRegistrationStep1SoleProprietorForwarderAsyncFunc = userId => ({
 const finishRegistrationStep2Transporter = {
     properties: {
         [colsCompanies.LEGAL_CITY_COORDINATES]: coordinatesFormat,
+        [colsCompanies.LEGAL_CITY_NAME]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
         [colsCompanies.LEGAL_ADDRESS]: {
             type: 'string',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
@@ -457,6 +461,7 @@ const finishRegistrationStep2Transporter = {
     },
     required: [
         colsCompanies.LEGAL_CITY_COORDINATES,
+        colsCompanies.LEGAL_CITY_NAME,
         colsCompanies.LEGAL_ADDRESS,
         colsCompanies.SETTLEMENT_ACCOUNT,
         colsCompanies.POST_ADDRESS,
@@ -488,6 +493,10 @@ const finishRegistrationStep2TransporterAsyncFunc = userId => ({
 const finishRegistrationStep2Holder = {
     properties: {
         [colsCompanies.LEGAL_CITY_COORDINATES]: coordinatesFormat,
+        [colsCompanies.LEGAL_CITY_NAME]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
         [colsCompanies.LEGAL_ADDRESS]: {
             type: 'string',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
@@ -530,6 +539,8 @@ const finishRegistrationStep2Holder = {
         },
     },
     required: [
+        colsCompanies.LEGAL_CITY_COORDINATES,
+        colsCompanies.LEGAL_CITY_NAME,
         colsCompanies.LEGAL_ADDRESS,
         colsCompanies.SETTLEMENT_ACCOUNT,
         colsCompanies.POST_ADDRESS,
@@ -561,6 +572,10 @@ const finishRegistrationStep2HolderAsyncFunc = userId => ({
 const finishRegistrationStep2SoleProprietorForwarder = {
     properties: {
         [colsCompanies.LEGAL_CITY_COORDINATES]: coordinatesFormat,
+        [colsCompanies.LEGAL_CITY_NAME]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
         [colsCompanies.LEGAL_ADDRESS]: {
             type: 'string',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
@@ -595,6 +610,8 @@ const finishRegistrationStep2SoleProprietorForwarder = {
         },
     },
     required: [
+        colsCompanies.LEGAL_CITY_COORDINATES,
+        colsCompanies.LEGAL_CITY_NAME,
         colsCompanies.LEGAL_ADDRESS,
         colsCompanies.SETTLEMENT_ACCOUNT,
         colsCompanies.POST_ADDRESS,
