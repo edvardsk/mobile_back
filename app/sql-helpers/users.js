@@ -193,6 +193,19 @@ const selectUserWithRoleAndFreezingStatus = id => squelPostgres
     .limit(1)
     .toString();
 
+const selectFirstInCompanyByCompanyId = companyId => squelPostgres
+    .select()
+    .field('u.*')
+    .field('r.name', HOMELESS_COLUMNS.ROLE)
+    .from(table.NAME, 'u')
+    .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
+    .left_join(tableUsersCompanies.NAME, 'uc', `uc.${colsUsersCompanies.USER_ID} = u.id`)
+    .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
+    .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
+    .order(`uc.${colsUsersCompanies.CREATED_AT}`, true)
+    .limit(1)
+    .toString();
+
 module.exports = {
     insertUser,
     selectUser,
@@ -208,4 +221,5 @@ module.exports = {
     selectUsersByCompanyIdPaginationSorting,
     selectCountUsersByCompanyId,
     selectUserWithRoleAndFreezingStatus,
+    selectFirstInCompanyByCompanyId,
 };

@@ -4,6 +4,7 @@ const { oneOrNone, one } = require('db');
 const {
     insertCompany,
     updateCompany,
+    selectCompanyById,
     selectCompanyByUserId,
     selectCompanyBySettlementAccountWithFirstOwner,
     selectCompanyByIdentityNumberWithFirstOwner,
@@ -26,6 +27,8 @@ const MAP_COUNTRIES_AND_SETTLEMENT_ACCOUNT_LENGTH = {
 
 const cols = SQL_TABLES.COMPANIES.COLUMNS;
 const colsCountries = SQL_TABLES.COUNTRIES.COLUMNS;
+
+const getCompany = id => oneOrNone(selectCompanyById(id));
 
 const getCompanyByUserId = userId => oneOrNone(selectCompanyByUserId(userId));
 
@@ -69,6 +72,11 @@ const checkCompanyWithStateRegistrationCertificateNumberExistsOpposite = async (
     return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId;
 };
 
+const checkCompanyWithIdExists = async (meta, companyId) => {
+    const company = await getCompany(companyId);
+    return !!company;
+};
+
 const validateSettlementAccount = async (props, account, schema, key, data) => {
     const country = await CountriesService.getCountryStrict(data[cols.BANK_COUNTRY_ID]);
     const countryName = country[colsCountries.NAME];
@@ -77,6 +85,7 @@ const validateSettlementAccount = async (props, account, schema, key, data) => {
 };
 
 module.exports = {
+    getCompany,
     getCompanyByUserId,
     getCompanyByUserIdStrict,
     addCompanyAsTransaction,
@@ -85,5 +94,6 @@ module.exports = {
     checkCompanyWithIdentityNumberExistsOpposite,
     checkCompanyWithNameExistsOpposite,
     checkCompanyWithStateRegistrationCertificateNumberExistsOpposite,
+    checkCompanyWithIdExists,
     validateSettlementAccount,
 };

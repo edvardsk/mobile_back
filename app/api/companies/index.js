@@ -1,6 +1,9 @@
 const express = require('express');
 const { ROUTES } = require('constants/routes');
 const getEmployees = require('./employees/get');
+const get = require('./get');
+const getData = require('./data/get');
+const getFiles = require('./files/get');
 
 // middlewares
 const { isHasPermissions } = require('api/middlewares');
@@ -18,7 +21,7 @@ const router = express.Router();
 router.get(
     ROUTES.COMPANIES.EMPLOYEES.BASE + ROUTES.COMPANIES.EMPLOYEES.GET_ALL,
     isHasPermissions([PERMISSIONS.READ_EMPLOYEES]),
-    validate(ValidatorSchemes.requiredMeParams, 'params'),
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     validate(ValidatorSchemes.basePaginationQuery, 'query'),
     validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
     validate(ValidatorSchemes.baseSortingSortingDirectionQuery, 'query'),
@@ -26,6 +29,30 @@ router.get(
     validate(ValidatorSchemes.modifyCompanyEmployeesFilterQuery, 'query'),
     validate(ValidatorSchemes.companyEmployeesFilterQuery, 'query'),
     getEmployees.getListEmployees,
+);
+
+
+// data
+router.get(
+    ROUTES.COMPANIES.GET,
+    isHasPermissions([PERMISSIONS.READ_LEGAL_DATA]),
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    get.geCommonData,
+);
+
+router.get(
+    ROUTES.COMPANIES.LEGAL_DATA.BASE + ROUTES.COMPANIES.LEGAL_DATA.GET,
+    isHasPermissions([PERMISSIONS.READ_LEGAL_DATA]),
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    getData.getLegalData,
+);
+
+router.get(
+    ROUTES.COMPANIES.FILES.BASE + ROUTES.COMPANIES.FILES.GROUPS.BASE + ROUTES.COMPANIES.FILES.GROUPS.GET,
+    isHasPermissions([PERMISSIONS.READ_LEGAL_DATA]),
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.listFilesGroupParams, 'params'),
+    getFiles.getGroupFiles,
 );
 
 module.exports = router;

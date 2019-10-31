@@ -16,22 +16,20 @@ const {
 // formatters
 const { formatRecordToSave } = require('formatters/freezing-history');
 
-// helpers
-const { isControlRole } = require('helpers');
-
 const freezeUser = async (req, res, next) => {
     const colsFreezingHistory = SQL_TABLES.FREEZING_HISTORY.COLUMNS;
     try {
         const currentUserId = res.locals.user.id;
-        const currentUserRole = res.locals.user.role;
         const currentUserPermissions = res.locals.permissions;
+        const isControlRole = res.locals.user.isControlRole;
+
         const { userId } = req.params;
         const user = await UsersService.getUserWithRoleAndFreezingData(userId);
         if (!user) {
             return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
         }
 
-        if (!isControlRole(currentUserRole)) {
+        if (!isControlRole) {
             const isFromOneCompany = await UsersCompaniesService.isUsersFromOneCompany(currentUserId, user.id);
             if (!isFromOneCompany) {
                 return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);

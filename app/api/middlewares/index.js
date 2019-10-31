@@ -13,7 +13,7 @@ const { ERROR_CODES } = require('constants/http-codes');
 const { SQL_TABLES } = require('constants/tables');
 
 // helpers
-const { extractToken } = require('helpers');
+const { extractToken, isControlRole } = require('helpers');
 const { isValidUUID } = require('helpers/validators');
 
 const isAllowedRoute = req => {
@@ -52,6 +52,7 @@ const isAuthenticated = async (req, res) => {
 
             res.locals.user = user;
             res.locals.permissions = new Set(permissions);
+            res.locals.user.isControlRole = isControlRole(user.role);
             return req.next();
         } catch (error) {
             logger.error(error);

@@ -25,12 +25,14 @@ const getObject = (
 const putObject = (
     bucketName,
     fileName,
-    body
+    body,
+    contentType
 ) => new Promise((resolve, reject) => {
     const params = {
         Body: body,
         Bucket: bucketName,
         Key: fileName,
+        ContentType: contentType,
     };
     s3.putObject(params, (error, data) => {
         if (error) reject(error);
@@ -67,9 +69,20 @@ const deleteObject = (
     });
 });
 
+const getSignedUrl = (bucketName, fileName, expiration = 60) => new Promise((resolve) => {
+    const params = {
+        Bucket: bucketName,
+        Key: fileName,
+        Expires: expiration,
+    };
+    const url = s3.getSignedUrl('getObject', params);
+    resolve(url);
+});
+
 module.exports = {
     getObject,
     putObject,
     headObject,
     deleteObject,
+    getSignedUrl,
 };

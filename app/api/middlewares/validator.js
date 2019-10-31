@@ -1,7 +1,7 @@
 const Ajv = require('ajv');
 const { get } = require('lodash');
 const { reject } = require('api/response');
-const ajv = new Ajv({ allErrors: true });
+const ajv = new Ajv({ allErrors: true, jsonPointers: true });
 require('ajv-keywords')(ajv, 'instanceof');
 require('ajv-errors')(ajv);
 const fileType = require('file-type');
@@ -116,6 +116,12 @@ ajv.addKeyword('not_valid_settlement_account', {
     validate: CompaniesService.validateSettlementAccount,
 });
 
+ajv.addKeyword('company_with_id_not_exist', {
+    async: true,
+    type: 'string',
+    validate: CompaniesService.checkCompanyWithIdExists,
+});
+
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {
     try {
         const data = get(req, pathToData);
@@ -125,6 +131,7 @@ const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next)
             const params = {
                 role: res.locals.user.role,
                 userId: res.locals.user.id,
+                isControlRole: res.locals.user.isControlRole,
             };
             scheme = schemeOrGetter(params);
         } else {
