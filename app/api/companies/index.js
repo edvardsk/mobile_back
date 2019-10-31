@@ -8,7 +8,7 @@ const getFiles = require('./files/get');
 const postSteps = require('./steps/post');
 
 // middlewares
-const { isHasPermissions } = require('api/middlewares');
+const { isHasPermissions, injectShadowCompanyHeadByMeOrId } = require('api/middlewares');
 const { validate } = require('api/middlewares/validator');
 const { formDataHandler } = require('api/middlewares/files');
 
@@ -23,50 +23,50 @@ const upload = multer();
 const uploadData = upload.any();
 
 const CREATE_OR_MODIFY_STEP_1_TEXT_MAP_SCHEMES = {
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: ValidatorSchemes.finishRegistrationStep1Transporter,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: ValidatorSchemes.finishRegistrationStep1Holder,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_INDIVIDUAL_FORWARDER]: ValidatorSchemes.finishRegistrationStep1IndividualForwarder,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep1SoleProprietorForwarder,
+    [ROLES.TRANSPORTER]: ValidatorSchemes.finishRegistrationStep1Transporter,
+    [ROLES.HOLDER]: ValidatorSchemes.finishRegistrationStep1Holder,
+    [ROLES.INDIVIDUAL_FORWARDER]: ValidatorSchemes.finishRegistrationStep1IndividualForwarder,
+    [ROLES.SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep1SoleProprietorForwarder,
 };
 
 const CREATE_OR_MODIFY_STEP_1_TEXT_MAP_SCHEMES_ASYNC = {
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: ValidatorSchemes.finishRegistrationStep1TransporterAsyncFunc,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: ValidatorSchemes.finishRegistrationStep1HolderAsyncFunc,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_INDIVIDUAL_FORWARDER]: ValidatorSchemes.finishRegistrationStep1IndividualForwarderAsyncFunc,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep1SoleProprietorForwarderAsyncFunc,
+    [ROLES.TRANSPORTER]: ValidatorSchemes.finishRegistrationStep1TransporterAsyncFunc,
+    [ROLES.HOLDER]: ValidatorSchemes.finishRegistrationStep1HolderAsyncFunc,
+    [ROLES.INDIVIDUAL_FORWARDER]: ValidatorSchemes.finishRegistrationStep1IndividualForwarderAsyncFunc,
+    [ROLES.SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep1SoleProprietorForwarderAsyncFunc,
 };
 
 const CREATE_OR_MODIFY_STEP_2_TEXT_MAP_SCHEMES = {
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: ValidatorSchemes.finishRegistrationStep2Transporter,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: ValidatorSchemes.finishRegistrationStep2Holder,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep2SoleProprietorForwarder,
+    [ROLES.TRANSPORTER]: ValidatorSchemes.finishRegistrationStep2Transporter,
+    [ROLES.HOLDER]: ValidatorSchemes.finishRegistrationStep2Holder,
+    [ROLES.SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep2SoleProprietorForwarder,
 };
 
 const CREATE_OR_MODIFY_STEP_2_TEXT_MAP_SCHEMES_ASYNC = {
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: ValidatorSchemes.finishRegistrationStep2TransporterAsyncFunc,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: ValidatorSchemes.finishRegistrationStep2HolderAsyncFunc,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep2SoleProprietorForwarderAsyncFunc,
+    [ROLES.TRANSPORTER]: ValidatorSchemes.finishRegistrationStep2TransporterAsyncFunc,
+    [ROLES.HOLDER]: ValidatorSchemes.finishRegistrationStep2HolderAsyncFunc,
+    [ROLES.SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep2SoleProprietorForwarderAsyncFunc,
 };
 
 const CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES = {
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: ValidatorSchemes.finishRegistrationStep3Transporter,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: ValidatorSchemes.finishRegistrationStep3Holder,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_INDIVIDUAL_FORWARDER]: ValidatorSchemes.finishRegistrationStep3IndividualForwarder,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep3SoleProprietorForwarder,
+    [ROLES.TRANSPORTER]: ValidatorSchemes.finishRegistrationStep3Transporter,
+    [ROLES.HOLDER]: ValidatorSchemes.finishRegistrationStep3Holder,
+    [ROLES.INDIVIDUAL_FORWARDER]: ValidatorSchemes.finishRegistrationStep3IndividualForwarder,
+    [ROLES.SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep3SoleProprietorForwarder,
 };
 
 const CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES_ASYNC = {
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: ValidatorSchemes.finishRegistrationStep3TransporterAsyncFunc,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: ValidatorSchemes.finishRegistrationStep3HolderAsyncFunc,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_INDIVIDUAL_FORWARDER]: ValidatorSchemes.finishRegistrationStep3IndividualForwarderAsyncFunc,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep3SoleProprietorForwarderAsyncFunc,
+    [ROLES.TRANSPORTER]: ValidatorSchemes.finishRegistrationStep3TransporterAsyncFunc,
+    [ROLES.HOLDER]: ValidatorSchemes.finishRegistrationStep3HolderAsyncFunc,
+    [ROLES.INDIVIDUAL_FORWARDER]: ValidatorSchemes.finishRegistrationStep3IndividualForwarderAsyncFunc,
+    [ROLES.SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep3SoleProprietorForwarderAsyncFunc,
 };
 
 const CREATE_OR_MODIFY_STEP_3_FILES_MAP_SCHEMES = {
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: ValidatorSchemes.finishRegistrationStep3TransporterFiles,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: ValidatorSchemes.finishRegistrationStep3HolderFiles,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_INDIVIDUAL_FORWARDER]: ValidatorSchemes.finishRegistrationStep3IndividualForwarderFiles,
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep3SoleProprietorForwarderFiles,
+    [ROLES.TRANSPORTER]: ValidatorSchemes.finishRegistrationStep3TransporterFiles,
+    [ROLES.HOLDER]: ValidatorSchemes.finishRegistrationStep3HolderFiles,
+    [ROLES.INDIVIDUAL_FORWARDER]: ValidatorSchemes.finishRegistrationStep3IndividualForwarderFiles,
+    [ROLES.SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep3SoleProprietorForwarderFiles,
 };
 
 // employees
@@ -110,30 +110,42 @@ router.get(
 
 // modify company steps
 router.post(
-    ROUTES.AUTH.FINISH_REGISTRATION.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['1'].BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['1'].POST,
+    ROUTES.COMPANIES.STEPS.BASE + ROUTES.COMPANIES.STEPS['1'].BASE + ROUTES.COMPANIES.STEPS['1'].POST,
     isHasPermissions([PERMISSIONS.MODIFY_COMPANY_DATA_STEP_1]), // permissions middleware
-    validate(({ role }) => CREATE_OR_MODIFY_STEP_1_TEXT_MAP_SCHEMES[role]),
-    validate(({ role, userId }) => CREATE_OR_MODIFY_STEP_1_TEXT_MAP_SCHEMES_ASYNC[role](userId)),
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectShadowCompanyHeadByMeOrId,
+    validate(({ shadowMainUserRole, role }) => CREATE_OR_MODIFY_STEP_1_TEXT_MAP_SCHEMES[shadowMainUserRole || role]),
+    validate(({ shadowUserId, shadowMainUserRole, role, userId }) => (
+        CREATE_OR_MODIFY_STEP_1_TEXT_MAP_SCHEMES_ASYNC[shadowMainUserRole || role](shadowUserId || userId)
+    )),
     postSteps.editStep1,
 );
 
 router.post(
-    ROUTES.AUTH.FINISH_REGISTRATION.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['2'].BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['2'].POST,
+    ROUTES.COMPANIES.STEPS.BASE + ROUTES.COMPANIES.STEPS['2'].BASE + ROUTES.COMPANIES.STEPS['2'].POST,
     isHasPermissions([PERMISSIONS.MODIFY_COMPANY_DATA_STEP_2]), // permissions middleware
-    validate(({ role }) => CREATE_OR_MODIFY_STEP_2_TEXT_MAP_SCHEMES[role]),
-    validate(({ role, userId }) => CREATE_OR_MODIFY_STEP_2_TEXT_MAP_SCHEMES_ASYNC[role](userId)),
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectShadowCompanyHeadByMeOrId,
+    validate(({ shadowMainUserRole, role }) => CREATE_OR_MODIFY_STEP_2_TEXT_MAP_SCHEMES[shadowMainUserRole || role]),
+    validate(({ shadowUserId, shadowMainUserRole, role, userId }) => (
+        CREATE_OR_MODIFY_STEP_2_TEXT_MAP_SCHEMES_ASYNC[shadowMainUserRole || role](shadowUserId || userId)
+    )),
     validate(ValidatorSchemes.settlementAccountAsync),
     postSteps.editStep2,
 );
 
 router.post(
-    ROUTES.AUTH.FINISH_REGISTRATION.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['3'].BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['3'].POST,
+    ROUTES.COMPANIES.STEPS.BASE + ROUTES.COMPANIES.STEPS['3'].BASE + ROUTES.COMPANIES.STEPS['3'].POST,
     isHasPermissions([PERMISSIONS.MODIFY_COMPANY_DATA_STEP_3]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectShadowCompanyHeadByMeOrId,
     formDataHandler(uploadData), // uploading files middleware
     validate(ValidatorSchemes.modifyOtherOrganizations),
-    validate(({ role }) => CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES[role]),
-    validate(({ role, userId }) => CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES_ASYNC[role](userId)),
-    validate(({ role }) => CREATE_OR_MODIFY_STEP_3_FILES_MAP_SCHEMES[role], 'files'),
+    validate(({ shadowMainUserRole, role }) => CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES[shadowMainUserRole || role]),
+    validate(({ shadowUserId, shadowMainUserRole, role, userId }) => (
+        CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES_ASYNC[shadowMainUserRole || role](shadowUserId || userId)
+    )),
+    validate(({ shadowMainUserRole, role }) => CREATE_OR_MODIFY_STEP_3_FILES_MAP_SCHEMES[shadowMainUserRole || role], 'files'),
     postSteps.editStep3,
 );
 

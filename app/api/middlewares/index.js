@@ -10,7 +10,8 @@ const PermissionsService = require('services/tables/permissions');
 const { ERRORS } = require('constants/errors');
 const { ALLOWED_ROUTES } = require('constants/routes');
 const { ERROR_CODES } = require('constants/http-codes');
-const { SQL_TABLES } = require('constants/tables');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
+const { MAP_COMPANY_OWNERS_TO_MAIN_ROLES } = require('constants/system');
 
 // helpers
 const { extractToken, isControlRole } = require('helpers');
@@ -86,7 +87,38 @@ const isHasPermissions = (permissionsOrGetter = []) => (req, res, next) => {
     }
 };
 
+const injectShadowCompanyHeadByMeOrId = async (req, res, next) => {
+    try {
+        const { role } = res.locals.user;
+        if (isControlRole(role)) {
+            const companyId = req.params.meOrId;
+            if (!isValidUUID(companyId)) {
+                return reject(res, ERRORS.COMPANIES.INVALID_COMPANY_ID);
+            }
+            const headUser = await UsersService.getFirstUserInCompany(companyId);
+            if (!headUser) {
+                return reject(res, ERRORS.COMPANIES.INVALID_COMPANY_ID);
+            }
+
+            const shadowRole = headUser[HOMELESS_COLUMNS.ROLE];
+
+            const mainShadowRole = MAP_COMPANY_OWNERS_TO_MAIN_ROLES[shadowRole];
+
+            if (!mainShadowRole) {
+                return reject(res, ERRORS.SYSTEM.ERROR);
+            }
+
+            res.locals.shadowMainUserRole = mainShadowRole;
+            res.locals.shadowUserId = headUser.id;
+        }
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     isHasPermissions,
     isAuthenticated,
+    injectShadowCompanyHeadByMeOrId,
 };

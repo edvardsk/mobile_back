@@ -61,6 +61,10 @@ const getFirstUserInCompanyStrict = companyId => (
     one(selectFirstInCompanyByCompanyId(companyId))
 );
 
+const getFirstUserInCompany = companyId => (
+    oneOrNone(selectFirstInCompanyByCompanyId(companyId))
+);
+
 const checkUserWithPassportNumberExistsOpposite = async (meta, number) => {
     const user = await getUserByPassportNumber(number);
     const { userId } = meta;
@@ -99,6 +103,7 @@ module.exports = {
     getUserForAuthentication,
     getUserWithRoleAndFreezingData,
     getFirstUserInCompanyStrict,
+    getFirstUserInCompany,
 
     checkUserWithPassportNumberExistsOpposite,
     checkUserWithEmailExistsOpposite,
