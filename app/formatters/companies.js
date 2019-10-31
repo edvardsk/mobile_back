@@ -59,11 +59,19 @@ const formatLegalDataForSoleProprietorForwarderForResponse = (company, user) => 
     [HOMELESS_COLUMNS.BANK_COUNTRY]: company[HOMELESS_COLUMNS.BANK_COUNTRY],
 });
 
+const formatCompanyToResponse = company => ({
+    id: company.id,
+    [cols.NAME]: company[cols.NAME] || undefined,
+    [cols.IDENTITY_NUMBER]: company[cols.IDENTITY_NUMBER],
+    [cols.CREATED_AT]: company[cols.CREATED_AT],
+});
+
 module.exports = {
     formatInitialDataToSave,
     formatCompanyDataOnStep2,
     formatLegalDataForTransporterAndHolderForResponse,
     formatLegalDataForIndividualForwarderForResponse,
     formatLegalDataForSoleProprietorForwarderForResponse,
+    formatCompanyToResponse,
 };
 
