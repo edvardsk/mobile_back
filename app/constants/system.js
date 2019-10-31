@@ -152,6 +152,10 @@ const PERMISSIONS = {
 
     READ_EMPLOYEES: 'read_employees',
     READ_LEGAL_DATA: 'read_legal_info',
+
+    MODIFY_COMPANY_DATA_STEP_1: 'modify_company_data_step_1',
+    MODIFY_COMPANY_DATA_STEP_2: 'modify_company_data_step_2',
+    MODIFY_COMPANY_DATA_STEP_3: 'modify_company_data_step_3',
 };
 
 const MAP_ROLES_TO_FREEZING_PERMISSIONS = {
