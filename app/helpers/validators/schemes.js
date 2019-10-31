@@ -1,7 +1,7 @@
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
-const { DOCUMENTS } = require('constants/files');
+const { DOCUMENTS, FILES_GROUPS } = require('constants/files');
 const { ROLES } = require('constants/system');
 const {
     PAGINATION_PARAMS,
@@ -1068,6 +1068,18 @@ const requiredMeParams = {
     ],
 };
 
+const listFilesGroupParams = {
+    properties: {
+        fileGroup: {
+            type: 'string',
+            enum: [FILES_GROUPS.BASIC, FILES_GROUPS.CUSTOM],
+        },
+    },
+    required: [
+        'fileGroup'
+    ]
+};
+
 const basePaginationQuery = {
     properties: {
         [PAGINATION_PARAMS.PAGE]: {
@@ -1194,6 +1206,7 @@ module.exports = {
     requiredMeParams,
     meOrIdRequiredMeParams,
     meOrIdRequiredIdParams,
+    listFilesGroupParams,
 
     basePaginationQuery,
     basePaginationModifyQuery,
