@@ -10,7 +10,7 @@ const postSteps = require('./steps/post');
 // middlewares
 const { isHasPermissions, injectShadowCompanyHeadByMeOrId } = require('api/middlewares');
 const { validate } = require('api/middlewares/validator');
-const { formDataHandler } = require('api/middlewares/files');
+const { formDataHandler, createOrUpdateDataOnStep3 } = require('api/middlewares/files');
 
 // constants
 const { PERMISSIONS, ROLES } = require('constants/system');
@@ -147,6 +147,7 @@ router.post(
     )),
     validate(({ shadowMainUserRole, role }) => CREATE_OR_MODIFY_STEP_3_FILES_MAP_SCHEMES[shadowMainUserRole || role], 'files'),
     postSteps.editStep3,
+    createOrUpdateDataOnStep3,
 );
 
 module.exports = router;

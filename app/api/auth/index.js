@@ -18,7 +18,7 @@ const ValidatorSchemes = require('helpers/validators/schemes');
 
 // middlewares
 const { isHasPermissions, isAuthenticated } = require('api/middlewares');
-const { formDataHandler } = require('api/middlewares/files');
+const { formDataHandler, createOrUpdateDataOnStep3 } = require('api/middlewares/files');
 const { validate } = require('api/middlewares/validator');
 
 const upload = multer();
@@ -200,6 +200,7 @@ router.post(
     validate(({ role, userId }) => FINISH_REGISTRATION_STEP_3_TEXT_MAP_SCHEMES_ASYNC[role](userId)),
     validate(({ role }) => FINISH_REGISTRATION_STEP_3_FILES_MAP_SCHEMES[role], 'files'),
     finishRegistration.finishRegistrationStep3,
+    createOrUpdateDataOnStep3,
 );
 
 router.post(
