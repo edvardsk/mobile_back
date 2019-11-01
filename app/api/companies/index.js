@@ -89,6 +89,7 @@ router.get(
     ROUTES.COMPANIES.GET,
     isHasPermissions([PERMISSIONS.READ_LEGAL_DATA]),
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectShadowCompanyHeadByMeOrId,
     get.geCommonData,
 );
 
@@ -96,6 +97,7 @@ router.get(
     ROUTES.COMPANIES.LEGAL_DATA.BASE + ROUTES.COMPANIES.LEGAL_DATA.GET,
     isHasPermissions([PERMISSIONS.READ_LEGAL_DATA]),
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectShadowCompanyHeadByMeOrId,
     getData.getLegalData,
 );
 
@@ -104,6 +106,7 @@ router.get(
     isHasPermissions([PERMISSIONS.READ_LEGAL_DATA]),
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     validate(ValidatorSchemes.listFilesGroupParams, 'params'),
+    injectShadowCompanyHeadByMeOrId,
     getFiles.getGroupFiles,
 );
 
