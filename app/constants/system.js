@@ -146,7 +146,6 @@ const MAP_ALLOWED_ROLES_TO_RESEND_EMAIL = {
 
 const PERMISSIONS = {
     AUTHORIZATION: 'authorization',
-    FINISH_REGISTRATION: 'finish_registration',
     RESET_PASSWORD: 'reset_password',
     CONFIRM_EMAIL: 'confirm_email',
     CONFIRM_PHONE_NUMBER: 'confirm_phone_number',
@@ -157,7 +156,7 @@ const PERMISSIONS = {
     REGISTRATION_SAVE_STEP_5: 'registration_save_step_5',
     ACCEPT_REGISTRATION: 'accept_registration',
     EXPECT_REGISTRATION_CONFIRMATION: 'expect_registration_confirmation',
-    PASS_PRIMARY_CONFIRMATION: 'PASS_PRIMARY_CONFIRMATION',
+    PASS_PRIMARY_CONFIRMATION: 'pass_primary_confirmation',
 
     FREEZE_ADMIN: 'freeze_admin',
     FREEZE_MANAGER: 'freeze_manager',
