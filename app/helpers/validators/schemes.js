@@ -1020,11 +1020,35 @@ const requiredEmailAsync = {
     additionalProperties: false,
 };
 
+const inviteUserWithoutCompanyRolesParams = {
+    properties: {
+        role: {
+            type: 'string',
+            enum: [ROLES.MANAGER],
+        },
+    },
+    required: [
+        'role'
+    ],
+};
+
 const inviteUserRolesParams = {
     properties: {
         role: {
             type: 'string',
-            enum: [ROLES.MANAGER, ROLES.DISPATCHER, ROLES.LOGISTICIAN],
+            enum: [ROLES.DISPATCHER, ROLES.LOGISTICIAN],
+        },
+    },
+    required: [
+        'role'
+    ],
+};
+
+const inviteUserRolesAdvancedParams = {
+    properties: {
+        role: {
+            type: 'string',
+            enum: [ROLES.DRIVER],
         },
     },
     required: [
@@ -1203,6 +1227,8 @@ module.exports = {
 
     modifyOtherOrganizations,
     inviteUserRolesParams,
+    inviteUserRolesAdvancedParams,
+    inviteUserWithoutCompanyRolesParams,
     requiredMeParams,
     meOrIdRequiredMeParams,
     meOrIdRequiredIdParams,

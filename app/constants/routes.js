@@ -161,6 +161,23 @@ const ROUTES = {
             BASE: BASES.ROLES,
             POST: IDS.ROLE,
         },
+        COMPANIES: {
+            BASE: BASES.COMPANIES,
+            ROLES: {
+                BASE: IDS.ME_OR_ID + BASES.ROLES,
+                POST: IDS.ROLE,
+            },
+        },
+        ADVANCED: {
+            BASE: BASES.ADVANCED,
+            COMPANIES: {
+                BASE: BASES.COMPANIES,
+                ROLES: {
+                    BASE: IDS.ME_OR_ID + BASES.ROLES,
+                    POST: IDS.ROLE,
+                },
+            },
+        },
         RESEND: {
             BASE: BASES.RESEND,
             USERS: {
