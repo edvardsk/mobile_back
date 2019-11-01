@@ -18,6 +18,7 @@ const formatUserForResponse = user => ({
 });
 
 const formatUserWithPermissionsForResponse = (user, permissions) => ({
+    id: user.id,
     [cols.EMAIL]: user[cols.EMAIL],
     [cols.CREATED_AT]: user[cols.CREATED_AT],
     [cols.FULL_NAME]: user[cols.FULL_NAME],
