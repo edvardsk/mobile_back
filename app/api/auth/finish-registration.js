@@ -41,6 +41,7 @@ const finishRegistrationStep1 = async (req, res, next) => {
     try {
         const userId = res.locals.user.id;
         const userRole = res.locals.user.role;
+        const userPermissions = res.locals.permissions;
 
         const company = await CompaniesService.getCompanyByUserIdStrict(userId);
 
@@ -48,12 +49,17 @@ const finishRegistrationStep1 = async (req, res, next) => {
             ...req.body,
         };
 
-        const transactionList = [
+        const transactionsList = [
             CompaniesService.updateCompanyAsTransaction(company.id, MAP_ROLES_AND_FORMATTERS_STEP_1[userRole](companyData)),
-            UserPermissionsService.addUserPermissionAsTransaction(userId, MAP_ROLES_TO_NEXT_PERMISSIONS_FOR_STEP_1[userRole]),
         ];
 
-        await TablesService.runTransaction(transactionList);
+        if (!(userPermissions.has(PERMISSIONS.REGISTRATION_SAVE_STEP_2) || userPermissions.has(PERMISSIONS.REGISTRATION_SAVE_STEP_3))) {
+            transactionsList.push(
+                UserPermissionsService.addUserPermissionAsTransaction(userId, MAP_ROLES_TO_NEXT_PERMISSIONS_FOR_STEP_1[userRole]),
+            );
+        }
+
+        await TablesService.runTransaction(transactionsList);
 
         return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
     } catch (error) {
