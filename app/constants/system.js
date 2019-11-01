@@ -6,6 +6,7 @@ const ROLES = {
     UNCONFIRMED_MANAGER: 'unconfirmed_manager',
     UNCONFIRMED_DISPATCHER: 'unconfirmed_dispatcher',
     UNCONFIRMED_LOGISTICIAN: 'unconfirmed_logistician',
+    UNCONFIRMED_DRIVER: 'unconfirmed_driver',
 
     CONFIRMED_EMAIL_TRANSPORTER: 'confirmed_email_transporter',
     CONFIRMED_EMAIL_HOLDER: 'confirmed_email_holder',
@@ -14,6 +15,7 @@ const ROLES = {
     CONFIRMED_EMAIL_MANAGER: 'confirmed_email_manager',
     CONFIRMED_EMAIL_DISPATCHER: 'confirmed_email_dispatcher',
     CONFIRMED_EMAIL_LOGISTICIAN: 'confirmed_email_logistician',
+    CONFIRMED_EMAIL_DRIVER: 'confirmed_email_driver',
 
     CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER: 'confirmed_email_and_phone_transporter',
     CONFIRMED_EMAIL_AND_PHONE_HOLDER: 'confirmed_email_and_phone_holder',
@@ -28,7 +30,8 @@ const ROLES = {
     ADMIN: 'admin',
     MANAGER: 'manager',
     DISPATCHER: 'dispatcher',
-    LOGISTICIAN: 'logistician'
+    LOGISTICIAN: 'logistician',
+    DRIVER: 'driver',
 };
 
 const MAP_COMPANY_OWNERS_TO_MAIN_ROLES = {
@@ -166,10 +169,12 @@ const PERMISSIONS = {
     FREEZE_SOLE_PROPRIETOR_FORWARDER: 'freeze_sole_proprietor_forwarder',
     FREEZE_DISPATCHER: 'freeze_dispatcher',
     FREEZE_LOGISTICIAN: 'freeze_logistician',
+    FREEZE_DRIVER: 'freeze_driver',
 
     INVITE_MANAGER: 'invite_manager',
     INVITE_DISPATCHER: 'invite_dispatcher',
     INVITE_LOGISTICIAN: 'invite_logistician',
+    INVITE_DRIVER: 'invite_driver',
     BASIC_INVITES: 'basic_invites',
 
     READ_EMPLOYEES: 'read_employees',
