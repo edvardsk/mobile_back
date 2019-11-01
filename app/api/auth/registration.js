@@ -3,7 +3,9 @@ const uuid = require('uuid/v4');
 
 // services
 const UsersService = require('services/tables/users');
+const CompaniesService = require('services/tables/companies');
 const EmailConfirmationService = require('services/tables/email-confirmation-hashes');
+const UsersCompaniesService = require('services/tables/users-to-companies');
 const UsersRolesService = require('services/tables/users-to-roles');
 const RolesService = require('services/tables/roles');
 const PhoneNumbersService = require('services/tables/phone-numbers');
@@ -20,6 +22,7 @@ const { SUCCESS_CODES } = require('constants/http-codes');
 const { MAP_ROLES_FROM_CLIENT_TO_SERVER, ROLES_TO_REGISTER } = require('constants/system');
 
 // formatters
+const UsersCompaniesFormatters = require('formatters/users-to-companies');
 const { formatUserForSaving } = require('formatters/users');
 const { formatRecordToSave } = require('formatters/email-confirmation');
 const { formatRolesForResponse } = require('formatters/roles');
@@ -57,11 +60,20 @@ const createUser = async (req, res, next) => {
 
         const data = formatUserForSaving(userId, body, hash, key);
 
+        const companyId = uuid();
+        const companyData = {
+            id: companyId,
+        };
+        const userCompanyData = UsersCompaniesFormatters.formatRecordToSave(userId, companyId);
+
         await TableService.runTransaction([
             UsersService.addUserAsTransaction(data),
             UsersRolesService.addUserRoleAsTransaction(userId, pendingRole),
             EmailConfirmationService.addRecordAsTransaction(formatRecordToSave(userId, confirmationHash)),
             PhoneNumbersService.addRecordAsTransaction(formatPhoneNumberToSave(userId, phonePrefixId, phoneNumber)),
+            CompaniesService.addCompanyAsTransaction(companyData),
+            UsersCompaniesService.addRecordAsTransaction(userCompanyData),
+
         ]);
 
         await MailService.sendConfirmationEmail(email, confirmationHash, role[colsRoles.NAME]);

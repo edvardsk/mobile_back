@@ -132,8 +132,13 @@ const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next)
                 role: res.locals.user.role,
                 userId: res.locals.user.id,
                 isControlRole: res.locals.user.isControlRole,
+                shadowMainUserRole: res.locals.shadowMainUserRole,
+                shadowUserId: res.locals.shadowUserId,
             };
             scheme = schemeOrGetter(params);
+            if (!scheme) {
+                return reject(res, {});
+            }
         } else {
             scheme = schemeOrGetter;
         }

@@ -14,47 +14,42 @@ const {
 // constants
 const {
     ROLES,
+    MAP_COMPANY_OWNERS_TO_MAIN_ROLES,
 } = require('constants/system');
 const { ERRORS } = require('constants/errors');
 const { HOMELESS_COLUMNS } = require('constants/tables');
 
 const MAP_ROLE_TO_FORMATTER = {
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: formatLegalDataForTransporterAndHolderForResponse,
     [ROLES.TRANSPORTER]: formatLegalDataForTransporterAndHolderForResponse,
-
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_HOLDER]: formatLegalDataForTransporterAndHolderForResponse,
     [ROLES.HOLDER]: formatLegalDataForTransporterAndHolderForResponse,
-
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_INDIVIDUAL_FORWARDER]: formatLegalDataForIndividualForwarderForResponse,
     [ROLES.INDIVIDUAL_FORWARDER]: formatLegalDataForIndividualForwarderForResponse,
-
-    [ROLES.CONFIRMED_EMAIL_AND_PHONE_SOLE_PROPRIETOR_FORWARDER]: formatLegalDataForSoleProprietorForwarderForResponse,
     [ROLES.SOLE_PROPRIETOR_FORWARDER]: formatLegalDataForSoleProprietorForwarderForResponse,
 };
 
 const getLegalData = async (req, res, next) => {
     try {
         const currentUserId = res.locals.user.id;
-        const isControlRole = res.locals.user.isControlRole;
+        const { isControlRole } = res.locals.user;
+        const { shadowUserId } = res.locals;
 
-        const { meOrId } = req.params;
-        let company;
-        let firstUserInCompanyData;
-
+        let companyHeadId;
         if (isControlRole) {
-            company = await CompaniesService.getCompany(meOrId);
-            if (!company) {
-                return reject(res, ERRORS.COMPANIES.INVALID_COMPANY_ID);
-            }
-            firstUserInCompanyData = await UsersService.getFirstUserInCompanyStrict(company.id);
+            companyHeadId = shadowUserId;
         } else {
-            company = await CompaniesService.getCompanyByUserId(currentUserId);
-            firstUserInCompanyData = await UsersService.getFirstUserInCompanyStrict(company.id);
+            companyHeadId = currentUserId;
         }
 
-        const userRole = firstUserInCompanyData[HOMELESS_COLUMNS.ROLE];
+        const company = await CompaniesService.getCompanyByUserId(companyHeadId);
+        if (!company) {
+            return reject(res, ERRORS.COMPANIES.INVALID_COMPANY_ID);
+        }
 
-        const legalData = MAP_ROLE_TO_FORMATTER[userRole](company, firstUserInCompanyData);
+        const firstUserInCompanyData = await UsersService.getFirstUserInCompanyStrict(company.id);
+
+        const userRole = firstUserInCompanyData[HOMELESS_COLUMNS.ROLE];
+        const mainRole = MAP_COMPANY_OWNERS_TO_MAIN_ROLES[userRole];
+
+        const legalData = MAP_ROLE_TO_FORMATTER[mainRole](company, firstUserInCompanyData);
 
         return success(res, { legal_data: legalData });
     } catch (error) {

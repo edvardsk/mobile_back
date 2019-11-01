@@ -187,6 +187,21 @@ const ROUTES = {
                 GET: IDS.FILE_GROUP,
             }
         },
+        STEPS: {
+            BASE: IDS.ME_OR_ID + BASES.STEPS,
+            1: {
+                BASE: BASES['1'],
+                POST: '',
+            },
+            2: {
+                BASE: BASES['2'],
+                POST: '',
+            },
+            3: {
+                BASE: BASES['3'],
+                POST: '',
+            },
+        }
     },
 
 };

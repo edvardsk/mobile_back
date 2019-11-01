@@ -14,18 +14,19 @@ const { ERRORS } = require('constants/errors');
 const geCommonData = async (req, res, next) => {
     try {
         const currentUserId = res.locals.user.id;
-        const isControlRole = res.locals.user.isControlRole;
+        const { isControlRole } = res.locals.user;
+        const { shadowUserId } = res.locals;
 
-        const { meOrId } = req.params;
-        let company;
-
+        let companyHeadId;
         if (isControlRole) {
-            company = await CompaniesService.getCompany(meOrId);
-            if (!company) {
-                return reject(res, ERRORS.COMPANIES.INVALID_COMPANY_ID);
-            }
+            companyHeadId = shadowUserId;
         } else {
-            company = await CompaniesService.getCompanyByUserId(currentUserId);
+            companyHeadId = currentUserId;
+        }
+
+        const company = await CompaniesService.getCompanyByUserId(companyHeadId);
+        if (!company) {
+            return reject(res, ERRORS.COMPANIES.INVALID_COMPANY_ID);
         }
 
         const formattedCompany = formatCompanyToResponse(company);
