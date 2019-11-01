@@ -14,7 +14,6 @@ const { FILES_TYPES } = require('constants/files');
 const router = express.Router();
 
 const GET_CONDITIONS_AND_TERMS_PERMISSIONS = [
-    PERMISSIONS.FINISH_REGISTRATION,
     PERMISSIONS.REGISTRATION_SAVE_STEP_5,
 ];
 

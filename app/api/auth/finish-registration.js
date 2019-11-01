@@ -3,11 +3,16 @@ const { success } = require('api/response');
 // services
 const CompaniesService = require('services/tables/companies');
 const RoutesService = require('services/tables/routes');
+const UsersRolesService = require('services/tables/users-to-roles');
 const UserPermissionsService = require('services/tables/users-to-permissions');
 const TablesService = require('services/tables');
 
 // constants
-const { ROLES, PERMISSIONS } = require('constants/system');
+const {
+    ROLES,
+    PERMISSIONS,
+    MAP_FROM_PENDING_ROLE_TO_MAIN,
+} = require('constants/system');
 const { SUCCESS_CODES } = require('constants/http-codes');
 
 // formatters
@@ -151,6 +156,7 @@ const finishRegistrationStep4 = async (req, res, next) => {
 const finishRegistrationStep5 = async (req, res, next) => {
     try {
         const userId = res.locals.user.id;
+        const userRole = res.locals.user.role;
         const permissionsToRemove = [
             PERMISSIONS.REGISTRATION_SAVE_STEP_1,
             PERMISSIONS.REGISTRATION_SAVE_STEP_2,
@@ -159,9 +165,13 @@ const finishRegistrationStep5 = async (req, res, next) => {
             PERMISSIONS.REGISTRATION_SAVE_STEP_5,
         ];
 
+        const nextUserRole = MAP_FROM_PENDING_ROLE_TO_MAIN[userRole];
+
         const transactionsList = [
+            UsersRolesService.updateUserRoleAsTransaction(userId, nextUserRole),
             UserPermissionsService.removeUserPermissionsAsTransaction(userId, permissionsToRemove),
-            UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.EXPECT_REGISTRATION_CONFIRMATION),
+            UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.EXPECT_COMPANY_EDITING_CONFIRMATION),
+            UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.PASS_PRIMARY_CONFIRMATION),
         ];
 
         await TablesService.runTransaction(transactionsList);
