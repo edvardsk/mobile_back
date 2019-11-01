@@ -26,7 +26,7 @@ const confirmAccount = async (req, res, next) => {
         if (userPermissions.includes(PERMISSIONS.PASS_PRIMARY_CONFIRMATION)) {
 
             transactionsList.push(
-                UserPermissionsService.removeUserPermissionAsTransaction(userId, PERMISSIONS.EXPECT_REGISTRATION_CONFIRMATION),
+                UserPermissionsService.removeUserPermissionAsTransaction(userId, PERMISSIONS.PASS_PRIMARY_CONFIRMATION),
             );
         }
 
