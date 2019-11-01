@@ -44,9 +44,9 @@ const editStep1 = async (req, res, next) => {
         } else {
             companyHeadId = currentUserId;
             companyHeadRole = currentUserRole;
-            if (!currentUserPermissions.has(PERMISSIONS.EXPECT_REGISTRATION_CONFIRMATION)) {
+            if (!currentUserPermissions.has(PERMISSIONS.EXPECT_COMPANY_EDITING_CONFIRMATION)) {
                 transactionList.push(
-                    UserPermissionsService.addUserPermissionAsTransaction(currentUserId, PERMISSIONS.EXPECT_REGISTRATION_CONFIRMATION)
+                    UserPermissionsService.addUserPermissionAsTransaction(currentUserId, PERMISSIONS.EXPECT_COMPANY_EDITING_CONFIRMATION)
                 );
             }
         }
@@ -89,9 +89,9 @@ const editStep2 = async (req, res, next) => {
             companyHeadId = shadowUserId;
         } else {
             companyHeadId = currentUserId;
-            if (!currentUserPermissions.has(PERMISSIONS.EXPECT_REGISTRATION_CONFIRMATION)) {
+            if (!currentUserPermissions.has(PERMISSIONS.EXPECT_COMPANY_EDITING_CONFIRMATION)) {
                 transactionList.push(
-                    UserPermissionsService.addUserPermissionAsTransaction(currentUserId, PERMISSIONS.EXPECT_REGISTRATION_CONFIRMATION)
+                    UserPermissionsService.addUserPermissionAsTransaction(currentUserId, PERMISSIONS.EXPECT_COMPANY_EDITING_CONFIRMATION)
                 );
             }
         }
@@ -135,9 +135,9 @@ const editStep3 = async (req, res, next) => {
         } else {
             companyHeadId = currentUserId;
             companyHeadRole = currentUserRole;
-            if (!currentUserPermissions.has(PERMISSIONS.EXPECT_REGISTRATION_CONFIRMATION)) {
+            if (!currentUserPermissions.has(PERMISSIONS.EXPECT_COMPANY_EDITING_CONFIRMATION)) {
                 transactionList.push(
-                    UserPermissionsService.addUserPermissionAsTransaction(currentUserId, PERMISSIONS.EXPECT_REGISTRATION_CONFIRMATION)
+                    UserPermissionsService.addUserPermissionAsTransaction(currentUserId, PERMISSIONS.EXPECT_COMPANY_EDITING_CONFIRMATION)
                 );
             }
         }

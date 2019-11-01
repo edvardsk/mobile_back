@@ -164,7 +164,7 @@ const finishRegistrationStep5 = async (req, res, next) => {
         const transactionsList = [
             UsersRolesService.updateUserRoleAsTransaction(userId, nextUserRole),
             UserPermissionsService.removeUserPermissionsAsTransaction(userId, permissionsToRemove),
-            UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.EXPECT_REGISTRATION_CONFIRMATION),
+            UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.EXPECT_COMPANY_EDITING_CONFIRMATION),
             UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.PASS_PRIMARY_CONFIRMATION),
         ];
 

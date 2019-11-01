@@ -15,12 +15,12 @@ const confirmAccount = async (req, res, next) => {
 
         const userPermissions = await PermissionsService.getAllUserPermissions(userId);
 
-        if (!userPermissions.includes(PERMISSIONS.EXPECT_REGISTRATION_CONFIRMATION)) {
+        if (!userPermissions.includes(PERMISSIONS.EXPECT_COMPANY_EDITING_CONFIRMATION)) {
             return reject(res, ERRORS.ACCOUNT_CONFIRMATIONS.PROHIBITED);
         }
 
         const transactionsList = [
-            UserPermissionsService.removeUserPermissionAsTransaction(userId, PERMISSIONS.EXPECT_REGISTRATION_CONFIRMATION),
+            UserPermissionsService.removeUserPermissionAsTransaction(userId, PERMISSIONS.EXPECT_COMPANY_EDITING_CONFIRMATION),
         ];
 
         if (userPermissions.includes(PERMISSIONS.PASS_PRIMARY_CONFIRMATION)) {

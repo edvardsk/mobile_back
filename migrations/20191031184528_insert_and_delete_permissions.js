@@ -56,6 +56,13 @@ exports.up = function(knex) {
         })
         .then(function () {
             return knex.batchInsert('permissions', ADD_PERMISSIONS);
+        })
+        .then(function () {
+            return knex('permissions')
+                .where('name', '=', 'expect_registration_confirmation')
+                .update({
+                    name: 'expect_company_editing_confirmation',
+                });
         });
 };
 
@@ -77,5 +84,12 @@ exports.down = function(knex) {
                     .where('id', permission.id)
                     .del()
             )));
+        })
+        .then(function () {
+            return knex('permissions')
+                .where('name', '=', 'expect_company_editing_confirmation')
+                .update({
+                    name: 'expect_registration_confirmation',
+                });
         });
 };

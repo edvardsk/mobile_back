@@ -155,7 +155,7 @@ const PERMISSIONS = {
     REGISTRATION_SAVE_STEP_4: 'registration_save_step_4',
     REGISTRATION_SAVE_STEP_5: 'registration_save_step_5',
     ACCEPT_REGISTRATION: 'accept_registration',
-    EXPECT_REGISTRATION_CONFIRMATION: 'expect_registration_confirmation',
+    EXPECT_COMPANY_EDITING_CONFIRMATION: 'expect_company_editing_confirmation',
     PASS_PRIMARY_CONFIRMATION: 'pass_primary_confirmation',
 
     FREEZE_ADMIN: 'freeze_admin',
