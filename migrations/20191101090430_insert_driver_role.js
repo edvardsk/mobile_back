@@ -1,5 +1,6 @@
 const FIRST_PERMISSIONS = require('./20191017144540_add_permissions').PERMISSIONS;
 const READ_LEGAL_INFO_PERMISSIONS = require('./20191030100944_insert_permissions.js').PERMISSIONS;
+const BASIC_INVITES_PERMISSIONS = require('./20191024092329_insert_permissions.js').PERMISSIONS;
 
 const FIRST_ROLES = require('./20191017143230_add_roles').ROLES;
 const CONTROL_ROLES = require('./20191023095323_insert_roles').ROLES;
@@ -36,6 +37,7 @@ const PERMISSIONS = [
 const ALL_PERMISSIONS = [
     ...FIRST_PERMISSIONS,
     ...READ_LEGAL_INFO_PERMISSIONS,
+    ...BASIC_INVITES_PERMISSIONS,
     ...PERMISSIONS,
 ];
 
@@ -76,6 +78,7 @@ const ROLES_WITH_PERMISSIONS = [
     ['dispatcher', [
         'invite_driver',
         'freeze_driver',
+        'basic_invites',
     ]],
 ];
 
