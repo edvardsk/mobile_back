@@ -1,10 +1,12 @@
-const { success } = require('api/response');
+const { success, reject } = require('api/response');
 const uuid = require('uuid/v4');
 const moment = require('moment');
 
 // services
 const UsersService = require('services/tables/users');
 const CompaniesService = require('services/tables/companies');
+const FilesService = require('services/tables/files');
+const UsersFilesService = require('services/tables/users-to-files');
 const EmailConfirmationService = require('services/tables/email-confirmation-hashes');
 const UsersRolesService = require('services/tables/users-to-roles');
 const PhoneNumbersService = require('services/tables/phone-numbers');
@@ -12,23 +14,23 @@ const UsersCompaniesService = require('services/tables/users-to-companies');
 const TableService = require('services/tables');
 const CryptService = require('services/crypto');
 const MailService = require('services/mail');
+const S3Service = require('services/aws/s3');
 
 // constants
 const { SQL_TABLES } = require('constants/tables');
 const { SUCCESS_CODES } = require('constants/http-codes');
-const {
-    MAP_FROM_MAIN_ROLE_TO_UNCONFIRMED,
-    SET_ROLES_TO_APPLY_COMPANY_FOR_INVITE,
-    MAP_ROLES_TO_ROLES_TO_INVITE,
-} = require('constants/system');
+const { MAP_FROM_MAIN_ROLE_TO_UNCONFIRMED } = require('constants/system');
+const { ERRORS } = require('constants/errors');
 
 // formatters
 const UsersFormatters = require('formatters/users');
 const EmailConfirmationFormatters = require('formatters/email-confirmation');
 const UsersCompaniesFormatters = require('formatters/users-to-companies');
 const PhoneNumbersFormatters = require('formatters/phone-numbers');
+const FilesFormatters = require('formatters/files');
 
 const {
+    AWS_S3_BUCKET_NAME,
     INVITE_EXPIRATION_UNIT,
     INVITE_EXPIRATION_VALUE,
 } = process.env;
@@ -58,9 +60,9 @@ const inviteUser = async (req, res, next) => {
         const transactionsListHead = [];
         const transactionsListTail = [];
 
-        // transactionsListTail.push(
-        //     UsersCompaniesService.addRecordAsTransaction(userCompanyData)
-        // );
+        transactionsListTail.push(
+            UsersCompaniesService.addRecordAsTransaction(userCompanyData)
+        );
 
         const inviteData = {
             invitedUserId,
@@ -78,10 +80,50 @@ const inviteUser = async (req, res, next) => {
 };
 
 const inviteUserAdvanced = async (req, res, next) => {
+    const colsFiles = SQL_TABLES.FILES.COLUMNS;
+    const colsUsersFiles = SQL_TABLES.USERS_TO_FILES.COLUMNS;
     try {
         const { inviteData } = res.locals;
-        const { transactionsListHead, transactionsListTail, invitedUserId } = inviteData;
+        const { files } = req;
+        const { transactionsListTail, invitedUserId } = inviteData;
 
+        const dataToStore = Object.keys(files).reduce((acc, type) => {
+            const [dbFiles, dbUsersFiles, storageFiles] = acc;
+            files[type].forEach(file => {
+                const fileId = uuid();
+                const fileHash = uuid();
+                const filePath = `${fileHash}${file.originalname}`;
+                const fileUrl = FilesFormatters.formatStoringFile(AWS_S3_BUCKET_NAME, filePath);
+                dbFiles.push({
+                    id: fileId,
+                    [colsFiles.NAME]: file.originalname,
+                    [colsFiles.TYPE]: type,
+                    [colsFiles.URL]: CryptService.encrypt(fileUrl),
+                });
+                dbUsersFiles.push({
+                    [colsUsersFiles.USER_ID]: invitedUserId,
+                    [colsUsersFiles.FILE_ID]: fileId,
+                });
+                storageFiles.push({
+                    bucket: AWS_S3_BUCKET_NAME,
+                    path: filePath,
+                    data: file.buffer,
+                    contentType: file.mimetype,
+                });
+            });
+            return acc;
+        }, [[], [], []]);
+
+        const [dbFiles, dbUsersFiles, storageFiles] = dataToStore;
+
+        res.locals.inviteData.storageFiles = storageFiles;
+
+        transactionsListTail.push(
+            FilesService.addFilesAsTransaction(dbFiles)
+        );
+        transactionsListTail.push(
+            UsersFilesService.addRecordsAsTransaction(dbUsersFiles)
+        );
 
         return next();
     } catch (error) {
@@ -108,7 +150,7 @@ const inviteMiddleware = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
     try {
         const { inviteData } = res.locals;
-        const { transactionsListHead, transactionsListTail, invitedUserId } = inviteData;
+        const { transactionsListHead, transactionsListTail, invitedUserId, storageFiles } = inviteData;
 
         const currentUserId = res.locals.user.id;
         const { body } = req;
@@ -130,19 +172,24 @@ const inviteMiddleware = async (req, res, next) => {
         const emailConfirmationData = EmailConfirmationFormatters.formatRecordToSave(userId, confirmationHash, currentUserId, inviteExpirationDate);
         const phoneNumberData = PhoneNumbersFormatters.formatPhoneNumberToSave(userId, phonePrefixId, phoneNumber);
 
-        // const transactionList = [
-        //     UsersService.addUserAsTransaction(data),
-        //     UsersRolesService.addUserRoleAsTransaction(userId, unconfirmedRole),
-        //     EmailConfirmationService.addRecordAsTransaction(emailConfirmationData),
-        //     PhoneNumbersService.addRecordAsTransaction(phoneNumberData),
-        // ];
+        const transactionList = [
+            UsersService.addUserAsTransaction(data),
+            UsersRolesService.addUserRoleAsTransaction(userId, unconfirmedRole),
+            EmailConfirmationService.addRecordAsTransaction(emailConfirmationData),
+            PhoneNumbersService.addRecordAsTransaction(phoneNumberData),
+        ];
 
+        await TableService.runTransaction([
+            ...transactionsListHead,
+            ...transactionList,
+            ...transactionsListTail,
+        ]);
 
-        // await TableService.runTransaction([
-        //     ...transactionListHead,
-        //     ...transactionList,
-        //     ...transactionListTail,
-        // ]);
+        if (storageFiles && Array.isArray(storageFiles) && storageFiles.length > 0) {
+            await Promise.all(storageFiles.map(({ bucket, path, data, contentType }) => {
+                return S3Service.putObject(bucket, path, data, contentType);
+            }));
+        }
 
         await MailService.sendConfirmationEmail(email, confirmationHash, role);
         return success(res, {}, SUCCESS_CODES.CREATED);

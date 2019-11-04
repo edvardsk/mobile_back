@@ -35,6 +35,8 @@ const fileFormat = {
             properties: {
                 fieldname: {
                     type: 'string',
+                    maxLength: POSTGRES_MAX_STRING_LENGTH,
+
                 },
                 originalname: {
                     type: 'string',
