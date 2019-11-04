@@ -1032,6 +1032,13 @@ const inviteUserWithoutCompanyRolesParams = {
     ],
 };
 
+const inviteUserAdvancedFiles = {
+    patternProperties: {
+        '.': fileFormat,
+    },
+    required: [DOCUMENTS.PASSPORT, DOCUMENTS.DRIVER_LICENSE],
+};
+
 const inviteUserRolesParams = {
     properties: {
         role: {
@@ -1229,6 +1236,7 @@ module.exports = {
     inviteUserRolesParams,
     inviteUserRolesAdvancedParams,
     inviteUserWithoutCompanyRolesParams,
+    inviteUserAdvancedFiles,
     requiredMeParams,
     meOrIdRequiredMeParams,
     meOrIdRequiredIdParams,

@@ -231,6 +231,18 @@ const MAP_ROLES_PRIORITY_TO_UNFREEZE = {
     [ROLES.LOGISTICIAN]: 1,
 };
 
+const MAP_ROLES_TO_ROLES_TO_INVITE = {
+    [ROLES.TRANSPORTER]: new Set([
+        ROLES.DISPATCHER, ROLES.DRIVER,
+    ]),
+    [ROLES.HOLDER]: new Set([
+        ROLES.LOGISTICIAN,
+    ]),
+    [ROLES.DISPATCHER]: new Set([
+        ROLES.DRIVER,
+    ]),
+};
+
 module.exports = {
     ROLES,
     ROLES_TO_REGISTER,
@@ -249,4 +261,5 @@ module.exports = {
     MAP_ROLES_TO_FREEZING_PERMISSIONS,
     MAP_ROLES_PRIORITY_TO_UNFREEZE,
     MAP_COMPANY_OWNERS_TO_MAIN_ROLES,
+    MAP_ROLES_TO_ROLES_TO_INVITE,
 };

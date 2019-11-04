@@ -42,7 +42,8 @@ router.post(
     validate(ValidatorSchemes.inviteUser),
     validate(ValidatorSchemes.inviteUserAsync),
     validate(ValidatorSchemes.phoneNumberWithPrefixAsync),
-    post.inviteUserWithoutCompany
+    post.inviteUserWithoutCompany,
+    post.inviteMiddleware,
 );
 
 router.post(
@@ -54,7 +55,8 @@ router.post(
     validate(ValidatorSchemes.inviteUser),
     validate(ValidatorSchemes.inviteUserAsync),
     validate(ValidatorSchemes.phoneNumberWithPrefixAsync),
-    post.inviteUser
+    post.inviteUser,
+    post.inviteMiddleware,
 );
 
 router.post(
@@ -67,7 +69,10 @@ router.post(
     validate(ValidatorSchemes.inviteUser),
     validate(ValidatorSchemes.inviteUserAsync),
     validate(ValidatorSchemes.phoneNumberWithPrefixAsync),
-    post.inviteUserAdvanced
+    validate(ValidatorSchemes.inviteUserAdvancedFiles, 'files'),
+    post.inviteUser,
+    post.inviteUserAdvanced,
+    post.inviteMiddleware,
 );
 
 

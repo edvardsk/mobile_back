@@ -54,6 +54,7 @@ const isAuthenticated = async (req, res) => {
             res.locals.user = user;
             res.locals.permissions = new Set(permissions);
             res.locals.user.isControlRole = isControlRole(user.role);
+
             return req.next();
         } catch (error) {
             logger.error(error);

@@ -191,6 +191,14 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    USERS_TO_FILES: {
+        NAME: 'users_to_files',
+        COLUMNS: {
+            USER_ID: 'user_id',
+            FILE_ID: 'file_id',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
