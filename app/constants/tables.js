@@ -70,7 +70,7 @@ const SQL_TABLES = {
         COLUMNS: {
             NAME: 'name',
             URL: 'url',
-            TYPE: 'type',
+            LABELS: 'labels',
             DESCRIPTION: 'description',
             EXPIRED_AT: 'expired_at',
             CREATED_AT: 'created_at',

@@ -1,5 +1,6 @@
 const squel = require('squel');
 const { SQL_TABLES } = require('constants/tables');
+const { SqlArray } = require('constants/instances');
 
 const squelPostgres = squel.useFlavour('postgres');
 
@@ -9,14 +10,16 @@ const tableCompaniesFiles = SQL_TABLES.COMPANIES_TO_FILES;
 const cols = table.COLUMNS;
 const colsCompaniesFiles  = tableCompaniesFiles.COLUMNS;
 
-const insertFiles = values => {
-    return squelPostgres
-        .insert()
-        .into(table.NAME)
-        .setFieldsRows(values)
-        .returning('*')
-        .toString();
-};
+squelPostgres.registerValueHandler(SqlArray, function(value) {
+    return value.toString();
+});
+
+const insertFiles = values => squelPostgres
+    .insert()
+    .into(table.NAME)
+    .setFieldsRows(values)
+    .returning('*')
+    .toString();
 
 const deleteFilesByIds = ids => squelPostgres
     .delete()
@@ -25,17 +28,17 @@ const deleteFilesByIds = ids => squelPostgres
     .returning('*')
     .toString();
 
-const selectFilesByCompanyIdAndTypes = (companyId, types, notPrefix) => squelPostgres
+const selectFilesByCompanyIdAndLabels = (companyId, fileGroup) => squelPostgres
     .select()
     .from(table.NAME, 'f')
     .field('f.*')
     .where(`cf.${colsCompaniesFiles.COMPANY_ID} = '${companyId}'`)
-    .where(`f.${cols.TYPE} ${notPrefix} IN ?`, types)
+    .where(`f.${cols.LABELS} @> ARRAY['${fileGroup}']`)
     .left_join(tableCompaniesFiles.NAME, 'cf', `cf.${colsCompaniesFiles.FILE_ID} = f.id`)
     .toString();
 
 module.exports = {
     insertFiles,
     deleteFilesByIds,
-    selectFilesByCompanyIdAndTypes,
+    selectFilesByCompanyIdAndLabels,
 };

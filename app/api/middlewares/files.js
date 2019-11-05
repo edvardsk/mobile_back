@@ -17,6 +17,8 @@ const S3Service = require('services/aws/s3');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SUCCESS_CODES } = require('constants/http-codes');
 const { ERRORS } = require('constants/errors');
+const { DOCUMENTS_SET, FILES_GROUPS } = require('constants/files');
+const { SqlArray } = require('constants/instances');
 
 // formatters
 const { formatStoringFile } = require('formatters/files');
@@ -82,6 +84,7 @@ const createOrUpdateDataOnStep3 = async (req, res, next) => {
         const dataToStore = Object.keys(files).reduce((acc, type) => {
             const [dbFiles, dbCompaniesFiles, storageFiles] = acc;
             files[type].forEach(file => {
+                const fileLabels = new SqlArray([type, DOCUMENTS_SET.has(type) ? FILES_GROUPS.BASIC: FILES_GROUPS.CUSTOM]);
                 const fileId = uuid();
                 const fileHash = uuid();
                 const filePath = `${fileHash}${file.originalname}`;
@@ -89,7 +92,7 @@ const createOrUpdateDataOnStep3 = async (req, res, next) => {
                 dbFiles.push({
                     id: fileId,
                     [colsFiles.NAME]: file.originalname,
-                    [colsFiles.TYPE]: type,
+                    [colsFiles.LABELS]: fileLabels,
                     [colsFiles.URL]: CryptService.encrypt(fileUrl),
                 });
                 dbCompaniesFiles.push({

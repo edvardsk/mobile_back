@@ -10,6 +10,8 @@ const DOCUMENTS = {
     DRIVER_LICENSE: 'driver_license',
 };
 
+const DOCUMENTS_SET = new Set(Object.values(DOCUMENTS));
+
 const FILES_GROUPS = {
     BASIC: 'basic',
     CUSTOM: 'custom',
@@ -18,5 +20,6 @@ const FILES_GROUPS = {
 module.exports = {
     FILES_TYPES,
     DOCUMENTS,
+    DOCUMENTS_SET,
     FILES_GROUPS,
 };

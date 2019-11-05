@@ -4,7 +4,7 @@ const { manyOrNone } = require('db');
 const {
     insertFiles,
     selectFilesByCompanyId,
-    selectFilesByCompanyIdAndTypes,
+    selectFilesByCompanyIdAndLabels,
     deleteFilesByIds,
 } = require('sql-helpers/files');
 
@@ -15,13 +15,13 @@ const addFilesAsTransaction = data => [insertFiles(data), OPERATIONS.MANY_OR_NON
 
 const getFilesByCompanyId = companyId => manyOrNone(selectFilesByCompanyId(companyId));
 
-const getFilesByCompanyIdAndTypes = (companyId, types, notPrefix) => manyOrNone(selectFilesByCompanyIdAndTypes(companyId, types, notPrefix));
+const getFilesByCompanyIdAndFileGroup = (companyId, fileGroup) => manyOrNone(selectFilesByCompanyIdAndLabels(companyId, fileGroup));
 
 const removeFilesByIdsAsTransaction = ids => [deleteFilesByIds(ids), OPERATIONS.MANY_OR_NONE];
 
 module.exports = {
     addFilesAsTransaction,
     getFilesByCompanyId,
-    getFilesByCompanyIdAndTypes,
+    getFilesByCompanyIdAndFileGroup,
     removeFilesByIdsAsTransaction,
 };
