@@ -6,6 +6,7 @@ const get = require('./get');
 const getData = require('./data/get');
 const getFiles = require('./files/get');
 const postSteps = require('./steps/post');
+const getSteps = require('./steps/get');
 
 // middlewares
 const { isHasPermissions, injectShadowCompanyHeadByMeOrId } = require('api/middlewares');
@@ -162,6 +163,32 @@ router.post(
     validate(({ shadowMainUserRole, role }) => CREATE_OR_MODIFY_STEP_3_FILES_MAP_SCHEMES[shadowMainUserRole || role], 'files'),
     postSteps.editStep3,
     createOrUpdateDataOnStep3,
+);
+
+
+// get company data steps
+router.get(
+    ROUTES.COMPANIES.STEPS.BASE + ROUTES.COMPANIES.STEPS['1'].BASE + ROUTES.COMPANIES.STEPS['1'].GET,
+    isHasPermissions([PERMISSIONS.MODIFY_COMPANY_DATA_STEP_1]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectShadowCompanyHeadByMeOrId,
+    getSteps.getStep1,
+);
+
+router.get(
+    ROUTES.COMPANIES.STEPS.BASE + ROUTES.COMPANIES.STEPS['2'].BASE + ROUTES.COMPANIES.STEPS['2'].GET,
+    isHasPermissions([PERMISSIONS.MODIFY_COMPANY_DATA_STEP_2]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectShadowCompanyHeadByMeOrId,
+    getSteps.getStep2,
+);
+
+router.get(
+    ROUTES.COMPANIES.STEPS.BASE + ROUTES.COMPANIES.STEPS['3'].BASE + ROUTES.COMPANIES.STEPS['3'].GET,
+    isHasPermissions([PERMISSIONS.MODIFY_COMPANY_DATA_STEP_3]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectShadowCompanyHeadByMeOrId,
+    getSteps.getStep3,
 );
 
 module.exports = router;

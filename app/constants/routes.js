@@ -215,14 +215,17 @@ const ROUTES = {
             1: {
                 BASE: BASES['1'],
                 POST: '',
+                GET: '',
             },
             2: {
                 BASE: BASES['2'],
                 POST: '',
+                GET: '',
             },
             3: {
                 BASE: BASES['3'],
                 POST: '',
+                GET: '',
             },
         }
     },
