@@ -1,3 +1,5 @@
+const { ROLES } = require('./system');
+
 const API_PREFIX = '/api/v1';
 
 const BASES = {
@@ -192,6 +194,10 @@ const ROUTES = {
         EMPLOYEES: {
             BASE: IDS.ME_OR_ID + BASES.EMPLOYEES,
             GET_ALL: '',
+            ROLES: {
+                BASE: BASES.ROLES,
+                GET: `/${ROLES.DRIVER}`,
+            }
         },
         LEGAL_DATA: {
             BASE: IDS.ME_OR_ID + BASES.LEGAL_DATA,

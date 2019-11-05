@@ -1,6 +1,13 @@
 const squel = require('squel');
 const { get } = require('lodash');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
+const { ROLES } = require('constants/system');
+
+const DRIVER_ROLES = [
+    ROLES.UNCONFIRMED_DRIVER,
+    ROLES.CONFIRMED_EMAIL_DRIVER,
+    ROLES.DRIVER,
+];
 
 const squelPostgres = squel.useFlavour('postgres');
 
@@ -14,6 +21,7 @@ const tablePhoneNumbers = SQL_TABLES.PHONE_NUMBERS;
 const tablePhonePrefixes = SQL_TABLES.PHONE_PREFIXES;
 const tableEmailConfirmationHashes = SQL_TABLES.EMAIL_CONFIRMATION_HASHES;
 const tableFreezingHistory = SQL_TABLES.FREEZING_HISTORY;
+const tableDrivers = SQL_TABLES.DRIVERS;
 
 const cols = table.COLUMNS;
 const colsRoles = tableRoles.COLUMNS;
@@ -25,6 +33,7 @@ const colsPhoneNumbers = tablePhoneNumbers.COLUMNS;
 const colsPhonePrefixes = tablePhonePrefixes.COLUMNS;
 const colsEmailConfirmationHashes = tableEmailConfirmationHashes.COLUMNS;
 const colsFreezingHistory = tableFreezingHistory.COLUMNS;
+const colsDrivers = tableDrivers.COLUMNS;
 
 const insertUser = values => squelPostgres
     .insert()
@@ -137,7 +146,8 @@ const selectUsersByCompanyIdPaginationSorting = (companyId, limit, offset, sortC
         .field(`r.${colsRoles.NAME}`, HOMELESS_COLUMNS.ROLE)
         .field(`CONCAT(php.${colsPhonePrefixes.CODE}, phn.${colsPhoneNumbers.NUMBER})::bigint`, HOMELESS_COLUMNS.FULL_PHONE_NUMBER)
         .from(table.NAME, 'u')
-        .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`);
+        .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
+        .where(`r.${colsRoles.NAME} NOT IN ?`, DRIVER_ROLES);
 
     expression = setFilter(expression, filter);
     return expression
@@ -157,11 +167,56 @@ const selectCountUsersByCompanyId = (companyId, filter) => {
         .select()
         .field('COUNT(u.id)')
         .from(table.NAME, 'u')
-        .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`);
+        .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
+        .where(`r.${colsRoles.NAME} NOT IN ?`, DRIVER_ROLES);
 
     expression = setFilter(expression, filter);
     return expression
         .left_join(tableUsersCompanies.NAME, 'uc', `u.id = uc.${colsUsersCompanies.USER_ID}`)
+        .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
+        .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
+        .toString();
+};
+
+const selectUsersByCompanyIdAndDriverRolePaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => {
+    let expression = squelPostgres
+        .select()
+        .field('u.*')
+        .field(`r.${colsRoles.NAME}`, HOMELESS_COLUMNS.ROLE)
+        .field(`CONCAT(php.${colsPhonePrefixes.CODE}, phn.${colsPhoneNumbers.NUMBER})::bigint`, HOMELESS_COLUMNS.FULL_PHONE_NUMBER)
+        .field(`d.${colsDrivers.DRIVER_LICENCE_REGISTERED_AT}`)
+        .field(`d.${colsDrivers.DRIVER_LICENCE_EXPIRED_AT}`)
+        .from(table.NAME, 'u')
+        .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
+        .where(`r.${colsRoles.NAME} IN ?`, DRIVER_ROLES);
+
+    expression = setFilter(expression, filter);
+    return expression
+        .left_join(tableUsersCompanies.NAME, 'uc', `u.id = uc.${colsUsersCompanies.USER_ID}`)
+        .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
+        .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
+        .left_join(tablePhoneNumbers.NAME, 'phn', `phn.${colsPhoneNumbers.USER_ID} = u.id`)
+        .left_join(tablePhonePrefixes.NAME, 'php', `php.id = phn.${colsPhoneNumbers.PHONE_PREFIX_ID}`)
+        .left_join(tableDrivers.NAME, 'd', `d.${colsDrivers.USER_ID} = u.id`)
+        .order(sortColumn, asc)
+        .limit(limit)
+        .offset(offset)
+        .toString();
+};
+
+const selectCountUsersByCompanyIdAndDriverRole = (companyId, filter) => {
+    let expression = squelPostgres
+        .select()
+        .field('COUNT(u.id)')
+        .from(table.NAME, 'u')
+        .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
+        .where(`r.${colsRoles.NAME} IN ?`, DRIVER_ROLES);
+
+    expression = setFilter(expression, filter);
+    return expression
+        .left_join(tableUsersCompanies.NAME, 'uc', `u.id = uc.${colsUsersCompanies.USER_ID}`)
+        .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
+        .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
         .toString();
 };
 
@@ -220,6 +275,10 @@ module.exports = {
     selectUserWithRoleAndConfirmationHash,
     selectUsersByCompanyIdPaginationSorting,
     selectCountUsersByCompanyId,
+
+    selectUsersByCompanyIdAndDriverRolePaginationSorting,
+    selectCountUsersByCompanyIdAndDriverRole,
+
     selectUserWithRoleAndFreezingStatus,
     selectFirstInCompanyByCompanyId,
 };

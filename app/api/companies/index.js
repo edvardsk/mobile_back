@@ -78,9 +78,20 @@ router.get(
     validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
     validate(ValidatorSchemes.baseSortingSortingDirectionQuery, 'query'),
     validate(ValidatorSchemes.companyEmployeesSortColumnQuery, 'query'),
-    validate(ValidatorSchemes.modifyCompanyEmployeesFilterQuery, 'query'),
+    validate(ValidatorSchemes.modifyFilterQuery, 'query'),
     validate(ValidatorSchemes.companyEmployeesFilterQuery, 'query'),
     getEmployees.getListEmployees,
+);
+
+router.get(
+    ROUTES.COMPANIES.EMPLOYEES.BASE + ROUTES.COMPANIES.EMPLOYEES.ROLES.BASE + ROUTES.COMPANIES.EMPLOYEES.ROLES.GET,
+    isHasPermissions([PERMISSIONS.READ_EMPLOYEES]),
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.basePaginationQuery, 'query'),
+    validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
+    validate(ValidatorSchemes.modifyFilterQuery, 'query'),
+    validate(ValidatorSchemes.companyDriversFilterQuery, 'query'),
+    getEmployees.getListDrivers,
 );
 
 

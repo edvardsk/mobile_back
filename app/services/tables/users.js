@@ -13,6 +13,10 @@ const {
     selectUserWithRoleAndConfirmationHash,
     selectUsersByCompanyIdPaginationSorting,
     selectCountUsersByCompanyId,
+
+    selectUsersByCompanyIdAndDriverRolePaginationSorting,
+    selectCountUsersByCompanyIdAndDriverRole,
+
     selectUserWithRoleAndFreezingStatus,
     selectFirstInCompanyByCompanyId,
 } = require('sql-helpers/users');
@@ -54,6 +58,15 @@ const getUsersByCompanyIdPaginationSorting = (companyId, limit, offset, sortColu
 
 const getCountUsersByCompanyId = (companyId, filter) => (
     one(selectCountUsersByCompanyId(companyId, filter))
+        .then(({ count }) => +count)
+);
+
+const getCompanyDriversPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
+    manyOrNone(selectUsersByCompanyIdAndDriverRolePaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
+);
+
+const getCountCompanyDrivers = (companyId, filter) => (
+    one(selectCountUsersByCompanyIdAndDriverRole(companyId, filter))
         .then(({ count }) => +count)
 );
 
@@ -100,6 +113,10 @@ module.exports = {
     getUserWithRoleAndConfirmationHashStrict,
     getUsersByCompanyIdPaginationSorting,
     getCountUsersByCompanyId,
+
+    getCompanyDriversPaginationSorting,
+    getCountCompanyDrivers,
+
     getUserForAuthentication,
     getUserWithRoleAndFreezingData,
     getFirstUserInCompanyStrict,
