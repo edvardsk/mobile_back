@@ -21,7 +21,14 @@ const deleteRecordsByCompanyId = companyId => squelPostgres
     .returning('*')
     .toString();
 
+const selectRecordsByCompanyId = companyId => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where(`${cols.COMPANY_ID} = '${companyId}'`)
+    .toString();
+
 module.exports = {
     insertRecords,
     deleteRecordsByCompanyId,
+    selectRecordsByCompanyId,
 };

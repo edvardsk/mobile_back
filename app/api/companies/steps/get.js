@@ -3,6 +3,7 @@ const { success } = require('api/response');
 // services
 const CompaniesService = require('services/tables/companies');
 const UsersService = require('services/tables/users');
+const OtherOrganizationsService = require('services/tables/other-organizations');
 
 // constants
 const { ROLES } = require('constants/system');
@@ -107,13 +108,18 @@ const getStep3 = async (req, res, next) => {
             companyHeadId = currentUserId;
             companyHeadRole = currentUserRole;
         }
+        const company = await CompaniesService.getCompanyByUserIdStrict(companyHeadId);
 
         let user = {};
+        let otherOrganizations = {};
         if ([ROLES.INDIVIDUAL_FORWARDER, ROLES.SOLE_PROPRIETOR_FORWARDER].includes(companyHeadRole)) {
             user = await UsersService.getUser(companyHeadId);
         }
-        const company = await CompaniesService.getCompanyByUserIdStrict(companyHeadId);
-        const formattedData = MAP_ROLES_AND_FORMATTERS_STEP_3[companyHeadRole](company, user);
+        if ([ROLES.TRANSPORTER, ROLES.HOLDER].includes(companyHeadRole)) {
+            otherOrganizations = await OtherOrganizationsService.getRecordsByCompanyId(company.id);
+        }
+
+        const formattedData = MAP_ROLES_AND_FORMATTERS_STEP_3[companyHeadRole](company, user, otherOrganizations);
 
         return success(res, { company: formattedData });
     } catch (error) {

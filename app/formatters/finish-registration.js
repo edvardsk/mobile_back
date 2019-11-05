@@ -76,7 +76,7 @@ const formatDataForTransporterAndHolderForStep2Response = data => ({
     [HOMELESS_COLUMNS.BANK_COUNTRY]: data[HOMELESS_COLUMNS.BANK_COUNTRY],
 });
 
-const formatDataForTransporterForStep3Response = (company) => ({
+const formatDataForTransporterForStep3Response = (company, _, organizations) => ({
     [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: company[colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER],
     [colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT]: company[colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT],
     [colsCompanies.INSURANCE_POLICY_NUMBER]: company[colsCompanies.INSURANCE_POLICY_NUMBER],
@@ -85,13 +85,15 @@ const formatDataForTransporterForStep3Response = (company) => ({
     [colsCompanies.INSURANCE_POLICY_EXPIRED_AT]: company[colsCompanies.INSURANCE_POLICY_EXPIRED_AT],
     [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: company[colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT],
     [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT]: company[colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT],
+    [HOMELESS_COLUMNS.OTHER_ORGANIZATIONS]: organizations,
 });
 
-const formatDataForHolderForStep3Response = (company) => ({
+const formatDataForHolderForStep3Response = (company, _, organizations) => ({
     [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: company[colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER],
     [colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT]: company[colsCompanies.STATE_REGISTRATION_CERTIFICATE_CREATED_AT],
     [colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT]: company[colsCompanies.RESIDENCY_CERTIFICATE_CREATED_AT],
     [colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT]: company[colsCompanies.RESIDENCY_CERTIFICATE_EXPIRED_AT],
+    [HOMELESS_COLUMNS.OTHER_ORGANIZATIONS]: organizations,
 });
 
 const formatDataForIndividualForwarderForStep3Response = (company, user) => ({
