@@ -22,8 +22,6 @@ const { SQL_TABLES } = require('constants/tables');
 const { SUCCESS_CODES } = require('constants/http-codes');
 const { ROLES, MAP_FROM_MAIN_ROLE_TO_UNCONFIRMED } = require('constants/system');
 const { ERRORS } = require('constants/errors');
-const { SqlArray } = require('constants/instances');
-const { DOCUMENTS_SET, FILES_GROUPS } = require('constants/files');
 
 // formatters
 const UsersFormatters = require('formatters/users');
@@ -98,7 +96,9 @@ const inviteUserAdvanced = async (req, res, next) => {
                 const fileHash = uuid();
                 const filePath = `${fileHash}${file.originalname}`;
                 const fileUrl = FilesFormatters.formatStoringFile(AWS_S3_BUCKET_NAME, filePath);
-                const fileLabels = new SqlArray([type, DOCUMENTS_SET.has(type) ? FILES_GROUPS.BASIC: FILES_GROUPS.CUSTOM]);
+
+                const fileLabels = FilesFormatters.formatLabelsToStore(type);
+
                 dbFiles.push({
                     id: fileId,
                     [colsFiles.NAME]: file.originalname,

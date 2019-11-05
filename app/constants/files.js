@@ -8,6 +8,7 @@ const DOCUMENTS = {
     INSURANCE_POLICY: 'insurance_policy',
     RESIDENCY_CERTIFICATE: 'residency_certificate',
     DRIVER_LICENSE: 'driver_license',
+    VISA: 'visa',
 };
 
 const DOCUMENTS_SET = new Set(Object.values(DOCUMENTS));
