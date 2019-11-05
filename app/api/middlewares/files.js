@@ -46,8 +46,7 @@ const createOrUpdateDataOnStep3 = async (req, res, next) => {
     try {
         const { body, files } = req;
         const { step3Data } = res.locals;
-        const { transactionList, companyHeadId } = step3Data;
-
+        const { transactionList, companyHeadId, isEditOperation } = step3Data;
 
         const USER_PROPS = new Set([
             colsUsers.PASSPORT_NUMBER,
@@ -109,12 +108,22 @@ const createOrUpdateDataOnStep3 = async (req, res, next) => {
 
         const [dbFiles, dbCompaniesFiles, storageFiles] = dataToStore;
 
-        const companyFiles = await CompaniesFilesService.getFilesByCompanyId(company.id);
+        let filesToDelete;
+        if (isEditOperation) {
+            const labelsToDelete = Object.keys(files);
+            if (labelsToDelete.length) {
+                filesToDelete = await FilesService.getFilesByCompanyIdAndLabels(company.id, labelsToDelete);
+            } else {
+                filesToDelete = [];
+            }
+        } else {
+            filesToDelete = await FilesService.getFilesByCompanyId(company.id);
+        }
 
-        if (companyFiles.length) {
+        if (filesToDelete.length) {
             // delete old files
 
-            const [ids, urls] = companyFiles.reduce((acc, file) => {
+            const [ids, urls] = filesToDelete.reduce((acc, file) => {
                 const [ids, urls] = acc;
                 ids.push(file.id);
                 urls.push(CryptService.decrypt(file[colsFiles.URL]));
@@ -122,16 +131,19 @@ const createOrUpdateDataOnStep3 = async (req, res, next) => {
 
             }, [[], []]);
 
-            const deleteTransactionList = [
-                CompaniesFilesService.removeRecordsByCompanyIdAsTransaction(company.id),
-                OtherOrganizationsService.removeRecordsByCompanyIdAsTransaction(company.id),
-            ];
+            transactionList.push(
+                CompaniesFilesService.removeRecordsByFileIdsAsTransaction(ids)
+            );
+            transactionList.push(
+                FilesService.removeFilesByIdsAsTransaction(ids)
+            );
 
-            if (ids.length) {
-                deleteTransactionList.push( FilesService.removeFilesByIdsAsTransaction(ids));
-            }
-
-            await TablesService.runTransaction(deleteTransactionList);
+            transactionList.push(
+                FilesService.addFilesAsTransaction(dbFiles)
+            );
+            transactionList.push(
+                CompaniesFilesService.addRecordsAsTransaction(dbCompaniesFiles)
+            );
 
             await Promise.all(urls.map(url => {
                 const [bucket, path] = url.split('/');
@@ -140,10 +152,7 @@ const createOrUpdateDataOnStep3 = async (req, res, next) => {
         }
 
         transactionList.push(
-            FilesService.addFilesAsTransaction(dbFiles)
-        );
-        transactionList.push(
-            CompaniesFilesService.addRecordsAsTransaction(dbCompaniesFiles)
+            OtherOrganizationsService.removeRecordsByCompanyIdAsTransaction(company.id)
         );
 
         if (!isEmpty(usersProps)) {

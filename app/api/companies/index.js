@@ -63,13 +63,6 @@ const CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES_ASYNC = {
     [ROLES.SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep3SoleProprietorForwarderAsyncFunc,
 };
 
-const CREATE_OR_MODIFY_STEP_3_FILES_MAP_SCHEMES = {
-    [ROLES.TRANSPORTER]: ValidatorSchemes.finishRegistrationStep3TransporterFiles,
-    [ROLES.HOLDER]: ValidatorSchemes.finishRegistrationStep3HolderFiles,
-    [ROLES.INDIVIDUAL_FORWARDER]: ValidatorSchemes.finishRegistrationStep3IndividualForwarderFiles,
-    [ROLES.SOLE_PROPRIETOR_FORWARDER]: ValidatorSchemes.finishRegistrationStep3SoleProprietorForwarderFiles,
-};
-
 // employees
 router.get(
     ROUTES.COMPANIES.EMPLOYEES.BASE + ROUTES.COMPANIES.EMPLOYEES.GET_ALL,
@@ -160,7 +153,7 @@ router.post(
     validate(({ shadowUserId, shadowMainUserRole, role, userId }) => (
         CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES_ASYNC[shadowMainUserRole || role](shadowUserId || userId)
     )),
-    validate(({ shadowMainUserRole, role }) => CREATE_OR_MODIFY_STEP_3_FILES_MAP_SCHEMES[shadowMainUserRole || role], 'files'),
+    validate(ValidatorSchemes.notRequiredFiles, 'files'),
     postSteps.editStep3,
     createOrUpdateDataOnStep3,
 );

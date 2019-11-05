@@ -28,7 +28,15 @@ const deleteFilesByIds = ids => squelPostgres
     .returning('*')
     .toString();
 
-const selectFilesByCompanyIdAndLabels = (companyId, fileGroup) => squelPostgres
+const selectFilesByCompanyId = companyId => squelPostgres
+    .select()
+    .from(table.NAME, 'f')
+    .field('f.*')
+    .where(`cf.${colsCompaniesFiles.COMPANY_ID} = '${companyId}'`)
+    .left_join(tableCompaniesFiles.NAME, 'cf', `cf.${colsCompaniesFiles.FILE_ID} = f.id`)
+    .toString();
+
+const selectFilesByCompanyIdAndLabel = (companyId, fileGroup) => squelPostgres
     .select()
     .from(table.NAME, 'f')
     .field('f.*')
@@ -37,8 +45,19 @@ const selectFilesByCompanyIdAndLabels = (companyId, fileGroup) => squelPostgres
     .left_join(tableCompaniesFiles.NAME, 'cf', `cf.${colsCompaniesFiles.FILE_ID} = f.id`)
     .toString();
 
+const selectFilesByCompanyIdAndLabels = (companyId, labels) => squelPostgres
+    .select()
+    .from(table.NAME, 'f')
+    .field('f.*')
+    .where(`cf.${colsCompaniesFiles.COMPANY_ID} = '${companyId}'`)
+    .where(`f.${cols.LABELS} && ARRAY[${labels.map(label => `'${label}'`).toString()}]`)
+    .left_join(tableCompaniesFiles.NAME, 'cf', `cf.${colsCompaniesFiles.FILE_ID} = f.id`)
+    .toString();
+
 module.exports = {
     insertFiles,
     deleteFilesByIds,
+    selectFilesByCompanyId,
+    selectFilesByCompanyIdAndLabel,
     selectFilesByCompanyIdAndLabels,
 };

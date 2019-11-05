@@ -146,6 +146,7 @@ const editStep3 = async (req, res, next) => {
         res.locals.step3Data.transactionList = transactionList;
         res.locals.step3Data.companyHeadId = companyHeadId;
         res.locals.step3Data.companyHeadRole = companyHeadRole;
+        res.locals.step3Data.isEditOperation = true;
 
         return next();
     } catch (error) {

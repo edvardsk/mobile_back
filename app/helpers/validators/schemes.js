@@ -1231,6 +1231,12 @@ const companyDriversFilterQuery = {
     },
 };
 
+const notRequiredFiles = {
+    patternProperties: {
+        '.': fileFormat,
+    },
+};
+
 module.exports = {
     requiredUserId,
     requiredExistingUserWithIdAsync,
@@ -1306,4 +1312,6 @@ module.exports = {
     modifyFilterQuery,
     companyEmployeesFilterQuery,
     companyDriversFilterQuery,
+
+    notRequiredFiles,
 };
