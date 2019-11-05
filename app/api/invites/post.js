@@ -6,6 +6,7 @@ const moment = require('moment');
 const UsersService = require('services/tables/users');
 const CompaniesService = require('services/tables/companies');
 const FilesService = require('services/tables/files');
+const DriversService = require('services/tables/drivers');
 const UsersFilesService = require('services/tables/users-to-files');
 const EmailConfirmationService = require('services/tables/email-confirmation-hashes');
 const UsersRolesService = require('services/tables/users-to-roles');
@@ -19,7 +20,7 @@ const S3Service = require('services/aws/s3');
 // constants
 const { SQL_TABLES } = require('constants/tables');
 const { SUCCESS_CODES } = require('constants/http-codes');
-const { MAP_FROM_MAIN_ROLE_TO_UNCONFIRMED } = require('constants/system');
+const { ROLES, MAP_FROM_MAIN_ROLE_TO_UNCONFIRMED } = require('constants/system');
 const { ERRORS } = require('constants/errors');
 
 // formatters
@@ -28,6 +29,7 @@ const EmailConfirmationFormatters = require('formatters/email-confirmation');
 const UsersCompaniesFormatters = require('formatters/users-to-companies');
 const PhoneNumbersFormatters = require('formatters/phone-numbers');
 const FilesFormatters = require('formatters/files');
+const DriversFormatters = require('formatters/drivers');
 
 const {
     AWS_S3_BUCKET_NAME,
@@ -84,8 +86,8 @@ const inviteUserAdvanced = async (req, res, next) => {
     const colsUsersFiles = SQL_TABLES.USERS_TO_FILES.COLUMNS;
     try {
         const { inviteData } = res.locals;
-        const { files } = req;
-        const { transactionsListTail, invitedUserId } = inviteData;
+        const { files, body } = req;
+        const { transactionsListTail, invitedUserId, invitedUserRole } = inviteData;
 
         const dataToStore = Object.keys(files).reduce((acc, type) => {
             const [dbFiles, dbUsersFiles, storageFiles] = acc;
@@ -124,6 +126,13 @@ const inviteUserAdvanced = async (req, res, next) => {
         transactionsListTail.push(
             UsersFilesService.addRecordsAsTransaction(dbUsersFiles)
         );
+
+        if (invitedUserRole === ROLES.DRIVER) {
+            const driverData = DriversFormatters.formatRecordToSave(invitedUserId, body);
+            transactionsListTail.push(
+                DriversService.addRecordAsTransaction(driverData)
+            );
+        }
 
         return next();
     } catch (error) {
@@ -178,6 +187,7 @@ const inviteMiddleware = async (req, res, next) => {
             EmailConfirmationService.addRecordAsTransaction(emailConfirmationData),
             PhoneNumbersService.addRecordAsTransaction(phoneNumberData),
         ];
+
 
         await TableService.runTransaction([
             ...transactionsListHead,

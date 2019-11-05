@@ -33,6 +33,9 @@ const INVITE_USER_ADVANCED_MAP_PERMISSIONS = {
     [ROLES.DRIVER]: [PERMISSIONS.INVITE_DRIVER],
 };
 
+const INVITE_USER_ADVANCED_MAP_BASIC_SCHEMES = {
+    [ROLES.DRIVER]: ValidatorSchemes.inviteDriver,
+};
 
 // invite
 router.post(
@@ -61,12 +64,12 @@ router.post(
 
 router.post(
     ROUTES.INVITES.ADVANCED.BASE + ROUTES.INVITES.ADVANCED.COMPANIES.BASE + ROUTES.INVITES.ADVANCED.COMPANIES.ROLES.BASE + ROUTES.INVITES.ADVANCED.COMPANIES.ROLES.POST,
+    validate(ValidatorSchemes.inviteUserRolesAdvancedParams, 'params'),
     isHasPermissions(({ params }) => INVITE_USER_ADVANCED_MAP_PERMISSIONS[params.role]),
     formDataHandler(uploadData), // uploading files middleware
-    validate(ValidatorSchemes.inviteUserRolesAdvancedParams, 'params'),
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectShadowCompanyHeadByMeOrId,
-    validate(ValidatorSchemes.inviteUser),
+    validate(({ requestParams }) => INVITE_USER_ADVANCED_MAP_BASIC_SCHEMES[requestParams.role]),
     validate(ValidatorSchemes.inviteUserAsync),
     validate(ValidatorSchemes.phoneNumberWithPrefixAsync),
     validate(ValidatorSchemes.inviteUserAdvancedFiles, 'files'),

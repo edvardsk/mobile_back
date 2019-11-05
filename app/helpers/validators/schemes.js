@@ -15,6 +15,7 @@ const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
 const colsPhoneConfirmation = SQL_TABLES.PHONE_CONFIRMATION_CODES.COLUMNS;
 const colsOtherOrganizations = SQL_TABLES.OTHER_ORGANIZATIONS.COLUMNS;
 const colsRoutes = SQL_TABLES.ROUTES.COLUMNS;
+const colsDrivers = SQL_TABLES.DRIVERS.COLUMNS;
 
 const DIGITS_VALIDATION_PATTERN = '^\\d+$';
 const PASSWORD_VALIDATION_PATTERN = '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$';
@@ -965,6 +966,45 @@ const inviteUser = {
     additionalProperties: false,
 };
 
+const inviteDriver = {
+    properties: {
+        [colsUsers.EMAIL]: {
+            type: 'string',
+            format: 'email',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsUsers.FULL_NAME]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
+            type: 'string',
+            format: 'uuid',
+        },
+        [HOMELESS_COLUMNS.PHONE_NUMBER]: {
+            type: 'string',
+            pattern: DIGITS_VALIDATION_PATTERN,
+        },
+        [colsDrivers.DRIVER_LICENCE_REGISTERED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsDrivers.DRIVER_LICENCE_EXPIRED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+    },
+    required: [
+        colsUsers.EMAIL,
+        colsUsers.FULL_NAME,
+        HOMELESS_COLUMNS.PHONE_PREFIX_ID,
+        HOMELESS_COLUMNS.PHONE_NUMBER,
+        colsDrivers.DRIVER_LICENCE_REGISTERED_AT,
+        colsDrivers.DRIVER_LICENCE_EXPIRED_AT,
+    ],
+    additionalProperties: false,
+};
+
 const inviteUserAsync = {
     $async: true,
     properties: {
@@ -1229,6 +1269,7 @@ module.exports = {
 
     inviteUser,
     inviteUserAsync,
+    inviteDriver,
 
     requiredPassword,
     requiredEmail,

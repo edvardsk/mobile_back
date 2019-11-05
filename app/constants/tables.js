@@ -199,6 +199,15 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    DRIVERS: {
+        NAME: 'drivers',
+        COLUMNS: {
+            USER_ID: 'user_id',
+            DRIVER_LICENCE_REGISTERED_AT: 'driver_licence_registered_at',
+            DRIVER_LICENCE_EXPIRED_AT: 'driver_licence_expired_at',
+            CREATED_AT: 'created_at',
+        },
+    }
 };
 
 const NO_SQL_TABLES = {
