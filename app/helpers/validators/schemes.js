@@ -331,8 +331,7 @@ const finishRegistrationStep1IndividualForwarder = {
         },
         [colsCompanies.IDENTITY_NUMBER]: {
             type: 'string',
-            minLength: 9,
-            maxLength: 12,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
         [colsCompanies.WEBSITE]: {
             type: 'string',
