@@ -58,6 +58,20 @@ const selectUserWithRole = id => squelPostgres
     .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
     .toString();
 
+const selectUserWithRoleAndPhoneNumber = id => squelPostgres
+    .select()
+    .from(table.NAME, 'u')
+    .field('u.*')
+    .field('r.name', HOMELESS_COLUMNS.ROLE)
+    .field(`phn.${colsPhoneNumbers.NUMBER}`, HOMELESS_COLUMNS.PHONE_NUMBER)
+    .field('php.id', HOMELESS_COLUMNS.PHONE_PREFIX_ID)
+    .where(`u.id = '${id}'`)
+    .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
+    .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
+    .left_join(tablePhoneNumbers.NAME, 'phn', `phn.${colsPhoneNumbers.USER_ID} = u.id`)
+    .left_join(tablePhonePrefixes.NAME, 'php', `php.id = phn.${colsPhoneNumbers.PHONE_PREFIX_ID}`)
+    .toString();
+
 const selectUserByEmail = email => squelPostgres
     .select()
     .from(table.NAME)
@@ -263,6 +277,7 @@ const selectFirstInCompanyByCompanyId = companyId => squelPostgres
 module.exports = {
     insertUser,
     selectUser,
+    selectUserWithRoleAndPhoneNumber,
     selectUserWithRole,
     selectUserByEmail,
     selectUserByEmailWithRole,

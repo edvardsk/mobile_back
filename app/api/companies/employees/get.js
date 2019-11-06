@@ -16,7 +16,7 @@ const { SET_DRIVER_ROLES } = require('constants/system');
 
 // formatters
 const { formatPaginationDataForResponse } = require('formatters/pagination-sorting');
-const { formatUserWithPhoneAndRole } = require('formatters/users');
+const { formatUserWithPhoneAndRole, formatUserWithPhoneNumberAndRole } = require('formatters/users');
 const { formatDriversWithPhoneAndRole } = require('formatters/drivers');
 const { formatFilesForResponse } = require('formatters/files');
 
@@ -152,11 +152,11 @@ const getEmployee = async (req, res, next) => {
             return reject(res, ERRORS.COMPANIES.NOT_USER_IN_COMPANY);
         }
 
-        const user = await UsersService.getUserWithRoleAndFreezingData(targetUserId);
+        const user = await UsersService.getUserWithRoleAndPhoneNumber(targetUserId);
         const targetRole = user[HOMELESS_COLUMNS.ROLE];
 
         const result = {
-            user: formatUserWithPhoneAndRole(user),
+            user: formatUserWithPhoneNumberAndRole(user),
         };
 
         if (SET_DRIVER_ROLES.has(targetRole)) {

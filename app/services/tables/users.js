@@ -5,6 +5,7 @@ const {
     selectUserWithRole,
     selectUserByEmail,
     selectUserByEmailWithRole,
+    selectUserWithRoleAndPhoneNumber,
     selectUserByEmailWithRoleAndFreezingStatus,
     selectUserRole,
     updateUser,
@@ -28,6 +29,8 @@ const addUser = data => one(insertUser(data));
 const getUser = id => oneOrNone(selectUser(id));
 
 const getUserWithRole = id => oneOrNone(selectUserWithRole(id));
+
+const getUserWithRoleAndPhoneNumber = id => oneOrNone(selectUserWithRoleAndPhoneNumber(id));
 
 const getUserByEmail = email => oneOrNone(selectUserByEmail(email));
 
@@ -103,6 +106,7 @@ module.exports = {
     addUser,
     getUser,
     getUserWithRole,
+    getUserWithRoleAndPhoneNumber,
     getUserByEmailWithRole,
     getUserByEmailWithRoleAndFreezingData,
     getUserByEmail,
