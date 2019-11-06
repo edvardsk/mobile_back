@@ -6,9 +6,11 @@ const squelPostgres = squel.useFlavour('postgres');
 
 const table = SQL_TABLES.FILES;
 const tableCompaniesFiles = SQL_TABLES.COMPANIES_TO_FILES;
+const tableUsersFiles = SQL_TABLES.USERS_TO_FILES;
 
 const cols = table.COLUMNS;
-const colsCompaniesFiles  = tableCompaniesFiles.COLUMNS;
+const colsCompaniesFiles = tableCompaniesFiles.COLUMNS;
+const colsUsersFiles = tableUsersFiles.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -54,10 +56,18 @@ const selectFilesByCompanyIdAndLabels = (companyId, labels) => squelPostgres
     .left_join(tableCompaniesFiles.NAME, 'cf', `cf.${colsCompaniesFiles.FILE_ID} = f.id`)
     .toString();
 
+const selectFilesByUserId = userId => squelPostgres
+    .select()
+    .from(table.NAME, 'f')
+    .where(`uf.${colsUsersFiles.USER_ID} = '${userId}'`)
+    .left_join(tableUsersFiles.NAME, 'uf', `uf.${colsUsersFiles.FILE_ID} = f.id`)
+    .toString();
+
 module.exports = {
     insertFiles,
     deleteFilesByIds,
     selectFilesByCompanyId,
     selectFilesByCompanyIdAndLabel,
     selectFilesByCompanyIdAndLabels,
+    selectFilesByUserId,
 };

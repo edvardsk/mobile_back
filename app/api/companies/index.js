@@ -88,6 +88,15 @@ router.get(
     getEmployees.getListDrivers,
 );
 
+router.get(
+    ROUTES.COMPANIES.EMPLOYEES.BASE + ROUTES.COMPANIES.EMPLOYEES.USERS.BASE + ROUTES.COMPANIES.EMPLOYEES.USERS.GET,
+    isHasPermissions([PERMISSIONS.READ_EMPLOYEES]),
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.requiredUserId, 'params'),
+    validate(ValidatorSchemes.requiredExistingUserWithIdAsync, 'params'),
+    getEmployees.getEmployee,
+);
+
 
 // data
 router.get(

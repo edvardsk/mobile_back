@@ -197,7 +197,11 @@ const ROUTES = {
             ROLES: {
                 BASE: BASES.ROLES,
                 GET: `/${ROLES.DRIVER}`,
-            }
+            },
+            USERS: {
+                BASE: BASES.USERS,
+                GET: IDS.USER_ID,
+            },
         },
         LEGAL_DATA: {
             BASE: IDS.ME_OR_ID + BASES.LEGAL_DATA,

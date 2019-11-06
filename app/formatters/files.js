@@ -1,6 +1,9 @@
 // constants
 const { SqlArray } = require('constants/instances');
 const { DOCUMENTS_SET, FILES_GROUPS } = require('constants/files');
+const { SQL_TABLES } = require('constants/tables');
+
+const cols = SQL_TABLES.FILES.COLUMNS;
 
 const formatStoringFile = (bucket, path) => `${bucket}/${path}`;
 
@@ -25,8 +28,22 @@ const formatLabelsToStore = string => {
     return new SqlArray(labels);
 };
 
+const formatFilesForResponse = files => files.map(file => (
+    formatFileForResponse(file)
+));
+
+const formatFileForResponse = file => ({
+    id: file.id,
+    [cols.NAME]: file[cols.NAME],
+    [cols.URL]: file[cols.URL],
+    [cols.LABELS]: file[cols.LABELS],
+    [cols.CREATED_AT]: file[cols.CREATED_AT],
+
+});
+
 module.exports = {
     formatStoringFile,
     unformatStoringFile,
     formatLabelsToStore,
+    formatFilesForResponse,
 };
