@@ -16,6 +16,7 @@ const formatDriversWithPhoneAndRole = data => ({
     [HOMELESS_COLUMNS.FULL_PHONE_NUMBER]: data[HOMELESS_COLUMNS.FULL_PHONE_NUMBER],
     [cols.DRIVER_LICENCE_REGISTERED_AT]: data[cols.DRIVER_LICENCE_REGISTERED_AT],
     [cols.DRIVER_LICENCE_EXPIRED_AT]: data[cols.DRIVER_LICENCE_EXPIRED_AT],
+    [colsUsers.FREEZED]: data[colsUsers.FREEZED],
 });
 
 module.exports = {

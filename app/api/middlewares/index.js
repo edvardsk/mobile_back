@@ -28,7 +28,7 @@ const isAuthenticated = async (req, res) => {
     if (isAllowedRoute(req)) {
         return req.next();
     } else {
-        const colsFreezingHistory = SQL_TABLES.FREEZING_HISTORY.COLUMNS;
+        const colsUsers = SQL_TABLES.USERS.COLUMNS;
         try {
             const token = extractToken(req);
             const isTokenValid = TokenService.verifyJWToken(token);
@@ -45,7 +45,7 @@ const isAuthenticated = async (req, res) => {
                 return reject(res, ERRORS.AUTHENTICATION.INVALID_TOKEN);
             }
 
-            if (user[colsFreezingHistory.FREEZED]) {
+            if (user[colsUsers.FREEZED]) {
                 return reject(res, ERRORS.AUTHENTICATION.FREEZED, {}, ERROR_CODES.FORBIDDEN);
             }
 

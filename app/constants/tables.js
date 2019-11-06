@@ -11,6 +11,7 @@ const SQL_TABLES = {
             PASSPORT_CREATED_AT: 'passport_created_at',
             PASSPORT_EXPIRED_AT: 'passport_expired_at',
             PASSPORT_ISSUING_AUTHORITY: 'passport_issuing_authority',
+            FREEZED: 'freezed',
         },
     },
     EMAIL_CONFIRMATION_HASHES: {

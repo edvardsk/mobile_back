@@ -1,7 +1,6 @@
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
 const cols = SQL_TABLES.USERS.COLUMNS;
-const colsFreezingHistory = SQL_TABLES.FREEZING_HISTORY.COLUMNS;
 
 const formatUserForSaving = (id, user, password, key) => ({
     id,
@@ -38,7 +37,11 @@ const formatUserWithPhoneAndRole = data => ({
     [cols.FULL_NAME]: data[cols.FULL_NAME],
     [HOMELESS_COLUMNS.ROLE]: data[HOMELESS_COLUMNS.ROLE],
     [HOMELESS_COLUMNS.FULL_PHONE_NUMBER]: data[HOMELESS_COLUMNS.FULL_PHONE_NUMBER],
-    [colsFreezingHistory.FREEZED]: !!data[colsFreezingHistory.FREEZED],
+    [cols.FREEZED]: data[cols.FREEZED],
+});
+
+const formatFreezingFieldToEdit = value => ({
+    [cols.FREEZED]: value,
 });
 
 module.exports = {
@@ -47,4 +50,5 @@ module.exports = {
     formatUserWithPermissionsForResponse,
     formatPasswordDataToUpdate,
     formatUserWithPhoneAndRole,
+    formatFreezingFieldToEdit,
 };

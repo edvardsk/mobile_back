@@ -15,18 +15,17 @@ const { PERMISSIONS } = require('constants/system');
 
 const createToken = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
-    const colsFreezingHistory = SQL_TABLES.FREEZING_HISTORY.COLUMNS;
     try {
         const password = get(req.body, 'password');
         const email = get(req.body, 'email');
 
-        const user = await UsersService.getUserByEmailWithRoleAndFreezingData(email);
+        const user = await UsersService.getUserByEmailWithRole(email);
 
         if (!user) {
             return reject(res, ERRORS.AUTHORIZATION.INVALID_EMAIL_OR_PASSWORD, {}, ERROR_CODES.UNAUTHORIZED);
         }
 
-        if (user[colsFreezingHistory.FREEZED]) {
+        if (user[colsUsers.FREEZED]) {
             return reject(res, ERRORS.AUTHORIZATION.FREEZED, {}, ERROR_CODES.FORBIDDEN);
         }
 
