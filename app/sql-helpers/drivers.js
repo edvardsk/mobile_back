@@ -14,6 +14,14 @@ const insertRecord = values => squelPostgres
     .returning('*')
     .toString();
 
+const updateRecordByUserId = (userId, values) => squelPostgres
+    .update()
+    .table(table.NAME)
+    .setFields(values)
+    .where(`${cols.USER_ID} = '${userId}'`)
+    .returning('*')
+    .toString();
+
 const selectRecordByUserId = userId => squelPostgres
     .select()
     .from(table.NAME)
@@ -22,5 +30,6 @@ const selectRecordByUserId = userId => squelPostgres
 
 module.exports = {
     insertRecord,
+    updateRecordByUserId,
     selectRecordByUserId,
 };

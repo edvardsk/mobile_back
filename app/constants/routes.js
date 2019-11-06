@@ -201,6 +201,10 @@ const ROUTES = {
             USERS: {
                 BASE: BASES.USERS,
                 GET: IDS.USER_ID,
+                ADVANCED: {
+                    BASE: IDS.USER_ID + BASES.ADVANCED,
+                    PUT: '',
+                },
             },
         },
         LEGAL_DATA: {

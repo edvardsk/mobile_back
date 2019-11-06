@@ -2,6 +2,7 @@ const { one, oneOrNone } = require('db');
 const {
     insertRecord,
     getRecordByPhoneNumber,
+    updateRecordByUserId,
 } = require('sql-helpers/phone-numbers');
 
 // constants
@@ -21,6 +22,8 @@ const addRecord = values => one(insertRecord(values));
 const getRecordByNumber = number => oneOrNone(getRecordByPhoneNumber(number));
 
 const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
+
+const editRecordAsTransaction = (userId, values) => [updateRecordByUserId(userId, values), OPERATIONS.ONE];
 
 const checkPhoneNumberExists = async (props, number, schema, currentPropsName, data) => {
     const colsPhoneNumbers = SQL_TABLES.PHONE_NUMBERS.COLUMNS;
@@ -42,6 +45,8 @@ const checkPhoneNumberValid = async (props, number, schema, key, data) => {
 module.exports = {
     addRecord,
     addRecordAsTransaction,
+    editRecordAsTransaction,
+
     checkPhoneNumberExists,
     checkPhoneNumberValid,
 };

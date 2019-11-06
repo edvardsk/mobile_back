@@ -20,7 +20,16 @@ const getRecordByPhoneNumber = number => squelPostgres
     .where(`${cols.NUMBER} = '${number}'`)
     .toString();
 
+const updateRecordByUserId = (userId, values) => squelPostgres
+    .update()
+    .table(table.NAME)
+    .setFields(values)
+    .where(`${cols.USER_ID} = '${userId}'`)
+    .returning('*')
+    .toString();
+
 module.exports = {
     insertRecord,
     getRecordByPhoneNumber,
+    updateRecordByUserId,
 };

@@ -966,7 +966,7 @@ const inviteUser = {
     additionalProperties: false,
 };
 
-const inviteDriver = {
+const createOrModifyDriver = {
     properties: {
         [colsUsers.EMAIL]: {
             type: 'string',
@@ -1289,7 +1289,7 @@ module.exports = {
 
     inviteUser,
     inviteUserAsync,
-    inviteDriver,
+    createOrModifyDriver,
 
     requiredPassword,
     requiredEmail,

@@ -11,7 +11,7 @@ const { ERRORS } = require('constants/errors');
 const { ALLOWED_ROUTES } = require('constants/routes');
 const { ERROR_CODES } = require('constants/http-codes');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
-const { MAP_COMPANY_OWNERS_TO_MAIN_ROLES } = require('constants/system');
+const { MAP_COMPANY_OWNERS_TO_MAIN_ROLES, MAP_ROLES_TO_MAIN_ROLE } = require('constants/system');
 
 // helpers
 const { extractToken, isControlRole } = require('helpers');
@@ -72,8 +72,12 @@ const isHasPermissions = (permissionsOrGetter = []) => (req, res, next) => {
         if (typeof permissionsOrGetter === 'function') {
             const params = {
                 params: req.params,
+                targetRole: res.locals.targetRole,
             };
             permissions = permissionsOrGetter(params);
+            if (!permissions) {
+                return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
+            }
 
         } else {
             permissions = permissionsOrGetter;
@@ -118,8 +122,21 @@ const injectShadowCompanyHeadByMeOrId = async (req, res, next) => {
     }
 };
 
+const injectTargetRole = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        const user = await UsersService.getUserWithRole(userId);
+        res.locals.targetRole = MAP_ROLES_TO_MAIN_ROLE[user[HOMELESS_COLUMNS.ROLE]];
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     isHasPermissions,
     isAuthenticated,
     injectShadowCompanyHeadByMeOrId,
+    injectTargetRole,
 };

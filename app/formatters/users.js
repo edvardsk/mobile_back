@@ -54,6 +54,11 @@ const formatFreezingFieldToEdit = value => ({
     [cols.FREEZED]: value,
 });
 
+const formatUserToUpdate = data => ({
+    [cols.EMAIL]: data[cols.EMAIL],
+    [cols.FULL_NAME]: data[cols.FULL_NAME],
+});
+
 module.exports = {
     formatUserForSaving,
     formatUserForResponse,
@@ -62,4 +67,5 @@ module.exports = {
     formatUserWithPhoneAndRole,
     formatUserWithPhoneNumberAndRole,
     formatFreezingFieldToEdit,
+    formatUserToUpdate,
 };

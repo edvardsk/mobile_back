@@ -56,6 +56,15 @@ const selectFilesByCompanyIdAndLabels = (companyId, labels) => squelPostgres
     .left_join(tableCompaniesFiles.NAME, 'cf', `cf.${colsCompaniesFiles.FILE_ID} = f.id`)
     .toString();
 
+const selectFilesByUserIdAndLabels = (userId, labels) => squelPostgres
+    .select()
+    .from(table.NAME, 'f')
+    .field('f.*')
+    .where(`uf.${colsUsersFiles.USER_ID} = '${userId}'`)
+    .where(`f.${cols.LABELS} && ARRAY[${labels.map(label => `'${label}'`).toString()}]`)
+    .left_join(tableUsersFiles.NAME, 'uf', `uf.${colsCompaniesFiles.FILE_ID} = f.id`)
+    .toString();
+
 const selectFilesByUserId = userId => squelPostgres
     .select()
     .from(table.NAME, 'f')
@@ -69,5 +78,6 @@ module.exports = {
     selectFilesByCompanyId,
     selectFilesByCompanyIdAndLabel,
     selectFilesByCompanyIdAndLabels,
+    selectFilesByUserIdAndLabels,
     selectFilesByUserId,
 };
