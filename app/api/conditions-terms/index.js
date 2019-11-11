@@ -13,17 +13,13 @@ const { FILES_TYPES } = require('constants/files');
 
 const router = express.Router();
 
-const GET_CONDITIONS_AND_TERMS_PERMISSIONS = [
-    PERMISSIONS.REGISTRATION_SAVE_STEP_5,
-];
-
 const POST_CONDITIONS_AND_TERMS_PERMISSIONS = [
-    // todo: add admin permissions
+    PERMISSIONS.MODIFY_CONDITIONS_AND_TERMS,
 ];
 
 router.get(
     ROUTES.CONDITIONS_TERMS.GET,
-    isHasPermissions(GET_CONDITIONS_AND_TERMS_PERMISSIONS),
+    isHasPermissions([PERMISSIONS.REGISTRATION_SAVE_STEP_5], [PERMISSIONS.READ_CONDITIONS_AND_TERMS]),
     get.getConditionsTerms
 );
 

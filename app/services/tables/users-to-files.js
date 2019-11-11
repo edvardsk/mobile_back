@@ -4,7 +4,7 @@ const { manyOrNone } = require('db');
 const {
     insertRecords,
     selectFilesByUserId,
-    deleteRecordsByUserId,
+    deleteRecordsByFileIds,
 } = require('sql-helpers/users-to-files');
 
 // constants
@@ -14,10 +14,10 @@ const addRecordsAsTransaction = data => [insertRecords(data), OPERATIONS.MANY_OR
 
 const getFilesByCompanyId = userId => manyOrNone(selectFilesByUserId(userId));
 
-const removeRecordsByCompanyIdAsTransaction = userId => [deleteRecordsByUserId(userId), OPERATIONS.MANY_OR_NONE];
+const removeRecordsByFileIdsAsTransaction = fileIds => [deleteRecordsByFileIds(fileIds), OPERATIONS.MANY_OR_NONE];
 
 module.exports = {
     addRecordsAsTransaction,
     getFilesByCompanyId,
-    removeRecordsByCompanyIdAsTransaction,
+    removeRecordsByFileIdsAsTransaction,
 };

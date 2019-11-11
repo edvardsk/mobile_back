@@ -75,5 +75,6 @@ module.exports = {
     formatLegalDataForIndividualForwarderForResponse,
     formatLegalDataForSoleProprietorForwarderForResponse,
     formatCompanyToResponse,
+    formatGeoPointToObject,
 };
 

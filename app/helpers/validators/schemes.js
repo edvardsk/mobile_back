@@ -2,12 +2,13 @@
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { DOCUMENTS, FILES_GROUPS } = require('constants/files');
-const { ROLES } = require('constants/system');
+const { ROLES, ARRAY_ROLES_WITHOUT_ADMIN } = require('constants/system');
 const {
     PAGINATION_PARAMS,
     SORTING_PARAMS,
     SORTING_DIRECTIONS,
     COMPANY_EMPLOYEES_SORT_COLUMNS,
+    USERS_SORT_COLUMNS,
 } = require('constants/pagination-sorting');
 
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
@@ -966,7 +967,7 @@ const inviteUser = {
     additionalProperties: false,
 };
 
-const inviteDriver = {
+const createOrModifyDriver = {
     properties: {
         [colsUsers.EMAIL]: {
             type: 'string',
@@ -1020,6 +1021,26 @@ const inviteUserAsync = {
     },
     additionalProperties: true,
 };
+
+const modifyEmployeeAsyncFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsUsers.EMAIL]: {
+            email_exists: {
+                userId,
+            },
+        },
+        [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
+            phone_prefix_not_exist: {},
+        },
+        [HOMELESS_COLUMNS.PHONE_NUMBER]: {
+            phone_number_exists: {
+                userId
+            },
+        },
+    },
+    additionalProperties: true,
+});
 
 const requiredPassword = {
     properties: {
@@ -1195,6 +1216,15 @@ const companyEmployeesSortColumnQuery = {
     }
 };
 
+const usersSortColumnQuery = {
+    properties: {
+        [SORTING_PARAMS.SORT_COLUMN]: {
+            type: 'string',
+            enum: USERS_SORT_COLUMNS,
+        }
+    }
+};
+
 const modifyFilterQuery = {
     properties: {
         [HOMELESS_COLUMNS.FILTER]: {
@@ -1217,6 +1247,26 @@ const companyEmployeesFilterQuery = {
     },
 };
 
+const usersFilterQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.FILTER]: {
+            type: 'object',
+            properties: {
+                [HOMELESS_COLUMNS.ROLE]: {
+                    type: 'array',
+                    minItems: 1,
+                    uniqueItems: true,
+                    items: {
+                        enum: ARRAY_ROLES_WITHOUT_ADMIN,
+
+                    },
+                },
+            },
+            additionalProperties: false,
+        },
+    },
+};
+
 const companyDriversFilterQuery = {
     properties: {
         [HOMELESS_COLUMNS.FILTER]: {
@@ -1228,6 +1278,12 @@ const companyDriversFilterQuery = {
             },
             additionalProperties: false,
         },
+    },
+};
+
+const notRequiredFiles = {
+    patternProperties: {
+        '.': fileFormat,
     },
 };
 
@@ -1283,7 +1339,8 @@ module.exports = {
 
     inviteUser,
     inviteUserAsync,
-    inviteDriver,
+    createOrModifyDriver,
+    modifyEmployeeAsyncFunc,
 
     requiredPassword,
     requiredEmail,
@@ -1303,7 +1360,11 @@ module.exports = {
     basePaginationModifyQuery,
     baseSortingSortingDirectionQuery,
     companyEmployeesSortColumnQuery,
+    usersSortColumnQuery,
     modifyFilterQuery,
     companyEmployeesFilterQuery,
+    usersFilterQuery,
     companyDriversFilterQuery,
+
+    notRequiredFiles,
 };
