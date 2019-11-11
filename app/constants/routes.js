@@ -1,3 +1,5 @@
+const { ROLES } = require('./system');
+
 const API_PREFIX = '/api/v1';
 
 const BASES = {
@@ -35,6 +37,7 @@ const BASES = {
     UNFREEZE: '/unfreeze',
     FILES: '/files',
     GROUPS: '/groups',
+    MANAGEMENT: '/management',
 };
 
 const IDS = {
@@ -67,6 +70,10 @@ const ROUTES = {
         AUTHORIZATION: {
             BASE: BASES.AUTHORIZATION,
             POST: '',
+            MANAGEMENT: {
+                BASE: BASES.MANAGEMENT,
+                POST: '',
+            },
         },
         CONFIRM_EMAIL: {
             BASE: BASES.CONFIRM_EMAIL,
@@ -127,7 +134,7 @@ const ROUTES = {
     },
     USERS: {
         BASE: BASES.USERS,
-        GET: '',
+        GET_ALL: '',
         ME: {
             BASE: BASES.ME,
             GET: '',
@@ -192,6 +199,18 @@ const ROUTES = {
         EMPLOYEES: {
             BASE: IDS.ME_OR_ID + BASES.EMPLOYEES,
             GET_ALL: '',
+            ROLES: {
+                BASE: BASES.ROLES,
+                GET: `/${ROLES.DRIVER}`,
+            },
+            USERS: {
+                BASE: BASES.USERS,
+                GET: IDS.USER_ID,
+                ADVANCED: {
+                    BASE: IDS.USER_ID + BASES.ADVANCED,
+                    PUT: '',
+                },
+            },
         },
         LEGAL_DATA: {
             BASE: IDS.ME_OR_ID + BASES.LEGAL_DATA,
@@ -209,14 +228,17 @@ const ROUTES = {
             1: {
                 BASE: BASES['1'],
                 POST: '',
+                GET: '',
             },
             2: {
                 BASE: BASES['2'],
                 POST: '',
+                GET: '',
             },
             3: {
                 BASE: BASES['3'],
                 POST: '',
+                GET: '',
             },
         }
     },
@@ -231,6 +253,7 @@ const ALLOWED_ROUTES = {
     POST: new Set([
         API_PREFIX + ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.POST,
         API_PREFIX + ROUTES.AUTH.AUTHORIZATION.BASE + ROUTES.AUTH.AUTHORIZATION.POST,
+        API_PREFIX + ROUTES.AUTH.AUTHORIZATION.BASE + ROUTES.AUTH.AUTHORIZATION.MANAGEMENT.BASE + ROUTES.AUTH.AUTHORIZATION.MANAGEMENT.POST,
 
         API_PREFIX + ROUTES.AUTH.FORGOT_PASSWORD.BASE + ROUTES.AUTH.FORGOT_PASSWORD.RESET.BASE + ROUTES.AUTH.FORGOT_PASSWORD.RESET.POST,
         API_PREFIX + ROUTES.AUTH.FORGOT_PASSWORD.BASE + ROUTES.AUTH.FORGOT_PASSWORD.CHANGE.BASE + ROUTES.AUTH.FORGOT_PASSWORD.CHANGE.POST,

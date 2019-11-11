@@ -32,7 +32,6 @@ const FilesFormatters = require('formatters/files');
 const DriversFormatters = require('formatters/drivers');
 
 const {
-    AWS_S3_BUCKET_NAME,
     INVITE_EXPIRATION_UNIT,
     INVITE_EXPIRATION_VALUE,
 } = process.env;
@@ -82,44 +81,12 @@ const inviteUser = async (req, res, next) => {
 };
 
 const inviteUserAdvanced = async (req, res, next) => {
-    const colsFiles = SQL_TABLES.FILES.COLUMNS;
-    const colsUsersFiles = SQL_TABLES.USERS_TO_FILES.COLUMNS;
     try {
         const { inviteData } = res.locals;
         const { files, body } = req;
         const { transactionsListTail, invitedUserId, invitedUserRole } = inviteData;
 
-        const dataToStore = Object.keys(files).reduce((acc, type) => {
-            const [dbFiles, dbUsersFiles, storageFiles] = acc;
-            files[type].forEach(file => {
-                const fileId = uuid();
-                const fileHash = uuid();
-                const filePath = `${fileHash}${file.originalname}`;
-                const fileUrl = FilesFormatters.formatStoringFile(AWS_S3_BUCKET_NAME, filePath);
-
-                const fileLabels = FilesFormatters.formatLabelsToStore(type);
-
-                dbFiles.push({
-                    id: fileId,
-                    [colsFiles.NAME]: file.originalname,
-                    [colsFiles.LABELS]: fileLabels,
-                    [colsFiles.URL]: CryptService.encrypt(fileUrl),
-                });
-                dbUsersFiles.push({
-                    [colsUsersFiles.USER_ID]: invitedUserId,
-                    [colsUsersFiles.FILE_ID]: fileId,
-                });
-                storageFiles.push({
-                    bucket: AWS_S3_BUCKET_NAME,
-                    path: filePath,
-                    data: file.buffer,
-                    contentType: file.mimetype,
-                });
-            });
-            return acc;
-        }, [[], [], []]);
-
-        const [dbFiles, dbUsersFiles, storageFiles] = dataToStore;
+        const [dbFiles, dbUsersFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForUsers(files, invitedUserId);
 
         res.locals.inviteData.storageFiles = storageFiles;
 

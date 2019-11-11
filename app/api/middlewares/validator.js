@@ -135,6 +135,7 @@ const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next)
                 shadowMainUserRole: res.locals.shadowMainUserRole,
                 shadowUserId: res.locals.shadowUserId,
                 requestParams: req.params,
+                targetRole: res.locals.targetRole,
             };
             scheme = schemeOrGetter(params);
             if (!scheme) {

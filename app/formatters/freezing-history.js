@@ -2,9 +2,9 @@ const { SQL_TABLES } = require('constants/tables');
 
 const cols = SQL_TABLES.FREEZING_HISTORY.COLUMNS;
 
-const formatRecordToSave = (initiatorId, targerId, isFreezed) => ({
+const formatRecordToSave = (initiatorId, targetId, isFreezed) => ({
     [cols.INITIATOR_ID]: initiatorId,
-    [cols.TARGET_ID]: targerId,
+    [cols.TARGET_ID]: targetId,
     [cols.FREEZED]: isFreezed,
 });
 

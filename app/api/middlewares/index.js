@@ -11,7 +11,7 @@ const { ERRORS } = require('constants/errors');
 const { ALLOWED_ROUTES } = require('constants/routes');
 const { ERROR_CODES } = require('constants/http-codes');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
-const { MAP_COMPANY_OWNERS_TO_MAIN_ROLES } = require('constants/system');
+const { MAP_COMPANY_OWNERS_TO_MAIN_ROLES, MAP_ROLES_TO_MAIN_ROLE } = require('constants/system');
 
 // helpers
 const { extractToken, isControlRole } = require('helpers');
@@ -28,7 +28,7 @@ const isAuthenticated = async (req, res) => {
     if (isAllowedRoute(req)) {
         return req.next();
     } else {
-        const colsFreezingHistory = SQL_TABLES.FREEZING_HISTORY.COLUMNS;
+        const colsUsers = SQL_TABLES.USERS.COLUMNS;
         try {
             const token = extractToken(req);
             const isTokenValid = TokenService.verifyJWToken(token);
@@ -45,7 +45,7 @@ const isAuthenticated = async (req, res) => {
                 return reject(res, ERRORS.AUTHENTICATION.INVALID_TOKEN);
             }
 
-            if (user[colsFreezingHistory.FREEZED]) {
+            if (user[colsUsers.FREEZED]) {
                 return reject(res, ERRORS.AUTHENTICATION.FREEZED, {}, ERROR_CODES.FORBIDDEN);
             }
 
@@ -66,22 +66,29 @@ const isAuthenticated = async (req, res) => {
     }
 };
 
-const isHasPermissions = (permissionsOrGetter = []) => (req, res, next) => {
+const isHasPermissions = (...permissionsParams) => (req, res, next) => {
     try {
-        let permissions;
-        if (typeof permissionsOrGetter === 'function') {
-            const params = {
-                params: req.params,
-            };
-            permissions = permissionsOrGetter(params);
+        if (!permissionsParams.some(permissionsOrGetter => {
+            let permissions;
+            if (typeof permissionsOrGetter === 'function') {
+                const params = {
+                    params: req.params,
+                    targetRole: res.locals.targetRole,
+                };
+                permissions = permissionsOrGetter(params);
+                if (!permissions) {
+                    return false;
+                }
 
-        } else {
-            permissions = permissionsOrGetter;
-        }
-        const userPermissions = res.locals.permissions;
-        if (!permissions.every(permission => userPermissions.has(permission))) {
+            } else {
+                permissions = permissionsOrGetter;
+            }
+            const userPermissions = res.locals.permissions;
+            return permissions.every(permission => userPermissions.has(permission));
+        })) {
             return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
         }
+
         next();
     } catch (error) {
         next(error);
@@ -118,8 +125,21 @@ const injectShadowCompanyHeadByMeOrId = async (req, res, next) => {
     }
 };
 
+const injectTargetRole = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        const user = await UsersService.getUserWithRole(userId);
+        res.locals.targetRole = MAP_ROLES_TO_MAIN_ROLE[user[HOMELESS_COLUMNS.ROLE]];
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     isHasPermissions,
     isAuthenticated,
     injectShadowCompanyHeadByMeOrId,
+    injectTargetRole,
 };

@@ -11,6 +11,7 @@ const SQL_TABLES = {
             PASSPORT_CREATED_AT: 'passport_created_at',
             PASSPORT_EXPIRED_AT: 'passport_expired_at',
             PASSPORT_ISSUING_AUTHORITY: 'passport_issuing_authority',
+            FREEZED: 'freezed',
         },
     },
     EMAIL_CONFIRMATION_HASHES: {
@@ -217,6 +218,7 @@ const NO_SQL_TABLES = {
 const HOMELESS_COLUMNS = {
     ROLE: 'role',
     ROLE_ID: 'role_id',
+    ROLES: 'roles',
     PHONE_NUMBER: 'phone_number',
     PHONE_PREFIX_ID: 'phone_prefix_id',
     OWNER_ID: 'owner_id',

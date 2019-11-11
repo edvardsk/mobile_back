@@ -29,8 +29,16 @@ const deleteRecordsByUserId = userId => squelPostgres
     .returning('*')
     .toString();
 
+const deleteRecordsByFileIds = fileIds => squelPostgres
+    .delete()
+    .from(table.NAME)
+    .where(`${cols.FILE_ID} IN ?`, fileIds)
+    .returning('*')
+    .toString();
+
 module.exports = {
     insertRecords,
     selectFilesByUserId,
     deleteRecordsByUserId,
+    deleteRecordsByFileIds,
 };

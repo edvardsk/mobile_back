@@ -5,6 +5,7 @@ const {
     selectUserWithRole,
     selectUserByEmail,
     selectUserByEmailWithRole,
+    selectUserWithRoleAndPhoneNumber,
     selectUserByEmailWithRoleAndFreezingStatus,
     selectUserRole,
     updateUser,
@@ -13,8 +14,15 @@ const {
     selectUserWithRoleAndConfirmationHash,
     selectUsersByCompanyIdPaginationSorting,
     selectCountUsersByCompanyId,
+
+    selectUsersByCompanyIdAndDriverRolePaginationSorting,
+    selectCountUsersByCompanyIdAndDriverRole,
+
     selectUserWithRoleAndFreezingStatus,
     selectFirstInCompanyByCompanyId,
+
+    selectUsersPaginationSorting,
+    selectCountUsers,
 } = require('sql-helpers/users');
 
 const { OPERATIONS } = require('constants/postgres');
@@ -24,6 +32,8 @@ const addUser = data => one(insertUser(data));
 const getUser = id => oneOrNone(selectUser(id));
 
 const getUserWithRole = id => oneOrNone(selectUserWithRole(id));
+
+const getUserWithRoleAndPhoneNumber = id => oneOrNone(selectUserWithRoleAndPhoneNumber(id));
 
 const getUserByEmail = email => oneOrNone(selectUserByEmail(email));
 
@@ -57,12 +67,30 @@ const getCountUsersByCompanyId = (companyId, filter) => (
         .then(({ count }) => +count)
 );
 
+const getCompanyDriversPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
+    manyOrNone(selectUsersByCompanyIdAndDriverRolePaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
+);
+
+const getCountCompanyDrivers = (companyId, filter) => (
+    one(selectCountUsersByCompanyIdAndDriverRole(companyId, filter))
+        .then(({ count }) => +count)
+);
+
 const getFirstUserInCompanyStrict = companyId => (
     one(selectFirstInCompanyByCompanyId(companyId))
 );
 
 const getFirstUserInCompany = companyId => (
     oneOrNone(selectFirstInCompanyByCompanyId(companyId))
+);
+
+const getUsersPaginationSorting = (limit, offset, sortColumn, asc, filter) => (
+    manyOrNone(selectUsersPaginationSorting(limit, offset, sortColumn, asc, filter))
+);
+
+const getCountUsers = filter => (
+    one(selectCountUsers(filter))
+        .then(({ count }) => +count)
 );
 
 const checkUserWithPassportNumberExistsOpposite = async (meta, number) => {
@@ -73,7 +101,8 @@ const checkUserWithPassportNumberExistsOpposite = async (meta, number) => {
 
 const checkUserWithEmailExistsOpposite = async (meta, email) => {
     const user = await getUserByEmail(email);
-    return !user;
+    const { userId } = meta;
+    return !user || user.id === userId;
 };
 
 const checkUserWithEmailExists = async (meta, email) => {
@@ -90,6 +119,7 @@ module.exports = {
     addUser,
     getUser,
     getUserWithRole,
+    getUserWithRoleAndPhoneNumber,
     getUserByEmailWithRole,
     getUserByEmailWithRoleAndFreezingData,
     getUserByEmail,
@@ -100,10 +130,17 @@ module.exports = {
     getUserWithRoleAndConfirmationHashStrict,
     getUsersByCompanyIdPaginationSorting,
     getCountUsersByCompanyId,
+
+    getCompanyDriversPaginationSorting,
+    getCountCompanyDrivers,
+
     getUserForAuthentication,
     getUserWithRoleAndFreezingData,
     getFirstUserInCompanyStrict,
     getFirstUserInCompany,
+
+    getUsersPaginationSorting,
+    getCountUsers,
 
     checkUserWithPassportNumberExistsOpposite,
     checkUserWithEmailExistsOpposite,
