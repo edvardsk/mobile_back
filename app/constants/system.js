@@ -75,6 +75,8 @@ const PERMISSIONS = {
     MODIFY_COMPANY_DATA_STEP_3: 'modify_company_data_step_3',
 };
 
+const ARRAY_ROLES_WITHOUT_ADMIN = Object.values(ROLES).filter(role => role !== ROLES.ADMIN);
+
 const UNCONFIRMED_EMAIL_ROLES = [
     ROLES.UNCONFIRMED_TRANSPORTER,
     ROLES.UNCONFIRMED_HOLDER,
@@ -300,6 +302,7 @@ const SET_DRIVER_ROLES = new Set([
 
 module.exports = {
     ROLES,
+    ARRAY_ROLES_WITHOUT_ADMIN,
     ROLES_TO_REGISTER,
     PERMISSIONS,
     UNCONFIRMED_EMAIL_ROLES,

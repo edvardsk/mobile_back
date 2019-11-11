@@ -134,7 +134,7 @@ const ROUTES = {
     },
     USERS: {
         BASE: BASES.USERS,
-        GET: '',
+        GET_ALL: '',
         ME: {
             BASE: BASES.ME,
             GET: '',

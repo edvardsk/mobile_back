@@ -16,6 +16,17 @@ const router = express.Router();
 // users
 router.get(ROUTES.USERS.ME.BASE + ROUTES.USERS.ME.GET, get.getUser);
 
+router.get(
+    ROUTES.USERS.GET_ALL,
+    validate(ValidatorSchemes.basePaginationQuery, 'query'),
+    validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
+    validate(ValidatorSchemes.baseSortingSortingDirectionQuery, 'query'),
+    validate(ValidatorSchemes.usersSortColumnQuery, 'query'),
+    validate(ValidatorSchemes.modifyFilterQuery, 'query'),
+    validate(ValidatorSchemes.usersFilterQuery, 'query'),
+    get.getUsers,
+);
+
 
 //freezing
 router.post(
