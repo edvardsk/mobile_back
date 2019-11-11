@@ -78,6 +78,8 @@ const PERMISSIONS = {
 
     MODIFY_CONDITIONS_AND_TERMS: 'modify_conditions_and_terms',
     READ_CONDITIONS_AND_TERMS: 'read_conditions_and_terms',
+
+    CRUD_CARGO: 'crud_cargo',
 };
 
 const ARRAY_ROLES_WITHOUT_ADMIN = Object.values(ROLES).filter(role => role !== ROLES.ADMIN);
