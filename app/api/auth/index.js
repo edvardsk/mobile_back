@@ -104,7 +104,17 @@ router.use('/*', isAuthenticated);
 router.post(
     ROUTES.AUTH.AUTHORIZATION.BASE + ROUTES.AUTH.AUTHORIZATION.POST,
     validate(ValidatorSchemes.authorization),
-    authorization.createToken
+    authorization.checkUserExisting,
+    authorization.checkNotManagementRole,
+    authorization.generateToken,
+);
+
+router.post(
+    ROUTES.AUTH.AUTHORIZATION.BASE + ROUTES.AUTH.AUTHORIZATION.MANAGEMENT.BASE + ROUTES.AUTH.AUTHORIZATION.MANAGEMENT.POST,
+    validate(ValidatorSchemes.authorization),
+    authorization.checkUserExisting,
+    authorization.checkManagementRole,
+    authorization.generateToken,
 );
 
 router.post(

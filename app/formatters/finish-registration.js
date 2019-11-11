@@ -73,6 +73,7 @@ const formatDataForTransporterAndHolderForStep2Response = data => ({
     [colsCompanies.BANK_CODE]: data[colsCompanies.BANK_CODE],
     [colsCompanies.BANK_NAME]: data[colsCompanies.BANK_NAME],
     [colsCompanies.BANK_ADDRESS]: data[colsCompanies.BANK_ADDRESS],
+    [colsCompanies.BANK_COUNTRY_ID]: data[colsCompanies.BANK_COUNTRY_ID],
     [HOMELESS_COLUMNS.BANK_COUNTRY]: data[HOMELESS_COLUMNS.BANK_COUNTRY],
 });
 

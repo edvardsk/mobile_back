@@ -20,6 +20,9 @@ const {
 
     selectUserWithRoleAndFreezingStatus,
     selectFirstInCompanyByCompanyId,
+
+    selectUsersPaginationSorting,
+    selectCountUsers,
 } = require('sql-helpers/users');
 
 const { OPERATIONS } = require('constants/postgres');
@@ -81,6 +84,15 @@ const getFirstUserInCompany = companyId => (
     oneOrNone(selectFirstInCompanyByCompanyId(companyId))
 );
 
+const getUsersPaginationSorting = (limit, offset, sortColumn, asc, filter) => (
+    manyOrNone(selectUsersPaginationSorting(limit, offset, sortColumn, asc, filter))
+);
+
+const getCountUsers = filter => (
+    one(selectCountUsers(filter))
+        .then(({ count }) => +count)
+);
+
 const checkUserWithPassportNumberExistsOpposite = async (meta, number) => {
     const user = await getUserByPassportNumber(number);
     const { userId } = meta;
@@ -89,7 +101,8 @@ const checkUserWithPassportNumberExistsOpposite = async (meta, number) => {
 
 const checkUserWithEmailExistsOpposite = async (meta, email) => {
     const user = await getUserByEmail(email);
-    return !user;
+    const { userId } = meta;
+    return !user || user.id === userId;
 };
 
 const checkUserWithEmailExists = async (meta, email) => {
@@ -125,6 +138,9 @@ module.exports = {
     getUserWithRoleAndFreezingData,
     getFirstUserInCompanyStrict,
     getFirstUserInCompany,
+
+    getUsersPaginationSorting,
+    getCountUsers,
 
     checkUserWithPassportNumberExistsOpposite,
     checkUserWithEmailExistsOpposite,

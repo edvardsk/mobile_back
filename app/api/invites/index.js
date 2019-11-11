@@ -34,7 +34,7 @@ const INVITE_USER_ADVANCED_MAP_PERMISSIONS = {
 };
 
 const INVITE_USER_ADVANCED_MAP_BASIC_SCHEMES = {
-    [ROLES.DRIVER]: ValidatorSchemes.inviteDriver,
+    [ROLES.DRIVER]: ValidatorSchemes.createOrModifyDriver,
 };
 
 // invite
