@@ -1,7 +1,8 @@
 const { one, oneOrNone } = require('db');
 const {
     insertRecord,
-    getRecordByPhoneNumber,
+    selectRecordByPhoneNumberAndPrefixId,
+    updateRecordByUserId,
 } = require('sql-helpers/phone-numbers');
 
 // constants
@@ -18,17 +19,20 @@ const colsPhonePrefixes = SQL_TABLES.PHONE_PREFIXES.COLUMNS;
 
 const addRecord = values => one(insertRecord(values));
 
-const getRecordByNumber = number => oneOrNone(getRecordByPhoneNumber(number));
+const getRecordByNumberAndPrefixId = (number, prefixId) => oneOrNone(selectRecordByPhoneNumberAndPrefixId(number, prefixId));
 
 const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
 
-const checkPhoneNumberExists = async (props, number, schema, currentPropsName, data) => {
+const editRecordAsTransaction = (userId, values) => [updateRecordByUserId(userId, values), OPERATIONS.ONE];
+
+const checkPhoneNumberExists = async (meta, number, schema, currentPropsName, data) => {
     const colsPhoneNumbers = SQL_TABLES.PHONE_NUMBERS.COLUMNS;
     const prefixId = data[HOMELESS_COLUMNS.PHONE_PREFIX_ID];
 
-    const phoneFromDb = await getRecordByNumber(number);
+    const phoneFromDb = await getRecordByNumberAndPrefixId(number, prefixId);
+    const { userId } = meta;
 
-    return !(phoneFromDb && phoneFromDb[colsPhoneNumbers.PHONE_PREFIX_ID] === prefixId);
+    return !phoneFromDb || (phoneFromDb && phoneFromDb[colsPhoneNumbers.USER_ID] === userId);
 };
 
 const checkPhoneNumberValid = async (props, number, schema, key, data) => {
@@ -42,6 +46,8 @@ const checkPhoneNumberValid = async (props, number, schema, key, data) => {
 module.exports = {
     addRecord,
     addRecordAsTransaction,
+    editRecordAsTransaction,
+
     checkPhoneNumberExists,
     checkPhoneNumberValid,
 };

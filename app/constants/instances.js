@@ -6,6 +6,14 @@ function Geo(longitude, latitude) {
     };
 }
 
+function SqlArray(data) {
+    this.data = [...data];
+    this.toString = function () {
+        return `ARRAY [${this.data.map(value => `'${value}'`).toString()}]`;
+    };
+}
+
 module.exports = {
     Geo,
+    SqlArray,
 };

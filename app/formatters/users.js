@@ -37,6 +37,26 @@ const formatUserWithPhoneAndRole = data => ({
     [cols.FULL_NAME]: data[cols.FULL_NAME],
     [HOMELESS_COLUMNS.ROLE]: data[HOMELESS_COLUMNS.ROLE],
     [HOMELESS_COLUMNS.FULL_PHONE_NUMBER]: data[HOMELESS_COLUMNS.FULL_PHONE_NUMBER],
+    [cols.FREEZED]: data[cols.FREEZED],
+});
+
+const formatUserWithPhoneNumberAndRole = data => ({
+    id: data.id,
+    [cols.EMAIL]: data[cols.EMAIL],
+    [cols.FULL_NAME]: data[cols.FULL_NAME],
+    [HOMELESS_COLUMNS.ROLE]: data[HOMELESS_COLUMNS.ROLE],
+    [HOMELESS_COLUMNS.PHONE_NUMBER]: data[HOMELESS_COLUMNS.PHONE_NUMBER],
+    [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: data[HOMELESS_COLUMNS.PHONE_PREFIX_ID],
+    [cols.FREEZED]: data[cols.FREEZED],
+});
+
+const formatFreezingFieldToEdit = value => ({
+    [cols.FREEZED]: value,
+});
+
+const formatUserToUpdate = data => ({
+    [cols.EMAIL]: data[cols.EMAIL],
+    [cols.FULL_NAME]: data[cols.FULL_NAME],
 });
 
 module.exports = {
@@ -45,4 +65,7 @@ module.exports = {
     formatUserWithPermissionsForResponse,
     formatPasswordDataToUpdate,
     formatUserWithPhoneAndRole,
+    formatUserWithPhoneNumberAndRole,
+    formatFreezingFieldToEdit,
+    formatUserToUpdate,
 };

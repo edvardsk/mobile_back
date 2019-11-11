@@ -3,11 +3,10 @@ const { SQL_TABLES } = require('constants/tables');
 
 const squelPostgres = squel.useFlavour('postgres');
 
-const table = SQL_TABLES.COMPANIES_TO_FILES;
+const table = SQL_TABLES.USERS_TO_FILES;
 const tableFiles = SQL_TABLES.FILES;
 
 const cols = table.COLUMNS;
-const colsFiles = tableFiles.COLUMNS;
 
 const insertRecords = values => squelPostgres
     .insert()
@@ -16,25 +15,17 @@ const insertRecords = values => squelPostgres
     .returning('*')
     .toString();
 
-const selectFilesByCompanyId = companyId => squelPostgres
+const selectFilesByUserId = userId => squelPostgres
     .select()
     .from(table.NAME, 'cf')
-    .where(`cf.${cols.COMPANY_ID} = '${companyId}'`)
+    .where(`cf.${cols.USER_ID} = '${userId}'`)
     .left_join(tableFiles.NAME, 'f', `f.id = cf.${cols.FILE_ID}`)
     .toString();
 
-const selectFilesByCompanyIdAndLabels = (companyId, labels) => squelPostgres
-    .select()
-    .from(table.NAME, 'cf')
-    .where(`cf.${cols.COMPANY_ID} = '${companyId}'`)
-    .where(`f.${colsFiles.LABELS} && ARRAY['${labels}']`)
-    .left_join(tableFiles.NAME, 'f', `f.id = cf.${cols.FILE_ID}`)
-    .toString();
-
-const deleteRecordsByCompanyId = companyId => squelPostgres
+const deleteRecordsByUserId = userId => squelPostgres
     .delete()
     .from(table.NAME)
-    .where(`${cols.COMPANY_ID} = '${companyId}'`)
+    .where(`${cols.USER_ID} = '${userId}'`)
     .returning('*')
     .toString();
 
@@ -47,8 +38,7 @@ const deleteRecordsByFileIds = fileIds => squelPostgres
 
 module.exports = {
     insertRecords,
-    selectFilesByCompanyId,
-    selectFilesByCompanyIdAndLabels,
-    deleteRecordsByCompanyId,
+    selectFilesByUserId,
+    deleteRecordsByUserId,
     deleteRecordsByFileIds,
 };

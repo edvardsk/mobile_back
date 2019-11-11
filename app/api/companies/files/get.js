@@ -3,30 +3,11 @@ const { success, reject } = require('api/response');
 // services
 const CompaniesService = require('services/tables/companies');
 const FilesService = require('services/tables/files');
-const UsersService = require('services/tables/users');
-const S3Service = require('services/aws/s3');
-const CryptoService = require('services/crypto');
 
 // constants
 const { ERRORS } = require('constants/errors');
-const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
-const { DOCUMENTS, FILES_GROUPS } = require('constants/files');
-const { ROLES, MAP_COMPANY_OWNERS_TO_MAIN_ROLES } = require('constants/system');
-
-// formatters
-const { unformatStoringFile } = require('formatters/files');
-
-const { FILES_PREVIEW_LIFETIME_SECONDS } = process.env;
-
-const MAP_ROLES_TO_LIST_NON_CUSTOM_FILES = {
-    [ROLES.TRANSPORTER]: [DOCUMENTS.STATE_REGISTRATION_CERTIFICATE, DOCUMENTS.INSURANCE_POLICY, DOCUMENTS.RESIDENCY_CERTIFICATE],
-    [ROLES.HOLDER]: [DOCUMENTS.STATE_REGISTRATION_CERTIFICATE, DOCUMENTS.RESIDENCY_CERTIFICATE],
-    [ROLES.INDIVIDUAL_FORWARDER]: [DOCUMENTS.PASSPORT],
-    [ROLES.SOLE_PROPRIETOR_FORWARDER]: [DOCUMENTS.PASSPORT, DOCUMENTS.STATE_REGISTRATION_CERTIFICATE],
-};
 
 const getGroupFiles = async (req, res, next) => {
-    const colsFiles = SQL_TABLES.FILES.COLUMNS;
     try {
         const currentUserId = res.locals.user.id;
         const isControlRole = res.locals.user.isControlRole;
@@ -34,48 +15,19 @@ const getGroupFiles = async (req, res, next) => {
         const { meOrId, fileGroup } = req.params;
 
         let company;
-        let firstUserInCompanyData;
 
         if (isControlRole) {
             company = await CompaniesService.getCompany(meOrId);
             if (!company) {
                 return reject(res, ERRORS.COMPANIES.INVALID_COMPANY_ID);
             }
-            firstUserInCompanyData = await UsersService.getFirstUserInCompanyStrict(company.id);
         } else {
             company = await CompaniesService.getCompanyByUserId(currentUserId);
-            firstUserInCompanyData = await UsersService.getFirstUserInCompanyStrict(company.id);
         }
 
-        const userRole = firstUserInCompanyData[HOMELESS_COLUMNS.ROLE];
+        const files = await FilesService.getFilesByCompanyIdAndFileGroup(company.id, fileGroup);
 
-        const mainRole = MAP_COMPANY_OWNERS_TO_MAIN_ROLES[userRole];
-
-        const listNonCustomFileTypes = MAP_ROLES_TO_LIST_NON_CUSTOM_FILES[mainRole];
-
-        const notPrefix = fileGroup === FILES_GROUPS.CUSTOM ? 'NOT' : '';
-
-        const files = await FilesService.getFilesByCompanyIdAndTypes(company.id, listNonCustomFileTypes, notPrefix);
-
-        const decryptedFiles = files.map(file => {
-            const url = CryptoService.decrypt(file[colsFiles.URL]);
-            return {
-                ...file,
-                url,
-            };
-        });
-
-        const signedUrls = await Promise.all(decryptedFiles.map(file => {
-            const [bucket, path] = unformatStoringFile(file[colsFiles.URL]);
-            return S3Service.getSignedUrl(bucket, path, +FILES_PREVIEW_LIFETIME_SECONDS);
-        }));
-
-        const resultFiles = decryptedFiles.map((file, i) => {
-            return {
-                ...file,
-                [colsFiles.URL]: signedUrls[i],
-            };
-        });
+        const resultFiles = await FilesService.formatTemporaryLinks(files);
 
         return success(res, { files: resultFiles } );
     } catch (error) {

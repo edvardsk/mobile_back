@@ -3,7 +3,7 @@ const { SQL_TABLES } = require('constants/tables');
 
 const squelPostgres = squel.useFlavour('postgres');
 
-const table = SQL_TABLES.PHONE_NUMBERS;
+const table = SQL_TABLES.DRIVERS;
 
 const cols = table.COLUMNS;
 
@@ -14,13 +14,6 @@ const insertRecord = values => squelPostgres
     .returning('*')
     .toString();
 
-const selectRecordByPhoneNumberAndPrefixId = (number, prefixId) => squelPostgres
-    .select()
-    .from(table.NAME)
-    .where(`${cols.NUMBER} = '${number}'`)
-    .where(`${cols.PHONE_PREFIX_ID} = '${prefixId}'`)
-    .toString();
-
 const updateRecordByUserId = (userId, values) => squelPostgres
     .update()
     .table(table.NAME)
@@ -29,8 +22,14 @@ const updateRecordByUserId = (userId, values) => squelPostgres
     .returning('*')
     .toString();
 
+const selectRecordByUserId = userId => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where(`${cols.USER_ID} = '${userId}'`)
+    .toString();
+
 module.exports = {
     insertRecord,
-    selectRecordByPhoneNumberAndPrefixId,
     updateRecordByUserId,
+    selectRecordByUserId,
 };

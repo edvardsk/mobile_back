@@ -2,12 +2,13 @@
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { DOCUMENTS, FILES_GROUPS } = require('constants/files');
-const { ROLES } = require('constants/system');
+const { ROLES, ARRAY_ROLES_WITHOUT_ADMIN } = require('constants/system');
 const {
     PAGINATION_PARAMS,
     SORTING_PARAMS,
     SORTING_DIRECTIONS,
     COMPANY_EMPLOYEES_SORT_COLUMNS,
+    USERS_SORT_COLUMNS,
 } = require('constants/pagination-sorting');
 
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
@@ -15,6 +16,7 @@ const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
 const colsPhoneConfirmation = SQL_TABLES.PHONE_CONFIRMATION_CODES.COLUMNS;
 const colsOtherOrganizations = SQL_TABLES.OTHER_ORGANIZATIONS.COLUMNS;
 const colsRoutes = SQL_TABLES.ROUTES.COLUMNS;
+const colsDrivers = SQL_TABLES.DRIVERS.COLUMNS;
 
 const DIGITS_VALIDATION_PATTERN = '^\\d+$';
 const PASSWORD_VALIDATION_PATTERN = '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$';
@@ -35,6 +37,8 @@ const fileFormat = {
             properties: {
                 fieldname: {
                     type: 'string',
+                    maxLength: POSTGRES_MAX_STRING_LENGTH,
+
                 },
                 originalname: {
                     type: 'string',
@@ -962,6 +966,45 @@ const inviteUser = {
     additionalProperties: false,
 };
 
+const createOrModifyDriver = {
+    properties: {
+        [colsUsers.EMAIL]: {
+            type: 'string',
+            format: 'email',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsUsers.FULL_NAME]: {
+            type: 'string',
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
+            type: 'string',
+            format: 'uuid',
+        },
+        [HOMELESS_COLUMNS.PHONE_NUMBER]: {
+            type: 'string',
+            pattern: DIGITS_VALIDATION_PATTERN,
+        },
+        [colsDrivers.DRIVER_LICENCE_REGISTERED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsDrivers.DRIVER_LICENCE_EXPIRED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+    },
+    required: [
+        colsUsers.EMAIL,
+        colsUsers.FULL_NAME,
+        HOMELESS_COLUMNS.PHONE_PREFIX_ID,
+        HOMELESS_COLUMNS.PHONE_NUMBER,
+        colsDrivers.DRIVER_LICENCE_REGISTERED_AT,
+        colsDrivers.DRIVER_LICENCE_EXPIRED_AT,
+    ],
+    additionalProperties: false,
+};
+
 const inviteUserAsync = {
     $async: true,
     properties: {
@@ -977,6 +1020,26 @@ const inviteUserAsync = {
     },
     additionalProperties: true,
 };
+
+const modifyEmployeeAsyncFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsUsers.EMAIL]: {
+            email_exists: {
+                userId,
+            },
+        },
+        [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
+            phone_prefix_not_exist: {},
+        },
+        [HOMELESS_COLUMNS.PHONE_NUMBER]: {
+            phone_number_exists: {
+                userId
+            },
+        },
+    },
+    additionalProperties: true,
+});
 
 const requiredPassword = {
     properties: {
@@ -1019,11 +1082,42 @@ const requiredEmailAsync = {
     additionalProperties: false,
 };
 
+const inviteUserWithoutCompanyRolesParams = {
+    properties: {
+        role: {
+            type: 'string',
+            enum: [ROLES.MANAGER],
+        },
+    },
+    required: [
+        'role'
+    ],
+};
+
+const inviteUserAdvancedFiles = {
+    patternProperties: {
+        '.': fileFormat,
+    },
+    required: [DOCUMENTS.PASSPORT, DOCUMENTS.DRIVER_LICENSE],
+};
+
 const inviteUserRolesParams = {
     properties: {
         role: {
             type: 'string',
-            enum: [ROLES.MANAGER, ROLES.DISPATCHER, ROLES.LOGISTICIAN],
+            enum: [ROLES.DISPATCHER, ROLES.LOGISTICIAN],
+        },
+    },
+    required: [
+        'role'
+    ],
+};
+
+const inviteUserRolesAdvancedParams = {
+    properties: {
+        role: {
+            type: 'string',
+            enum: [ROLES.DRIVER],
         },
     },
     required: [
@@ -1121,7 +1215,16 @@ const companyEmployeesSortColumnQuery = {
     }
 };
 
-const modifyCompanyEmployeesFilterQuery = {
+const usersSortColumnQuery = {
+    properties: {
+        [SORTING_PARAMS.SORT_COLUMN]: {
+            type: 'string',
+            enum: USERS_SORT_COLUMNS,
+        }
+    }
+};
+
+const modifyFilterQuery = {
     properties: {
         [HOMELESS_COLUMNS.FILTER]: {
             parse_string_to_json: {},
@@ -1140,6 +1243,46 @@ const companyEmployeesFilterQuery = {
             },
             additionalProperties: false,
         },
+    },
+};
+
+const usersFilterQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.FILTER]: {
+            type: 'object',
+            properties: {
+                [HOMELESS_COLUMNS.ROLE]: {
+                    type: 'array',
+                    minItems: 1,
+                    uniqueItems: true,
+                    items: {
+                        enum: ARRAY_ROLES_WITHOUT_ADMIN,
+
+                    },
+                },
+            },
+            additionalProperties: false,
+        },
+    },
+};
+
+const companyDriversFilterQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.FILTER]: {
+            type: 'object',
+            properties: {
+                [colsUsers.FULL_NAME]: {
+                    type: 'string',
+                },
+            },
+            additionalProperties: false,
+        },
+    },
+};
+
+const notRequiredFiles = {
+    patternProperties: {
+        '.': fileFormat,
     },
 };
 
@@ -1195,6 +1338,8 @@ module.exports = {
 
     inviteUser,
     inviteUserAsync,
+    createOrModifyDriver,
+    modifyEmployeeAsyncFunc,
 
     requiredPassword,
     requiredEmail,
@@ -1202,6 +1347,9 @@ module.exports = {
 
     modifyOtherOrganizations,
     inviteUserRolesParams,
+    inviteUserRolesAdvancedParams,
+    inviteUserWithoutCompanyRolesParams,
+    inviteUserAdvancedFiles,
     requiredMeParams,
     meOrIdRequiredMeParams,
     meOrIdRequiredIdParams,
@@ -1211,6 +1359,11 @@ module.exports = {
     basePaginationModifyQuery,
     baseSortingSortingDirectionQuery,
     companyEmployeesSortColumnQuery,
-    modifyCompanyEmployeesFilterQuery,
+    usersSortColumnQuery,
+    modifyFilterQuery,
     companyEmployeesFilterQuery,
+    usersFilterQuery,
+    companyDriversFilterQuery,
+
+    notRequiredFiles,
 };

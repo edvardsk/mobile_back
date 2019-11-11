@@ -11,6 +11,7 @@ const SQL_TABLES = {
             PASSPORT_CREATED_AT: 'passport_created_at',
             PASSPORT_EXPIRED_AT: 'passport_expired_at',
             PASSPORT_ISSUING_AUTHORITY: 'passport_issuing_authority',
+            FREEZED: 'freezed',
         },
     },
     EMAIL_CONFIRMATION_HASHES: {
@@ -70,7 +71,7 @@ const SQL_TABLES = {
         COLUMNS: {
             NAME: 'name',
             URL: 'url',
-            TYPE: 'type',
+            LABELS: 'labels',
             DESCRIPTION: 'description',
             EXPIRED_AT: 'expired_at',
             CREATED_AT: 'created_at',
@@ -191,6 +192,23 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    USERS_TO_FILES: {
+        NAME: 'users_to_files',
+        COLUMNS: {
+            USER_ID: 'user_id',
+            FILE_ID: 'file_id',
+            CREATED_AT: 'created_at',
+        },
+    },
+    DRIVERS: {
+        NAME: 'drivers',
+        COLUMNS: {
+            USER_ID: 'user_id',
+            DRIVER_LICENCE_REGISTERED_AT: 'driver_licence_registered_at',
+            DRIVER_LICENCE_EXPIRED_AT: 'driver_licence_expired_at',
+            CREATED_AT: 'created_at',
+        },
+    }
 };
 
 const NO_SQL_TABLES = {
@@ -200,6 +218,7 @@ const NO_SQL_TABLES = {
 const HOMELESS_COLUMNS = {
     ROLE: 'role',
     ROLE_ID: 'role_id',
+    ROLES: 'roles',
     PHONE_NUMBER: 'phone_number',
     PHONE_PREFIX_ID: 'phone_prefix_id',
     OWNER_ID: 'owner_id',
