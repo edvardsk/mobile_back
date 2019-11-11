@@ -66,26 +66,29 @@ const isAuthenticated = async (req, res) => {
     }
 };
 
-const isHasPermissions = (permissionsOrGetter = []) => (req, res, next) => {
+const isHasPermissions = (...permissionsParams) => (req, res, next) => {
     try {
-        let permissions;
-        if (typeof permissionsOrGetter === 'function') {
-            const params = {
-                params: req.params,
-                targetRole: res.locals.targetRole,
-            };
-            permissions = permissionsOrGetter(params);
-            if (!permissions) {
-                return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
-            }
+        if (!permissionsParams.some(permissionsOrGetter => {
+            let permissions;
+            if (typeof permissionsOrGetter === 'function') {
+                const params = {
+                    params: req.params,
+                    targetRole: res.locals.targetRole,
+                };
+                permissions = permissionsOrGetter(params);
+                if (!permissions) {
+                    return false;
+                }
 
-        } else {
-            permissions = permissionsOrGetter;
-        }
-        const userPermissions = res.locals.permissions;
-        if (!permissions.every(permission => userPermissions.has(permission))) {
+            } else {
+                permissions = permissionsOrGetter;
+            }
+            const userPermissions = res.locals.permissions;
+            return permissions.every(permission => userPermissions.has(permission));
+        })) {
             return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
         }
+
         next();
     } catch (error) {
         next(error);
