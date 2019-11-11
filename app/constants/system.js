@@ -75,6 +75,9 @@ const PERMISSIONS = {
     MODIFY_COMPANY_DATA_STEP_3: 'modify_company_data_step_3',
 
     READ_LIST_USERS: 'read_list_users',
+
+    MODIFY_CONDITIONS_AND_TERMS: 'modify_conditions_and_terms',
+    READ_CONDITIONS_AND_TERMS: 'read_conditions_and_terms',
 };
 
 const ARRAY_ROLES_WITHOUT_ADMIN = Object.values(ROLES).filter(role => role !== ROLES.ADMIN);
