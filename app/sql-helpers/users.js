@@ -290,22 +290,6 @@ const selectUsersPaginationSorting = (limit, offset, sortColumn, asc, filter) =>
         .limit(limit)
         .offset(offset)
         .toString();
-
-    // const string = squelPostgres
-    //     .select()
-    //     .from(table.NAME, 'u')
-    //     .field('u.*');
-    //
-    // if (roles.length) {
-    //     string
-    //         .where(`r.${colsRoles.NAME} IN ?`, roles)
-    // }
-    //
-    // return string
-    //     .where(`r.${colsRoles.NAME} <> '${ROLES.ADMIN}'`)
-    //     .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
-    //     .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
-    //     .toString();
 };
 
 const selectCountUsers = filter => {
