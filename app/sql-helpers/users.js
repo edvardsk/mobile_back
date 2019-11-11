@@ -274,6 +274,53 @@ const selectFirstInCompanyByCompanyId = companyId => squelPostgres
     .limit(1)
     .toString();
 
+const selectUsersPaginationSorting = (limit, offset, sortColumn, asc, filter) => {
+    let expression = squelPostgres
+        .select()
+        .from(table.NAME, 'u')
+        .field('u.*')
+        .field('r.name', HOMELESS_COLUMNS.ROLE);
+
+    expression = setUsersFilter(expression, filter);
+    return expression
+        .where(`r.${colsRoles.NAME} <> '${ROLES.ADMIN}'`)
+        .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
+        .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
+        .order(sortColumn, asc)
+        .limit(limit)
+        .offset(offset)
+        .toString();
+};
+
+const selectCountUsers = filter => {
+    let expression = squelPostgres
+        .select()
+        .from(table.NAME, 'u')
+        .field('COUNT(u.id)');
+
+    expression = setUsersFilter(expression, filter);
+    return expression
+        .where(`r.${colsRoles.NAME} <> '${ROLES.ADMIN}'`)
+        .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
+        .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
+        .toString();
+};
+
+const setUsersFilter = (expression, filteringObject) => {
+    const filteringObjectSQLExpressions = [
+        [HOMELESS_COLUMNS.ROLE, `r.${colsRoles.NAME} IN ?`, filteringObject[HOMELESS_COLUMNS.ROLE]],
+    ];
+
+    for (let [key, exp, values] of filteringObjectSQLExpressions) {
+        if (Array.isArray(get(filteringObject, key))) {
+            expression = expression.where(exp, values);
+        } else if (get(filteringObject, key) !== undefined) {
+            expression = expression.where(exp);
+        }
+    }
+    return expression;
+};
+
 module.exports = {
     insertUser,
     selectUser,
@@ -295,4 +342,7 @@ module.exports = {
 
     selectUserWithRoleAndFreezingStatus,
     selectFirstInCompanyByCompanyId,
+
+    selectUsersPaginationSorting,
+    selectCountUsers,
 };
