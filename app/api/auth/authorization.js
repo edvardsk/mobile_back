@@ -8,15 +8,18 @@ const TokenService = require('services/token');
 const RolesPermissionsService = require('services/tables/roles-to-permissions');
 
 // constants
-const { SQL_TABLES } = require('constants/tables');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
 const { ERROR_CODES } = require('constants/http-codes');
 const { PERMISSIONS } = require('constants/system');
 
-const createToken = async (req, res, next) => {
-    const colsUsers = SQL_TABLES.USERS.COLUMNS;
+// helpers
+const { isManagementRole } = require('helpers');
+
+const colsUsers = SQL_TABLES.USERS.COLUMNS;
+
+const checkUserExisting = async (req, res, next) => {
     try {
-        const password = get(req.body, 'password');
         const email = get(req.body, 'email');
 
         const user = await UsersService.getUserByEmailWithRole(email);
@@ -25,6 +28,44 @@ const createToken = async (req, res, next) => {
             return reject(res, ERRORS.AUTHORIZATION.INVALID_EMAIL_OR_PASSWORD, {}, ERROR_CODES.UNAUTHORIZED);
         }
 
+        res.locals.user = user;
+        return next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+const checkManagementRole = async (req, res, next) => {
+    try {
+        const { user } = res.locals;
+        const userRole = user[HOMELESS_COLUMNS.ROLE];
+        if (!isManagementRole(userRole)) {
+            return reject(res, ERRORS.AUTHORIZATION.INVALID_EMAIL_OR_PASSWORD, {}, ERROR_CODES.UNAUTHORIZED);
+        }
+        return next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+const checkNotManagementRole = async (req, res, next) => {
+    try {
+        const { user } = res.locals;
+        const userRole = user[HOMELESS_COLUMNS.ROLE];
+        if (isManagementRole(userRole)) {
+            return reject(res, ERRORS.AUTHORIZATION.INVALID_EMAIL_OR_PASSWORD, {}, ERROR_CODES.UNAUTHORIZED);
+        }
+        return next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+const generateToken = async (req, res, next) => {
+    try {
+        const password = get(req.body, 'password');
+
+        const { user } = res.locals;
         if (user[colsUsers.FREEZED]) {
             return reject(res, ERRORS.AUTHORIZATION.FREEZED, {}, ERROR_CODES.FORBIDDEN);
         }
@@ -42,12 +83,16 @@ const createToken = async (req, res, next) => {
         } else {
             return reject(res, ERRORS.AUTHORIZATION.INVALID_EMAIL_OR_PASSWORD, {}, ERROR_CODES.UNAUTHORIZED);
         }
-
     } catch (error) {
         next(error);
     }
 };
 
+
+
 module.exports = {
-    createToken,
+    checkUserExisting,
+    checkManagementRole,
+    checkNotManagementRole,
+    generateToken,
 };
