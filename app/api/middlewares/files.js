@@ -1,10 +1,8 @@
 const multer  = require('multer');
-const uuid = require('uuid/v4');
 const { groupBy, isEmpty } = require('lodash');
 const { success, reject } = require('api/response');
 
 // services
-const CryptService = require('services/crypto');
 const FilesService = require('services/tables/files');
 const UsersService = require('services/tables/users');
 const CompaniesService = require('services/tables/companies');
@@ -19,9 +17,9 @@ const { SUCCESS_CODES } = require('constants/http-codes');
 const { ERRORS } = require('constants/errors');
 
 // formatters
-const { formatStoringFile, formatLabelsToStore } = require('formatters/files');
+const { prepareFilesToDelete, prepareFilesToStoreForCompanies } = require('formatters/files');
 
-const { AWS_S3_BUCKET_NAME, REQUEST_FILES_COUNT } = process.env;
+const { REQUEST_FILES_COUNT } = process.env;
 
 const formDataHandler = (handler) => (req, res, next) => handler(req, res, (error) => {
     if (error instanceof multer.MulterError) {
@@ -40,8 +38,6 @@ const formDataHandler = (handler) => (req, res, next) => handler(req, res, (erro
 const createOrUpdateDataOnStep3 = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
     const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
-    const colsFiles = SQL_TABLES.FILES.COLUMNS;
-    const colsCompaniesFiles = SQL_TABLES.COMPANIES_TO_FILES.COLUMNS;
     const colsOtherOrganizations = SQL_TABLES.OTHER_ORGANIZATIONS.COLUMNS;
     try {
         const { body, files } = req;
@@ -78,35 +74,7 @@ const createOrUpdateDataOnStep3 = async (req, res, next) => {
 
         const company = await CompaniesService.getCompanyByUserIdStrict(companyHeadId);
 
-        const dataToStore = Object.keys(files).reduce((acc, type) => {
-            const [dbFiles, dbCompaniesFiles, storageFiles] = acc;
-            files[type].forEach(file => {
-                const fileLabels = formatLabelsToStore(type);
-                const fileId = uuid();
-                const fileHash = uuid();
-                const filePath = `${fileHash}${file.originalname}`;
-                const fileUrl = formatStoringFile(AWS_S3_BUCKET_NAME, filePath);
-                dbFiles.push({
-                    id: fileId,
-                    [colsFiles.NAME]: file.originalname,
-                    [colsFiles.LABELS]: fileLabels,
-                    [colsFiles.URL]: CryptService.encrypt(fileUrl),
-                });
-                dbCompaniesFiles.push({
-                    [colsCompaniesFiles.COMPANY_ID]: company.id,
-                    [colsCompaniesFiles.FILE_ID]: fileId,
-                });
-                storageFiles.push({
-                    bucket: AWS_S3_BUCKET_NAME,
-                    path: filePath,
-                    data: file.buffer,
-                    contentType: file.mimetype,
-                });
-            });
-            return acc;
-        }, [[], [], []]);
-
-        const [dbFiles, dbCompaniesFiles, storageFiles] = dataToStore;
+        const [dbFiles, dbCompaniesFiles, storageFiles] = prepareFilesToStoreForCompanies(files, company.id);
 
         let filesToDelete;
         if (isEditOperation) {
@@ -123,13 +91,7 @@ const createOrUpdateDataOnStep3 = async (req, res, next) => {
         if (filesToDelete.length) {
             // delete old files
 
-            const [ids, urls] = filesToDelete.reduce((acc, file) => {
-                const [ids, urls] = acc;
-                ids.push(file.id);
-                urls.push(CryptService.decrypt(file[colsFiles.URL]));
-                return acc;
-
-            }, [[], []]);
+            const [ids, urls] = prepareFilesToDelete(filesToDelete);
 
             transactionList.push(
                 CompaniesFilesService.removeRecordsByFileIdsAsTransaction(ids)

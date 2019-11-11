@@ -4,6 +4,7 @@ const { success, reject } = require('api/response');
 const UsersService = require('services/tables/users');
 const FreezingHistoryService = require('services/tables/freezing-history');
 const UsersCompaniesService = require('services/tables/users-to-companies');
+const TablesService = require('services/tables');
 
 // constants
 const { ERROR_CODES } = require('constants/http-codes');
@@ -15,16 +16,17 @@ const {
 
 // formatters
 const { formatRecordToSave } = require('formatters/freezing-history');
+const { formatFreezingFieldToEdit } = require('formatters/users');
 
 const freezeUser = async (req, res, next) => {
-    const colsFreezingHistory = SQL_TABLES.FREEZING_HISTORY.COLUMNS;
+    const colsUsers = SQL_TABLES.USERS.COLUMNS;
     try {
         const currentUserId = res.locals.user.id;
         const currentUserPermissions = res.locals.permissions;
         const isControlRole = res.locals.user.isControlRole;
 
         const { userId } = req.params;
-        const user = await UsersService.getUserWithRoleAndFreezingData(userId);
+        const user = await UsersService.getUserWithRole(userId);
         if (!user) {
             return reject(res, {}, {}, ERROR_CODES.FORBIDDEN);
         }
@@ -36,7 +38,7 @@ const freezeUser = async (req, res, next) => {
             }
         }
 
-        if (user[colsFreezingHistory.FREEZED]) {
+        if (user[colsUsers.FREEZED]) {
             return reject(res, ERRORS.FREEZING.FREEZED);
         }
 
@@ -46,7 +48,14 @@ const freezeUser = async (req, res, next) => {
         }
 
         const freezingData = formatRecordToSave(currentUserId, userId, true);
-        await FreezingHistoryService.addRecord(freezingData);
+        const userData = formatFreezingFieldToEdit(true);
+
+        const transactionsList = [
+            FreezingHistoryService.addRecordAsTransaction(freezingData),
+            UsersService.updateUserAsTransaction(userId, userData),
+        ];
+
+        await TablesService.runTransaction(transactionsList);
 
         return success(res, {});
     } catch (error) {

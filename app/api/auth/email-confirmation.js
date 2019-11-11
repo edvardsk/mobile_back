@@ -25,7 +25,7 @@ const { formatPasswordDataToUpdate } = require('formatters/users');
 
 const confirmEmail = async (req, res, next) => {
     const colsEmailConfirmation = SQL_TABLES.EMAIL_CONFIRMATION_HASHES.COLUMNS;
-    const colsFreezingHistory = SQL_TABLES.FREEZING_HISTORY.COLUMNS;
+    const colsUsers = SQL_TABLES.USERS.COLUMNS;
     try {
         const { hash } = req.query;
 
@@ -42,9 +42,9 @@ const confirmEmail = async (req, res, next) => {
             return reject(res, ERRORS.AUTHORIZATION.USER_CONFIRMED_EMAIL);
         }
 
-        const user = await UsersService.getUserWithRoleAndFreezingData(userId);
+        const user = await UsersService.getUserWithRole(userId);
 
-        if (user[colsFreezingHistory.FREEZED]) {
+        if (user[colsUsers.FREEZED]) {
             return reject(res, ERRORS.AUTHENTICATION.FREEZED, {}, ERROR_CODES.FORBIDDEN);
         }
 
@@ -72,7 +72,6 @@ const confirmEmail = async (req, res, next) => {
 const advancedConfirmEmail = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
     const colsEmailConfirmation = SQL_TABLES.EMAIL_CONFIRMATION_HASHES.COLUMNS;
-    const colsFreezingHistory = SQL_TABLES.FREEZING_HISTORY.COLUMNS;
     try {
         const { body } = req;
         const { hash } = req.query;
@@ -85,11 +84,11 @@ const advancedConfirmEmail = async (req, res, next) => {
         const userId = hashFromDb[colsEmailConfirmation.USER_ID];
 
         const [user, permissions] = await Promise.all([
-            UsersService.getUserWithRoleAndFreezingData(userId),
+            UsersService.getUserWithRole(userId),
             RolesPermissionsService.getUserPermissions(userId),
         ]);
 
-        if (user[colsFreezingHistory.FREEZED]) {
+        if (user[colsUsers.FREEZED]) {
             return reject(res, ERRORS.AUTHENTICATION.FREEZED, {}, ERROR_CODES.FORBIDDEN);
         }
 

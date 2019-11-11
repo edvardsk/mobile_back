@@ -2,6 +2,7 @@ const express = require('express');
 const multer  = require('multer');
 const { ROUTES } = require('constants/routes');
 const getEmployees = require('./employees/get');
+const putEmployees = require('./employees/put');
 const get = require('./get');
 const getData = require('./data/get');
 const getFiles = require('./files/get');
@@ -9,7 +10,7 @@ const postSteps = require('./steps/post');
 const getSteps = require('./steps/get');
 
 // middlewares
-const { isHasPermissions, injectShadowCompanyHeadByMeOrId } = require('api/middlewares');
+const { isHasPermissions, injectShadowCompanyHeadByMeOrId, injectTargetRole } = require('api/middlewares');
 const { validate } = require('api/middlewares/validator');
 const { formDataHandler, createOrUpdateDataOnStep3 } = require('api/middlewares/files');
 
@@ -22,6 +23,20 @@ const ValidatorSchemes = require('helpers/validators/schemes');
 const router = express.Router();
 const upload = multer();
 const uploadData = upload.any();
+
+const MAP_TARGET_ROLE_AND_PERMISSIONS = {
+    [ROLES.DRIVER]: [
+        PERMISSIONS.MODIFY_DRIVER,
+    ],
+};
+
+const MAP_TARGET_ROLE_AND_SCHEMES = {
+    [ROLES.DRIVER]: ValidatorSchemes.createOrModifyDriver,
+};
+
+const MAP_TARGET_ROLE_AND_SCHEMES_FILES = {
+    [ROLES.DRIVER]: ValidatorSchemes.notRequiredFiles,
+};
 
 const CREATE_OR_MODIFY_STEP_1_TEXT_MAP_SCHEMES = {
     [ROLES.TRANSPORTER]: ValidatorSchemes.finishRegistrationStep1Transporter,
@@ -86,6 +101,31 @@ router.get(
     validate(ValidatorSchemes.modifyFilterQuery, 'query'),
     validate(ValidatorSchemes.companyDriversFilterQuery, 'query'),
     getEmployees.getListDrivers,
+);
+
+router.get(
+    ROUTES.COMPANIES.EMPLOYEES.BASE + ROUTES.COMPANIES.EMPLOYEES.USERS.BASE + ROUTES.COMPANIES.EMPLOYEES.USERS.GET,
+    isHasPermissions([PERMISSIONS.READ_EMPLOYEES]),
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.requiredUserId, 'params'),
+    validate(ValidatorSchemes.requiredExistingUserWithIdAsync, 'params'),
+    getEmployees.getEmployee,
+);
+
+router.put(
+    ROUTES.COMPANIES.EMPLOYEES.BASE + ROUTES.COMPANIES.EMPLOYEES.USERS.BASE + ROUTES.COMPANIES.EMPLOYEES.USERS.ADVANCED.BASE + ROUTES.COMPANIES.EMPLOYEES.USERS.ADVANCED.PUT,
+    isHasPermissions([PERMISSIONS.MODIFY_EMPLOYEES]),
+    validate(ValidatorSchemes.requiredUserId, 'params'),
+    validate(ValidatorSchemes.requiredExistingUserWithIdAsync, 'params'),
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectTargetRole,
+    formDataHandler(uploadData), // uploading files middleware
+    isHasPermissions(({ targetRole }) => MAP_TARGET_ROLE_AND_PERMISSIONS[targetRole]),
+    validate(({ targetRole }) => MAP_TARGET_ROLE_AND_SCHEMES[targetRole]),
+    validate(({ requestParams }) => ValidatorSchemes.modifyEmployeeAsyncFunc(requestParams.userId)),
+    validate(ValidatorSchemes.phoneNumberWithPrefixAsync),
+    validate(({ targetRole }) => MAP_TARGET_ROLE_AND_SCHEMES_FILES[targetRole], 'files'),
+    putEmployees.editEmployeeAdvanced,
 );
 
 

@@ -5,16 +5,20 @@ const { get } = require('lodash');
 const UsersService = require('services/tables/users');
 const CompaniesService = require('services/tables/companies');
 const UsersCompaniesService = require('services/tables/users-to-companies');
+const DriverService = require('services/tables/drivers');
+const FilesService = require('services/tables/files');
 
 // constants
-const { SQL_TABLES } = require('constants/tables');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
 const { SORTING_DIRECTIONS } = require('constants/pagination-sorting');
+const { SET_DRIVER_ROLES } = require('constants/system');
 
 // formatters
 const { formatPaginationDataForResponse } = require('formatters/pagination-sorting');
-const { formatUserWithPhoneAndRole } = require('formatters/users');
+const { formatUserWithPhoneAndRole, formatUserWithPhoneNumberAndRole } = require('formatters/users');
 const { formatDriversWithPhoneAndRole } = require('formatters/drivers');
+const { formatFilesForResponse } = require('formatters/files');
 
 // helpers
 const { getParams } = require('helpers/pagination-sorting');
@@ -129,7 +133,53 @@ const getListDrivers = async (req, res, next) => {
     }
 };
 
+const getEmployee = async (req, res, next) => {
+    try {
+        const currentUserId = res.locals.user.id;
+        const { isControlRole } = res.locals.user;
+        const { shadowUserId } = res.locals;
+        const targetUserId = req.params.userId;
+
+        let companyHeadId;
+        if (isControlRole) {
+            companyHeadId = shadowUserId;
+        } else {
+            companyHeadId = currentUserId;
+        }
+
+        const isFromOneCompany = await UsersCompaniesService.isUsersFromOneCompany(companyHeadId, targetUserId);
+        if (!isFromOneCompany) {
+            return reject(res, ERRORS.COMPANIES.NOT_USER_IN_COMPANY);
+        }
+
+        const user = await UsersService.getUserWithRoleAndPhoneNumber(targetUserId);
+        const targetRole = user[HOMELESS_COLUMNS.ROLE];
+
+        const result = {
+            user: formatUserWithPhoneNumberAndRole(user),
+        };
+
+        if (SET_DRIVER_ROLES.has(targetRole)) {
+            const [driver, files] = await Promise.all([
+                DriverService.getRecordByUserId(targetUserId),
+                FilesService.getFilesByUserId(targetUserId),
+            ]);
+
+            const filesLinks = await FilesService.formatTemporaryLinks(files);
+            const formattedFilesLinks = formatFilesForResponse(filesLinks);
+
+            result.driver = driver;
+            result.files = formattedFilesLinks;
+        }
+
+        return success(res, { ...result });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     getListEmployees,
     getListDrivers,
+    getEmployee,
 };
