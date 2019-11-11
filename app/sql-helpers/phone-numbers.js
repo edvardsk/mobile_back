@@ -14,10 +14,11 @@ const insertRecord = values => squelPostgres
     .returning('*')
     .toString();
 
-const getRecordByPhoneNumber = number => squelPostgres
+const selectRecordByPhoneNumberAndPrefixId = (number, prefixId) => squelPostgres
     .select()
     .from(table.NAME)
     .where(`${cols.NUMBER} = '${number}'`)
+    .where(`${cols.PHONE_PREFIX_ID} = '${prefixId}'`)
     .toString();
 
 const updateRecordByUserId = (userId, values) => squelPostgres
@@ -30,6 +31,6 @@ const updateRecordByUserId = (userId, values) => squelPostgres
 
 module.exports = {
     insertRecord,
-    getRecordByPhoneNumber,
+    selectRecordByPhoneNumberAndPrefixId,
     updateRecordByUserId,
 };

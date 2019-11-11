@@ -122,6 +122,8 @@ router.put(
     formDataHandler(uploadData), // uploading files middleware
     isHasPermissions(({ targetRole }) => MAP_TARGET_ROLE_AND_PERMISSIONS[targetRole]),
     validate(({ targetRole }) => MAP_TARGET_ROLE_AND_SCHEMES[targetRole]),
+    validate(({ requestParams }) => ValidatorSchemes.modifyEmployeeAsyncFunc(requestParams.userId)),
+    validate(ValidatorSchemes.phoneNumberWithPrefixAsync),
     validate(({ targetRole }) => MAP_TARGET_ROLE_AND_SCHEMES_FILES[targetRole], 'files'),
     putEmployees.editEmployeeAdvanced,
 );

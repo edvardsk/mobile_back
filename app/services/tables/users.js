@@ -89,7 +89,8 @@ const checkUserWithPassportNumberExistsOpposite = async (meta, number) => {
 
 const checkUserWithEmailExistsOpposite = async (meta, email) => {
     const user = await getUserByEmail(email);
-    return !user;
+    const { userId } = meta;
+    return !user || user.id === userId;
 };
 
 const checkUserWithEmailExists = async (meta, email) => {

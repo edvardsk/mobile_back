@@ -1021,6 +1021,26 @@ const inviteUserAsync = {
     additionalProperties: true,
 };
 
+const modifyEmployeeAsyncFunc = userId => ({
+    $async: true,
+    properties: {
+        [colsUsers.EMAIL]: {
+            email_exists: {
+                userId,
+            },
+        },
+        [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
+            phone_prefix_not_exist: {},
+        },
+        [HOMELESS_COLUMNS.PHONE_NUMBER]: {
+            phone_number_exists: {
+                userId
+            },
+        },
+    },
+    additionalProperties: true,
+});
+
 const requiredPassword = {
     properties: {
         [colsUsers.PASSWORD]: {
@@ -1290,6 +1310,7 @@ module.exports = {
     inviteUser,
     inviteUserAsync,
     createOrModifyDriver,
+    modifyEmployeeAsyncFunc,
 
     requiredPassword,
     requiredEmail,
