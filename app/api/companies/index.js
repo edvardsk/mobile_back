@@ -4,12 +4,17 @@ const { ROUTES } = require('constants/routes');
 const getEmployees = require('./employees/get');
 const putEmployees = require('./employees/put');
 const get = require('./get');
+
 const getData = require('./data/get');
 const getCommon = require('./common/get');
+
 const getFiles = require('./files/get');
+
 const postSteps = require('./steps/post');
 const getSteps = require('./steps/get');
 const postApprove = require('./approve/post');
+
+const postCargo = require('./cargos/post');
 
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
@@ -250,6 +255,16 @@ router.post(
     validate(ValidatorSchemes.requiredCompanyIdParams, 'params'),
     validate(ValidatorSchemes.requiredExistingCompanyWithIdAsync, 'params'),
     postApprove.approveCompany,
+);
+
+// cargos
+router.post(
+    ROUTES.COMPANIES.CARGOS.BASE + ROUTES.COMPANIES.CARGOS.POST,
+    isHasPermissions([PERMISSIONS.CRUD_CARGO]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.createCargo),
+    postCargo.createCargo,
 );
 
 module.exports = router;

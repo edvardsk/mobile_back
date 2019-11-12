@@ -39,6 +39,7 @@ const BASES = {
     MANAGEMENT: '/management',
     COMMON_DATA: '/common-data',
     APPROVE: '/approve',
+    CARGOS: '/cargos',
 };
 
 const IDS = {
@@ -242,7 +243,11 @@ const ROUTES = {
                 POST: '',
                 GET: '',
             },
-        }
+        },
+        CARGOS: {
+            BASE: IDS.ME_OR_ID + BASES.CARGOS,
+            POST: '',
+        },
     },
 
 };

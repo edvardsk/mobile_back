@@ -18,6 +18,7 @@ const colsPhoneConfirmation = SQL_TABLES.PHONE_CONFIRMATION_CODES.COLUMNS;
 const colsOtherOrganizations = SQL_TABLES.OTHER_ORGANIZATIONS.COLUMNS;
 const colsRoutes = SQL_TABLES.ROUTES.COLUMNS;
 const colsDrivers = SQL_TABLES.DRIVERS.COLUMNS;
+const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 
 const DIGITS_VALIDATION_PATTERN = '^\\d+$';
 const PASSWORD_VALIDATION_PATTERN = '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$';
@@ -1111,6 +1112,48 @@ const inviteUserAdvancedFiles = {
     required: [DOCUMENTS.PASSPORT, DOCUMENTS.DRIVER_LICENSE],
 };
 
+const createCargo = {
+    properties: {
+        [colsCargos.UPLOADING_DATE_FROM]: {
+            type: 'string',
+            format: 'date-time',
+        },
+        [colsCargos.UPLOADING_DATE_TO]: {
+            type: 'string',
+            format: 'date-time',
+        },
+        [colsCargos.DOWNLOADING_DATE_FROM]: {
+            type: 'string',
+            format: 'date-time',
+        },
+        [colsCargos.DOWNLOADING_DATE_TO]: {
+            type: 'string',
+            format: 'date-time',
+        },
+        [colsCargos.GROSS_WEIGHT]: {
+            type: 'number',
+        },
+        [colsCargos.WIDTH]: {
+            type: 'number',
+        },
+        [colsCargos.HEIGHT]: {
+            type: 'number',
+        },
+        [colsCargos.LENGTH]: {
+            type: 'number',
+        },
+    },
+    required:[
+        colsCargos.UPLOADING_DATE_FROM,
+        colsCargos.DOWNLOADING_DATE_FROM,
+        colsCargos.GROSS_WEIGHT,
+        colsCargos.WIDTH,
+        colsCargos.HEIGHT,
+        colsCargos.LENGTH,
+    ],
+    additionalProperties: false,
+};
+
 const inviteUserRolesParams = {
     properties: {
         role: {
@@ -1393,6 +1436,8 @@ module.exports = {
     requiredPassword,
     requiredEmail,
     requiredEmailAsync,
+
+    createCargo,
 
     modifyOtherOrganizations,
     inviteUserRolesParams,
