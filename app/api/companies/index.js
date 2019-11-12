@@ -9,6 +9,7 @@ const getCommon = require('./common/get');
 const getFiles = require('./files/get');
 const postSteps = require('./steps/post');
 const getSteps = require('./steps/get');
+const postApprove = require('./approve/post');
 
 // middlewares
 const { isHasPermissions, injectShadowCompanyHeadByMeOrId, injectTargetRole } = require('api/middlewares');
@@ -235,6 +236,16 @@ router.get(
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectShadowCompanyHeadByMeOrId,
     getSteps.getStep3,
+);
+
+
+// approve company
+router.post(
+    ROUTES.COMPANIES.APPROVE.BASE + ROUTES.COMPANIES.APPROVE.POST,
+    isHasPermissions([PERMISSIONS.APPROVE_COMPANY]), // permissions middleware
+    validate(ValidatorSchemes.requiredCompanyIdParams, 'params'),
+    validate(ValidatorSchemes.requiredExistingCompanyWithIdAsync, 'params'),
+    postApprove.approveCompany,
 );
 
 module.exports = router;

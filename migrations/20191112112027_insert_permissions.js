@@ -7,6 +7,10 @@ const PERMISSIONS = [
         id: '38c48dab-7088-4f86-914d-03a14ed4cdb0',
         name: 'read_companies',
     },
+    {
+        id: '22a0c126-83e9-422b-a7c4-4004c63bc29e',
+        name: 'approve_company',
+    },
 ];
 
 const ALL_PERMISSIONS = [
@@ -20,9 +24,11 @@ const ALL_ROLES = [
 const ROLES_WITH_PERMISSIONS = [
     ['admin', [
         'read_companies',
+        'approve_company',
     ]],
     ['manager', [
         'read_companies',
+        'approve_company',
     ]],
 ];
 

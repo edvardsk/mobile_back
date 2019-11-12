@@ -32,6 +32,8 @@ const colsCountries = SQL_TABLES.COUNTRIES.COLUMNS;
 
 const getCompany = id => oneOrNone(selectCompanyById(id));
 
+const getCompanyStrict = id => one(selectCompanyById(id));
+
 const getCompanyByUserId = userId => oneOrNone(selectCompanyByUserId(userId));
 
 const getCompanyBySettlementAccountWithFirstOwner = account => oneOrNone(selectCompanyBySettlementAccountWithFirstOwner(account));
@@ -97,6 +99,7 @@ const validateSettlementAccount = async (props, account, schema, key, data) => {
 
 module.exports = {
     getCompany,
+    getCompanyStrict,
     getCompanyByUserId,
     getCompanyByUserIdStrict,
     addCompanyAsTransaction,

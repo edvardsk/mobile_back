@@ -232,6 +232,7 @@ const HOMELESS_COLUMNS = {
     FULL_PHONE_NUMBER: 'full_phone_number',
     FILTER: 'filter',
     BANK_COUNTRY: 'bank_country',
+    HEAD_ROLE_NAME: 'head_role_name',
 };
 
 module.exports = {

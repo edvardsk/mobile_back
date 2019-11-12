@@ -38,6 +38,7 @@ const ERRORS = {
     COMPANIES: {
         INVALID_COMPANY_ID: 'companies.invalid_company_id',
         NOT_USER_IN_COMPANY: 'companies.not_user_in_company',
+        APPROVED: 'companies.approved',
     },
     VALIDATION: {
         ERROR: 'validation.error',

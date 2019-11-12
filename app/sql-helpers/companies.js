@@ -8,11 +8,13 @@ const squelPostgres = squel.useFlavour('postgres');
 const table = SQL_TABLES.COMPANIES;
 const tableUsers = SQL_TABLES.USERS;
 const tableCountries = SQL_TABLES.COUNTRIES;
+const tableRoles = SQL_TABLES.ROLES;
 const tableUsersCompanies = SQL_TABLES.USERS_TO_COMPANIES;
 
 const cols = table.COLUMNS;
 const colsUsers = tableUsers.COLUMNS;
 const colsCountries = tableCountries.COLUMNS;
+const colsRoles = tableRoles.COLUMNS;
 const colsUsersCompanies = tableUsersCompanies.COLUMNS;
 
 squelPostgres.registerValueHandler(Geo, function(value) {
@@ -39,9 +41,11 @@ const selectCompanyById = id => squelPostgres
     .field('c.*')
     .field(`ct.${colsCountries.NAME}`, HOMELESS_COLUMNS.BANK_COUNTRY)
     .field(`ST_AsText(${cols.LEGAL_CITY_COORDINATES})`, cols.LEGAL_CITY_COORDINATES)
+    .field(`r.${colsRoles.NAME}`, HOMELESS_COLUMNS.HEAD_ROLE_NAME)
     .where(`c.id = '${id}'`)
     .from(table.NAME, 'c')
     .left_join(tableCountries.NAME, 'ct', `ct.id = c.${cols.BANK_COUNTRY_ID} `)
+    .left_join(tableRoles.NAME, 'r', `r.id = c.${cols.HEAD_ROLE_ID} `)
     .toString();
 
 const selectCompanyByUserId = userId => squelPostgres
@@ -107,10 +111,12 @@ const selectCompaniesPaginationSorting = (limit, offset, sortColumn, asc, filter
     let expression = squelPostgres
         .select()
         .field('c.*')
+        .field(`r.${colsRoles.NAME}`, HOMELESS_COLUMNS.HEAD_ROLE_NAME)
         .from(table.NAME, 'c');
 
     expression = setCompaniesFilter(expression, filter);
     return expression
+        .left_join(tableRoles.NAME, 'r', `r.id = c.${cols.HEAD_ROLE_ID}`)
         .order(sortColumn, asc)
         .limit(limit)
         .offset(offset)

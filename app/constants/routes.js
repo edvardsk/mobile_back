@@ -39,6 +39,7 @@ const BASES = {
     GROUPS: '/groups',
     MANAGEMENT: '/management',
     COMMON_DATA: '/common-data',
+    APPROVE: '/approve',
 };
 
 const IDS = {
@@ -47,6 +48,7 @@ const IDS = {
     ME: '/:me',
     ME_OR_ID: '/:meOrId',
     FILE_GROUP: '/:fileGroup',
+    COMPANY_ID: '/:companyId',
 };
 
 const ROUTES = {
@@ -198,6 +200,10 @@ const ROUTES = {
         BASE: BASES.COMPANIES,
         GET_ALL: '',
         GET: IDS.ME_OR_ID,
+        APPROVE: {
+            BASE: IDS.COMPANY_ID + BASES.APPROVE,
+            POST: '',
+        },
         EMPLOYEES: {
             BASE: IDS.ME_OR_ID + BASES.EMPLOYEES,
             GET_ALL: '',

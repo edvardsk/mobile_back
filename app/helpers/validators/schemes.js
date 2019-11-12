@@ -93,6 +93,15 @@ const requiredExistingUserWithIdAsync = {
     },
 };
 
+const requiredExistingCompanyWithIdAsync = {
+    $async: true,
+    properties: {
+        companyId: {
+            company_with_id_not_exist: {},
+        },
+    },
+};
+
 const otherOrganizations = {
     type: 'array',
     items: [
@@ -1162,6 +1171,18 @@ const requiredMeParams = {
     ],
 };
 
+const requiredCompanyIdParams = {
+    properties: {
+        companyId: {
+            type: 'string',
+            format: 'uuid',
+        },
+    },
+    required: [
+        'companyId'
+    ],
+};
+
 const listFilesGroupParams = {
     properties: {
         fileGroup: {
@@ -1316,6 +1337,7 @@ const notRequiredFiles = {
 module.exports = {
     requiredUserId,
     requiredExistingUserWithIdAsync,
+    requiredExistingCompanyWithIdAsync,
 
     registration,
     registrationAsync,
@@ -1378,6 +1400,7 @@ module.exports = {
     inviteUserWithoutCompanyRolesParams,
     inviteUserAdvancedFiles,
     requiredMeParams,
+    requiredCompanyIdParams,
     meOrIdRequiredMeParams,
     meOrIdRequiredIdParams,
     listFilesGroupParams,

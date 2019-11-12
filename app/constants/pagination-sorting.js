@@ -23,7 +23,7 @@ const COMPANY_EMPLOYEES_SORT_COLUMNS = [
 ];
 
 const COMPANIES_SORT_COLUMNS = [
-    colsCompanies.NAME
+    colsCompanies.NAME, colsCompanies.CREATED_AT
 ];
 
 const USERS_SORT_COLUMNS = [

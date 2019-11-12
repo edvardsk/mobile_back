@@ -80,6 +80,7 @@ const PERMISSIONS = {
     READ_CONDITIONS_AND_TERMS: 'read_conditions_and_terms',
 
     READ_COMPANIES: 'read_companies',
+    APPROVE_COMPANY: 'approve_company',
 };
 
 const ARRAY_ROLES_WITHOUT_ADMIN = Object.values(ROLES).filter(role => role !== ROLES.ADMIN);
