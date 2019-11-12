@@ -26,7 +26,6 @@ const BASES = {
     4: '/4',
     5: '/5',
     CONDITIONS_TERMS: '/conditions-terms',
-    ACCOUNT_CONFIRMATIONS: '/account-confirmations',
     INVITES: '/invites',
     MANAGER: '/manager',
     RESEND: '/resend',
@@ -155,15 +154,6 @@ const ROUTES = {
         BASE: BASES.CONDITIONS_TERMS,
         GET: '',
         POST: '',
-    },
-    ACCOUNT_CONFIRMATIONS: {
-        BASE: BASES.ACCOUNT_CONFIRMATIONS,
-        USERS: {
-            BASE: BASES.USERS,
-            GET_ALL: '',
-            GET: IDS.USER_ID,
-            POST: IDS.USER_ID,
-        },
     },
     INVITES: {
         BASE: BASES.INVITES,
