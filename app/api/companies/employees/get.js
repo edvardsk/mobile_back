@@ -25,7 +25,7 @@ const { getParams } = require('helpers/pagination-sorting');
 
 const employeesPaginationOptions = {
     DEFAULT_LIMIT: 5,
-    DEFAULT_SORT_COLUMN: SQL_TABLES.USERS.COLUMNS.CREATED_AT,
+    DEFAULT_SORT_COLUMN: 'id',
     DEFAULT_SORT_DIRECTION: SORTING_DIRECTIONS.ASC,
 };
 
