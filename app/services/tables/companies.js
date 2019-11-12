@@ -1,4 +1,4 @@
-const { oneOrNone, one } = require('db');
+const { oneOrNone, one, manyOrNone } = require('db');
 
 // sql-helpers
 const {
@@ -10,6 +10,8 @@ const {
     selectCompanyByIdentityNumberWithFirstOwner,
     selectCompanyByNameWithFirstOwner,
     selectCompanyByStateRegistrationCertificateNumberWithFirstOwner,
+    selectCompaniesPaginationSorting,
+    selectCountCompanies,
 } = require('sql-helpers/companies');
 
 // services
@@ -30,6 +32,8 @@ const colsCountries = SQL_TABLES.COUNTRIES.COLUMNS;
 
 const getCompany = id => oneOrNone(selectCompanyById(id));
 
+const getCompanyStrict = id => one(selectCompanyById(id));
+
 const getCompanyByUserId = userId => oneOrNone(selectCompanyByUserId(userId));
 
 const getCompanyBySettlementAccountWithFirstOwner = account => oneOrNone(selectCompanyBySettlementAccountWithFirstOwner(account));
@@ -48,6 +52,15 @@ const addCompanyAsTransaction = data => [insertCompany(data), OPERATIONS.ONE];
 
 const updateCompanyAsTransaction = (id, data) => [updateCompany(id, data), OPERATIONS.ONE];
 
+const getCompaniesPaginationSorting = (limit, offset, sortColumn, asc, filter) => (
+    manyOrNone(selectCompaniesPaginationSorting(limit, offset, sortColumn, asc, filter))
+);
+
+const getCountCompanies = (filter) => (
+    one(selectCountCompanies(filter))
+        .then(({ count }) => +count)
+);
+
 const checkCompanyWithSettlementAccountExistsOpposite = async (meta, account) => {
     const company = await getCompanyBySettlementAccountWithFirstOwner(account);
     const { userId } = meta;
@@ -56,8 +69,8 @@ const checkCompanyWithSettlementAccountExistsOpposite = async (meta, account) =>
 
 const checkCompanyWithIdentityNumberExistsOpposite = async (meta, number) => {
     const company = await getCompanyByIdentityNumberWithFirstOwner(number);
-    const { userId } = meta;
-    return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId;
+    const { userId, companyId } = meta;
+    return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId || company.id === companyId;
 };
 
 const checkCompanyWithNameExistsOpposite = async (meta, name) => {
@@ -86,10 +99,14 @@ const validateSettlementAccount = async (props, account, schema, key, data) => {
 
 module.exports = {
     getCompany,
+    getCompanyStrict,
     getCompanyByUserId,
     getCompanyByUserIdStrict,
     addCompanyAsTransaction,
     updateCompanyAsTransaction,
+    getCompaniesPaginationSorting,
+    getCountCompanies,
+
     checkCompanyWithSettlementAccountExistsOpposite,
     checkCompanyWithIdentityNumberExistsOpposite,
     checkCompanyWithNameExistsOpposite,

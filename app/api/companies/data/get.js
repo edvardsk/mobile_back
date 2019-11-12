@@ -1,7 +1,6 @@
-const { success, reject } = require('api/response');
+const { success } = require('api/response');
 
 // services
-const CompaniesService = require('services/tables/companies');
 const UsersService = require('services/tables/users');
 
 // formatters
@@ -14,9 +13,7 @@ const {
 // constants
 const {
     ROLES,
-    MAP_COMPANY_OWNERS_TO_MAIN_ROLES,
 } = require('constants/system');
-const { ERRORS } = require('constants/errors');
 const { HOMELESS_COLUMNS } = require('constants/tables');
 
 const MAP_ROLE_TO_FORMATTER = {
@@ -28,28 +25,16 @@ const MAP_ROLE_TO_FORMATTER = {
 
 const getLegalData = async (req, res, next) => {
     try {
-        const currentUserId = res.locals.user.id;
-        const { isControlRole } = res.locals.user;
-        const { shadowUserId } = res.locals;
+        const { company } = res.locals;
 
-        let companyHeadId;
-        if (isControlRole) {
-            companyHeadId = shadowUserId;
-        } else {
-            companyHeadId = currentUserId;
+        const headRole = company[HOMELESS_COLUMNS.HEAD_ROLE_NAME];
+
+        let firstUserInCompanyData = {};
+
+        if ([ROLES.INDIVIDUAL_FORWARDER, ROLES.SOLE_PROPRIETOR_FORWARDER].includes(headRole)) {
+            firstUserInCompanyData = await UsersService.getFirstUserInCompanyStrict(company.id);
         }
-
-        const company = await CompaniesService.getCompanyByUserId(companyHeadId);
-        if (!company) {
-            return reject(res, ERRORS.COMPANIES.INVALID_COMPANY_ID);
-        }
-
-        const firstUserInCompanyData = await UsersService.getFirstUserInCompanyStrict(company.id);
-
-        const userRole = firstUserInCompanyData[HOMELESS_COLUMNS.ROLE];
-        const mainRole = MAP_COMPANY_OWNERS_TO_MAIN_ROLES[userRole];
-
-        const legalData = MAP_ROLE_TO_FORMATTER[mainRole](company, firstUserInCompanyData);
+        const legalData = MAP_ROLE_TO_FORMATTER[headRole](company, firstUserInCompanyData);
 
         return success(res, { legal_data: legalData });
     } catch (error) {

@@ -89,6 +89,9 @@ const SQL_TABLES = {
         NAME: 'companies',
         COLUMNS: {
             NAME: 'name',
+            HEAD_ROLE_ID: 'head_role_id',
+            PRIMARY_CONFIRMED: 'primary_confirmed',
+            EDITING_CONFIRMED: 'editing_confirmed',
             COUNTRY_ID: 'country_id',
             IDENTITY_NUMBER: 'identity_number',
             OWNERSHIP_TYPE: 'ownership_type',
@@ -276,6 +279,7 @@ const HOMELESS_COLUMNS = {
     FULL_PHONE_NUMBER: 'full_phone_number',
     FILTER: 'filter',
     BANK_COUNTRY: 'bank_country',
+    HEAD_ROLE_NAME: 'head_role_name',
 };
 
 module.exports = {

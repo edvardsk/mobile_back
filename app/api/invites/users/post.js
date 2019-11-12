@@ -34,7 +34,7 @@ const resendInvite = async (req, res, next) => {
     try {
         const currentUserId = res.locals.user.id;
         const currentUserRole = res.locals.user.role;
-        const isControlRole = res.locals.user.isControlRole;
+        const { isControlRole } = res.locals;
         const { userId } = req.params;
 
         const user = await UsersService.getUserWithRole(userId);

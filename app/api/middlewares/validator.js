@@ -16,6 +16,7 @@ const RolesService = require('services/tables/roles');
 
 // constants
 const { ERRORS } = require('constants/errors');
+const { HOMELESS_COLUMNS } = require('constants/tables');
 
 // helpers
 const { parseStringToJson, parsePaginationOptions } = require('helpers/validators/custom');
@@ -131,9 +132,9 @@ const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next)
             const params = {
                 role: res.locals.user.role,
                 userId: res.locals.user.id,
-                isControlRole: res.locals.user.isControlRole,
-                shadowMainUserRole: res.locals.shadowMainUserRole,
+                isControlRole: res.locals.isControlRole,
                 shadowUserId: res.locals.shadowUserId,
+                companyHeadRole: get(res, `locals.company.${HOMELESS_COLUMNS.HEAD_ROLE_NAME}`),
                 requestParams: req.params,
                 targetRole: res.locals.targetRole,
             };

@@ -38,6 +38,7 @@ const ERRORS = {
     COMPANIES: {
         INVALID_COMPANY_ID: 'companies.invalid_company_id',
         NOT_USER_IN_COMPANY: 'companies.not_user_in_company',
+        APPROVED: 'companies.approved',
     },
     VALIDATION: {
         ERROR: 'validation.error',
@@ -55,6 +56,7 @@ const ERRORS = {
         HASH_EXPIRED: 'invites.hash_expired',
         ALREADY_CONFIRMED: 'invites.already_confirmed',
         TOO_OFTEN: 'invites.too_often',
+        PROHIBITED: 'invites.prohibited',
     },
     ACCOUNT_CONFIRMATIONS: {
         PROHIBITED: 'account_confirmations.prohibited',

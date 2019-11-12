@@ -66,6 +66,14 @@ const formatCompanyToResponse = company => ({
     [cols.NAME]: company[cols.NAME] || undefined,
     [cols.IDENTITY_NUMBER]: company[cols.IDENTITY_NUMBER],
     [cols.CREATED_AT]: company[cols.CREATED_AT],
+    [cols.PRIMARY_CONFIRMED]: company[cols.PRIMARY_CONFIRMED],
+    [cols.EDITING_CONFIRMED]: company[cols.EDITING_CONFIRMED],
+    [HOMELESS_COLUMNS.HEAD_ROLE_NAME]: company[HOMELESS_COLUMNS.HEAD_ROLE_NAME],
+});
+
+const formatDataToApprove = () => ({
+    [cols.PRIMARY_CONFIRMED]: true,
+    [cols.EDITING_CONFIRMED]: true,
 });
 
 module.exports = {
@@ -76,5 +84,6 @@ module.exports = {
     formatLegalDataForSoleProprietorForwarderForResponse,
     formatCompanyToResponse,
     formatGeoPointToObject,
+    formatDataToApprove,
 };
 
