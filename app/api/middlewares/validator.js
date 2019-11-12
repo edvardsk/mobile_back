@@ -123,6 +123,12 @@ ajv.addKeyword('company_with_id_not_exist', {
     validate: CompaniesService.checkCompanyWithIdExists,
 });
 
+const dateTimeRegex = new RegExp('\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d+([+-][0-2]\\d:[0-5]\\d|Z)');
+
+ajv.addFormat('date-time', {
+    validate: (dateTimeString) => dateTimeRegex.test(dateTimeString)
+});
+
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {
     try {
         const data = get(req, pathToData);

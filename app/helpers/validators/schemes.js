@@ -1142,6 +1142,41 @@ const createCargo = {
         [colsCargos.LENGTH]: {
             type: 'number',
         },
+        [colsCargos.LOADING_METHODS]: {
+            type: 'array',
+            minItems: 1,
+            uniqueItems: true,
+            items: {
+                enum: ['up', 'back', 'side'],
+
+            },
+        },
+        [colsCargos.LOADING_TYPE]: {
+            type: 'string',
+            enum: ['FTL', 'LTL']
+        },
+        [colsCargos.GUARANTEES]: {
+            type: 'array',
+            minItems: 1,
+            uniqueItems: true,
+            items: {
+                enum: ['TIR', 'CMR'],
+            },
+        },
+        [colsCargos.DANGER_CLASS_ID]: {
+            type: 'string',
+            format: 'uuid',
+        },
+        [colsCargos.VEHICLE_TYPE_ID]: {
+            type: 'string',
+            format: 'uuid',
+        },
+        [colsCargos.PACKING_DESCRIPTION]: {
+            type: 'string',
+        },
+        [colsCargos.DESCRIPTION]: {
+            type: 'string',
+        },
     },
     required:[
         colsCargos.UPLOADING_DATE_FROM,
@@ -1150,6 +1185,10 @@ const createCargo = {
         colsCargos.WIDTH,
         colsCargos.HEIGHT,
         colsCargos.LENGTH,
+        colsCargos.LOADING_METHODS,
+        colsCargos.LOADING_TYPE,
+        colsCargos.GUARANTEES,
+        colsCargos.VEHICLE_TYPE_ID,
     ],
     additionalProperties: false,
 };
