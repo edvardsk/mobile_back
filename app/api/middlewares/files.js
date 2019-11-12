@@ -100,17 +100,19 @@ const createOrUpdateDataOnStep3 = async (req, res, next) => {
                 FilesService.removeFilesByIdsAsTransaction(ids)
             );
 
+            await Promise.all(urls.map(url => {
+                const [bucket, path] = url.split('/');
+                return S3Service.deleteObject(bucket, path);
+            }));
+        }
+
+        if (dbFiles.length) {
             transactionList.push(
                 FilesService.addFilesAsTransaction(dbFiles)
             );
             transactionList.push(
                 CompaniesFilesService.addRecordsAsTransaction(dbCompaniesFiles)
             );
-
-            await Promise.all(urls.map(url => {
-                const [bucket, path] = url.split('/');
-                return S3Service.deleteObject(bucket, path);
-            }));
         }
 
         transactionList.push(
