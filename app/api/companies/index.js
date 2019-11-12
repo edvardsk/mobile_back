@@ -5,6 +5,7 @@ const getEmployees = require('./employees/get');
 const putEmployees = require('./employees/put');
 const get = require('./get');
 const getData = require('./data/get');
+const getCommon = require('./common/get');
 const getFiles = require('./files/get');
 const postSteps = require('./steps/post');
 const getSteps = require('./steps/get');
@@ -131,11 +132,23 @@ router.put(
 
 // data
 router.get(
-    ROUTES.COMPANIES.GET,
+    ROUTES.COMPANIES.GET_ALL,
+    isHasPermissions([PERMISSIONS.READ_COMPANIES]),
+    validate(ValidatorSchemes.basePaginationQuery, 'query'),
+    validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
+    validate(ValidatorSchemes.baseSortingSortingDirectionQuery, 'query'),
+    validate(ValidatorSchemes.companiesSortColumnQuery, 'query'),
+    validate(ValidatorSchemes.modifyFilterQuery, 'query'),
+    validate(ValidatorSchemes.companiesFilterQuery, 'query'),
+    get.getListCompanies,
+);
+
+router.get(
+    ROUTES.COMPANIES.COMMON_DATA.BASE + ROUTES.COMPANIES.COMMON_DATA.GET,
     isHasPermissions([PERMISSIONS.READ_LEGAL_DATA]),
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectShadowCompanyHeadByMeOrId,
-    get.geCommonData,
+    getCommon.geCommonData,
 );
 
 router.get(

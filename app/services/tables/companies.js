@@ -1,4 +1,4 @@
-const { oneOrNone, one } = require('db');
+const { oneOrNone, one, manyOrNone } = require('db');
 
 // sql-helpers
 const {
@@ -10,6 +10,8 @@ const {
     selectCompanyByIdentityNumberWithFirstOwner,
     selectCompanyByNameWithFirstOwner,
     selectCompanyByStateRegistrationCertificateNumberWithFirstOwner,
+    selectCompaniesPaginationSorting,
+    selectCountCompanies,
 } = require('sql-helpers/companies');
 
 // services
@@ -47,6 +49,15 @@ const getCompanyByUserIdStrict = userId => one(selectCompanyByUserId(userId));
 const addCompanyAsTransaction = data => [insertCompany(data), OPERATIONS.ONE];
 
 const updateCompanyAsTransaction = (id, data) => [updateCompany(id, data), OPERATIONS.ONE];
+
+const getCompaniesPaginationSorting = (limit, offset, sortColumn, asc, filter) => (
+    manyOrNone(selectCompaniesPaginationSorting(limit, offset, sortColumn, asc, filter))
+);
+
+const getCountCompanies = (filter) => (
+    one(selectCountCompanies(filter))
+        .then(({ count }) => +count)
+);
 
 const checkCompanyWithSettlementAccountExistsOpposite = async (meta, account) => {
     const company = await getCompanyBySettlementAccountWithFirstOwner(account);
@@ -90,6 +101,9 @@ module.exports = {
     getCompanyByUserIdStrict,
     addCompanyAsTransaction,
     updateCompanyAsTransaction,
+    getCompaniesPaginationSorting,
+    getCountCompanies,
+
     checkCompanyWithSettlementAccountExistsOpposite,
     checkCompanyWithIdentityNumberExistsOpposite,
     checkCompanyWithNameExistsOpposite,

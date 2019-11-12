@@ -38,6 +38,7 @@ const BASES = {
     FILES: '/files',
     GROUPS: '/groups',
     MANAGEMENT: '/management',
+    COMMON_DATA: '/common-data',
 };
 
 const IDS = {
@@ -195,6 +196,7 @@ const ROUTES = {
     },
     COMPANIES: {
         BASE: BASES.COMPANIES,
+        GET_ALL: '',
         GET: IDS.ME_OR_ID,
         EMPLOYEES: {
             BASE: IDS.ME_OR_ID + BASES.EMPLOYEES,
@@ -211,6 +213,10 @@ const ROUTES = {
                     PUT: '',
                 },
             },
+        },
+        COMMON_DATA: {
+            BASE: IDS.ME_OR_ID + BASES.COMMON_DATA,
+            GET: '',
         },
         LEGAL_DATA: {
             BASE: IDS.ME_OR_ID + BASES.LEGAL_DATA,

@@ -8,6 +8,7 @@ const {
     SORTING_PARAMS,
     SORTING_DIRECTIONS,
     COMPANY_EMPLOYEES_SORT_COLUMNS,
+    COMPANIES_SORT_COLUMNS,
     USERS_SORT_COLUMNS,
 } = require('constants/pagination-sorting');
 
@@ -1215,6 +1216,15 @@ const companyEmployeesSortColumnQuery = {
     }
 };
 
+const companiesSortColumnQuery = {
+    properties: {
+        [SORTING_PARAMS.SORT_COLUMN]: {
+            type: 'string',
+            enum: COMPANIES_SORT_COLUMNS,
+        }
+    }
+};
+
 const usersSortColumnQuery = {
     properties: {
         [SORTING_PARAMS.SORT_COLUMN]: {
@@ -1273,6 +1283,23 @@ const companyDriversFilterQuery = {
             properties: {
                 [colsUsers.FULL_NAME]: {
                     type: 'string',
+                },
+            },
+            additionalProperties: false,
+        },
+    },
+};
+
+const companiesFilterQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.FILTER]: {
+            type: 'object',
+            properties: {
+                [colsCompanies.PRIMARY_CONFIRMED]: {
+                    type: 'boolean',
+                },
+                [colsCompanies.EDITING_CONFIRMED]: {
+                    type: 'boolean',
                 },
             },
             additionalProperties: false,
@@ -1359,11 +1386,13 @@ module.exports = {
     basePaginationModifyQuery,
     baseSortingSortingDirectionQuery,
     companyEmployeesSortColumnQuery,
+    companiesSortColumnQuery,
     usersSortColumnQuery,
     modifyFilterQuery,
     companyEmployeesFilterQuery,
     usersFilterQuery,
     companyDriversFilterQuery,
+    companiesFilterQuery,
 
     notRequiredFiles,
 };

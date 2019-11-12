@@ -1,4 +1,5 @@
 const squel = require('squel');
+const { get } = require('lodash');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { Geo } = require('constants/instances');
 
@@ -102,6 +103,45 @@ const selectCompanyByStateRegistrationCertificateNumberWithFirstOwner = number =
     .limit(1)
     .toString();
 
+const selectCompaniesPaginationSorting = (limit, offset, sortColumn, asc, filter) => {
+    let expression = squelPostgres
+        .select()
+        .field('c.*')
+        .from(table.NAME, 'c');
+
+    expression = setCompaniesFilter(expression, filter);
+    return expression
+        .order(sortColumn, asc)
+        .limit(limit)
+        .offset(offset)
+        .toString();
+};
+
+const selectCountCompanies = (filter) => {
+    let expression = squelPostgres
+        .select()
+        .field('COUNT(c.id)')
+        .from(table.NAME, 'c');
+
+    expression = setCompaniesFilter(expression, filter);
+    return expression
+        .toString();
+};
+
+const setCompaniesFilter = (expression, filteringObject) => {
+    const filteringObjectSQLExpressions = [
+        [cols.PRIMARY_CONFIRMED, `${cols.PRIMARY_CONFIRMED} = ${filteringObject[cols.PRIMARY_CONFIRMED]}`],
+        [cols.EDITING_CONFIRMED, `${cols.EDITING_CONFIRMED} = ${filteringObject[cols.EDITING_CONFIRMED]}`],
+    ];
+
+    for (let [key, exp] of filteringObjectSQLExpressions) {
+        if (get(filteringObject, key) !== undefined) {
+            expression = expression.where(exp);
+        }
+    }
+    return expression;
+};
+
 module.exports = {
     insertCompany,
     updateCompany,
@@ -111,4 +151,6 @@ module.exports = {
     selectCompanyByIdentityNumberWithFirstOwner,
     selectCompanyByNameWithFirstOwner,
     selectCompanyByStateRegistrationCertificateNumberWithFirstOwner,
+    selectCompaniesPaginationSorting,
+    selectCountCompanies,
 };
