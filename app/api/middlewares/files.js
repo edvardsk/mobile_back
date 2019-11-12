@@ -41,8 +41,8 @@ const createOrUpdateDataOnStep3 = async (req, res, next) => {
     const colsOtherOrganizations = SQL_TABLES.OTHER_ORGANIZATIONS.COLUMNS;
     try {
         const { body, files } = req;
-        const { step3Data } = res.locals;
-        const { transactionList, companyHeadId, isEditOperation } = step3Data;
+        const { step3Data, company } = res.locals;
+        const { transactionList, isEditOperation } = step3Data;
 
         const USER_PROPS = new Set([
             colsUsers.PASSPORT_NUMBER,
@@ -71,8 +71,6 @@ const createOrUpdateDataOnStep3 = async (req, res, next) => {
                 companiesProps[key] = body[key];
             }
         });
-
-        const company = await CompaniesService.getCompanyByUserIdStrict(companyHeadId);
 
         const [dbFiles, dbCompaniesFiles, storageFiles] = prepareFilesToStoreForCompanies(files, company.id);
 
@@ -120,7 +118,8 @@ const createOrUpdateDataOnStep3 = async (req, res, next) => {
         );
 
         if (!isEmpty(usersProps)) {
-            transactionList.push(UsersService.updateUserAsTransaction(companyHeadId, usersProps));
+            const user = UsersService.getFirstUserInCompanyStrict(company.id);
+            transactionList.push(UsersService.updateUserAsTransaction(user.id, usersProps));
         }
 
         if (!isEmpty(companiesProps)) {

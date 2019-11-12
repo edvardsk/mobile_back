@@ -1,10 +1,11 @@
-const { one, many } = require('db');
+const { one, many, oneOrNone } = require('db');
 
 // sql-helpers
 const {
     selectRecordByUserId,
     insertRecord,
     selectRecordByTwoUsersIds,
+    selectRecordByCompanyIdAndUserId,
 } = require('sql-helpers/users-to-companies');
 
 // constants
@@ -26,8 +27,14 @@ const isUsersFromOneCompany = (user1, user2) => many(selectRecordByTwoUsersIds(u
 
 const addRecordAsTransaction = data => [insertRecord(data), OPERATIONS.ONE];
 
+const hasCompanyUser = async (companyId, userId) => {
+    const record = await oneOrNone(selectRecordByCompanyIdAndUserId(companyId, userId));
+    return !!record;
+};
+
 module.exports = {
     getRecordByUserIdStrict,
     addRecordAsTransaction,
     isUsersFromOneCompany,
+    hasCompanyUser,
 };

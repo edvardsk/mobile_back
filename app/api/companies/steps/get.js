@@ -1,12 +1,12 @@
 const { success } = require('api/response');
 
 // services
-const CompaniesService = require('services/tables/companies');
 const UsersService = require('services/tables/users');
 const OtherOrganizationsService = require('services/tables/other-organizations');
 
 // constants
 const { ROLES } = require('constants/system');
+const { HOMELESS_COLUMNS } = require('constants/tables');
 
 // formatters
 const FinishRegistrationFormatters = require('formatters/finish-registration');
@@ -26,30 +26,13 @@ const MAP_ROLES_AND_FORMATTERS_STEP_3 = {
 };
 
 /*
-* @req.params {user} - current user
-* @req.params {permissions} - current permissions
-* @req.params {isControlRole} - is current user admin or manager
-* @req.params {shadowMainUserRole} - if control user role is used - role of company admin
-* @req.params {shadowUserId} - if control user role is used - id of company admin
+* @res.locals {company} - current user
 * */
 const getStep1 = async (req, res, next) => {
     try {
-        const currentUserId = res.locals.user.id;
-        const currentUserRole = res.locals.user.role;
-        const { isControlRole } = res.locals.user;
-        const { shadowMainUserRole, shadowUserId } = res.locals;
-
-        let companyHeadId;
-        let companyHeadRole;
-        if (isControlRole) {
-            companyHeadId = shadowUserId;
-            companyHeadRole = shadowMainUserRole;
-        } else {
-            companyHeadId = currentUserId;
-            companyHeadRole = currentUserRole;
-        }
-        const company = await CompaniesService.getCompanyByUserIdStrict(companyHeadId);
-        const formattedData = MAP_ROLES_AND_FORMATTERS_STEP_1[companyHeadRole](company);
+        const { company } = res.locals;
+        const headRole = company[HOMELESS_COLUMNS.HEAD_ROLE_NAME];
+        const formattedData = MAP_ROLES_AND_FORMATTERS_STEP_1[headRole](company);
 
         return success(res, { company: formattedData });
     } catch (error) {
@@ -58,25 +41,11 @@ const getStep1 = async (req, res, next) => {
 };
 
 /*
-* @req.params {user} - current user
-* @req.params {permissions} - current permissions
-* @req.params {isControlRole} - is current user admin or manager
-* @req.params {shadowMainUserRole} - if control user role is used - role of company admin
-* @req.params {shadowUserId} - if control user role is used - id of company admin
+* @res.locals {company} - current user
 * */
 const getStep2 = async (req, res, next) => {
     try {
-        const currentUserId = res.locals.user.id;
-        const { isControlRole } = res.locals.user;
-        const { shadowUserId } = res.locals;
-
-        let companyHeadId;
-        if (isControlRole) {
-            companyHeadId = shadowUserId;
-        } else {
-            companyHeadId = currentUserId;
-        }
-        const company = await CompaniesService.getCompanyByUserIdStrict(companyHeadId);
+        const { company } = res.locals;
         const formattedData = FinishRegistrationFormatters.formatDataForTransporterAndHolderForStep2Response(company);
 
         return success(res, { company: formattedData });
@@ -86,40 +55,25 @@ const getStep2 = async (req, res, next) => {
 };
 
 /*
-* @req.params {user} - current user
-* @req.params {permissions} - current permissions
-* @req.params {isControlRole} - is current user admin or manager
-* @req.params {shadowMainUserRole} - if control user role is used - role of company admin || from injectShadowCompanyHeadByMeOrId
-* @req.params {shadowUserId} - if control user role is used - id of company admin
+* @res.locals {company} - current user
 * */
 const getStep3 = async (req, res, next) => {
     try {
-        const currentUserId = res.locals.user.id;
-        const currentUserRole = res.locals.user.role;
-        const { isControlRole } = res.locals.user;
-        const { shadowMainUserRole, shadowUserId } = res.locals;
-
-        let companyHeadId;
-        let companyHeadRole;
-        if (isControlRole) {
-            companyHeadId = shadowUserId;
-            companyHeadRole = shadowMainUserRole;
-        } else {
-            companyHeadId = currentUserId;
-            companyHeadRole = currentUserRole;
-        }
-        const company = await CompaniesService.getCompanyByUserIdStrict(companyHeadId);
+        const { company } = res.locals;
 
         let user = {};
         let otherOrganizations = {};
-        if ([ROLES.INDIVIDUAL_FORWARDER, ROLES.SOLE_PROPRIETOR_FORWARDER].includes(companyHeadRole)) {
-            user = await UsersService.getUser(companyHeadId);
+
+        const headRole = company[HOMELESS_COLUMNS.HEAD_ROLE_NAME];
+
+        if ([ROLES.INDIVIDUAL_FORWARDER, ROLES.SOLE_PROPRIETOR_FORWARDER].includes(headRole)) {
+            user = await UsersService.getFirstUserInCompanyStrict(company.id);
         }
-        if ([ROLES.TRANSPORTER, ROLES.HOLDER].includes(companyHeadRole)) {
+        if ([ROLES.TRANSPORTER, ROLES.HOLDER].includes(headRole)) {
             otherOrganizations = await OtherOrganizationsService.getRecordsByCompanyId(company.id);
         }
 
-        const formattedData = MAP_ROLES_AND_FORMATTERS_STEP_3[companyHeadRole](company, user, otherOrganizations);
+        const formattedData = MAP_ROLES_AND_FORMATTERS_STEP_3[headRole](company, user, otherOrganizations);
 
         return success(res, { company: formattedData });
     } catch (error) {

@@ -56,6 +56,7 @@ const ERRORS = {
         HASH_EXPIRED: 'invites.hash_expired',
         ALREADY_CONFIRMED: 'invites.already_confirmed',
         TOO_OFTEN: 'invites.too_often',
+        PROHIBITED: 'invites.prohibited',
     },
     ACCOUNT_CONFIRMATIONS: {
         PROHIBITED: 'account_confirmations.prohibited',

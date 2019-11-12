@@ -69,8 +69,8 @@ const checkCompanyWithSettlementAccountExistsOpposite = async (meta, account) =>
 
 const checkCompanyWithIdentityNumberExistsOpposite = async (meta, number) => {
     const company = await getCompanyByIdentityNumberWithFirstOwner(number);
-    const { userId } = meta;
-    return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId;
+    const { userId, companyId } = meta;
+    return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId || company.id === companyId;
 };
 
 const checkCompanyWithNameExistsOpposite = async (meta, name) => {

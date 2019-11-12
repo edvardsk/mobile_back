@@ -4,7 +4,6 @@ const moment = require('moment');
 
 // services
 const UsersService = require('services/tables/users');
-const CompaniesService = require('services/tables/companies');
 const FilesService = require('services/tables/files');
 const DriversService = require('services/tables/drivers');
 const UsersFilesService = require('services/tables/users-to-files');
@@ -18,7 +17,7 @@ const MailService = require('services/mail');
 const S3Service = require('services/aws/s3');
 
 // constants
-const { SQL_TABLES } = require('constants/tables');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SUCCESS_CODES } = require('constants/http-codes');
 const { ROLES, MAP_FROM_MAIN_ROLE_TO_UNCONFIRMED } = require('constants/system');
 const { ERRORS } = require('constants/errors');
@@ -31,6 +30,12 @@ const PhoneNumbersFormatters = require('formatters/phone-numbers');
 const FilesFormatters = require('formatters/files');
 const DriversFormatters = require('formatters/drivers');
 
+const MAP_ROLES_TO_INVITE_TO_COMPANY_ROLES = {
+    [ROLES.DISPATCHER]: ROLES.TRANSPORTER,
+    [ROLES.DRIVER]: ROLES.TRANSPORTER,
+    [ROLES.LOGISTICIAN]: ROLES.HOLDER,
+};
+
 const {
     INVITE_EXPIRATION_UNIT,
     INVITE_EXPIRATION_VALUE,
@@ -38,21 +43,12 @@ const {
 
 const inviteUser = async (req, res, next) => {
     try {
-        const currentUserId = res.locals.user.id;
-        const { isControlRole } = res.locals.user;
-        const { shadowUserId } = res.locals;
+        const { company } = res.locals;
         const { role } = req.params;
 
-        let companyHeadId;
-        if (isControlRole) {
-            companyHeadId = shadowUserId;
-        } else {
-            companyHeadId = currentUserId;
-        }
-
-        const company = await CompaniesService.getCompanyByUserId(companyHeadId);
-        if (!company) {
-            return reject(res, ERRORS.COMPANIES.INVALID_COMPANY_ID);
+        const headRole = company[HOMELESS_COLUMNS.HEAD_ROLE_NAME];
+        if (MAP_ROLES_TO_INVITE_TO_COMPANY_ROLES[role] !== headRole) {
+            return reject(res, ERRORS.INVITES.PROHIBITED);
         }
 
         const invitedUserId = uuid();

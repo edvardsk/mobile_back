@@ -54,9 +54,11 @@ const selectCompanyByUserId = userId => squelPostgres
     .field('c.*')
     .field(`ct.${colsCountries.NAME}`, HOMELESS_COLUMNS.BANK_COUNTRY)
     .field(`ST_AsText(${cols.LEGAL_CITY_COORDINATES})`, cols.LEGAL_CITY_COORDINATES)
+    .field(`r.${colsRoles.NAME}`, HOMELESS_COLUMNS.HEAD_ROLE_NAME)
     .where(`uc.${colsUsersCompanies.USER_ID} = '${userId}'`)
     .left_join(tableUsersCompanies.NAME, 'uc', `c.id = uc.${colsUsersCompanies.COMPANY_ID}`)
     .left_join(tableCountries.NAME, 'ct', `ct.id = c.${cols.BANK_COUNTRY_ID} `)
+    .left_join(tableRoles.NAME, 'r', `r.id = c.${cols.HEAD_ROLE_ID} `)
     .toString();
 
 const selectCompanyBySettlementAccountWithFirstOwner = account => squelPostgres

@@ -12,7 +12,7 @@ const getSteps = require('./steps/get');
 const postApprove = require('./approve/post');
 
 // middlewares
-const { isHasPermissions, injectShadowCompanyHeadByMeOrId, injectTargetRole } = require('api/middlewares');
+const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
 const { validate } = require('api/middlewares/validator');
 const { formDataHandler, createOrUpdateDataOnStep3 } = require('api/middlewares/files');
 
@@ -85,6 +85,7 @@ router.get(
     ROUTES.COMPANIES.EMPLOYEES.BASE + ROUTES.COMPANIES.EMPLOYEES.GET_ALL,
     isHasPermissions([PERMISSIONS.READ_EMPLOYEES]),
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
     validate(ValidatorSchemes.basePaginationQuery, 'query'),
     validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
     validate(ValidatorSchemes.baseSortingSortingDirectionQuery, 'query'),
@@ -98,6 +99,7 @@ router.get(
     ROUTES.COMPANIES.EMPLOYEES.BASE + ROUTES.COMPANIES.EMPLOYEES.ROLES.BASE + ROUTES.COMPANIES.EMPLOYEES.ROLES.GET,
     isHasPermissions([PERMISSIONS.READ_EMPLOYEES]),
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
     validate(ValidatorSchemes.basePaginationQuery, 'query'),
     validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
     validate(ValidatorSchemes.modifyFilterQuery, 'query'),
@@ -109,6 +111,7 @@ router.get(
     ROUTES.COMPANIES.EMPLOYEES.BASE + ROUTES.COMPANIES.EMPLOYEES.USERS.BASE + ROUTES.COMPANIES.EMPLOYEES.USERS.GET,
     isHasPermissions([PERMISSIONS.READ_EMPLOYEES]),
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
     validate(ValidatorSchemes.requiredUserId, 'params'),
     validate(ValidatorSchemes.requiredExistingUserWithIdAsync, 'params'),
     getEmployees.getEmployee,
@@ -127,6 +130,7 @@ router.put(
     validate(({ requestParams }) => ValidatorSchemes.modifyEmployeeAsyncFunc(requestParams.userId)),
     validate(ValidatorSchemes.phoneNumberWithPrefixAsync),
     validate(({ targetRole }) => MAP_TARGET_ROLE_AND_SCHEMES_FILES[targetRole], 'files'),
+    injectCompanyData,
     putEmployees.editEmployeeAdvanced,
 );
 
@@ -148,7 +152,7 @@ router.get(
     ROUTES.COMPANIES.COMMON_DATA.BASE + ROUTES.COMPANIES.COMMON_DATA.GET,
     isHasPermissions([PERMISSIONS.READ_LEGAL_DATA]),
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
-    injectShadowCompanyHeadByMeOrId,
+    injectCompanyData,
     getCommon.geCommonData,
 );
 
@@ -156,7 +160,7 @@ router.get(
     ROUTES.COMPANIES.LEGAL_DATA.BASE + ROUTES.COMPANIES.LEGAL_DATA.GET,
     isHasPermissions([PERMISSIONS.READ_LEGAL_DATA]),
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
-    injectShadowCompanyHeadByMeOrId,
+    injectCompanyData,
     getData.getLegalData,
 );
 
@@ -165,7 +169,7 @@ router.get(
     isHasPermissions([PERMISSIONS.READ_LEGAL_DATA]),
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     validate(ValidatorSchemes.listFilesGroupParams, 'params'),
-    injectShadowCompanyHeadByMeOrId,
+    injectCompanyData,
     getFiles.getGroupFiles,
 );
 
@@ -175,10 +179,10 @@ router.post(
     ROUTES.COMPANIES.STEPS.BASE + ROUTES.COMPANIES.STEPS['1'].BASE + ROUTES.COMPANIES.STEPS['1'].POST,
     isHasPermissions([PERMISSIONS.MODIFY_COMPANY_DATA_STEP_1]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
-    injectShadowCompanyHeadByMeOrId,
-    validate(({ shadowMainUserRole, role }) => CREATE_OR_MODIFY_STEP_1_TEXT_MAP_SCHEMES[shadowMainUserRole || role]),
-    validate(({ shadowUserId, shadowMainUserRole, role, userId }) => (
-        CREATE_OR_MODIFY_STEP_1_TEXT_MAP_SCHEMES_ASYNC[shadowMainUserRole || role](shadowUserId || userId)
+    injectCompanyData,
+    validate(({ companyHeadRole }) => CREATE_OR_MODIFY_STEP_1_TEXT_MAP_SCHEMES[companyHeadRole]),
+    validate(({ companyId, companyHeadRole }) => (
+        CREATE_OR_MODIFY_STEP_1_TEXT_MAP_SCHEMES_ASYNC[companyHeadRole](companyId)
     )),
     postSteps.editStep1,
 );
@@ -187,10 +191,10 @@ router.post(
     ROUTES.COMPANIES.STEPS.BASE + ROUTES.COMPANIES.STEPS['2'].BASE + ROUTES.COMPANIES.STEPS['2'].POST,
     isHasPermissions([PERMISSIONS.MODIFY_COMPANY_DATA_STEP_2]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
-    injectShadowCompanyHeadByMeOrId,
-    validate(({ shadowMainUserRole, role }) => CREATE_OR_MODIFY_STEP_2_TEXT_MAP_SCHEMES[shadowMainUserRole || role]),
-    validate(({ shadowUserId, shadowMainUserRole, role, userId }) => (
-        CREATE_OR_MODIFY_STEP_2_TEXT_MAP_SCHEMES_ASYNC[shadowMainUserRole || role](shadowUserId || userId)
+    injectCompanyData,
+    validate(({ companyHeadRole }) => CREATE_OR_MODIFY_STEP_2_TEXT_MAP_SCHEMES[companyHeadRole]),
+    validate(({ companyId, companyHeadRole }) => (
+        CREATE_OR_MODIFY_STEP_2_TEXT_MAP_SCHEMES_ASYNC[companyHeadRole](companyId)
     )),
     validate(ValidatorSchemes.settlementAccountAsync),
     postSteps.editStep2,
@@ -200,12 +204,12 @@ router.post(
     ROUTES.COMPANIES.STEPS.BASE + ROUTES.COMPANIES.STEPS['3'].BASE + ROUTES.COMPANIES.STEPS['3'].POST,
     isHasPermissions([PERMISSIONS.MODIFY_COMPANY_DATA_STEP_3]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
-    injectShadowCompanyHeadByMeOrId,
+    injectCompanyData,
     formDataHandler(uploadData), // uploading files middleware
     validate(ValidatorSchemes.modifyOtherOrganizations),
-    validate(({ shadowMainUserRole, role }) => CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES[shadowMainUserRole || role]),
-    validate(({ shadowUserId, shadowMainUserRole, role, userId }) => (
-        CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES_ASYNC[shadowMainUserRole || role](shadowUserId || userId)
+    validate(({ companyHeadRole }) => CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES[companyHeadRole]),
+    validate(({ companyId, companyHeadRole }) => (
+        CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES_ASYNC[companyHeadRole](companyId)
     )),
     validate(ValidatorSchemes.notRequiredFiles, 'files'),
     postSteps.editStep3,
@@ -218,7 +222,7 @@ router.get(
     ROUTES.COMPANIES.STEPS.BASE + ROUTES.COMPANIES.STEPS['1'].BASE + ROUTES.COMPANIES.STEPS['1'].GET,
     isHasPermissions([PERMISSIONS.MODIFY_COMPANY_DATA_STEP_1]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
-    injectShadowCompanyHeadByMeOrId,
+    injectCompanyData,
     getSteps.getStep1,
 );
 
@@ -226,7 +230,7 @@ router.get(
     ROUTES.COMPANIES.STEPS.BASE + ROUTES.COMPANIES.STEPS['2'].BASE + ROUTES.COMPANIES.STEPS['2'].GET,
     isHasPermissions([PERMISSIONS.MODIFY_COMPANY_DATA_STEP_2]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
-    injectShadowCompanyHeadByMeOrId,
+    injectCompanyData,
     getSteps.getStep2,
 );
 
@@ -234,7 +238,7 @@ router.get(
     ROUTES.COMPANIES.STEPS.BASE + ROUTES.COMPANIES.STEPS['3'].BASE + ROUTES.COMPANIES.STEPS['3'].GET,
     isHasPermissions([PERMISSIONS.MODIFY_COMPANY_DATA_STEP_3]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
-    injectShadowCompanyHeadByMeOrId,
+    injectCompanyData,
     getSteps.getStep3,
 );
 

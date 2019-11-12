@@ -114,8 +114,6 @@ const finishRegistrationStep3 = async (req, res, next) => {
 
         res.locals.step3Data = {};
         res.locals.step3Data.transactionList = transactionsList;
-        res.locals.step3Data.companyHeadId = userId;
-        res.locals.step3Data.companyHeadRole = userRole;
 
         return next();
     } catch (error) {
