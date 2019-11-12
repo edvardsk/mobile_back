@@ -89,6 +89,9 @@ const SQL_TABLES = {
         NAME: 'companies',
         COLUMNS: {
             NAME: 'name',
+            HEAD_ROLE_ID: 'head_role_id',
+            PRIMARY_CONFIRMED: 'primary_confirmed',
+            EDITING_CONFIRMED: 'editing_confirmed',
             COUNTRY_ID: 'country_id',
             IDENTITY_NUMBER: 'identity_number',
             OWNERSHIP_TYPE: 'ownership_type',
