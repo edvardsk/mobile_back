@@ -57,7 +57,7 @@ const freezeUser = async (req, res, next) => {
 
         await TablesService.runTransaction(transactionsList);
 
-        return success(res, {});
+        return success(res, { userId });
     } catch (error) {
         next(error);
     }
