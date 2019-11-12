@@ -274,18 +274,21 @@ const selectFirstInCompanyByCompanyId = companyId => squelPostgres
     .limit(1)
     .toString();
 
-const selectUsersPaginationSorting = (limit, offset, sortColumn, asc, filter) => {
+const selectUsersPaginationSorting = (limit, offset, sortColumn, asc, filter) => { // todo
     let expression = squelPostgres
         .select()
         .from(table.NAME, 'u')
         .field('u.*')
-        .field('r.name', HOMELESS_COLUMNS.ROLE);
+        .field('r.name', HOMELESS_COLUMNS.ROLE)
+        .field(`CONCAT(php.${colsPhonePrefixes.CODE}, phn.${colsPhoneNumbers.NUMBER})::bigint`, HOMELESS_COLUMNS.FULL_PHONE_NUMBER);
 
     expression = setUsersFilter(expression, filter);
     return expression
         .where(`r.${colsRoles.NAME} <> '${ROLES.ADMIN}'`)
         .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
         .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
+        .left_join(tablePhoneNumbers.NAME, 'phn', `phn.${colsPhoneNumbers.USER_ID} = u.id`)
+        .left_join(tablePhonePrefixes.NAME, 'php', `php.id = phn.${colsPhoneNumbers.PHONE_PREFIX_ID}`)
         .order(sortColumn, asc)
         .limit(limit)
         .offset(offset)

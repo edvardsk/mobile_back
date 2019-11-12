@@ -11,10 +11,13 @@ const formatUserForSaving = (id, user, password, key) => ({
 });
 
 const formatUserForResponse = user => ({
+    id: user.id,
     [cols.EMAIL]: user[cols.EMAIL],
     [cols.CREATED_AT]: user[cols.CREATED_AT],
     [cols.FULL_NAME]: user[cols.FULL_NAME],
     [HOMELESS_COLUMNS.ROLE]: user[HOMELESS_COLUMNS.ROLE],
+    [HOMELESS_COLUMNS.FULL_PHONE_NUMBER]: user[HOMELESS_COLUMNS.FULL_PHONE_NUMBER],
+    [cols.FREEZED]: user[cols.FREEZED],
 });
 
 const formatUserWithPermissionsForResponse = (user, permissions) => ({
