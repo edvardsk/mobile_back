@@ -16,6 +16,7 @@ const postApprove = require('./approve/post');
 
 const postCargo = require('./cargos/post');
 const getCargo = require('./cargos/get');
+const putCargo = require('./cargos/put');
 
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
@@ -264,8 +265,8 @@ router.post(
     isHasPermissions([PERMISSIONS.CRUD_CARGO]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
-    validate(ValidatorSchemes.createCargo),
-    validate(ValidatorSchemes.createCargoAsync),
+    validate(ValidatorSchemes.createOrEditCargo),
+    validate(ValidatorSchemes.createOrEditCargoAsync),
     postCargo.createCargo,
 );
 
@@ -289,6 +290,18 @@ router.get(
     validate(({ company }) => ValidatorSchemes.requiredExistingCargoInCompanyAsyncFunc({ companyId: company.id }), 'params'),
     injectCompanyData,
     getCargo.getCargo,
+);
+
+router.put(
+    ROUTES.COMPANIES.CARGOS.BASE + ROUTES.COMPANIES.CARGOS.PUT,
+    isHasPermissions([PERMISSIONS.CRUD_CARGO]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(({ company }) => ValidatorSchemes.requiredExistingCargoInCompanyAsyncFunc({ companyId: company.id }), 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.createOrEditCargo),
+    validate(ValidatorSchemes.createOrEditCargoAsync),
+    putCargo.editCargo,
 );
 
 module.exports = router;

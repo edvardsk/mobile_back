@@ -16,6 +16,12 @@ const formatRecordToSave = (companyId, cargoId, statusId, data) => ({
     [cols.STATUS_ID]: statusId,
 });
 
+const formatRecordToEdit = data => ({
+    ...data,
+    [cols.LOADING_METHODS]: new SqlArray(data[cols.LOADING_METHODS]),
+    [cols.GUARANTEES]: new SqlArray(data[cols.GUARANTEES]),
+});
+
 const formatRecordForList = cargo => ({
     id: cargo.id,
     [cols.UPLOADING_DATE_FROM]: cargo[cols.UPLOADING_DATE_FROM],
@@ -53,8 +59,46 @@ const formatRecordForResponse = cargo => ({
     [HOMELESS_COLUMNS.DOWNLOADING_POINTS]: cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS].map(value => formatGeoPointToObject(value)),
 });
 
+const formatCargoData = body => {
+    const CARGOS_PROPS = new Set([
+        cols.UPLOADING_DATE_FROM,
+        cols.UPLOADING_DATE_TO,
+        cols.DOWNLOADING_DATE_FROM,
+        cols.DOWNLOADING_DATE_TO,
+        cols.GROSS_WEIGHT,
+        cols.WIDTH,
+        cols.HEIGHT,
+        cols.LENGTH,
+        cols.LOADING_METHODS,
+        cols.LOADING_TYPE,
+        cols.GUARANTEES,
+        cols.DANGER_CLASS_ID,
+        cols.VEHICLE_TYPE_ID,
+        cols.PACKING_DESCRIPTION,
+        cols.DESCRIPTION,
+    ]);
+
+    const CARGO_POINTS_PROPS = new Set([
+        HOMELESS_COLUMNS.UPLOADING_POINTS,
+        HOMELESS_COLUMNS.DOWNLOADING_POINTS,
+    ]);
+
+    const cargosProps = {};
+    const cargoPointsProps = {};
+    Object.keys(body).forEach(key => {
+        if (CARGOS_PROPS.has(key)) {
+            cargosProps[key] = body[key];
+        } else if (CARGO_POINTS_PROPS.has(key)) {
+            cargoPointsProps[key] = body[key];
+        }
+    });
+    return { cargosProps, cargoPointsProps };
+};
+
 module.exports = {
     formatRecordToSave,
+    formatRecordToEdit,
     formatRecordForList,
     formatRecordForResponse,
+    formatCargoData,
 };

@@ -6,6 +6,8 @@ const squelPostgres = squel.useFlavour('postgres');
 
 const table = SQL_TABLES.CARGO_POINTS;
 
+const cols = table.COLUMNS;
+
 squelPostgres.registerValueHandler(Geo, function(value) {
     return value.toString();
 });
@@ -17,6 +19,15 @@ const insertRecords = values => squelPostgres
     .returning('*')
     .toString();
 
+const deleteRecordsByCargoId = cargoId => squelPostgres
+    .delete()
+    .from(table.NAME)
+    .where(`${cols.CARGO_ID} = '${cargoId}'`)
+    .returning('*')
+    .toString();
+
+
 module.exports = {
     insertRecords,
+    deleteRecordsByCargoId,
 };

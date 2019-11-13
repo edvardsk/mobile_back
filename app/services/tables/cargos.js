@@ -3,6 +3,7 @@ const { one, oneOrNone, manyOrNone } = require('db');
 // sql-helpers
 const {
     insertRecord,
+    updateRecordById,
     selectRecordById,
     selectRecordByIdLight,
     selectRecordsByCompanyId,
@@ -17,6 +18,8 @@ const { SQL_TABLES } = require('constants/tables');
 const cols = SQL_TABLES.CARGOS.COLUMNS;
 
 const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
+
+const editRecordAsTransaction = (id, data) => [updateRecordById(id, data), OPERATIONS.ONE];
 
 const getRecord = id => oneOrNone(selectRecordById(id));
 
@@ -43,6 +46,7 @@ const checkCargoInCompanyExists = async (meta, cargoId) => {
 
 module.exports = {
     addRecordAsTransaction,
+    editRecordAsTransaction,
     getRecord,
     getRecordStrict,
     getRecordsByCompanyId,
