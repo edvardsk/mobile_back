@@ -280,6 +280,8 @@ const HOMELESS_COLUMNS = {
     FILTER: 'filter',
     BANK_COUNTRY: 'bank_country',
     HEAD_ROLE_NAME: 'head_role_name',
+    UPLOADING_POINTS: 'uploading_points',
+    DOWNLOADING_POINTS: 'downloading_points',
 };
 
 module.exports = {

@@ -1209,6 +1209,18 @@ const createCargo = {
         [colsCargos.DESCRIPTION]: {
             type: 'string',
         },
+        [HOMELESS_COLUMNS.UPLOADING_POINTS]: {
+            type: 'array',
+            minItems: 1,
+            uniqueItems: true,
+            items: coordinatesFormat,
+        },
+        [HOMELESS_COLUMNS.DOWNLOADING_POINTS]: {
+            type: 'array',
+            minItems: 1,
+            uniqueItems: true,
+            items: coordinatesFormat
+        },
     },
     required:[
         colsCargos.UPLOADING_DATE_FROM,
@@ -1221,6 +1233,8 @@ const createCargo = {
         colsCargos.LOADING_TYPE,
         colsCargos.GUARANTEES,
         colsCargos.VEHICLE_TYPE_ID,
+        HOMELESS_COLUMNS.UPLOADING_POINTS,
+        HOMELESS_COLUMNS.DOWNLOADING_POINTS,
     ],
     additionalProperties: false,
 };
