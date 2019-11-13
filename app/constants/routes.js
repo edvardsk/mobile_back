@@ -40,6 +40,8 @@ const BASES = {
     COMMON_DATA: '/common-data',
     APPROVE: '/approve',
     CARGOS: '/cargos',
+    OTHERS: '/others',
+    CARGO_STATUSES: '/cargo-statuses',
 };
 
 const IDS = {
@@ -250,7 +252,13 @@ const ROUTES = {
             GET_ALL: '',
         },
     },
-
+    OTHERS: {
+        BASE: BASES.OTHERS,
+        CARGO_STATUSES: {
+            BASE: BASES.CARGO_STATUSES,
+            GET: '',
+        },
+    },
 };
 
 const ALLOWED_ROUTES = {
