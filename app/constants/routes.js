@@ -255,6 +255,7 @@ const ROUTES = {
             GET_ALL: '',
             GET: IDS.CARGO_ID,
             PUT: IDS.CARGO_ID,
+            DELETE: IDS.CARGO_ID,
         },
     },
     OTHERS: {
