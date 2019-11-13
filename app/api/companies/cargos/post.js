@@ -1,5 +1,5 @@
 const uuid = require('uuid/v4');
-const { success } = require('api/response');
+const { success, reject } = require('api/response');
 
 // services
 const CargosServices = require('services/tables/cargos');
@@ -9,18 +9,27 @@ const TablesService = require('services/tables');
 // constants
 const { SUCCESS_CODES } = require('constants/http-codes');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
+const { ERRORS } = require('constants/errors');
 
 // formatters
 const CargosFormatters = require('formatters/cargos');
 const CargoPointsFormatters = require('formatters/cargo-points');
 
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
+const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
 
 const createCargo = async (req, res, next) => {
     try {
         const { body } = req;
-        const { company } = res.locals;
+        const { company, isControlRole } = res.locals;
         const companyId = company.id;
+
+        if (!isControlRole && !company[colsCompanies.PRIMARY_CONFIRMED]) {
+            const cargos = await CargosServices.getRecordsByCompanyId(companyId);
+            if (cargos.length) {
+                return reject(res, ERRORS.CARGOS.UNABLE_TO_CREATE);
+            }
+        }
 
         const CARGOS_PROPS = new Set([
             colsCargos.UPLOADING_DATE_FROM,

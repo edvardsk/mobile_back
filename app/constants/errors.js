@@ -66,6 +66,9 @@ const ERRORS = {
         NOT_FREEZED: 'freezing.not_freezed',
         NOT_ENOUGH_POWER: 'freezing.not_enough_power',
     },
+    CARGOS: {
+        UNABLE_TO_CREATE: 'cargos.unable_to_create',
+    },
 };
 
 class PaginationError extends Error {
