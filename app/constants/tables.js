@@ -290,6 +290,7 @@ const HOMELESS_COLUMNS = {
     HEAD_ROLE_NAME: 'head_role_name',
     UPLOADING_POINTS: 'uploading_points',
     DOWNLOADING_POINTS: 'downloading_points',
+    STATUS: 'status',
 };
 
 module.exports = {

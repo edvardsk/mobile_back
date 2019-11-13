@@ -40,6 +40,10 @@ const BASES = {
     COMMON_DATA: '/common-data',
     APPROVE: '/approve',
     CARGOS: '/cargos',
+    OTHERS: '/others',
+    CARGO_STATUSES: '/cargo-statuses',
+    VEHICLE_TYPES: '/vehicle-types',
+    DANGER_CLASSES: '/danger-classes',
 };
 
 const IDS = {
@@ -250,7 +254,21 @@ const ROUTES = {
             GET_ALL: '',
         },
     },
-
+    OTHERS: {
+        BASE: BASES.OTHERS,
+        CARGO_STATUSES: {
+            BASE: BASES.CARGO_STATUSES,
+            GET: '',
+        },
+        VEHICLE_TYPES: {
+            BASE: BASES.VEHICLE_TYPES,
+            GET: '',
+        },
+        DANGER_CLASSES: {
+            BASE: BASES.DANGER_CLASSES,
+            GET: '',
+        },
+    },
 };
 
 const ALLOWED_ROUTES = {

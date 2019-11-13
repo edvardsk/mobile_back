@@ -14,6 +14,15 @@ const formatGeoDataValueToSave = value => {
     };
 };
 
+const formatGeoPointToObject = string => {
+    const [longitude, latitude] = string.slice(6, -1).split(' ');
+    return {
+        [HOMELESS_COLUMNS.LONGITUDE]: longitude,
+        [HOMELESS_COLUMNS.LATITUDE]: latitude
+    };
+};
+
 module.exports = {
     formatGeoDataValuesToSave,
+    formatGeoPointToObject,
 };

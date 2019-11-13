@@ -2,6 +2,9 @@
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { Geo } = require('constants/instances');
 
+// formatters
+const { formatGeoPointToObject } = require('./geo');
+
 const cols = SQL_TABLES.COMPANIES.COLUMNS;
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 
@@ -17,14 +20,6 @@ const formatCompanyDataOnStep2 = data => ({
         data[cols.LEGAL_CITY_COORDINATES][HOMELESS_COLUMNS.LATITUDE],
     ),
 });
-
-const formatGeoPointToObject = string => {
-    const [longitude, latitude] = string.slice(6, -1).split(' ');
-    return {
-        [HOMELESS_COLUMNS.LONGITUDE]: longitude,
-        [HOMELESS_COLUMNS.LATITUDE]: latitude
-    };
-};
 
 const formatLegalDataForTransporterAndHolderForResponse = company => ({
     [cols.LEGAL_CITY_COORDINATES]: company[cols.LEGAL_CITY_COORDINATES] && formatGeoPointToObject(company[cols.LEGAL_CITY_COORDINATES]),
@@ -83,7 +78,6 @@ module.exports = {
     formatLegalDataForIndividualForwarderForResponse,
     formatLegalDataForSoleProprietorForwarderForResponse,
     formatCompanyToResponse,
-    formatGeoPointToObject,
     formatDataToApprove,
 };
 

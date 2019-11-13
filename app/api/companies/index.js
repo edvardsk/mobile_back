@@ -273,6 +273,10 @@ router.get(
     ROUTES.COMPANIES.CARGOS.BASE + ROUTES.COMPANIES.CARGOS.GET_ALL,
     isHasPermissions([PERMISSIONS.CRUD_CARGO]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.basePaginationQuery, 'query'),
+    validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
+    validate(ValidatorSchemes.modifyFilterQuery, 'query'),
+    validate(ValidatorSchemes.cargosFilterQuery, 'query'),
     injectCompanyData,
     getCargo.getCargos,
 );

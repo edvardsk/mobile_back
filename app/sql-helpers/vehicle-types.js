@@ -11,6 +11,12 @@ const selectRecordById = id => squelPostgres
     .where(`id = '${id}'`)
     .toString();
 
+const selectRecords = () => squelPostgres
+    .select()
+    .from(table.NAME)
+    .toString();
+
 module.exports = {
     selectRecordById,
+    selectRecords,
 };
