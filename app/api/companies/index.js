@@ -4,12 +4,18 @@ const { ROUTES } = require('constants/routes');
 const getEmployees = require('./employees/get');
 const putEmployees = require('./employees/put');
 const get = require('./get');
+
 const getData = require('./data/get');
 const getCommon = require('./common/get');
+
 const getFiles = require('./files/get');
+
 const postSteps = require('./steps/post');
 const getSteps = require('./steps/get');
 const postApprove = require('./approve/post');
+
+const postCargo = require('./cargos/post');
+const getCargo = require('./cargos/get');
 
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
@@ -181,8 +187,8 @@ router.post(
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
     validate(({ companyHeadRole }) => CREATE_OR_MODIFY_STEP_1_TEXT_MAP_SCHEMES[companyHeadRole]),
-    validate(({ companyId, companyHeadRole }) => (
-        CREATE_OR_MODIFY_STEP_1_TEXT_MAP_SCHEMES_ASYNC[companyHeadRole](companyId)
+    validate(({ company, companyHeadRole }) => (
+        CREATE_OR_MODIFY_STEP_1_TEXT_MAP_SCHEMES_ASYNC[companyHeadRole]({ companyId: company.id })
     )),
     postSteps.editStep1,
 );
@@ -193,8 +199,8 @@ router.post(
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
     validate(({ companyHeadRole }) => CREATE_OR_MODIFY_STEP_2_TEXT_MAP_SCHEMES[companyHeadRole]),
-    validate(({ companyId, companyHeadRole }) => (
-        CREATE_OR_MODIFY_STEP_2_TEXT_MAP_SCHEMES_ASYNC[companyHeadRole](companyId)
+    validate(({ company, companyHeadRole }) => (
+        CREATE_OR_MODIFY_STEP_2_TEXT_MAP_SCHEMES_ASYNC[companyHeadRole]({ companyId: company.id })
     )),
     validate(ValidatorSchemes.settlementAccountAsync),
     postSteps.editStep2,
@@ -208,8 +214,8 @@ router.post(
     formDataHandler(uploadData), // uploading files middleware
     validate(ValidatorSchemes.modifyOtherOrganizations),
     validate(({ companyHeadRole }) => CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES[companyHeadRole]),
-    validate(({ companyId, companyHeadRole }) => (
-        CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES_ASYNC[companyHeadRole](companyId)
+    validate(({ company, companyHeadRole }) => (
+        CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES_ASYNC[companyHeadRole]({ companyId: company.id })
     )),
     validate(ValidatorSchemes.notRequiredFiles, 'files'),
     postSteps.editStep3,
@@ -250,6 +256,25 @@ router.post(
     validate(ValidatorSchemes.requiredCompanyIdParams, 'params'),
     validate(ValidatorSchemes.requiredExistingCompanyWithIdAsync, 'params'),
     postApprove.approveCompany,
+);
+
+// cargos
+router.post(
+    ROUTES.COMPANIES.CARGOS.BASE + ROUTES.COMPANIES.CARGOS.POST,
+    isHasPermissions([PERMISSIONS.CRUD_CARGO]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.createCargo),
+    validate(ValidatorSchemes.createCargoAsync),
+    postCargo.createCargo,
+);
+
+router.get(
+    ROUTES.COMPANIES.CARGOS.BASE + ROUTES.COMPANIES.CARGOS.GET_ALL,
+    isHasPermissions([PERMISSIONS.CRUD_CARGO]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    getCargo.getCargos,
 );
 
 module.exports = router;

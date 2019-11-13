@@ -76,6 +76,8 @@ const PERMISSIONS = {
     MODIFY_CONDITIONS_AND_TERMS: 'modify_conditions_and_terms',
     READ_CONDITIONS_AND_TERMS: 'read_conditions_and_terms',
 
+    CRUD_CARGO: 'crud_cargo',
+
     READ_COMPANIES: 'read_companies',
     APPROVE_COMPANY: 'approve_company',
 };

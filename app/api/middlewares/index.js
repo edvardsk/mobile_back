@@ -113,7 +113,11 @@ const injectCompanyData = async (req, res, next) => {
         const { role } = res.locals.user;
         if (isControlRole(role)) {
             const companyId = req.params.meOrId;
-            res.locals.company = await CompaniesService.getCompanyStrict(companyId);
+            const company = await CompaniesService.getCompany(companyId);
+            if (!company) {
+                return reject(res, ERRORS.COMPANIES.INVALID_COMPANY_ID);
+            }
+            res.locals.company = company;
         } else {
             const userId = res.locals.user.id;
             res.locals.company = await CompaniesService.getCompanyByUserId(userId);

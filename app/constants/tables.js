@@ -211,7 +211,62 @@ const SQL_TABLES = {
             DRIVER_LICENCE_EXPIRED_AT: 'driver_licence_expired_at',
             CREATED_AT: 'created_at',
         },
-    }
+    },
+    DANGER_CLASSES: {
+        NAME: 'danger_classes',
+        COLUMNS: {
+            CLASS: 'class',
+            SUBCLASS: 'subclass',
+            NAME: 'name',
+            CREATED_AT: 'created_at',
+        },
+    },
+    VEHICLE_TYPES: {
+        NAME: 'vehicle_types',
+        COLUMNS: {
+            NAME: 'name',
+            CREATED_AT: 'created_at',
+        },
+    },
+    CARGOS: {
+        NAME: 'cargos',
+        COLUMNS: {
+            COMPANY_ID: 'company_id',
+            STATUS_ID: 'status_id',
+            UPLOADING_DATE_FROM: 'uploading_date_from',
+            UPLOADING_DATE_TO: 'uploading_date_to',
+            DOWNLOADING_DATE_FROM: 'downloading_date_from',
+            DOWNLOADING_DATE_TO: 'downloading_date_to',
+            GROSS_WEIGHT: 'gross_weight',
+            WIDTH: 'width',
+            HEIGHT: 'height',
+            LENGTH: 'length',
+            LOADING_METHODS: 'loading_methods',
+            GUARANTEES: 'guarantees',
+            LOADING_TYPE: 'loading_type',
+            DANGER_CLASS_ID: 'danger_class_id',
+            VEHICLE_TYPE_ID: 'vehicle_type_id',
+            PACKING_DESCRIPTION: 'packing_description',
+            DESCRIPTION: 'description',
+            CREATED_AT: 'created_at',
+        },
+    },
+    CARGO_POINTS: {
+        NAME: 'cargo_points',
+        COLUMNS: {
+            CARGO_ID: 'cargo_id',
+            COORDINATES: 'coordinates',
+            TYPE: 'type',
+            CREATED_AT: 'created_at',
+        },
+    },
+    CARGO_STATUSES: {
+        NAME: 'cargo_statuses',
+        COLUMNS: {
+            NAME: 'name',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
@@ -233,6 +288,8 @@ const HOMELESS_COLUMNS = {
     FILTER: 'filter',
     BANK_COUNTRY: 'bank_country',
     HEAD_ROLE_NAME: 'head_role_name',
+    UPLOADING_POINTS: 'uploading_points',
+    DOWNLOADING_POINTS: 'downloading_points',
 };
 
 module.exports = {
