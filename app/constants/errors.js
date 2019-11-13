@@ -68,6 +68,7 @@ const ERRORS = {
     },
     CARGOS: {
         UNABLE_TO_CREATE: 'cargos.unable_to_create',
+        UNABLE_TO_EDIT: 'cargos.unable_to_edit',
     },
 };
 
