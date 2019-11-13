@@ -11,6 +11,11 @@ const {
     COMPANIES_SORT_COLUMNS,
     USERS_SORT_COLUMNS,
 } = require('constants/pagination-sorting');
+const {
+    LOADING_METHODS_MAP,
+    LOADING_TYPES_MAP,
+    GUARANTEES_MAP,
+} = require('constants/cargos');
 
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
@@ -1142,42 +1147,52 @@ const createCargo = {
         [colsCargos.DOWNLOADING_DATE_FROM]: {
             type: 'string',
             format: 'date-time',
+            formatMinimum: {
+                '$data': `1/${colsCargos.UPLOADING_DATE_FROM}`,
+            },
         },
         [colsCargos.DOWNLOADING_DATE_TO]: {
             type: 'string',
             format: 'date-time',
+            formatMinimum: {
+                '$data': `1/${colsCargos.DOWNLOADING_DATE_FROM}`,
+            },
         },
         [colsCargos.GROSS_WEIGHT]: {
             type: 'number',
+            exclusiveMinimum: 0,
         },
         [colsCargos.WIDTH]: {
             type: 'number',
+            exclusiveMinimum: 0,
         },
         [colsCargos.HEIGHT]: {
             type: 'number',
+            exclusiveMinimum: 0,
         },
         [colsCargos.LENGTH]: {
             type: 'number',
+            exclusiveMinimum: 0,
         },
         [colsCargos.LOADING_METHODS]: {
             type: 'array',
             minItems: 1,
             uniqueItems: true,
             items: {
-                enum: ['up', 'back', 'side'],
+                enum: [LOADING_METHODS_MAP.UP, LOADING_METHODS_MAP.BACK, LOADING_METHODS_MAP.SIDE],
 
             },
         },
         [colsCargos.LOADING_TYPE]: {
             type: 'string',
-            enum: ['FTL', 'LTL']
+            enum: [LOADING_TYPES_MAP.FTL, LOADING_TYPES_MAP.LTL],
         },
         [colsCargos.GUARANTEES]: {
             type: 'array',
             minItems: 1,
             uniqueItems: true,
             items: {
-                enum: ['TIR', 'CMR'],
+                enum: [GUARANTEES_MAP.CMR, GUARANTEES_MAP.TIR],
             },
         },
         [colsCargos.DANGER_CLASS_ID]: {
