@@ -291,6 +291,8 @@ const HOMELESS_COLUMNS = {
     UPLOADING_POINTS: 'uploading_points',
     DOWNLOADING_POINTS: 'downloading_points',
     STATUS: 'status',
+    DANGER_CLASS_NAME: 'danger_class_name',
+    VEHICLE_TYPE_NAME: 'vehicle_type_name',
 };
 
 module.exports = {

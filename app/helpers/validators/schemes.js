@@ -110,6 +110,17 @@ const requiredExistingCompanyWithIdAsync = {
     },
 };
 
+const requiredExistingCargoInCompanyAsyncFunc = ({ companyId }) => ({
+    $async: true,
+    properties: {
+        cargoId: {
+            cargo_in_company_not_exist: {
+                companyId,
+            },
+        },
+    },
+});
+
 const otherOrganizations = {
     type: 'array',
     items: [
@@ -1501,6 +1512,7 @@ module.exports = {
     requiredUserId,
     requiredExistingUserWithIdAsync,
     requiredExistingCompanyWithIdAsync,
+    requiredExistingCargoInCompanyAsyncFunc,
 
     registration,
     registrationAsync,

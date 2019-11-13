@@ -28,7 +28,33 @@ const formatRecordForList = cargo => ({
     [HOMELESS_COLUMNS.DOWNLOADING_POINTS]: cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS].map(value => formatGeoPointToObject(value)),
 });
 
+const formatRecordForResponse = cargo => ({
+    id: cargo.id,
+    [cols.UPLOADING_DATE_FROM]: cargo[cols.UPLOADING_DATE_FROM],
+    [cols.UPLOADING_DATE_TO]: cargo[cols.UPLOADING_DATE_TO],
+    [cols.DOWNLOADING_DATE_FROM]: cargo[cols.DOWNLOADING_DATE_FROM],
+    [cols.DOWNLOADING_DATE_TO]: cargo[cols.DOWNLOADING_DATE_TO],
+    [cols.GROSS_WEIGHT]: cargo[cols.GROSS_WEIGHT],
+    [cols.WIDTH]: cargo[cols.WIDTH],
+    [cols.HEIGHT]: cargo[cols.HEIGHT],
+    [cols.LENGTH]: cargo[cols.LENGTH],
+    [cols.LOADING_METHODS]: cargo[cols.LOADING_METHODS],
+    [cols.LOADING_TYPE]: cargo[cols.LOADING_TYPE],
+    [cols.GUARANTEES]: cargo[cols.GUARANTEES],
+    [cols.DANGER_CLASS_ID]: cargo[cols.DANGER_CLASS_ID],
+    [cols.VEHICLE_TYPE_ID]: cargo[cols.VEHICLE_TYPE_ID],
+    [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: cargo[HOMELESS_COLUMNS.DANGER_CLASS_NAME],
+    [HOMELESS_COLUMNS.VEHICLE_TYPE_NAME]: cargo[HOMELESS_COLUMNS.VEHICLE_TYPE_NAME],
+    [cols.PACKING_DESCRIPTION]: cargo[cols.PACKING_DESCRIPTION],
+    [cols.DESCRIPTION]: cargo[cols.DESCRIPTION],
+    [cols.CREATED_AT]: cargo[cols.CREATED_AT],
+    [HOMELESS_COLUMNS.STATUS]: cargo[HOMELESS_COLUMNS.STATUS],
+    [HOMELESS_COLUMNS.UPLOADING_POINTS]: cargo[HOMELESS_COLUMNS.UPLOADING_POINTS].map(value => formatGeoPointToObject(value)),
+    [HOMELESS_COLUMNS.DOWNLOADING_POINTS]: cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS].map(value => formatGeoPointToObject(value)),
+});
+
 module.exports = {
     formatRecordToSave,
     formatRecordForList,
+    formatRecordForResponse,
 };

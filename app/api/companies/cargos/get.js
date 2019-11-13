@@ -10,7 +10,7 @@ const { SORTING_DIRECTIONS } = require('constants/pagination-sorting');
 
 // formatters
 const { formatPaginationDataForResponse } = require('formatters/pagination-sorting');
-const { formatRecordForList } = require('formatters/cargos');
+const { formatRecordForList, formatRecordForResponse } = require('formatters/cargos');
 
 // helpers
 const { getParams } = require('helpers/pagination-sorting');
@@ -53,6 +53,17 @@ const getCargos = async (req, res, next) => {
     }
 };
 
+const getCargo = async (req, res, next) => {
+    try {
+        const { cargoId } = req.params;
+        const cargo = await CargosServices.getRecordStrict(cargoId);
+        return success(res, { cargo: formatRecordForResponse(cargo) });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     getCargos,
+    getCargo,
 };

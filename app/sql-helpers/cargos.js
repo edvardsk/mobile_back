@@ -7,9 +7,13 @@ const squelPostgres = squel.useFlavour('postgres');
 
 const table = SQL_TABLES.CARGOS;
 const tableCargoStatuses = SQL_TABLES.CARGO_STATUSES;
+const tableDangerClasses = SQL_TABLES.DANGER_CLASSES;
+const tableVehicleClasses = SQL_TABLES.VEHICLE_TYPES;
 
 const cols = table.COLUMNS;
 const colsCargoStatuses = tableCargoStatuses.COLUMNS;
+const colsDangerClasses = tableDangerClasses.COLUMNS;
+const colsVehicleClasses = tableVehicleClasses.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -20,6 +24,27 @@ const insertRecord = values => squelPostgres
     .into(table.NAME)
     .setFields(values)
     .returning('*')
+    .toString();
+
+const selectRecordById = id => squelPostgres
+    .select()
+    .field('c.*')
+    .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
+    .field('ARRAY(SELECT ST_AsText(coordinates) from cargo_points cp WHERE cp.cargo_id = c.id AND cp.type = \'upload\')', HOMELESS_COLUMNS.UPLOADING_POINTS)
+    .field('ARRAY(SELECT ST_AsText(coordinates) from cargo_points cp WHERE cp.cargo_id = c.id AND cp.type = \'download\')', HOMELESS_COLUMNS.DOWNLOADING_POINTS)
+    .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
+    .field(`vc.${colsVehicleClasses.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
+    .from(table.NAME, 'c')
+    .where(`c.id = '${id}'`)
+    .left_join(tableCargoStatuses.NAME, 'cs', `cs.id = c.${cols.STATUS_ID}`)
+    .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.DANGER_CLASS_ID}`)
+    .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
+    .toString();
+
+const selectRecordByIdLight = id => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where(`id = '${id}'`)
     .toString();
 
 const selectRecordsByCompanyId = companyId => squelPostgres
@@ -77,6 +102,8 @@ const setCargosFilter = (expression, filteringObject) => {
 
 module.exports = {
     insertRecord,
+    selectRecordById,
+    selectRecordByIdLight,
     selectRecordsByCompanyId,
     selectCargosByCompanyIdPaginationSorting,
     selectCountCargosByCompanyId,
