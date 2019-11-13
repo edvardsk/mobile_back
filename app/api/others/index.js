@@ -5,6 +5,8 @@ const getCargoStatuses = require('./cargo-statuses/get');
 
 const getVehicleTypes = require('./vehicle-types/get');
 
+const getDangerClasses = require('./danger-classes/get');
+
 // middlewares
 const { isHasPermissions } = require('api/middlewares');
 
@@ -27,6 +29,14 @@ router.get(
     ROUTES.OTHERS.VEHICLE_TYPES.BASE + ROUTES.OTHERS.VEHICLE_TYPES.GET,
     isHasPermissions([PERMISSIONS.CRUD_CARGO]),
     getVehicleTypes.getTypes,
+);
+
+
+// vehicle types
+router.get(
+    ROUTES.OTHERS.DANGER_CLASSES.BASE + ROUTES.OTHERS.DANGER_CLASSES.GET,
+    isHasPermissions([PERMISSIONS.CRUD_CARGO]),
+    getDangerClasses.getClasses,
 );
 
 module.exports = router;

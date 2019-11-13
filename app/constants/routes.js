@@ -43,6 +43,7 @@ const BASES = {
     OTHERS: '/others',
     CARGO_STATUSES: '/cargo-statuses',
     VEHICLE_TYPES: '/vehicle-types',
+    DANGER_CLASSES: '/danger-classes',
 };
 
 const IDS = {
@@ -261,6 +262,10 @@ const ROUTES = {
         },
         VEHICLE_TYPES: {
             BASE: BASES.VEHICLE_TYPES,
+            GET: '',
+        },
+        DANGER_CLASSES: {
+            BASE: BASES.DANGER_CLASSES,
             GET: '',
         },
     },
