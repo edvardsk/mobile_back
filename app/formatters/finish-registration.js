@@ -2,7 +2,7 @@
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
 // formatters
-const { formatGeoPointToObject } = require('./companies');
+const { formatGeoPointToObject } = require('./geo');
 
 const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
 const colsUsers = SQL_TABLES.USERS.COLUMNS;

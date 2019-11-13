@@ -17,6 +17,8 @@ const {
     GUARANTEES_MAP,
 } = require('constants/cargos');
 
+const { CARGO_STATUSES } = require('constants/cargo-statuses');
+
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
 const colsPhoneConfirmation = SQL_TABLES.PHONE_CONFIRMATION_CODES.COLUMNS;
@@ -1469,6 +1471,26 @@ const companiesFilterQuery = {
     },
 };
 
+const cargosFilterQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.FILTER]: {
+            type: 'object',
+            properties: {
+                [HOMELESS_COLUMNS.STATUS]: {
+                    type: 'array',
+                    minItems: 1,
+                    uniqueItems: true,
+                    items: {
+                        enum: CARGO_STATUSES,
+                    },
+
+                },
+            },
+            additionalProperties: false,
+        },
+    },
+};
+
 const notRequiredFiles = {
     patternProperties: {
         '.': fileFormat,
@@ -1560,6 +1582,7 @@ module.exports = {
     usersFilterQuery,
     companyDriversFilterQuery,
     companiesFilterQuery,
+    cargosFilterQuery,
 
     notRequiredFiles,
 };

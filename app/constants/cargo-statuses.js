@@ -10,6 +10,9 @@ const CARGO_STATUSES_MAP = {
     PROBLEM: 'problem',
 };
 
+const CARGO_STATUSES = Object.values(CARGO_STATUSES_MAP);
+
 module.exports = {
     CARGO_STATUSES_MAP,
+    CARGO_STATUSES,
 };
