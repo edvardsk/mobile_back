@@ -8,6 +8,7 @@ const {
     SORTING_PARAMS,
     SORTING_DIRECTIONS,
     COMPANY_EMPLOYEES_SORT_COLUMNS,
+    COMPANIES_SORT_COLUMNS,
     USERS_SORT_COLUMNS,
 } = require('constants/pagination-sorting');
 
@@ -88,6 +89,15 @@ const requiredExistingUserWithIdAsync = {
     properties: {
         userId: {
             user_with_id_not_exist: {},
+        },
+    },
+};
+
+const requiredExistingCompanyWithIdAsync = {
+    $async: true,
+    properties: {
+        companyId: {
+            company_with_id_not_exist: {},
         },
     },
 };
@@ -1161,6 +1171,18 @@ const requiredMeParams = {
     ],
 };
 
+const requiredCompanyIdParams = {
+    properties: {
+        companyId: {
+            type: 'string',
+            format: 'uuid',
+        },
+    },
+    required: [
+        'companyId'
+    ],
+};
+
 const listFilesGroupParams = {
     properties: {
         fileGroup: {
@@ -1211,6 +1233,15 @@ const companyEmployeesSortColumnQuery = {
         [SORTING_PARAMS.SORT_COLUMN]: {
             type: 'string',
             enum: COMPANY_EMPLOYEES_SORT_COLUMNS,
+        }
+    }
+};
+
+const companiesSortColumnQuery = {
+    properties: {
+        [SORTING_PARAMS.SORT_COLUMN]: {
+            type: 'string',
+            enum: COMPANIES_SORT_COLUMNS,
         }
     }
 };
@@ -1280,6 +1311,23 @@ const companyDriversFilterQuery = {
     },
 };
 
+const companiesFilterQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.FILTER]: {
+            type: 'object',
+            properties: {
+                [colsCompanies.PRIMARY_CONFIRMED]: {
+                    type: 'boolean',
+                },
+                [colsCompanies.EDITING_CONFIRMED]: {
+                    type: 'boolean',
+                },
+            },
+            additionalProperties: false,
+        },
+    },
+};
+
 const notRequiredFiles = {
     patternProperties: {
         '.': fileFormat,
@@ -1289,6 +1337,7 @@ const notRequiredFiles = {
 module.exports = {
     requiredUserId,
     requiredExistingUserWithIdAsync,
+    requiredExistingCompanyWithIdAsync,
 
     registration,
     registrationAsync,
@@ -1351,6 +1400,7 @@ module.exports = {
     inviteUserWithoutCompanyRolesParams,
     inviteUserAdvancedFiles,
     requiredMeParams,
+    requiredCompanyIdParams,
     meOrIdRequiredMeParams,
     meOrIdRequiredIdParams,
     listFilesGroupParams,
@@ -1359,11 +1409,13 @@ module.exports = {
     basePaginationModifyQuery,
     baseSortingSortingDirectionQuery,
     companyEmployeesSortColumnQuery,
+    companiesSortColumnQuery,
     usersSortColumnQuery,
     modifyFilterQuery,
     companyEmployeesFilterQuery,
     usersFilterQuery,
     companyDriversFilterQuery,
+    companiesFilterQuery,
 
     notRequiredFiles,
 };

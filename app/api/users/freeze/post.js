@@ -23,7 +23,7 @@ const freezeUser = async (req, res, next) => {
     try {
         const currentUserId = res.locals.user.id;
         const currentUserPermissions = res.locals.permissions;
-        const isControlRole = res.locals.user.isControlRole;
+        const { isControlRole } = res.locals;
 
         const { userId } = req.params;
         const user = await UsersService.getUserWithRole(userId);

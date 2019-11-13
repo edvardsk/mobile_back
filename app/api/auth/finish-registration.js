@@ -114,8 +114,6 @@ const finishRegistrationStep3 = async (req, res, next) => {
 
         res.locals.step3Data = {};
         res.locals.step3Data.transactionList = transactionsList;
-        res.locals.step3Data.companyHeadId = userId;
-        res.locals.step3Data.companyHeadRole = userRole;
 
         return next();
     } catch (error) {
@@ -168,11 +166,14 @@ const finishRegistrationStep5 = async (req, res, next) => {
         const nextUserRole = MAP_FROM_PENDING_ROLE_TO_MAIN[userRole];
 
         const transactionsList = [
-            UsersRolesService.updateUserRoleAsTransaction(userId, nextUserRole),
             UserPermissionsService.removeUserPermissionsAsTransaction(userId, permissionsToRemove),
-            UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.EXPECT_COMPANY_EDITING_CONFIRMATION),
-            UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.PASS_PRIMARY_CONFIRMATION),
         ];
+
+        if ([ROLES.TRANSPORTER, ROLES.HOLDER].includes(nextUserRole)) {
+            transactionsList.push(
+                UsersRolesService.updateUserRoleAsTransaction(userId, nextUserRole)
+            );
+        }
 
         await TablesService.runTransaction(transactionsList);
 

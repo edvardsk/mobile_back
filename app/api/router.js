@@ -4,7 +4,6 @@ const auth = require('./auth');
 
 const users = require('./users');
 const conditionsTerms = require('./conditions-terms');
-const accountConfirmations = require('./account-confirmations');
 const invites = require('./invites');
 const companies = require('./companies');
 
@@ -13,7 +12,6 @@ const router = express.Router();
 router.use(ROUTES.AUTH.BASE, auth);
 router.use(ROUTES.USERS.BASE, users);
 router.use(ROUTES.CONDITIONS_TERMS.BASE, conditionsTerms);
-router.use(ROUTES.ACCOUNT_CONFIRMATIONS.BASE, accountConfirmations);
 router.use(ROUTES.INVITES.BASE, invites);
 router.use(ROUTES.COMPANIES.BASE, companies);
 

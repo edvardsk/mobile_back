@@ -2,12 +2,12 @@ const { success } = require('api/response');
 
 // services
 const CompaniesService = require('services/tables/companies');
-const UserPermissionsService = require('services/tables/users-to-permissions');
 const TablesService = require('services/tables');
 
 // constants
-const { ROLES, PERMISSIONS } = require('constants/system');
+const { ROLES } = require('constants/system');
 const { SUCCESS_CODES } = require('constants/http-codes');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
 // formatters
 const FinishRegistrationFormatters = require('formatters/finish-registration');
@@ -20,44 +20,29 @@ const MAP_ROLES_AND_FORMATTERS_STEP_1 = {
     [ROLES.SOLE_PROPRIETOR_FORWARDER]: FinishRegistrationFormatters.formatCompanyForSoleProprietorForwarderToSave,
 };
 
+const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
+
 /*
-* @req.params {user} - current user
-* @req.params {permissions} - current permissions
-* @req.params {isControlRole} - is current user admin or manager
-* @req.params {shadowMainUserRole} - if control user role is used - role of company admin
-* @req.params {shadowUserId} - if control user role is used - id of company admin
+* @res.locals {company} - current company
+* @res.locals {isControlRole} - is user control role
 * */
 const editStep1 = async (req, res, next) => {
     try {
-        const currentUserId = res.locals.user.id;
-        const currentUserRole = res.locals.user.role;
-        const currentUserPermissions = res.locals.permissions;
-        const { isControlRole } = res.locals.user;
-        const { shadowMainUserRole, shadowUserId } = res.locals;
+        const { company, isControlRole } = res.locals;
+        const headRole = company[HOMELESS_COLUMNS.HEAD_ROLE_NAME];
 
         const transactionList = [];
-        let companyHeadId;
-        let companyHeadRole;
-        if (isControlRole) {
-            companyHeadId = shadowUserId;
-            companyHeadRole = shadowMainUserRole;
-        } else {
-            companyHeadId = currentUserId;
-            companyHeadRole = currentUserRole;
-            if (!currentUserPermissions.has(PERMISSIONS.EXPECT_COMPANY_EDITING_CONFIRMATION)) {
-                transactionList.push(
-                    UserPermissionsService.addUserPermissionAsTransaction(currentUserId, PERMISSIONS.EXPECT_COMPANY_EDITING_CONFIRMATION)
-                );
-            }
-        }
-        const company = await CompaniesService.getCompanyByUserIdStrict(companyHeadId);
 
         const companyData = {
             ...req.body,
         };
 
+        if (!isControlRole) {
+            companyData[colsCompanies.EDITING_CONFIRMED] = false;
+        }
+
         transactionList.push(
-            CompaniesService.updateCompanyAsTransaction(company.id, MAP_ROLES_AND_FORMATTERS_STEP_1[companyHeadRole](companyData))
+            CompaniesService.updateCompanyAsTransaction(company.id, MAP_ROLES_AND_FORMATTERS_STEP_1[headRole](companyData))
         );
 
         await TablesService.runTransaction(transactionList);
@@ -69,36 +54,20 @@ const editStep1 = async (req, res, next) => {
 };
 
 /*
-* @req.params {user} - current user
-* @req.params {permissions} - current permissions
-* @req.params {isControlRole} - is current user admin or manager
-* @req.params {shadowMainUserRole} - if control user role is used - role of company admin
-* @req.params {shadowUserId} - if control user role is used - id of company admin
+* @res.locals {company} - current company
+* @res.locals {isControlRole} - is user control role
 * */
 const editStep2 = async (req, res, next) => {
     try {
-        const currentUserId = res.locals.user.id;
-        const currentUserPermissions = res.locals.permissions;
-        const { isControlRole } = res.locals.user;
-        const { shadowUserId } = res.locals;
+        const { isControlRole, company } = res.locals;
         const { body } = req;
-
         const transactionList = [];
-        let companyHeadId;
-        if (isControlRole) {
-            companyHeadId = shadowUserId;
-        } else {
-            companyHeadId = currentUserId;
-            if (!currentUserPermissions.has(PERMISSIONS.EXPECT_COMPANY_EDITING_CONFIRMATION)) {
-                transactionList.push(
-                    UserPermissionsService.addUserPermissionAsTransaction(currentUserId, PERMISSIONS.EXPECT_COMPANY_EDITING_CONFIRMATION)
-                );
-            }
-        }
-
-        const company = await CompaniesService.getCompanyByUserIdStrict(companyHeadId);
 
         const companyData = formatCompanyDataOnStep2(body);
+
+        if (!isControlRole) {
+            companyData[colsCompanies.EDITING_CONFIRMED] = false;
+        }
 
         transactionList.push(
             CompaniesService.updateCompanyAsTransaction(company.id, companyData)
@@ -112,40 +81,25 @@ const editStep2 = async (req, res, next) => {
 };
 
 /*
-* @req.params {user} - current user
-* @req.params {permissions} - current permissions
-* @req.params {isControlRole} - is current user admin or manager
-* @req.params {shadowMainUserRole} - if control user role is used - role of company admin || from injectShadowCompanyHeadByMeOrId
-* @req.params {shadowUserId} - if control user role is used - id of company admin
+* @res.locals {company} - current company
+* @res.locals {isControlRole} - is user control role
 * */
 const editStep3 = async (req, res, next) => {
     try {
-        const currentUserId = res.locals.user.id;
-        const currentUserRole = res.locals.user.role;
-        const currentUserPermissions = res.locals.permissions;
-        const { isControlRole } = res.locals.user;
-        const { shadowMainUserRole, shadowUserId } = res.locals;
+        const { isControlRole, company } = res.locals;
+        const transactionsList = [];
 
-        const transactionList = [];
-        let companyHeadId;
-        let companyHeadRole;
-        if (isControlRole) {
-            companyHeadId = shadowUserId;
-            companyHeadRole = shadowMainUserRole;
-        } else {
-            companyHeadId = currentUserId;
-            companyHeadRole = currentUserRole;
-            if (!currentUserPermissions.has(PERMISSIONS.EXPECT_COMPANY_EDITING_CONFIRMATION)) {
-                transactionList.push(
-                    UserPermissionsService.addUserPermissionAsTransaction(currentUserId, PERMISSIONS.EXPECT_COMPANY_EDITING_CONFIRMATION)
-                );
-            }
+        if (!isControlRole) {
+            const companyData = {
+                [colsCompanies.EDITING_CONFIRMED]: false,
+            };
+            transactionsList.push(
+                CompaniesService.updateCompanyAsTransaction(company.id, companyData)
+            );
         }
 
         res.locals.step3Data = {};
-        res.locals.step3Data.transactionList = transactionList;
-        res.locals.step3Data.companyHeadId = companyHeadId;
-        res.locals.step3Data.companyHeadRole = companyHeadRole;
+        res.locals.step3Data.transactionList = transactionsList;
         res.locals.step3Data.isEditOperation = true;
 
         return next();

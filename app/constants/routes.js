@@ -26,7 +26,6 @@ const BASES = {
     4: '/4',
     5: '/5',
     CONDITIONS_TERMS: '/conditions-terms',
-    ACCOUNT_CONFIRMATIONS: '/account-confirmations',
     INVITES: '/invites',
     MANAGER: '/manager',
     RESEND: '/resend',
@@ -38,6 +37,8 @@ const BASES = {
     FILES: '/files',
     GROUPS: '/groups',
     MANAGEMENT: '/management',
+    COMMON_DATA: '/common-data',
+    APPROVE: '/approve',
 };
 
 const IDS = {
@@ -46,6 +47,7 @@ const IDS = {
     ME: '/:me',
     ME_OR_ID: '/:meOrId',
     FILE_GROUP: '/:fileGroup',
+    COMPANY_ID: '/:companyId',
 };
 
 const ROUTES = {
@@ -153,15 +155,6 @@ const ROUTES = {
         GET: '',
         POST: '',
     },
-    ACCOUNT_CONFIRMATIONS: {
-        BASE: BASES.ACCOUNT_CONFIRMATIONS,
-        USERS: {
-            BASE: BASES.USERS,
-            GET_ALL: '',
-            GET: IDS.USER_ID,
-            POST: IDS.USER_ID,
-        },
-    },
     INVITES: {
         BASE: BASES.INVITES,
         ROLES: {
@@ -195,7 +188,12 @@ const ROUTES = {
     },
     COMPANIES: {
         BASE: BASES.COMPANIES,
+        GET_ALL: '',
         GET: IDS.ME_OR_ID,
+        APPROVE: {
+            BASE: IDS.COMPANY_ID + BASES.APPROVE,
+            POST: '',
+        },
         EMPLOYEES: {
             BASE: IDS.ME_OR_ID + BASES.EMPLOYEES,
             GET_ALL: '',
@@ -211,6 +209,10 @@ const ROUTES = {
                     PUT: '',
                 },
             },
+        },
+        COMMON_DATA: {
+            BASE: IDS.ME_OR_ID + BASES.COMMON_DATA,
+            GET: '',
         },
         LEGAL_DATA: {
             BASE: IDS.ME_OR_ID + BASES.LEGAL_DATA,

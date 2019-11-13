@@ -5,13 +5,14 @@ const { reject } = require('api/response');
 const TokenService = require('services/token');
 const UsersService = require('services/tables/users');
 const PermissionsService = require('services/tables/permissions');
+const CompaniesService = require('services/tables/companies');
 
 // constants
 const { ERRORS } = require('constants/errors');
 const { ALLOWED_ROUTES } = require('constants/routes');
 const { ERROR_CODES } = require('constants/http-codes');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
-const { MAP_COMPANY_OWNERS_TO_MAIN_ROLES, MAP_ROLES_TO_MAIN_ROLE } = require('constants/system');
+const { MAP_ROLES_TO_MAIN_ROLE } = require('constants/system');
 
 // helpers
 const { extractToken, isControlRole } = require('helpers');
@@ -53,7 +54,7 @@ const isAuthenticated = async (req, res) => {
 
             res.locals.user = user;
             res.locals.permissions = new Set(permissions);
-            res.locals.user.isControlRole = isControlRole(user.role);
+            res.locals.isControlRole = isControlRole(user.role);
 
             return req.next();
         } catch (error) {
@@ -95,36 +96,6 @@ const isHasPermissions = (...permissionsParams) => (req, res, next) => {
     }
 };
 
-const injectShadowCompanyHeadByMeOrId = async (req, res, next) => {
-    try {
-        const { role } = res.locals.user;
-        if (isControlRole(role)) {
-            const companyId = req.params.meOrId;
-            if (!isValidUUID(companyId)) {
-                return reject(res, ERRORS.COMPANIES.INVALID_COMPANY_ID);
-            }
-            const headUser = await UsersService.getFirstUserInCompany(companyId);
-            if (!headUser) {
-                return reject(res, ERRORS.COMPANIES.INVALID_COMPANY_ID);
-            }
-
-            const shadowRole = headUser[HOMELESS_COLUMNS.ROLE];
-
-            const mainShadowRole = MAP_COMPANY_OWNERS_TO_MAIN_ROLES[shadowRole];
-
-            if (!mainShadowRole) {
-                return reject(res, ERRORS.SYSTEM.ERROR);
-            }
-
-            res.locals.shadowMainUserRole = mainShadowRole;
-            res.locals.shadowUserId = headUser.id;
-        }
-        next();
-    } catch (error) {
-        next(error);
-    }
-};
-
 const injectTargetRole = async (req, res, next) => {
     try {
         const { userId } = req.params;
@@ -137,9 +108,25 @@ const injectTargetRole = async (req, res, next) => {
     }
 };
 
+const injectCompanyData = async (req, res, next) => {
+    try {
+        const { role } = res.locals.user;
+        if (isControlRole(role)) {
+            const companyId = req.params.meOrId;
+            res.locals.company = await CompaniesService.getCompanyStrict(companyId);
+        } else {
+            const userId = res.locals.user.id;
+            res.locals.company = await CompaniesService.getCompanyByUserId(userId);
+        }
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     isHasPermissions,
     isAuthenticated,
-    injectShadowCompanyHeadByMeOrId,
     injectTargetRole,
+    injectCompanyData,
 };

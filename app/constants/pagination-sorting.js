@@ -1,6 +1,7 @@
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
+const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
 
 const PAGINATION_PARAMS = {
     PAGE: 'page',
@@ -21,6 +22,10 @@ const COMPANY_EMPLOYEES_SORT_COLUMNS = [
     colsUsers.EMAIL, colsUsers.FULL_NAME, colsUsers.CREATED_AT, HOMELESS_COLUMNS.FULL_PHONE_NUMBER, HOMELESS_COLUMNS.ROLE
 ];
 
+const COMPANIES_SORT_COLUMNS = [
+    colsCompanies.NAME, colsCompanies.CREATED_AT
+];
+
 const USERS_SORT_COLUMNS = [
     colsUsers.EMAIL, colsUsers.FULL_NAME, colsUsers.CREATED_AT, HOMELESS_COLUMNS.ROLE
 ];
@@ -31,5 +36,6 @@ module.exports = {
     SORTING_DIRECTIONS,
 
     COMPANY_EMPLOYEES_SORT_COLUMNS,
+    COMPANIES_SORT_COLUMNS,
     USERS_SORT_COLUMNS,
 };

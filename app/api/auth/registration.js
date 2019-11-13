@@ -32,6 +32,7 @@ const { formatPhonePrefixesForResponse } = require('formatters/phone-prefixes');
 const createUser = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
     const colsRoles = SQL_TABLES.ROLES.COLUMNS;
+    const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
     try {
         const { body } = req;
         const phoneNumber = body.phone_number;
@@ -63,6 +64,7 @@ const createUser = async (req, res, next) => {
         const companyId = uuid();
         const companyData = {
             id: companyId,
+            [colsCompanies.HEAD_ROLE_ID]: roleId,
         };
         const userCompanyData = UsersCompaniesFormatters.formatRecordToSave(userId, companyId);
 
@@ -73,7 +75,6 @@ const createUser = async (req, res, next) => {
             PhoneNumbersService.addRecordAsTransaction(formatPhoneNumberToSave(userId, phonePrefixId, phoneNumber)),
             CompaniesService.addCompanyAsTransaction(companyData),
             UsersCompaniesService.addRecordAsTransaction(userCompanyData),
-
         ]);
 
         await MailService.sendConfirmationEmail(email, confirmationHash, role[colsRoles.NAME]);

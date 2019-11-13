@@ -44,9 +44,6 @@ const PERMISSIONS = {
     REGISTRATION_SAVE_STEP_3: 'registration_save_step_3',
     REGISTRATION_SAVE_STEP_4: 'registration_save_step_4',
     REGISTRATION_SAVE_STEP_5: 'registration_save_step_5',
-    ACCEPT_REGISTRATION: 'accept_registration',
-    EXPECT_COMPANY_EDITING_CONFIRMATION: 'expect_company_editing_confirmation',
-    PASS_PRIMARY_CONFIRMATION: 'pass_primary_confirmation',
 
     FREEZE_ADMIN: 'freeze_admin',
     FREEZE_MANAGER: 'freeze_manager',
@@ -78,6 +75,9 @@ const PERMISSIONS = {
 
     MODIFY_CONDITIONS_AND_TERMS: 'modify_conditions_and_terms',
     READ_CONDITIONS_AND_TERMS: 'read_conditions_and_terms',
+
+    READ_COMPANIES: 'read_companies',
+    APPROVE_COMPANY: 'approve_company',
 };
 
 const ARRAY_ROLES_WITHOUT_ADMIN = Object.values(ROLES).filter(role => role !== ROLES.ADMIN);

@@ -26,7 +26,7 @@ const unfreezeUser = async (req, res, next) => {
         const currentUserId = res.locals.user.id;
         const currentUserRole = res.locals.user.role;
         const currentUserPermissions = res.locals.permissions;
-        const isControlRole = res.locals.user.isControlRole;
+        const { isControlRole } = res.locals;
         const { userId } = req.params;
         const user = await UsersService.getUserWithRoleAndFreezingData(userId);
         if (!user) {

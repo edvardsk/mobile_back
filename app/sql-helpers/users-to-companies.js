@@ -34,8 +34,16 @@ const selectRecordByTwoUsersIds = (user1, user2) => squelPostgres
     )
     .toString();
 
+const selectRecordByCompanyIdAndUserId = (companyId, userId) => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where(`${cols.COMPANY_ID} = '${companyId}'`)
+    .where(`${cols.USER_ID} = '${userId}'`)
+    .toString();
+
 module.exports = {
     selectRecordByUserId,
     insertRecord,
     selectRecordByTwoUsersIds,
+    selectRecordByCompanyIdAndUserId,
 };

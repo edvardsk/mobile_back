@@ -23,20 +23,11 @@ const FilesFormatters = require('formatters/files');
 const editEmployeeAdvanced = async (req, res, next) => {
     const colsDrivers = SQL_TABLES.DRIVERS.COLUMNS;
     try {
-        const currentUserId = res.locals.user.id;
-        const { isControlRole } = res.locals.user;
-        const { shadowUserId } = res.locals;
+        const { company } = res.locals;
         const targetUserId = req.params.userId;
         const { files, body } = req;
 
-        let companyHeadId;
-        if (isControlRole) {
-            companyHeadId = shadowUserId;
-        } else {
-            companyHeadId = currentUserId;
-        }
-
-        const isFromOneCompany = await UsersCompaniesService.isUsersFromOneCompany(companyHeadId, targetUserId);
+        const isFromOneCompany = await UsersCompaniesService.hasCompanyUser(company.id, targetUserId);
         if (!isFromOneCompany) {
             return reject(res, ERRORS.COMPANIES.NOT_USER_IN_COMPANY);
         }
@@ -75,7 +66,6 @@ const editEmployeeAdvanced = async (req, res, next) => {
         let filesToStore = [];
         const filesTypes = Object.keys(files);
         if (filesTypes.length) {
-
             const filesToDelete = await FilesService.getFilesByUserIdAndLabels(targetUserId, filesTypes);
 
             const [ids, urls] = FilesFormatters.prepareFilesToDelete(filesToDelete);

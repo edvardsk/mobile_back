@@ -5,7 +5,7 @@ const post = require('./post');
 const postUsers = require('./users/post');
 
 // middlewares
-const { isHasPermissions, injectShadowCompanyHeadByMeOrId } = require('api/middlewares');
+const { isHasPermissions, injectCompanyData } = require('api/middlewares');
 const { validate } = require('api/middlewares/validator');
 const { formDataHandler } = require('api/middlewares/files');
 
@@ -54,7 +54,7 @@ router.post(
     validate(ValidatorSchemes.inviteUserRolesParams, 'params'),
     isHasPermissions(({ params }) => INVITE_USER_MAP_PERMISSIONS[params.role]),
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
-    injectShadowCompanyHeadByMeOrId,
+    injectCompanyData,
     validate(ValidatorSchemes.inviteUser),
     validate(ValidatorSchemes.inviteUserAsync),
     validate(ValidatorSchemes.phoneNumberWithPrefixAsync),
@@ -68,7 +68,7 @@ router.post(
     isHasPermissions(({ params }) => INVITE_USER_ADVANCED_MAP_PERMISSIONS[params.role]),
     formDataHandler(uploadData), // uploading files middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
-    injectShadowCompanyHeadByMeOrId,
+    injectCompanyData,
     validate(({ requestParams }) => INVITE_USER_ADVANCED_MAP_BASIC_SCHEMES[requestParams.role]),
     validate(ValidatorSchemes.inviteUserAsync),
     validate(ValidatorSchemes.phoneNumberWithPrefixAsync),

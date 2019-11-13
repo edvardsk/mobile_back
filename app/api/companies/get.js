@@ -1,42 +1,57 @@
-const { success, reject } = require('api/response');
+const { get } = require('lodash');
+const { success } = require('api/response');
 
 // services
 const CompaniesService = require('services/tables/companies');
 
-// formatters
-const {
-    formatCompanyToResponse,
-} = require('formatters/companies');
-
 // constants
-const { ERRORS } = require('constants/errors');
+const { SQL_TABLES } = require('constants/tables');
+const { SORTING_DIRECTIONS } = require('constants/pagination-sorting');
 
-const geCommonData = async (req, res, next) => {
+// formatters
+const { formatPaginationDataForResponse } = require('formatters/pagination-sorting');
+const { formatCompanyToResponse } = require('formatters/companies');
+
+// helpers
+const { getParams } = require('helpers/pagination-sorting');
+
+const companiesPaginationOptions = {
+    DEFAULT_LIMIT: 5,
+    DEFAULT_SORT_COLUMN: SQL_TABLES.COMPANIES.COLUMNS.CREATED_AT,
+    DEFAULT_SORT_DIRECTION: SORTING_DIRECTIONS.ASC,
+};
+
+const getListCompanies = async (req, res, next) => {
     try {
-        const currentUserId = res.locals.user.id;
-        const { isControlRole } = res.locals.user;
-        const { shadowUserId } = res.locals;
+        const {
+            page,
+            limit,
+            sortColumn,
+            asc,
+        } = getParams(req, companiesPaginationOptions);
 
-        let companyHeadId;
-        if (isControlRole) {
-            companyHeadId = shadowUserId;
-        } else {
-            companyHeadId = currentUserId;
-        }
+        const filter = get(req, 'query.filter', {});
 
-        const company = await CompaniesService.getCompanyByUserId(companyHeadId);
-        if (!company) {
-            return reject(res, ERRORS.COMPANIES.INVALID_COMPANY_ID);
-        }
+        const [users, usersCount] = await Promise.all([
+            CompaniesService.getCompaniesPaginationSorting(limit, limit * page, sortColumn, asc, filter),
+            CompaniesService.getCountCompanies(filter)
+        ]);
 
-        const formattedCompany = formatCompanyToResponse(company);
+        const result = formatPaginationDataForResponse(
+            users.map(user => formatCompanyToResponse(user)),
+            usersCount,
+            limit,
+            page,
+            sortColumn,
+            asc
+        );
 
-        return success(res, { company: formattedCompany });
+        return success(res, result);
     } catch (error) {
         next(error);
     }
 };
 
 module.exports = {
-    geCommonData,
+    getListCompanies,
 };
