@@ -247,6 +247,7 @@ const ROUTES = {
         CARGOS: {
             BASE: IDS.ME_OR_ID + BASES.CARGOS,
             POST: '',
+            GET_ALL: '',
         },
     },
 

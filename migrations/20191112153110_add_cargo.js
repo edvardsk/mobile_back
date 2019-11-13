@@ -77,6 +77,20 @@ const VEHICLE_TYPES = [
     name
 }));
 
+const CARGO_STATUSES = [
+    'new',
+    'await_confirmation',
+    'confirmed',
+    'matching',
+    'agreed',
+    'in_road',
+    'delivered',
+    'cancelled',
+    'problem',
+].map(name => ({
+    name
+}));
+
 exports.up = function(knex) {
     return knex.schema.createTable('danger_classes', function(table) {
         table.uuid('id').defaultTo(knex.raw('uuid_generate_v4()')).primary().unique();
@@ -101,9 +115,17 @@ exports.up = function(knex) {
             });
         })
         .then(function () {
+            return knex.schema.createTable('cargo_statuses', function(table) {
+                table.uuid('id').defaultTo(knex.raw('uuid_generate_v4()')).primary().unique();
+                table.string('name', 50).notNull().unique();
+                table.timestamp('created_at').defaultTo(knex.fn.now());
+            });
+        })
+        .then(function () {
             return knex.schema.createTable('cargos', function(table) {
                 table.uuid('id').defaultTo(knex.raw('uuid_generate_v4()')).primary().unique();
                 table.uuid('company_id').references('companies.id').notNull();
+                table.uuid('status_id').references('cargo_statuses.id').notNull();
                 table.timestamp('uploading_date_from').notNull();
                 table.timestamp('uploading_date_to');
                 table.timestamp('downloading_date_from').notNull();
@@ -136,6 +158,9 @@ exports.up = function(knex) {
         })
         .then(function () {
             return  knex.batchInsert('vehicle_types', VEHICLE_TYPES);
+        })
+        .then(function () {
+            return  knex.batchInsert('cargo_statuses', CARGO_STATUSES);
         });
 };
 
@@ -149,5 +174,8 @@ exports.down = function(knex) {
         })
         .then(function () {
             return knex.schema.dropTable('danger_classes');
+        })
+        .then(function () {
+            return knex.schema.dropTable('cargo_statuses');
         });
 };

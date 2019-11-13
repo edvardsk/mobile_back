@@ -4,12 +4,14 @@ const { success, reject } = require('api/response');
 // services
 const CargosServices = require('services/tables/cargos');
 const CargoPointsService = require('services/tables/cargo-points');
+const CargoStatusesService = require('services/tables/cargo-statuses');
 const TablesService = require('services/tables');
 
 // constants
 const { SUCCESS_CODES } = require('constants/http-codes');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
+const { CARGO_STATUSES_MAP } = require('constants/cargo-statuses');
 
 // formatters
 const CargosFormatters = require('formatters/cargos');
@@ -66,7 +68,10 @@ const createCargo = async (req, res, next) => {
 
         const cargoId = uuid();
 
-        const cargo = CargosFormatters.formatRecordToSave(companyId, cargoId, cargosProps);
+        const cargoStatusRecord = await CargoStatusesService.getRecordByName(CARGO_STATUSES_MAP.NEW);
+        const statusId = cargoStatusRecord.id;
+
+        const cargo = CargosFormatters.formatRecordToSave(companyId, cargoId, statusId, cargosProps);
         const cargoPoints = CargoPointsFormatters.formatRecordsToSave(cargoId, cargoPointsProps);
 
         const transactionList = [

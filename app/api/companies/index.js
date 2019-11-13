@@ -15,6 +15,7 @@ const getSteps = require('./steps/get');
 const postApprove = require('./approve/post');
 
 const postCargo = require('./cargos/post');
+const getCargo = require('./cargos/get');
 
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
@@ -266,6 +267,14 @@ router.post(
     validate(ValidatorSchemes.createCargo),
     validate(ValidatorSchemes.createCargoAsync),
     postCargo.createCargo,
+);
+
+router.get(
+    ROUTES.COMPANIES.CARGOS.BASE + ROUTES.COMPANIES.CARGOS.GET_ALL,
+    isHasPermissions([PERMISSIONS.CRUD_CARGO]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    getCargo.getCargos,
 );
 
 module.exports = router;
