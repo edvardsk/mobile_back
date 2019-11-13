@@ -1,8 +1,8 @@
 const Ajv = require('ajv');
 const { get } = require('lodash');
 const { reject } = require('api/response');
-const ajv = new Ajv({ allErrors: true, jsonPointers: true });
-require('ajv-keywords')(ajv, 'instanceof');
+const ajv = new Ajv({ allErrors: true, jsonPointers: true, $data: true });
+require('ajv-keywords')(ajv);
 require('ajv-errors')(ajv);
 const fileType = require('file-type');
 
@@ -13,6 +13,8 @@ const PhoneNumbersService = require('services/tables/phone-numbers');
 const CountriesService = require('services/tables/countries');
 const CompaniesService = require('services/tables/companies');
 const RolesService = require('services/tables/roles');
+const DangerClassesService = require('services/tables/danger-classes');
+const VehicleClassesService = require('services/tables/vehicle-types');
 
 // constants
 const { ERRORS } = require('constants/errors');
@@ -123,10 +125,16 @@ ajv.addKeyword('company_with_id_not_exist', {
     validate: CompaniesService.checkCompanyWithIdExists,
 });
 
-const dateTimeRegex = new RegExp('\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d+([+-][0-2]\\d:[0-5]\\d|Z)');
+ajv.addKeyword('danger_class_not_exist', {
+    async: true,
+    type: 'string',
+    validate: DangerClassesService.checkRecordExists,
+});
 
-ajv.addFormat('date-time', {
-    validate: (dateTimeString) => dateTimeRegex.test(dateTimeString)
+ajv.addKeyword('vehicle_type_not_exist', {
+    async: true,
+    type: 'string',
+    validate: VehicleClassesService.checkRecordExists,
 });
 
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {
@@ -143,6 +151,7 @@ const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next)
                 companyHeadRole: get(res, `locals.company.${HOMELESS_COLUMNS.HEAD_ROLE_NAME}`),
                 requestParams: req.params,
                 targetRole: res.locals.targetRole,
+                company: res.locals.company,
             };
             scheme = schemeOrGetter(params);
             if (!scheme) {

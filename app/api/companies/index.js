@@ -186,8 +186,8 @@ router.post(
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
     validate(({ companyHeadRole }) => CREATE_OR_MODIFY_STEP_1_TEXT_MAP_SCHEMES[companyHeadRole]),
-    validate(({ companyId, companyHeadRole }) => (
-        CREATE_OR_MODIFY_STEP_1_TEXT_MAP_SCHEMES_ASYNC[companyHeadRole](companyId)
+    validate(({ company, companyHeadRole }) => (
+        CREATE_OR_MODIFY_STEP_1_TEXT_MAP_SCHEMES_ASYNC[companyHeadRole]({ companyId: company.id })
     )),
     postSteps.editStep1,
 );
@@ -198,8 +198,8 @@ router.post(
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
     validate(({ companyHeadRole }) => CREATE_OR_MODIFY_STEP_2_TEXT_MAP_SCHEMES[companyHeadRole]),
-    validate(({ companyId, companyHeadRole }) => (
-        CREATE_OR_MODIFY_STEP_2_TEXT_MAP_SCHEMES_ASYNC[companyHeadRole](companyId)
+    validate(({ company, companyHeadRole }) => (
+        CREATE_OR_MODIFY_STEP_2_TEXT_MAP_SCHEMES_ASYNC[companyHeadRole]({ companyId: company.id })
     )),
     validate(ValidatorSchemes.settlementAccountAsync),
     postSteps.editStep2,
@@ -213,8 +213,8 @@ router.post(
     formDataHandler(uploadData), // uploading files middleware
     validate(ValidatorSchemes.modifyOtherOrganizations),
     validate(({ companyHeadRole }) => CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES[companyHeadRole]),
-    validate(({ companyId, companyHeadRole }) => (
-        CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES_ASYNC[companyHeadRole](companyId)
+    validate(({ company, companyHeadRole }) => (
+        CREATE_OR_MODIFY_STEP_3_TEXT_MAP_SCHEMES_ASYNC[companyHeadRole]({ companyId: company.id })
     )),
     validate(ValidatorSchemes.notRequiredFiles, 'files'),
     postSteps.editStep3,
@@ -264,6 +264,7 @@ router.post(
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
     validate(ValidatorSchemes.createCargo),
+    validate(ValidatorSchemes.createCargoAsync),
     postCargo.createCargo,
 );
 

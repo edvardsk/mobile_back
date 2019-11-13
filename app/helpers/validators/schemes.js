@@ -259,7 +259,7 @@ const finishRegistrationStep1Transporter = {
     additionalProperties: false,
 };
 
-const finishRegistrationStep1TransporterAsyncFunc = userId => ({
+const finishRegistrationStep1TransporterAsyncFunc = ({ userId, companyId }) => ({
     $async: true,
     properties: {
         [colsCompanies.COUNTRY_ID]: {
@@ -268,11 +268,13 @@ const finishRegistrationStep1TransporterAsyncFunc = userId => ({
         [colsCompanies.IDENTITY_NUMBER]: {
             company_with_identity_number_exists: {
                 userId,
+                companyId,
             },
         },
         [colsCompanies.NAME]: {
             company_with_name_exists: {
                 userId,
+                companyId,
             },
         },
     },
@@ -318,7 +320,7 @@ const finishRegistrationStep1Holder = {
     additionalProperties: false,
 };
 
-const finishRegistrationStep1HolderAsyncFunc = userId => ({
+const finishRegistrationStep1HolderAsyncFunc = ({ userId, companyId }) => ({
     $async: true,
     properties: {
         [colsCompanies.COUNTRY_ID]: {
@@ -327,11 +329,13 @@ const finishRegistrationStep1HolderAsyncFunc = userId => ({
         [colsCompanies.IDENTITY_NUMBER]: {
             company_with_identity_number_exists: {
                 userId,
+                companyId,
             },
         },
         [colsCompanies.NAME]: {
             company_with_name_exists: {
                 userId,
+                companyId,
             },
         },
     },
@@ -361,7 +365,7 @@ const finishRegistrationStep1IndividualForwarder = {
     additionalProperties: false,
 };
 
-const finishRegistrationStep1IndividualForwarderAsyncFunc = userId => ({
+const finishRegistrationStep1IndividualForwarderAsyncFunc = ({ userId, companyId }) => ({
     $async: true,
     properties: {
         [colsCompanies.COUNTRY_ID]: {
@@ -370,6 +374,7 @@ const finishRegistrationStep1IndividualForwarderAsyncFunc = userId => ({
         [colsCompanies.IDENTITY_NUMBER]: {
             company_with_identity_number_exists: {
                 userId,
+                companyId,
             },
         },
     },
@@ -410,7 +415,7 @@ const finishRegistrationStep1SoleProprietorForwarder = {
     additionalProperties: false,
 };
 
-const finishRegistrationStep1SoleProprietorForwarderAsyncFunc = userId => ({
+const finishRegistrationStep1SoleProprietorForwarderAsyncFunc = ({ userId, companyId }) => ({
     $async: true,
     properties: {
         [colsCompanies.COUNTRY_ID]: {
@@ -419,6 +424,7 @@ const finishRegistrationStep1SoleProprietorForwarderAsyncFunc = userId => ({
         [colsCompanies.IDENTITY_NUMBER]: {
             company_with_identity_number_exists: {
                 userId,
+                companyId,
             },
         },
     },
@@ -489,12 +495,13 @@ const finishRegistrationStep2Transporter = {
     additionalProperties: false,
 };
 
-const finishRegistrationStep2TransporterAsyncFunc = userId => ({
+const finishRegistrationStep2TransporterAsyncFunc = ({ userId, companyId }) => ({
     $async: true,
     properties: {
         [colsCompanies.SETTLEMENT_ACCOUNT]: {
             company_with_settlement_account_exists: {
                 userId,
+                companyId,
             },
         },
         [colsCompanies.BANK_COUNTRY_ID]: {
@@ -568,12 +575,13 @@ const finishRegistrationStep2Holder = {
     additionalProperties: false,
 };
 
-const finishRegistrationStep2HolderAsyncFunc = userId => ({
+const finishRegistrationStep2HolderAsyncFunc = ({ userId, companyId }) => ({
     $async: true,
     properties: {
         [colsCompanies.SETTLEMENT_ACCOUNT]: {
             company_with_settlement_account_exists: {
                 userId,
+                companyId,
             },
         },
         [colsCompanies.BANK_COUNTRY_ID]: {
@@ -637,12 +645,13 @@ const finishRegistrationStep2SoleProprietorForwarder = {
     additionalProperties: false,
 };
 
-const finishRegistrationStep2SoleProprietorForwarderAsyncFunc = userId => ({
+const finishRegistrationStep2SoleProprietorForwarderAsyncFunc = ({ userId, companyId }) => ({
     $async: true,
     properties: {
         [colsCompanies.SETTLEMENT_ACCOUNT]: {
             company_with_settlement_account_exists: {
                 userId,
+                companyId,
             },
         },
         [colsCompanies.BANK_COUNTRY_ID]: {
@@ -731,11 +740,12 @@ const finishRegistrationStep3Transporter = {
     additionalProperties: false,
 };
 
-const finishRegistrationStep3TransporterAsyncFunc = userId => ({
+const finishRegistrationStep3TransporterAsyncFunc = ({ companyId, userId }) => ({
     $async: true,
     properties: {
         [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: {
             state_registration_certificate_number_exists: {
+                companyId,
                 userId,
             },
         },
@@ -784,11 +794,12 @@ const finishRegistrationStep3Holder = {
     additionalProperties: false,
 };
 
-const finishRegistrationStep3HolderAsyncFunc = userId => ({
+const finishRegistrationStep3HolderAsyncFunc = ({ companyId, userId }) => ({
     $async: true,
     properties: {
         [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: {
             state_registration_certificate_number_exists: {
+                companyId,
                 userId,
             },
         },
@@ -832,11 +843,12 @@ const finishRegistrationStep3IndividualForwarder = {
     additionalProperties: false,
 };
 
-const finishRegistrationStep3IndividualForwarderAsyncFunc = userId => ({
+const finishRegistrationStep3IndividualForwarderAsyncFunc = ({ companyId, userId }) => ({
     $async: true,
     properties: {
         [colsUsers.PASSPORT_NUMBER]: {
             passport_number_exists: {
+                companyId,
                 userId,
             },
         },
@@ -889,16 +901,18 @@ const finishRegistrationStep3SoleProprietorForwarder = {
     additionalProperties: false,
 };
 
-const finishRegistrationStep3SoleProprietorForwarderAsyncFunc = userId => ({
+const finishRegistrationStep3SoleProprietorForwarderAsyncFunc = ({ companyId, userId }) => ({
     $async: true,
     properties: {
         [colsCompanies.STATE_REGISTRATION_CERTIFICATE_NUMBER]: {
             state_registration_certificate_number_exists: {
+                companyId,
                 userId,
             },
         },
         [colsUsers.PASSPORT_NUMBER]: {
             passport_number_exists: {
+                companyId,
                 userId,
             },
         },
@@ -1121,6 +1135,9 @@ const createCargo = {
         [colsCargos.UPLOADING_DATE_TO]: {
             type: 'string',
             format: 'date-time',
+            formatMinimum: {
+                '$data': `1/${colsCargos.UPLOADING_DATE_FROM}`,
+            },
         },
         [colsCargos.DOWNLOADING_DATE_FROM]: {
             type: 'string',
@@ -1191,6 +1208,19 @@ const createCargo = {
         colsCargos.VEHICLE_TYPE_ID,
     ],
     additionalProperties: false,
+};
+
+const createCargoAsync = {
+    $async: true,
+    properties: {
+        [colsCargos.DANGER_CLASS_ID]: {
+            danger_class_not_exist: {},
+        },
+        [colsCargos.VEHICLE_TYPE_ID]: {
+            vehicle_type_not_exist: {},
+        },
+    },
+    additionalProperties: true,
 };
 
 const inviteUserRolesParams = {
@@ -1477,6 +1507,7 @@ module.exports = {
     requiredEmailAsync,
 
     createCargo,
+    createCargoAsync,
 
     modifyOtherOrganizations,
     inviteUserRolesParams,

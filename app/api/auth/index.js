@@ -183,7 +183,7 @@ router.post(
     ROUTES.AUTH.FINISH_REGISTRATION.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['1'].BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['1'].POST,
     isHasPermissions(FINISH_REGISTRATION_STEP1_PERMISSIONS), // permissions middleware
     validate(({ role }) => FINISH_REGISTRATION_STEP_1_TEXT_MAP_SCHEMES[role]),
-    validate(({ role, userId }) => FINISH_REGISTRATION_STEP_1_TEXT_MAP_SCHEMES_ASYNC[role](userId)),
+    validate(({ role, userId }) => FINISH_REGISTRATION_STEP_1_TEXT_MAP_SCHEMES_ASYNC[role]({ userId })),
     finishRegistration.finishRegistrationStep1,
 );
 
@@ -191,7 +191,7 @@ router.post(
     ROUTES.AUTH.FINISH_REGISTRATION.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS.BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['2'].BASE + ROUTES.AUTH.FINISH_REGISTRATION.STEPS['2'].POST,
     isHasPermissions(FINISH_REGISTRATION_STEP2_PERMISSIONS), // permissions middleware
     validate(({ role }) => FINISH_REGISTRATION_STEP_2_TEXT_MAP_SCHEMES[role]),
-    validate(({ role, userId }) => FINISH_REGISTRATION_STEP_2_TEXT_MAP_SCHEMES_ASYNC[role](userId)),
+    validate(({ role, userId }) => FINISH_REGISTRATION_STEP_2_TEXT_MAP_SCHEMES_ASYNC[role]({ userId })),
     validate(ValidatorSchemes.settlementAccountAsync),
     finishRegistration.finishRegistrationStep2,
 );
@@ -202,7 +202,7 @@ router.post(
     formDataHandler(uploadData), // uploading files middleware
     validate(ValidatorSchemes.modifyOtherOrganizations),
     validate(({ role }) => FINISH_REGISTRATION_STEP_3_TEXT_MAP_SCHEMES[role]),
-    validate(({ role, userId }) => FINISH_REGISTRATION_STEP_3_TEXT_MAP_SCHEMES_ASYNC[role](userId)),
+    validate(({ role, userId }) => FINISH_REGISTRATION_STEP_3_TEXT_MAP_SCHEMES_ASYNC[role]({ userId })),
     validate(({ role }) => FINISH_REGISTRATION_STEP_3_FILES_MAP_SCHEMES[role], 'files'),
     injectCompanyData,
     finishRegistration.finishRegistrationStep3,

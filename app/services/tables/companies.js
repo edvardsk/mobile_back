@@ -63,8 +63,8 @@ const getCountCompanies = (filter) => (
 
 const checkCompanyWithSettlementAccountExistsOpposite = async (meta, account) => {
     const company = await getCompanyBySettlementAccountWithFirstOwner(account);
-    const { userId } = meta;
-    return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId;
+    const { userId, companyId } = meta;
+    return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId || company.id === companyId;
 };
 
 const checkCompanyWithIdentityNumberExistsOpposite = async (meta, number) => {
@@ -75,14 +75,14 @@ const checkCompanyWithIdentityNumberExistsOpposite = async (meta, number) => {
 
 const checkCompanyWithNameExistsOpposite = async (meta, name) => {
     const company = await getCompanyByNameWithFirstOwner(name);
-    const { userId } = meta;
-    return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId;
+    const { userId, companyId } = meta;
+    return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId || company.id === companyId;
 };
 
 const checkCompanyWithStateRegistrationCertificateNumberExistsOpposite = async (meta, number) => {
     const company = await getCompanyByStateRegistrationCertificateNumberWithFirstOwner(number);
-    const { userId } = meta;
-    return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId;
+    const { userId, companyId } = meta;
+    return !company || company[HOMELESS_COLUMNS.OWNER_ID] === userId || company.id === companyId;
 };
 
 const checkCompanyWithIdExists = async (meta, companyId) => {

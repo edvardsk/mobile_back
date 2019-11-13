@@ -118,7 +118,7 @@ const createOrUpdateDataOnStep3 = async (req, res, next) => {
         );
 
         if (!isEmpty(usersProps)) {
-            const user = UsersService.getFirstUserInCompanyStrict(company.id);
+            const user = await UsersService.getFirstUserInCompanyStrict(company.id);
             transactionList.push(UsersService.updateUserAsTransaction(user.id, usersProps));
         }
 
