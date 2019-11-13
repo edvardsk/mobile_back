@@ -42,6 +42,7 @@ const BASES = {
     CARGOS: '/cargos',
     OTHERS: '/others',
     CARGO_STATUSES: '/cargo-statuses',
+    VEHICLE_TYPES: '/vehicle-types',
 };
 
 const IDS = {
@@ -256,6 +257,10 @@ const ROUTES = {
         BASE: BASES.OTHERS,
         CARGO_STATUSES: {
             BASE: BASES.CARGO_STATUSES,
+            GET: '',
+        },
+        VEHICLE_TYPES: {
+            BASE: BASES.VEHICLE_TYPES,
             GET: '',
         },
     },
