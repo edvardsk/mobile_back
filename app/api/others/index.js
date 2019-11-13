@@ -32,7 +32,7 @@ router.get(
 );
 
 
-// vehicle types
+// danger classes
 router.get(
     ROUTES.OTHERS.DANGER_CLASSES.BASE + ROUTES.OTHERS.DANGER_CLASSES.GET,
     isHasPermissions([PERMISSIONS.CRUD_CARGO]),
