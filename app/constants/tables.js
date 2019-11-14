@@ -268,6 +268,16 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    ECONOMIC_SETTINGS: {
+        NAME: 'economic_settings',
+        COLUMNS: {
+            COMPANY_ID: 'company_id',
+            PERCENT_FROM_TRANSPORTER: 'percent_from_transporter',
+            PERCENT_FROM_HOLDER: 'percent_from_holder',
+            PERCENT_TO_FORWARDER: 'percent_to_forwarder',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {

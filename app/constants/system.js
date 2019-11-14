@@ -80,6 +80,10 @@ const PERMISSIONS = {
 
     READ_COMPANIES: 'read_companies',
     APPROVE_COMPANY: 'approve_company',
+
+    EDIT_DEFAULT_ECONOMIC_SETTINGS: 'edit_default_economic_settings',
+    READ_DEFAULT_ECONOMIC_SETTINGS: 'read_default_economic_settings',
+    CRUD_COMPANIES_ECONOMIC_SETTINGS: 'crud_companies_economic_settings',
 };
 
 const ARRAY_ROLES_WITHOUT_ADMIN = Object.values(ROLES).filter(role => role !== ROLES.ADMIN);

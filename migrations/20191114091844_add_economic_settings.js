@@ -12,6 +12,7 @@ exports.up = function(knex) {
         table.decimal('percent_from_transporter', 4, 2).notNull();
         table.decimal('percent_from_holder', 4, 2).notNull();
         table.decimal('percent_to_forwarder', 4, 2).notNull();
+        table.timestamp('created_at').defaultTo(knex.fn.now());
     })
         .then(function () {
             return Promise.all([
