@@ -12,6 +12,7 @@ const formatRecordToSave = (userId, body) => ({
 const formatDriversWithPhoneAndRole = data => ({
     id: data.id,
     [colsUsers.FULL_NAME]: data[colsUsers.FULL_NAME],
+    [colsUsers.EMAIL]: data[colsUsers.EMAIL],
     [HOMELESS_COLUMNS.ROLE]: data[HOMELESS_COLUMNS.ROLE],
     [HOMELESS_COLUMNS.FULL_PHONE_NUMBER]: data[HOMELESS_COLUMNS.FULL_PHONE_NUMBER],
     [cols.DRIVER_LICENCE_REGISTERED_AT]: data[cols.DRIVER_LICENCE_REGISTERED_AT],
