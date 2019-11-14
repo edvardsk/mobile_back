@@ -43,7 +43,8 @@ const getListCompanies = async (req, res, next) => {
             limit,
             page,
             sortColumn,
-            asc
+            asc,
+            filter
         );
 
         return success(res, result);

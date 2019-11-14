@@ -248,6 +248,7 @@ const SQL_TABLES = {
             VEHICLE_TYPE_ID: 'vehicle_type_id',
             PACKING_DESCRIPTION: 'packing_description',
             DESCRIPTION: 'description',
+            FREEZED_AFTER: 'freezed_after',
             CREATED_AT: 'created_at',
         },
     },
@@ -291,6 +292,8 @@ const HOMELESS_COLUMNS = {
     UPLOADING_POINTS: 'uploading_points',
     DOWNLOADING_POINTS: 'downloading_points',
     STATUS: 'status',
+    DANGER_CLASS_NAME: 'danger_class_name',
+    VEHICLE_TYPE_NAME: 'vehicle_type_name',
 };
 
 module.exports = {

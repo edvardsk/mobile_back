@@ -110,6 +110,17 @@ const requiredExistingCompanyWithIdAsync = {
     },
 };
 
+const requiredExistingCargoInCompanyAsyncFunc = ({ companyId }) => ({
+    $async: true,
+    properties: {
+        cargoId: {
+            cargo_in_company_not_exist: {
+                companyId,
+            },
+        },
+    },
+});
+
 const otherOrganizations = {
     type: 'array',
     items: [
@@ -1133,7 +1144,7 @@ const inviteUserAdvancedFiles = {
     required: [DOCUMENTS.PASSPORT, DOCUMENTS.DRIVER_LICENSE],
 };
 
-const createCargo = {
+const createOrEditCargo = {
     properties: {
         [colsCargos.UPLOADING_DATE_FROM]: {
             type: 'string',
@@ -1241,7 +1252,7 @@ const createCargo = {
     additionalProperties: false,
 };
 
-const createCargoAsync = {
+const createOrEditCargoAsync = {
     $async: true,
     properties: {
         [colsCargos.DANGER_CLASS_ID]: {
@@ -1501,6 +1512,7 @@ module.exports = {
     requiredUserId,
     requiredExistingUserWithIdAsync,
     requiredExistingCompanyWithIdAsync,
+    requiredExistingCargoInCompanyAsyncFunc,
 
     registration,
     registrationAsync,
@@ -1557,8 +1569,8 @@ module.exports = {
     requiredEmail,
     requiredEmailAsync,
 
-    createCargo,
-    createCargoAsync,
+    createOrEditCargo,
+    createOrEditCargoAsync,
 
     modifyOtherOrganizations,
     inviteUserRolesParams,
