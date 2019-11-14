@@ -17,8 +17,8 @@ exports.up = function(knex) {
         .then(function () {
             return Promise.all([
                 knex.raw('CREATE UNIQUE INDEX company_id_index ON economic_settings ((company_id IS NULL)) WHERE company_id IS NULL;'),
-                knex.raw('ALTER TABLE economic_settings ADD CONSTRAINT percent_from_transporter_check CHECK (percent_from_transporter >= 0 AND percent_from_transporter <= 100)'),
-                knex.raw('ALTER TABLE economic_settings ADD CONSTRAINT percent_from_holder_check CHECK (percent_from_holder >= 0 AND percent_from_holder <= 100)'),
+                knex.raw('ALTER TABLE economic_settings ADD CONSTRAINT percent_from_transporter_check CHECK (percent_from_transporter >= 0 AND percent_from_transporter < 100)'),
+                knex.raw('ALTER TABLE economic_settings ADD CONSTRAINT percent_from_holder_check CHECK (percent_from_holder >= 0 AND percent_from_holder < 100)'),
                 knex.raw('ALTER TABLE economic_settings ADD CONSTRAINT percent_to_forwarder_check CHECK (percent_to_forwarder >= 0 AND percent_to_forwarder <= 100)'),
                 knex.raw('ALTER TABLE economic_settings ADD CONSTRAINT percent_sum CHECK (percent_from_transporter + percent_from_holder < 100)'),
             ]);

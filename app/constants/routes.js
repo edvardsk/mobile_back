@@ -283,6 +283,7 @@ const ROUTES = {
             DEFAULT: {
                 BASE: BASES.DEFAULT,
                 GET: '',
+                PUT: '',
             },
         },
     },

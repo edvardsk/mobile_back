@@ -26,6 +26,7 @@ const colsOtherOrganizations = SQL_TABLES.OTHER_ORGANIZATIONS.COLUMNS;
 const colsRoutes = SQL_TABLES.ROUTES.COLUMNS;
 const colsDrivers = SQL_TABLES.DRIVERS.COLUMNS;
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
+const colsEconomicSettings = SQL_TABLES.ECONOMIC_SETTINGS.COLUMNS;
 
 const DIGITS_VALIDATION_PATTERN = '^\\d+$';
 const PASSWORD_VALIDATION_PATTERN = '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$';
@@ -1265,6 +1266,32 @@ const createOrEditCargoAsync = {
     additionalProperties: true,
 };
 
+const createOrEditEconomicSettings = {
+    properties: {
+        [colsEconomicSettings.PERCENT_FROM_TRANSPORTER]: {
+            type: 'number',
+            minimum: 0,
+            exclusiveMaximum: 100,
+        },
+        [colsEconomicSettings.PERCENT_TO_FORWARDER]: {
+            type: 'number',
+            minimum: 0,
+            exclusiveMaximum: 100,
+        },
+        [colsEconomicSettings.PERCENT_FROM_HOLDER]: {
+            type: 'number',
+            minimum: 0,
+            maximum: 100,
+        },
+    },
+    required: [
+        colsEconomicSettings.PERCENT_FROM_TRANSPORTER,
+        colsEconomicSettings.PERCENT_TO_FORWARDER,
+        colsEconomicSettings.PERCENT_FROM_HOLDER,
+    ],
+    additionalProperties: true,
+};
+
 const inviteUserRolesParams = {
     properties: {
         role: {
@@ -1571,6 +1598,8 @@ module.exports = {
 
     createOrEditCargo,
     createOrEditCargoAsync,
+
+    createOrEditEconomicSettings,
 
     modifyOtherOrganizations,
     inviteUserRolesParams,
