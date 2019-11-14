@@ -16,6 +16,7 @@ const RolesService = require('services/tables/roles');
 const DangerClassesService = require('services/tables/danger-classes');
 const VehicleClassesService = require('services/tables/vehicle-types');
 const CargosService = require('services/tables/cargos');
+const EconomicSettingsService = require('services/tables/economic-settings');
 
 // constants
 const { ERRORS } = require('constants/errors');
@@ -130,6 +131,12 @@ ajv.addKeyword('cargo_in_company_not_exist', {
     async: true,
     type: 'string',
     validate: CargosService.checkCargoInCompanyExists,
+});
+
+ajv.addKeyword('company_economic_settings_exists', {
+    async: true,
+    type: 'string',
+    validate: EconomicSettingsService.checkEconomicSettingsExistsOpposite,
 });
 
 ajv.addKeyword('parse_string_to_json', {

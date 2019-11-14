@@ -285,6 +285,10 @@ const ROUTES = {
                 GET: '',
                 PUT: '',
             },
+            COMPANIES: {
+                BASE: BASES.COMPANIES,
+                POST: IDS.COMPANY_ID,
+            },
         },
     },
 };

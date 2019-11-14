@@ -10,6 +10,12 @@ const formatDefaultEconomicSettingsForResponse = data => ({
     [cols.PERCENT_TO_FORWARDER]: parseFloat(data[cols.PERCENT_TO_FORWARDER]),
 });
 
+const formatEconomicSettingsToSave = (companyId, data) => ({
+    ...data,
+    [cols.COMPANY_ID]: companyId,
+});
+
 module.exports = {
     formatDefaultEconomicSettingsForResponse,
+    formatEconomicSettingsToSave,
 };

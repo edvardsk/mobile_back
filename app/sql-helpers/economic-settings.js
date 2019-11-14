@@ -7,6 +7,13 @@ const table = SQL_TABLES.ECONOMIC_SETTINGS;
 
 const cols = table.COLUMNS;
 
+const insertRecord = values => squelPostgres
+    .insert()
+    .into(table.NAME)
+    .setFields(values)
+    .returning('*')
+    .toString();
+
 const updateRecordWithNullCompanyId = values => squelPostgres
     .update()
     .table(table.NAME)
@@ -21,7 +28,15 @@ const selectRecordWithNullCompanyId = () => squelPostgres
     .where(`${cols.COMPANY_ID} IS NULL`)
     .toString();
 
+const selectRecordByCompanyId = companyId => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where(`${cols.COMPANY_ID} = '${companyId}'`)
+    .toString();
+
 module.exports = {
+    insertRecord,
     updateRecordWithNullCompanyId,
     selectRecordWithNullCompanyId,
+    selectRecordByCompanyId,
 };

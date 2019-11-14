@@ -4,6 +4,8 @@ const { ROUTES } = require('constants/routes');
 const getEconomicDefault = require('./economics/default/get');
 const putEconomicDefault = require('./economics/default/put');
 
+const postEconomicCompanies = require('./economics/companies/post');
+
 // middlewares
 const { isHasPermissions } = require('api/middlewares');
 const { validate, validateEconomicPercentsSum } = require('api/middlewares/validator');
@@ -30,6 +32,18 @@ router.put(
     validate(ValidatorSchemes.createOrEditEconomicSettings),
     validateEconomicPercentsSum,
     putEconomicDefault.editDefaultEconomicSettings,
+);
+
+
+// companies
+router.post(
+    ROUTES.SETTINGS.ECONOMICS.BASE + ROUTES.SETTINGS.ECONOMICS.COMPANIES.BASE + ROUTES.SETTINGS.ECONOMICS.COMPANIES.POST,
+    isHasPermissions([PERMISSIONS.CRUD_COMPANIES_ECONOMIC_SETTINGS]),
+    validate(ValidatorSchemes.createOrEditEconomicSettings),
+    validate(ValidatorSchemes.requiredCompanyIdParams, 'params'),
+    validate(ValidatorSchemes.requiredExistingCompanyWithIdAsync, 'params'),
+    validate(ValidatorSchemes.createCompanyEconomicSettingsParamsAsync, 'params'),
+    postEconomicCompanies.createCompanyEconomicSettings,
 );
 
 module.exports = router;
