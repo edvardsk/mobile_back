@@ -52,7 +52,8 @@ const getListEmployees = async (req, res, next) => {
             limit,
             page,
             sortColumn,
-            asc
+            asc,
+            filter
         );
 
         return success(res, result);
@@ -91,7 +92,8 @@ const getListDrivers = async (req, res, next) => {
             limit,
             page,
             sortColumn,
-            asc
+            asc,
+            filter
         );
 
         return success(res, result);

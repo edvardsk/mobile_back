@@ -1144,7 +1144,7 @@ const inviteUserAdvancedFiles = {
     required: [DOCUMENTS.PASSPORT, DOCUMENTS.DRIVER_LICENSE],
 };
 
-const createCargo = {
+const createOrEditCargo = {
     properties: {
         [colsCargos.UPLOADING_DATE_FROM]: {
             type: 'string',
@@ -1252,7 +1252,7 @@ const createCargo = {
     additionalProperties: false,
 };
 
-const createCargoAsync = {
+const createOrEditCargoAsync = {
     $async: true,
     properties: {
         [colsCargos.DANGER_CLASS_ID]: {
@@ -1569,8 +1569,8 @@ module.exports = {
     requiredEmail,
     requiredEmailAsync,
 
-    createCargo,
-    createCargoAsync,
+    createOrEditCargo,
+    createOrEditCargoAsync,
 
     modifyOtherOrganizations,
     inviteUserRolesParams,
