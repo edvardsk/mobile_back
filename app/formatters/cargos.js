@@ -1,9 +1,16 @@
+const moment = require('moment');
+
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SqlArray } = require('constants/instances');
 
 // formatters
 const { formatGeoPointToObject } = require('./geo');
+
+const {
+    FREEZE_CARGO_UNIT,
+    FREEZE_CARGO_VALUE,
+} = process.env;
 
 const cols = SQL_TABLES.CARGOS.COLUMNS;
 
@@ -14,6 +21,7 @@ const formatRecordToSave = (companyId, cargoId, statusId, data) => ({
     [cols.LOADING_METHODS]: new SqlArray(data[cols.LOADING_METHODS]),
     [cols.GUARANTEES]: new SqlArray(data[cols.GUARANTEES]),
     [cols.STATUS_ID]: statusId,
+    [cols.FREEZED_AFTER]: moment().add(+FREEZE_CARGO_VALUE, FREEZE_CARGO_UNIT).toISOString(),
 });
 
 const formatRecordToEdit = data => ({

@@ -34,6 +34,13 @@ const updateRecordById = (id, data) => squelPostgres
     .returning('*')
     .toString();
 
+const deleteRecordById = id => squelPostgres
+    .delete()
+    .from(table.NAME)
+    .where(`id = '${id}'`)
+    .returning('*')
+    .toString();
+
 const selectRecordById = id => squelPostgres
     .select()
     .field('c.*')
@@ -111,6 +118,7 @@ const setCargosFilter = (expression, filteringObject) => {
 module.exports = {
     insertRecord,
     updateRecordById,
+    deleteRecordById,
     selectRecordById,
     selectRecordByIdLight,
     selectRecordsByCompanyId,
