@@ -75,4 +75,16 @@ router.delete(
     deleteEconomicCompanies.deleteCompanyEconomicSettings,
 );
 
+router.get(
+    ROUTES.SETTINGS.ECONOMICS.BASE + ROUTES.SETTINGS.ECONOMICS.COMPANIES.BASE + ROUTES.SETTINGS.ECONOMICS.COMPANIES.GET_ALL,
+    isHasPermissions([PERMISSIONS.CRUD_COMPANIES_ECONOMIC_SETTINGS]),
+    validate(ValidatorSchemes.basePaginationQuery, 'query'),
+    validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
+    validate(ValidatorSchemes.baseSortingSortingDirectionQuery, 'query'),
+    validate(ValidatorSchemes.companiesEconomicSettingsSortColumnQuery, 'query'),
+    validate(ValidatorSchemes.modifyFilterQuery, 'query'),
+    validate(ValidatorSchemes.companiesEconomicSettingsFilterQuery, 'query'),
+    getEconomicCompanies.getCompaniesEconomicSettings,
+);
+
 module.exports = router;

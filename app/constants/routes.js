@@ -291,6 +291,7 @@ const ROUTES = {
                 PUT: IDS.COMPANY_ID,
                 GET: IDS.COMPANY_ID,
                 DELETE: IDS.COMPANY_ID,
+                GET_ALL: '',
             },
         },
     },

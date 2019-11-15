@@ -1,4 +1,5 @@
 const squel = require('squel');
+const { get } = require('lodash');
 const { SQL_TABLES } = require('constants/tables');
 
 const squelPostgres = squel.useFlavour('postgres');
@@ -49,6 +50,46 @@ const selectRecordByCompanyId = companyId => squelPostgres
     .where(`${cols.COMPANY_ID} = '${companyId}'`)
     .toString();
 
+const selectCompaniesEconomicSettingsPaginationSorting = (limit, offset, sortColumn, asc, filter) => {
+    let expression = squelPostgres
+        .select()
+        .from(table.NAME, 'e')
+        .where(`e.${cols.COMPANY_ID} IS NOT NULL`);
+
+    expression = setCompaniesEconomicSettingsFilter(expression, filter);
+    return expression
+        .order(sortColumn, asc)
+        .limit(limit)
+        .offset(offset)
+        .toString();
+};
+
+const selectCountCompaniesEconomicSettings = filter => {
+    let expression = squelPostgres
+        .select()
+        .from(table.NAME, 'e')
+        .field('COUNT(e.id)')
+        .where(`e.${cols.COMPANY_ID} IS NOT NULL`);
+
+    expression = setCompaniesEconomicSettingsFilter(expression, filter);
+    return expression
+        .toString();
+};
+
+const setCompaniesEconomicSettingsFilter = (expression, filteringObject) => {
+    const filteringObjectSQLExpressions = [
+    ];
+
+    for (let [key, exp, values] of filteringObjectSQLExpressions) {
+        if (Array.isArray(get(filteringObject, key))) {
+            expression = expression.where(exp, values);
+        } else if (get(filteringObject, key) !== undefined) {
+            expression = expression.where(exp);
+        }
+    }
+    return expression;
+};
+
 module.exports = {
     insertRecord,
     updateRecordByCompanyId,
@@ -56,4 +97,6 @@ module.exports = {
     updateRecordWithNullCompanyId,
     selectRecordWithNullCompanyId,
     selectRecordByCompanyId,
+    selectCompaniesEconomicSettingsPaginationSorting,
+    selectCountCompaniesEconomicSettings,
 };

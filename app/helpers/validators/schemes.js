@@ -9,6 +9,7 @@ const {
     SORTING_DIRECTIONS,
     COMPANY_EMPLOYEES_SORT_COLUMNS,
     COMPANIES_SORT_COLUMNS,
+    COMPANIES_ECONOMIC_SETTINGS_SORT_COLUMNS,
     USERS_SORT_COLUMNS,
 } = require('constants/pagination-sorting');
 const {
@@ -1465,6 +1466,15 @@ const companiesSortColumnQuery = {
     }
 };
 
+const companiesEconomicSettingsSortColumnQuery = {
+    properties: {
+        [SORTING_PARAMS.SORT_COLUMN]: {
+            type: 'string',
+            enum: COMPANIES_ECONOMIC_SETTINGS_SORT_COLUMNS,
+        }
+    }
+};
+
 const usersSortColumnQuery = {
     properties: {
         [SORTING_PARAMS.SORT_COLUMN]: {
@@ -1541,6 +1551,17 @@ const companiesFilterQuery = {
                 [colsCompanies.EDITING_CONFIRMED]: {
                     type: 'boolean',
                 },
+            },
+            additionalProperties: false,
+        },
+    },
+};
+
+const companiesEconomicSettingsFilterQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.FILTER]: {
+            type: 'object',
+            properties: {
             },
             additionalProperties: false,
         },
@@ -1659,12 +1680,14 @@ module.exports = {
     baseSortingSortingDirectionQuery,
     companyEmployeesSortColumnQuery,
     companiesSortColumnQuery,
+    companiesEconomicSettingsSortColumnQuery,
     usersSortColumnQuery,
     modifyFilterQuery,
     companyEmployeesFilterQuery,
     usersFilterQuery,
     companyDriversFilterQuery,
     companiesFilterQuery,
+    companiesEconomicSettingsFilterQuery,
     cargosFilterQuery,
 
     notRequiredFiles,
