@@ -7,6 +7,7 @@ const putEconomicDefault = require('./economics/default/put');
 const postEconomicCompanies = require('./economics/companies/post');
 const putEconomicCompanies = require('./economics/companies/put');
 const getEconomicCompanies = require('./economics/companies/get');
+const deleteEconomicCompanies = require('./economics/companies/delete');
 
 // middlewares
 const { isHasPermissions } = require('api/middlewares');
@@ -44,6 +45,7 @@ router.post(
     validate(ValidatorSchemes.createOrEditEconomicSettings),
     validate(ValidatorSchemes.requiredCompanyIdParams, 'params'),
     validate(ValidatorSchemes.requiredExistingCompanyWithIdAsync, 'params'),
+    validate(ValidatorSchemes.requiredNotExistingCompanyEconomicSettingsWithIdAsync, 'params'),
     validate(ValidatorSchemes.createCompanyEconomicSettingsParamsAsync, 'params'),
     postEconomicCompanies.createCompanyEconomicSettings,
 );
@@ -53,8 +55,7 @@ router.put(
     isHasPermissions([PERMISSIONS.CRUD_COMPANIES_ECONOMIC_SETTINGS]),
     validate(ValidatorSchemes.createOrEditEconomicSettings),
     validate(ValidatorSchemes.requiredCompanyIdParams, 'params'),
-    validate(ValidatorSchemes.requiredExistingCompanyWithIdAsync, 'params'),
-    validate(ValidatorSchemes.editCompanyEconomicSettingsParamsAsync, 'params'),
+    validate(ValidatorSchemes.requireExistingCompanyEconomicSettingsParamsAsync, 'params'),
     putEconomicCompanies.editCompanyEconomicSettings,
 );
 
@@ -62,8 +63,16 @@ router.get(
     ROUTES.SETTINGS.ECONOMICS.BASE + ROUTES.SETTINGS.ECONOMICS.COMPANIES.BASE + ROUTES.SETTINGS.ECONOMICS.COMPANIES.GET,
     isHasPermissions([PERMISSIONS.CRUD_COMPANIES_ECONOMIC_SETTINGS]),
     validate(ValidatorSchemes.requiredCompanyIdParams, 'params'),
-    validate(ValidatorSchemes.requiredExistingCompanyWithIdAsync, 'params'),
+    validate(ValidatorSchemes.requireExistingCompanyEconomicSettingsParamsAsync, 'params'),
     getEconomicCompanies.getCompanyEconomicSettings,
+);
+
+router.delete(
+    ROUTES.SETTINGS.ECONOMICS.BASE + ROUTES.SETTINGS.ECONOMICS.COMPANIES.BASE + ROUTES.SETTINGS.ECONOMICS.COMPANIES.DELETE,
+    isHasPermissions([PERMISSIONS.CRUD_COMPANIES_ECONOMIC_SETTINGS]),
+    validate(ValidatorSchemes.requiredCompanyIdParams, 'params'),
+    validate(ValidatorSchemes.requireExistingCompanyEconomicSettingsParamsAsync, 'params'),
+    deleteEconomicCompanies.deleteCompanyEconomicSettings,
 );
 
 module.exports = router;

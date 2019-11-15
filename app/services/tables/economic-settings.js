@@ -4,6 +4,7 @@ const { one, oneOrNone } = require('db');
 const {
     insertRecord,
     updateRecordByCompanyId,
+    deleteRecordByCompanyId,
     updateRecordWithNullCompanyId,
     selectRecordWithNullCompanyId,
     selectRecordByCompanyId,
@@ -12,6 +13,8 @@ const {
 const createRecord = data => one(insertRecord(data));
 
 const editRecordByCompanyId = (companyId, data) => one(updateRecordByCompanyId(companyId, data));
+
+const removeRecordByCompanyId = companyId => one(deleteRecordByCompanyId(companyId));
 
 const getRecordByCompanyId = companyId => oneOrNone(selectRecordByCompanyId(companyId));
 
@@ -32,6 +35,7 @@ const checkEconomicSettingsExists = async (meta, companyId) => {
 module.exports = {
     createRecord,
     editRecordByCompanyId,
+    removeRecordByCompanyId,
     getRecordByCompanyId,
     getDefaultRecordStrict,
     editDefaultRecord,

@@ -290,6 +290,7 @@ const ROUTES = {
                 POST: IDS.COMPANY_ID,
                 PUT: IDS.COMPANY_ID,
                 GET: IDS.COMPANY_ID,
+                DELETE: IDS.COMPANY_ID,
             },
         },
     },

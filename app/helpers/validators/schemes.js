@@ -111,6 +111,24 @@ const requiredExistingCompanyWithIdAsync = {
     },
 };
 
+const requiredNotExistingCompanyEconomicSettingsWithIdAsync = {
+    $async: true,
+    properties: {
+        companyId: {
+            company_economic_settings_with_id_exist: {},
+        },
+    },
+};
+
+const requiredExistingCompanyEconomicSettingsWithIdAsync = {
+    $async: true,
+    properties: {
+        companyId: {
+            company_economic_settings_with_id_not_exist: {},
+        },
+    },
+};
+
 const requiredExistingCargoInCompanyAsyncFunc = ({ companyId }) => ({
     $async: true,
     properties: {
@@ -1276,7 +1294,7 @@ const createCompanyEconomicSettingsParamsAsync = {
     additionalProperties: true,
 };
 
-const editCompanyEconomicSettingsParamsAsync = {
+const requireExistingCompanyEconomicSettingsParamsAsync = {
     $async: true,
     properties: {
         companyId: {
@@ -1560,6 +1578,8 @@ module.exports = {
     requiredExistingUserWithIdAsync,
     requiredExistingCompanyWithIdAsync,
     requiredExistingCargoInCompanyAsyncFunc,
+    requiredNotExistingCompanyEconomicSettingsWithIdAsync,
+    requiredExistingCompanyEconomicSettingsWithIdAsync,
 
     registration,
     registrationAsync,
@@ -1621,7 +1641,7 @@ module.exports = {
 
     createOrEditEconomicSettings,
     createCompanyEconomicSettingsParamsAsync,
-    editCompanyEconomicSettingsParamsAsync,
+    requireExistingCompanyEconomicSettingsParamsAsync,
 
     modifyOtherOrganizations,
     inviteUserRolesParams,
