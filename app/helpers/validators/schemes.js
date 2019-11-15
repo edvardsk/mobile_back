@@ -1276,6 +1276,16 @@ const createCompanyEconomicSettingsParamsAsync = {
     additionalProperties: true,
 };
 
+const editCompanyEconomicSettingsParamsAsync = {
+    $async: true,
+    properties: {
+        companyId: {
+            company_economic_settings_not_exists: {},
+        },
+    },
+    additionalProperties: true,
+};
+
 const createOrEditEconomicSettings = {
     properties: {
         [colsEconomicSettings.PERCENT_FROM_TRANSPORTER]: {
@@ -1611,6 +1621,7 @@ module.exports = {
 
     createOrEditEconomicSettings,
     createCompanyEconomicSettingsParamsAsync,
+    editCompanyEconomicSettingsParamsAsync,
 
     modifyOtherOrganizations,
     inviteUserRolesParams,

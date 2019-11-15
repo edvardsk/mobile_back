@@ -288,6 +288,7 @@ const ROUTES = {
             COMPANIES: {
                 BASE: BASES.COMPANIES,
                 POST: IDS.COMPANY_ID,
+                PUT: IDS.COMPANY_ID,
             },
         },
     },

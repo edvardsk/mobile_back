@@ -14,6 +14,14 @@ const insertRecord = values => squelPostgres
     .returning('*')
     .toString();
 
+const updateRecordByCompanyId = (companyId, values) => squelPostgres
+    .update()
+    .table(table.NAME)
+    .setFields(values)
+    .where(`${cols.COMPANY_ID} = '${companyId}'`)
+    .returning('*')
+    .toString();
+
 const updateRecordWithNullCompanyId = values => squelPostgres
     .update()
     .table(table.NAME)
@@ -36,6 +44,7 @@ const selectRecordByCompanyId = companyId => squelPostgres
 
 module.exports = {
     insertRecord,
+    updateRecordByCompanyId,
     updateRecordWithNullCompanyId,
     selectRecordWithNullCompanyId,
     selectRecordByCompanyId,

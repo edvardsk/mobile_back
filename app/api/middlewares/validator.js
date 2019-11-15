@@ -139,6 +139,12 @@ ajv.addKeyword('company_economic_settings_exists', {
     validate: EconomicSettingsService.checkEconomicSettingsExistsOpposite,
 });
 
+ajv.addKeyword('company_economic_settings_not_exists', {
+    async: true,
+    type: 'string',
+    validate: EconomicSettingsService.checkEconomicSettingsExists,
+});
+
 ajv.addKeyword('parse_string_to_json', {
     modifying: true,
     schema: false,

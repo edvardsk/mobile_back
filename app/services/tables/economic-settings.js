@@ -3,12 +3,15 @@ const { one, oneOrNone } = require('db');
 // sql-helpers
 const {
     insertRecord,
+    updateRecordByCompanyId,
     updateRecordWithNullCompanyId,
     selectRecordWithNullCompanyId,
     selectRecordByCompanyId,
 } = require('sql-helpers/economic-settings');
 
 const createRecord = data => one(insertRecord(data));
+
+const editRecordByCompanyId = (companyId, data) => one(updateRecordByCompanyId(companyId, data));
 
 const getRecordByCompanyId = companyId => oneOrNone(selectRecordByCompanyId(companyId));
 
@@ -21,11 +24,18 @@ const checkEconomicSettingsExistsOpposite = async (meta, companyId) => {
     return !setting;
 };
 
+const checkEconomicSettingsExists = async (meta, companyId) => {
+    const setting = await getRecordByCompanyId(companyId);
+    return !!setting;
+};
+
 module.exports = {
     createRecord,
+    editRecordByCompanyId,
     getRecordByCompanyId,
     getDefaultRecordStrict,
     editDefaultRecord,
 
     checkEconomicSettingsExistsOpposite,
+    checkEconomicSettingsExists,
 };
