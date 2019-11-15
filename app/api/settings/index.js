@@ -6,6 +6,7 @@ const putEconomicDefault = require('./economics/default/put');
 
 const postEconomicCompanies = require('./economics/companies/post');
 const putEconomicCompanies = require('./economics/companies/put');
+const getEconomicCompanies = require('./economics/companies/get');
 
 // middlewares
 const { isHasPermissions } = require('api/middlewares');
@@ -55,6 +56,14 @@ router.put(
     validate(ValidatorSchemes.requiredExistingCompanyWithIdAsync, 'params'),
     validate(ValidatorSchemes.editCompanyEconomicSettingsParamsAsync, 'params'),
     putEconomicCompanies.editCompanyEconomicSettings,
+);
+
+router.get(
+    ROUTES.SETTINGS.ECONOMICS.BASE + ROUTES.SETTINGS.ECONOMICS.COMPANIES.BASE + ROUTES.SETTINGS.ECONOMICS.COMPANIES.GET,
+    isHasPermissions([PERMISSIONS.CRUD_COMPANIES_ECONOMIC_SETTINGS]),
+    validate(ValidatorSchemes.requiredCompanyIdParams, 'params'),
+    validate(ValidatorSchemes.requiredExistingCompanyWithIdAsync, 'params'),
+    getEconomicCompanies.getCompanyEconomicSettings,
 );
 
 module.exports = router;

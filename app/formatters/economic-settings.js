@@ -3,7 +3,7 @@ const { SQL_TABLES } = require('constants/tables');
 
 const cols = SQL_TABLES.ECONOMIC_SETTINGS.COLUMNS;
 
-const formatDefaultEconomicSettingsForResponse = data => ({
+const formatEconomicSettingsForResponse = data => ({
     id: data.id,
     [cols.PERCENT_FROM_TRANSPORTER]: parseFloat(data[cols.PERCENT_FROM_TRANSPORTER]),
     [cols.PERCENT_FROM_HOLDER]: parseFloat(data[cols.PERCENT_FROM_HOLDER]),
@@ -16,6 +16,6 @@ const formatEconomicSettingsToSave = (companyId, data) => ({
 });
 
 module.exports = {
-    formatDefaultEconomicSettingsForResponse,
+    formatEconomicSettingsForResponse,
     formatEconomicSettingsToSave,
 };
