@@ -278,6 +278,59 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    CARS: {
+        NAME: 'cars',
+        COLUMNS: {
+            COMPANY_ID: 'company_id',
+            MARK: 'mark',
+            MODEL: 'model',
+            STATE_NUMBER: 'state_number',
+            MADE_YEAR_AT: 'made_year_at',
+            CAR_TYPE: 'car_type',
+            LOADING_METHODS: 'loading_methods',
+            VEHICLE_TYPE_ID: 'vehicle_type_id',
+            DANGER_CLASS_ID: 'danger_class_id',
+            WIDTH: 'width',
+            HEIGHT: 'height',
+            LENGTH: 'length',
+            WEIGHT: 'weight',
+            CREATED_AT: 'created_at',
+        },
+    },
+    TRAILERS: {
+        NAME: 'trailers',
+        COLUMNS: {
+            CAR_ID: 'car_id',
+            MARK: 'mark',
+            MODEL: 'model',
+            STATE_NUMBER: 'state_number',
+            MADE_YEAR_AT: 'made_year_at',
+            LOADING_METHODS: 'loading_methods',
+            VEHICLE_TYPE_ID: 'vehicle_type_id',
+            DANGER_CLASS_ID: 'danger_class_id',
+            WIDTH: 'width',
+            HEIGHT: 'height',
+            LENGTH: 'length',
+            WEIGHT: 'weight',
+            CREATED_AT: 'created_at',
+        },
+    },
+    CARS_TO_FILES: {
+        NAME: 'cars_to_files',
+        COLUMNS: {
+            CAR_ID: 'CAR_ID',
+            FILE_ID: 'file_id',
+            CREATED_AT: 'created_at',
+        },
+    },
+    TRAILERS_TO_FILES: {
+        NAME: 'trailers_to_files',
+        COLUMNS: {
+            TRAILER_ID: 'trailer_id',
+            FILE_ID: 'file_id',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
