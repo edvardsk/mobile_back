@@ -5,7 +5,7 @@ exports.up = function(knex) {
         table.uuid('company_id').references('companies.id').notNull();
         table.string('car_mark').notNull();
         table.string('car_model').notNull();
-        table.string('car_state_number').notNull();
+        table.string('car_state_number').notNull().unique();
         table.integer('car_made_year_at').notNull();
         table.string('car_type').notNull();
         table.specificType('car_loading_methods', 'text[]');
@@ -23,7 +23,7 @@ exports.up = function(knex) {
                 table.uuid('car_id').references('cars.id').notNull().unique();
                 table.string('trailer_mark').notNull();
                 table.string('trailer_model').notNull();
-                table.string('trailer_state_number').notNull();
+                table.string('trailer_state_number').notNull().unique();
                 table.integer('trailer_made_year_at').notNull();
                 table.specificType('trailer_loading_methods', 'text[]');
                 table.uuid('trailer_vehicle_type_id').references('vehicle_types.id');

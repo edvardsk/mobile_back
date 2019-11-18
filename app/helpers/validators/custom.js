@@ -42,7 +42,7 @@ const compareYears = (value1, value2) => {
     const str1 = value1.toString();
     const str2 = value2.toString();
 
-    const year1 = +moment(str1).format('YYYY');
+    const year1 = +moment({ year: str1 }).format('YYYY');
     const date2Full = str2 !== 'current' ? moment({ year: str2 }) : moment();
     const year2 = +date2Full.format('YYYY');
 

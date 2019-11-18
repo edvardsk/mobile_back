@@ -3,11 +3,15 @@ const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { CAR_TYPES, CAR_TYPES_MAP } = require('constants/cars');
 const { LOADING_METHODS } = require('constants/cargos');
 const { STRING_BOOLEANS, STRING_BOOLEANS_MAP } = require('constants/index');
+const { DOCUMENTS } = require('constants/files');
 
 // patterns
 const { POSTGRES_MAX_STRING_LENGTH, SIZES_VALIDATION_PATTERN } = require('./patterns');
 
-// exported schemes
+// helpers
+const { fileFormat } = require('./helpers');
+
+
 const colsCars = SQL_TABLES.CARS.COLUMNS;
 
 const CAR_PROPS = {
@@ -203,6 +207,13 @@ const createCarTruckAsync = {
     additionalProperties: true,
 };
 
+const createCarTruckFiles = {
+    patternProperties: {
+        '.': fileFormat,
+    },
+    required: [DOCUMENTS.DANGER_CLASS],
+};
+
 // const requiredExistingCarInCompanyAsyncFunc = ({  }) => ({
 //     $async: true,
 //     properties: {
@@ -215,5 +226,6 @@ module.exports = {
     createCarCommon,
     createCarTruck,
     createCarTruckAsync,
+    createCarTruckFiles,
     // requiredExistingCarInCompanyAsyncFunc,
 };

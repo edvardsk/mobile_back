@@ -190,6 +190,7 @@ const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next)
                 requestParams: req.params,
                 targetRole: res.locals.targetRole,
                 company: res.locals.company,
+                body: req.body,
             };
             scheme = schemeOrGetter(params);
             if (!scheme) {
