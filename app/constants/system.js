@@ -77,6 +77,7 @@ const PERMISSIONS = {
     READ_CONDITIONS_AND_TERMS: 'read_conditions_and_terms',
 
     CRUD_CARGO: 'crud_cargo',
+    CRUD_CARS: 'crud_cars',
 
     READ_COMPANIES: 'read_companies',
     APPROVE_COMPANY: 'approve_company',

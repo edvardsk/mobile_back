@@ -23,7 +23,14 @@ const { ERRORS } = require('constants/errors');
 const { HOMELESS_COLUMNS, SQL_TABLES } = require('constants/tables');
 
 // helpers
-const { parseStringToJson, parsePaginationOptions } = require('helpers/validators/custom');
+const {
+    parseStringToJson,
+    parseStringToFloat,
+    parsePaginationOptions,
+    compareYears,
+} = require('helpers/validators/custom');
+
+const yearRegex = /^[0-9]{1,4}$/;
 
 ajv.addKeyword('phone_prefix_not_exist', {
     async: true,
@@ -151,10 +158,21 @@ ajv.addKeyword('parse_string_to_json', {
     validate: parseStringToJson,
 });
 
+ajv.addKeyword('parse_string_to_float', {
+    modifying: true,
+    schema: false,
+    validate: parseStringToFloat,
+});
+
 ajv.addKeyword('parse_pagination_options', {
     modifying: true,
     schema: false,
     validate: parsePaginationOptions,
+});
+
+ajv.addFormat('year', {
+    validate: (yearString) => yearRegex.test(yearString),
+    compare: compareYears,
 });
 
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {

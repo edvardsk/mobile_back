@@ -4,6 +4,8 @@ const LOADING_METHODS_MAP = {
     SIDE: 'side',
 };
 
+const LOADING_METHODS = Object.values(LOADING_METHODS_MAP);
+
 const LOADING_TYPES_MAP = {
     FTL: 'FTL',
     LTL: 'LTL',
@@ -16,6 +18,7 @@ const GUARANTEES_MAP = {
 
 module.exports = {
     LOADING_METHODS_MAP,
+    LOADING_METHODS,
     LOADING_TYPES_MAP,
     GUARANTEES_MAP,
 };
