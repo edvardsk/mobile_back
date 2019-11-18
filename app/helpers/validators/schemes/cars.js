@@ -11,7 +11,6 @@ const { POSTGRES_MAX_STRING_LENGTH, SIZES_VALIDATION_PATTERN } = require('./patt
 // helpers
 const { fileFormat } = require('./helpers');
 
-
 const colsCars = SQL_TABLES.CARS.COLUMNS;
 
 const CAR_PROPS = {
@@ -29,7 +28,7 @@ const CAR_PROPS = {
         minLength: 1,
         maxLength: POSTGRES_MAX_STRING_LENGTH,
     },
-    [colsCars.CAR_STATE_NUMBER]: {
+    [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: {
         type: 'string',
         minLength: 1,
         maxLength: POSTGRES_MAX_STRING_LENGTH,
@@ -142,7 +141,7 @@ const createCarCommon = {
         required: [
             colsCars.CAR_MARK,
             colsCars.CAR_MODEL,
-            colsCars.CAR_STATE_NUMBER,
+            HOMELESS_COLUMNS.CAR_STATE_NUMBER,
             colsCars.CAR_MADE_YEAR_AT,
         ],
     },
@@ -174,7 +173,6 @@ const createCarTruck = {
             colsCars.CAR_HEIGHT,
             colsCars.CAR_LENGTH,
             colsCars.CAR_WEIGHT,
-            colsCars.CAR_DANGER_CLASS_ID,
         ],
     },
 };
@@ -208,10 +206,58 @@ const createCarTruckAsync = {
 };
 
 const createCarTruckFiles = {
-    patternProperties: {
-        '.': fileFormat,
+    properties: {
+        ...CAR_PROPS,
+        [DOCUMENTS.DANGER_CLASS]: fileFormat,
+        [DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT]: fileFormat,
+        [DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION]: fileFormat,
     },
-    required: [DOCUMENTS.DANGER_CLASS],
+    anyOf: [
+        {
+            properties: {
+                [HOMELESS_COLUMNS.IS_CAR]: {
+                    const: STRING_BOOLEANS_MAP.TRUE,
+                },
+                [colsCars.CAR_TYPE]: {
+                    const: CAR_TYPES_MAP.TRUCK,
+                },
+            },
+            required: [
+                colsCars.CAR_DANGER_CLASS_ID,
+                DOCUMENTS.DANGER_CLASS,
+            ],
+        },
+        {
+            properties: {
+                [HOMELESS_COLUMNS.IS_CAR]: {
+                    const: STRING_BOOLEANS_MAP.TRUE,
+                },
+                [colsCars.CAR_TYPE]: {
+                    const: CAR_TYPES_MAP.TRUCK,
+                },
+            },
+            prohibited: [
+                colsCars.CAR_DANGER_CLASS_ID,
+                DOCUMENTS.DANGER_CLASS,
+            ],
+        },
+        {
+            properties: {
+                [HOMELESS_COLUMNS.IS_CAR]: {
+                    const: STRING_BOOLEANS_MAP.TRUE,
+                },
+                [colsCars.CAR_TYPE]: {
+                    const: CAR_TYPES_MAP.QUAD,
+                },
+            },
+            prohibited: [
+                colsCars.CAR_DANGER_CLASS_ID,
+                DOCUMENTS.DANGER_CLASS,
+            ],
+        },
+    ],
+    required: [DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT, DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION],
+    additionalProperties: false,
 };
 
 // const requiredExistingCarInCompanyAsyncFunc = ({  }) => ({

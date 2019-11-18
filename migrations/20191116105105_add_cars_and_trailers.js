@@ -5,7 +5,6 @@ exports.up = function(knex) {
         table.uuid('company_id').references('companies.id').notNull();
         table.string('car_mark').notNull();
         table.string('car_model').notNull();
-        table.string('car_state_number').notNull().unique();
         table.integer('car_made_year_at').notNull();
         table.string('car_type').notNull();
         table.specificType('car_loading_methods', 'text[]');
@@ -15,6 +14,7 @@ exports.up = function(knex) {
         table.decimal('car_height', 10, 2);
         table.decimal('car_length', 10, 2);
         table.decimal('car_weight', 10, 2);
+        table.boolean('deleted').notNull().defaultTo(false);
         table.timestamp('created_at').defaultTo(knex.fn.now());
     })
         .then(function () {
@@ -23,7 +23,6 @@ exports.up = function(knex) {
                 table.uuid('car_id').references('cars.id').notNull().unique();
                 table.string('trailer_mark').notNull();
                 table.string('trailer_model').notNull();
-                table.string('trailer_state_number').notNull().unique();
                 table.integer('trailer_made_year_at').notNull();
                 table.specificType('trailer_loading_methods', 'text[]');
                 table.uuid('trailer_vehicle_type_id').references('vehicle_types.id');
@@ -33,6 +32,7 @@ exports.up = function(knex) {
                 table.decimal('trailer_length', 10, 2);
                 table.decimal('trailer_weight', 10, 2);
                 table.timestamp('created_at').defaultTo(knex.fn.now());
+                table.boolean('deleted').notNull().defaultTo(false);
             });
         })
         .then(function () {
@@ -54,6 +54,24 @@ exports.up = function(knex) {
             });
         })
         .then(function () {
+            return knex.schema.createTable('cars_state_numbers', function(table) {
+                table.uuid('id').defaultTo(knex.raw('uuid_generate_v4()')).primary().unique();
+                table.uuid('car_id').references('cars.id').notNull();
+                table.string('number').notNull();
+                table.boolean('is_active').notNull().defaultTo(true);
+                table.timestamp('created_at').defaultTo(knex.fn.now());
+            });
+        })
+        .then(function () {
+            return knex.schema.createTable('trailers_state_numbers', function(table) {
+                table.uuid('id').defaultTo(knex.raw('uuid_generate_v4()')).primary().unique();
+                table.uuid('trailer_id').references('cars.id').notNull();
+                table.string('number').notNull();
+                table.boolean('is_active').notNull().defaultTo(true);
+                table.timestamp('created_at').defaultTo(knex.fn.now());
+            });
+        })
+        .then(function () {
             return Promise.all([
                 knex.raw('ALTER TABLE cars ADD CONSTRAINT car_made_year_at_check CHECK (car_made_year_at >= 1900 AND car_made_year_at <= 3000)'),
                 knex.raw('ALTER TABLE trailers ADD CONSTRAINT trailer_made_year_at_check CHECK (trailer_made_year_at >= 1900 AND trailer_made_year_at <= 3000)'),
@@ -65,6 +83,12 @@ exports.down = function(knex) {
     return knex.schema.dropTable('trailers_to_files')
         .then(function () {
             return knex.schema.dropTable('cars_to_files');
+        })
+        .then(function () {
+            return knex.schema.dropTable('cars_state_numbers');
+        })
+        .then(function () {
+            return knex.schema.dropTable('trailers_state_numbers');
         })
         .then(function () {
             return knex.schema.dropTable('trailers');

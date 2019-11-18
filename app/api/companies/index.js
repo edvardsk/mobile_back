@@ -28,7 +28,6 @@ const { formDataHandler, createOrUpdateDataOnStep3 } = require('api/middlewares/
 
 // constants
 const { PERMISSIONS, ROLES } = require('constants/system');
-const { HOMELESS_COLUMNS } = require('constants/tables');
 
 // helpers
 const ValidatorSchemes = require('helpers/validators/schemes');
@@ -330,7 +329,7 @@ router.post(
     validate(ValidatorSchemes.createCarCommon),
     validate(ValidatorSchemes.createCarTruck),
     validate(ValidatorSchemes.createCarTruckAsync),
-    validate(({ body }) => body[HOMELESS_COLUMNS.IS_CAR] && ValidatorSchemes.createCarTruckFiles, 'files'),
+    validate(ValidatorSchemes.createCarTruckFiles, ['body', 'files']),
     validate(ValidatorSchemes.modifyCarFloats),
 
     // validate(ValidatorSchemes.createOrEditCargoAsync),

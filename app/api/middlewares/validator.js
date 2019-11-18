@@ -177,7 +177,17 @@ ajv.addFormat('year', {
 
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {
     try {
-        const data = get(req, pathToData);
+        let data = {};
+        if (Array.isArray(pathToData)) {
+            pathToData.forEach(item => {
+                data = {
+                    ...data,
+                    ...get(req, item),
+                };
+            });
+        } else {
+            data = get(req, pathToData);
+        }
 
         let scheme;
         if (typeof schemeOrGetter === 'function') {

@@ -284,7 +284,6 @@ const SQL_TABLES = {
             COMPANY_ID: 'company_id',
             CAR_MARK: 'car_mark',
             CAR_MODEL: 'car_model',
-            CAR_STATE_NUMBER: 'car_state_number',
             CAR_MADE_YEAR_AT: 'car_made_year_at',
             CAR_TYPE: 'car_type',
             CAR_LOADING_METHODS: 'car_loading_methods',
@@ -295,6 +294,7 @@ const SQL_TABLES = {
             CAR_LENGTH: 'car_length',
             CAR_WEIGHT: 'car_weight',
             CREATED_AT: 'created_at',
+            DELETED: 'deleted',
         },
     },
     TRAILERS: {
@@ -303,7 +303,6 @@ const SQL_TABLES = {
             CAR_ID: 'car_id',
             TRAILER_MARK: 'trailer_mark',
             TRAILER_MODEL: 'trailer_model',
-            TRAILER_STATE_NUMBER: 'trailer_state_number',
             TRAILER_MADE_YEAR_AT: 'trailer_made_year_at',
             TRAILER_LOADING_METHODS: 'trailer_loading_methods',
             TRAILER_VEHICLE_TYPE_ID: 'trailer_vehicle_type_id',
@@ -313,6 +312,7 @@ const SQL_TABLES = {
             TRAILER_LENGTH: 'trailer_length',
             TRAILER_WEIGHT: 'trailer_weight',
             CREATED_AT: 'created_at',
+            DELETED: 'deleted',
         },
     },
     CARS_TO_FILES: {
@@ -328,6 +328,24 @@ const SQL_TABLES = {
         COLUMNS: {
             TRAILER_ID: 'trailer_id',
             FILE_ID: 'file_id',
+            CREATED_AT: 'created_at',
+        },
+    },
+    CARS_STATE_NUMBERS: {
+        NAME: 'cars_state_numbers',
+        COLUMNS: {
+            CAR_ID: 'car_id',
+            NUMBER: 'number',
+            IS_ACTIVE: 'is_active',
+            CREATED_AT: 'created_at',
+        },
+    },
+    TRAILERS_STATE_NUMBERS: {
+        NAME: 'trailers_state_numbers',
+        COLUMNS: {
+            TRAILER_ID: 'trailer_id',
+            NUMBER: 'number',
+            IS_ACTIVE: 'is_active',
             CREATED_AT: 'created_at',
         },
     },
@@ -358,6 +376,8 @@ const HOMELESS_COLUMNS = {
     DANGER_CLASS_NAME: 'danger_class_name',
     VEHICLE_TYPE_NAME: 'vehicle_type_name',
     IS_CAR: 'is_car',
+    CAR_STATE_NUMBER: 'car_state_number',
+    TRAILER_STATE_NUMBER: 'trailer_state_number',
 };
 
 module.exports = {

@@ -15,6 +15,7 @@ const {
 const cols = SQL_TABLES.FILES.COLUMNS;
 const colsCompaniesFiles = SQL_TABLES.COMPANIES_TO_FILES.COLUMNS;
 const colsUsersFiles = SQL_TABLES.USERS_TO_FILES.COLUMNS;
+const colsCarsFiles = SQL_TABLES.CARS_TO_FILES.COLUMNS;
 
 const formatStoringFile = (bucket, path) => `${bucket}/${path}`;
 
@@ -109,6 +110,36 @@ const prepareFilesToStoreForUsers = (files, userId) => Object.keys(files).reduce
     return acc;
 }, [[], [], []]);
 
+const prepareFilesToStoreForCars = (files, carId) => Object.keys(files).reduce((acc, type) => {
+    const [dbFiles, dbUsersFiles, storageFiles] = acc;
+    files[type].forEach(file => {
+        const fileId = uuid();
+        const fileHash = uuid();
+        const filePath = `${fileHash}${file.originalname}`;
+        const fileUrl = formatStoringFile(AWS_S3_BUCKET_NAME, filePath);
+
+        const fileLabels = formatLabelsToStore(type);
+
+        dbFiles.push({
+            id: fileId,
+            [cols.NAME]: file.originalname,
+            [cols.LABELS]: fileLabels,
+            [cols.URL]: CryptService.encrypt(fileUrl),
+        });
+        dbUsersFiles.push({
+            [colsCarsFiles.CAR_ID]: carId,
+            [colsCarsFiles.FILE_ID]: fileId,
+        });
+        storageFiles.push({
+            bucket: AWS_S3_BUCKET_NAME,
+            path: filePath,
+            data: file.buffer,
+            contentType: file.mimetype,
+        });
+    });
+    return acc;
+}, [[], [], []]);
+
 const prepareFilesToDelete = files => files.reduce((acc, file) => {
     const [ids, urls] = acc;
     ids.push(file.id);
@@ -124,5 +155,6 @@ module.exports = {
     formatFilesForResponse,
     prepareFilesToStoreForCompanies,
     prepareFilesToStoreForUsers,
+    prepareFilesToStoreForCars,
     prepareFilesToDelete,
 };
