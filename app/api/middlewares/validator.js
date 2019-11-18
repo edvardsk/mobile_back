@@ -16,10 +16,11 @@ const RolesService = require('services/tables/roles');
 const DangerClassesService = require('services/tables/danger-classes');
 const VehicleClassesService = require('services/tables/vehicle-types');
 const CargosService = require('services/tables/cargos');
+const EconomicSettingsService = require('services/tables/economic-settings');
 
 // constants
 const { ERRORS } = require('constants/errors');
-const { HOMELESS_COLUMNS } = require('constants/tables');
+const { HOMELESS_COLUMNS, SQL_TABLES } = require('constants/tables');
 
 // helpers
 const { parseStringToJson, parsePaginationOptions } = require('helpers/validators/custom');
@@ -96,18 +97,6 @@ ajv.addKeyword('email_not_exists', {
     validate: UsersService.checkUserWithEmailExists,
 });
 
-ajv.addKeyword('parse_string_to_json', {
-    modifying: true,
-    schema: false,
-    validate: parseStringToJson,
-});
-
-ajv.addKeyword('parse_pagination_options', {
-    modifying: true,
-    schema: false,
-    validate: parsePaginationOptions,
-});
-
 ajv.addKeyword('user_with_id_not_exist', {
     async: true,
     type: 'string',
@@ -142,6 +131,30 @@ ajv.addKeyword('cargo_in_company_not_exist', {
     async: true,
     type: 'string',
     validate: CargosService.checkCargoInCompanyExists,
+});
+
+ajv.addKeyword('company_economic_settings_exists', {
+    async: true,
+    type: 'string',
+    validate: EconomicSettingsService.checkEconomicSettingsExistsOpposite,
+});
+
+ajv.addKeyword('company_economic_settings_not_exists', {
+    async: true,
+    type: 'string',
+    validate: EconomicSettingsService.checkEconomicSettingsExists,
+});
+
+ajv.addKeyword('parse_string_to_json', {
+    modifying: true,
+    schema: false,
+    validate: parseStringToJson,
+});
+
+ajv.addKeyword('parse_pagination_options', {
+    modifying: true,
+    schema: false,
+    validate: parsePaginationOptions,
 });
 
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {
@@ -204,7 +217,24 @@ const validateFileType = expectedFileTypes => async (req, res, next) => {
     }
 };
 
+const validateEconomicPercentsSum = async (req, res, next) => {
+    const colsEconomicSettings = SQL_TABLES.ECONOMIC_SETTINGS.COLUMNS;
+    try {
+        const { body } = req;
+        const transporterPercent = body[colsEconomicSettings.PERCENT_FROM_TRANSPORTER];
+        const holderPercent = body[colsEconomicSettings.PERCENT_FROM_HOLDER];
+        if (transporterPercent + holderPercent >= 100) {
+            return reject(res, ERRORS.ECONOMIC_SETTINGS.SUM_PERCENT_TRANSPORTER_HOLDER_ERROR);
+        }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     validate,
     validateFileType,
+    validateEconomicPercentsSum,
 };

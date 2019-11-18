@@ -44,6 +44,9 @@ const BASES = {
     CARGO_STATUSES: '/cargo-statuses',
     VEHICLE_TYPES: '/vehicle-types',
     DANGER_CLASSES: '/danger-classes',
+    SETTINGS: '/settings',
+    ECONOMICS: '/economics',
+    DEFAULT: '/default',
 };
 
 const IDS = {
@@ -271,6 +274,25 @@ const ROUTES = {
         DANGER_CLASSES: {
             BASE: BASES.DANGER_CLASSES,
             GET: '',
+        },
+    },
+    SETTINGS: {
+        BASE: BASES.SETTINGS,
+        ECONOMICS: {
+            BASE: BASES.ECONOMICS,
+            DEFAULT: {
+                BASE: BASES.DEFAULT,
+                GET: '',
+                PUT: '',
+            },
+            COMPANIES: {
+                BASE: BASES.COMPANIES,
+                POST: IDS.COMPANY_ID,
+                PUT: IDS.COMPANY_ID,
+                GET: IDS.COMPANY_ID,
+                DELETE: IDS.COMPANY_ID,
+                GET_ALL: '',
+            },
         },
     },
 };
