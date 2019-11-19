@@ -60,6 +60,7 @@ const PERMISSIONS = {
     INVITE_LOGISTICIAN: 'invite_logistician',
     INVITE_DRIVER: 'invite_driver',
     BASIC_INVITES: 'basic_invites',
+    GET_INVITE_ROLES: 'get_invite_roles',
 
     READ_EMPLOYEES: 'read_employees',
     READ_LEGAL_DATA: 'read_legal_info',
@@ -97,6 +98,11 @@ const UNCONFIRMED_EMAIL_ROLES = [
 
 const ROLES_TO_REGISTER = [
     ROLES.TRANSPORTER, ROLES.HOLDER, ROLES.INDIVIDUAL_FORWARDER, ROLES.SOLE_PROPRIETOR_FORWARDER,
+];
+
+// todo: add accountant
+const ROLES_TO_INVITE = [
+    ROLES.MANAGER,
 ];
 
 const MAP_COMPANY_OWNERS_TO_MAIN_ROLES = {
@@ -315,6 +321,7 @@ module.exports = {
     ROLES,
     ARRAY_ROLES_WITHOUT_ADMIN,
     ROLES_TO_REGISTER,
+    ROLES_TO_INVITE,
     PERMISSIONS,
     UNCONFIRMED_EMAIL_ROLES,
 
