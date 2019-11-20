@@ -42,19 +42,27 @@ const createOrEditCargo = {
         },
         [colsCargos.GROSS_WEIGHT]: {
             type: 'number',
+            format: 'size',
             exclusiveMinimum: 0,
+            exclusiveMaximum: 1000,
         },
         [colsCargos.WIDTH]: {
             type: 'number',
+            format: 'size',
             exclusiveMinimum: 0,
+            exclusiveMaximum: 1000,
         },
         [colsCargos.HEIGHT]: {
             type: 'number',
+            format: 'size',
             exclusiveMinimum: 0,
+            exclusiveMaximum: 1000,
         },
         [colsCargos.LENGTH]: {
             type: 'number',
+            format: 'size',
             exclusiveMinimum: 0,
+            exclusiveMaximum: 1000,
         },
         [colsCargos.LOADING_METHODS]: {
             type: 'array',
