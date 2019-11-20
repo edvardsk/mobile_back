@@ -2,6 +2,7 @@ const express = require('express');
 const multer  = require('multer');
 const { ROUTES } = require('constants/routes');
 const post = require('./post');
+const get = require('./get');
 const postUsers = require('./users/post');
 
 // middlewares
@@ -78,6 +79,11 @@ router.post(
     post.inviteMiddleware,
 );
 
+router.get(
+    ROUTES.INVITES.ROLES.BASE + ROUTES.INVITES.ROLES.GET_ALL,
+    isHasPermissions([PERMISSIONS.GET_INVITE_ROLES]),
+    get.getInviteRoles,
+);
 
 // resend invite
 router.post(

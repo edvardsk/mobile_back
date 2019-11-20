@@ -169,6 +169,7 @@ const ROUTES = {
         ROLES: {
             BASE: BASES.ROLES,
             POST: IDS.ROLE,
+            GET_ALL: '',
         },
         COMPANIES: {
             BASE: BASES.COMPANIES,
