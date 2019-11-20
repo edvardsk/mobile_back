@@ -11,6 +11,7 @@ const RolesService = require('services/tables/roles');
 const PhoneNumbersService = require('services/tables/phone-numbers');
 const PhonePrefixesService = require('services/tables/phone-prefixes');
 const CountriesService = require('services/tables/countries');
+const LanguagesService = require('services/tables/languages');
 const TableService = require('services/tables');
 const CryptService = require('services/crypto');
 const MailService = require('services/mail');
@@ -28,6 +29,7 @@ const { formatRecordToSave } = require('formatters/email-confirmation');
 const { formatRolesForResponse } = require('formatters/roles');
 const { formatPhoneNumberToSave } = require('formatters/phone-numbers');
 const { formatPhonePrefixesForResponse } = require('formatters/phone-prefixes');
+const { formatLanguagesForResponse } = require('formatters/languages');
 
 const createUser = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
@@ -112,9 +114,19 @@ const getCountries = async (req, res, next) => {
     }
 };
 
+const getLanguages = async (req, res, next) => {
+    try {
+        const languages = await LanguagesService.getLanguages();
+        return success(res, { languages: formatLanguagesForResponse(languages) });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createUser,
     getRoles,
     getPhonePrefixes,
     getCountries,
+    getLanguages,
 };

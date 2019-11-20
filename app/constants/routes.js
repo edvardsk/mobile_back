@@ -48,6 +48,7 @@ const BASES = {
     ECONOMICS: '/economics',
     DEFAULT: '/default',
     CARS: '/cars',
+    LANGUAGES: '/languages',
 };
 
 const IDS = {
@@ -76,7 +77,11 @@ const ROUTES = {
             },
             COUNTRIES: {
                 BASE: BASES.COUNTRIES,
-                GET: '',
+                GET_ALL: '',
+            },
+            LANGUAGES: {
+                BASE: BASES.LANGUAGES,
+                GET_ALL: '',
             },
         },
         AUTHORIZATION: {
@@ -308,6 +313,7 @@ const ALLOWED_ROUTES = {
     GET: new Set([
         API_PREFIX + ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.ROLES.BASE + ROUTES.AUTH.REGISTRATION.ROLES.GET,
         API_PREFIX + ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.PHONE_PREFIXES.BASE + ROUTES.AUTH.REGISTRATION.PHONE_PREFIXES.GET,
+        API_PREFIX + ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.LANGUAGES.BASE + ROUTES.AUTH.REGISTRATION.LANGUAGES.GET_ALL,
     ]),
     POST: new Set([
         API_PREFIX + ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.POST,
