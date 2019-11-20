@@ -26,6 +26,7 @@ const formatUserWithPermissionsForResponse = (user, permissions) => ({
     [cols.EMAIL]: user[cols.EMAIL],
     [cols.CREATED_AT]: user[cols.CREATED_AT],
     [cols.FULL_NAME]: user[cols.FULL_NAME],
+    [HOMELESS_COLUMNS.LANGUAGE_CODE]: user[HOMELESS_COLUMNS.LANGUAGE_CODE],
     [HOMELESS_COLUMNS.ROLE]: user[HOMELESS_COLUMNS.ROLE],
     permissions: Array.from(permissions),
 });

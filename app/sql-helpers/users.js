@@ -22,6 +22,7 @@ const tablePhonePrefixes = SQL_TABLES.PHONE_PREFIXES;
 const tableEmailConfirmationHashes = SQL_TABLES.EMAIL_CONFIRMATION_HASHES;
 const tableFreezingHistory = SQL_TABLES.FREEZING_HISTORY;
 const tableDrivers = SQL_TABLES.DRIVERS;
+const tableLanguages = SQL_TABLES.LANGUAGES;
 
 const cols = table.COLUMNS;
 const colsRoles = tableRoles.COLUMNS;
@@ -34,6 +35,7 @@ const colsPhonePrefixes = tablePhonePrefixes.COLUMNS;
 const colsEmailConfirmationHashes = tableEmailConfirmationHashes.COLUMNS;
 const colsFreezingHistory = tableFreezingHistory.COLUMNS;
 const colsDrivers = tableDrivers.COLUMNS;
+const colsLanguages = tableLanguages.COLUMNS;
 
 const insertUser = values => squelPostgres
     .insert()
@@ -253,10 +255,12 @@ const selectUserWithRoleAndFreezingStatus = id => squelPostgres
     .field('u.*')
     .field('r.name', HOMELESS_COLUMNS.ROLE)
     .field(`fh.${colsFreezingHistory.INITIATOR_ID}`)
+    .field(`l.${colsLanguages.CODE}`, HOMELESS_COLUMNS.LANGUAGE_CODE)
     .where(`u.id = '${id}'`)
     .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
     .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
     .left_join(tableFreezingHistory.NAME, 'fh', `fh.${colsFreezingHistory.TARGET_ID} = u.id`)
+    .left_join(tableLanguages.NAME, 'l', `l.id = u.${cols.LANGUAGE_ID}`)
     .order(`fh.${colsFreezingHistory.CREATED_AT}`, false)
     .limit(1)
     .toString();

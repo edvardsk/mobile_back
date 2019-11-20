@@ -388,6 +388,7 @@ const HOMELESS_COLUMNS = {
     IS_CAR: 'is_car',
     CAR_STATE_NUMBER: 'car_state_number',
     TRAILER_STATE_NUMBER: 'trailer_state_number',
+    LANGUAGE_CODE: 'language_code',
 };
 
 module.exports = {

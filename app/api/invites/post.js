@@ -124,7 +124,7 @@ const inviteUserWithoutCompany = async (req, res, next) => {
 const inviteMiddleware = async (req, res, next) => {
     const colsUsers = SQL_TABLES.USERS.COLUMNS;
     try {
-        const { inviteData } = res.locals;
+        const { inviteData, user } = res.locals;
         const { transactionsListHead, transactionsListTail, invitedUserId, storageFiles } = inviteData;
 
         const currentUserId = res.locals.user.id;
@@ -141,6 +141,7 @@ const inviteMiddleware = async (req, res, next) => {
         const userId = invitedUserId;
         const confirmationHash = uuid();
 
+        body[colsUsers.LANGUAGE_ID] = user[colsUsers.LANGUAGE_ID];
         const data = UsersFormatters.formatUserForSaving(userId, body, hash, key);
 
         const inviteExpirationDate = moment().add(+INVITE_EXPIRATION_VALUE, INVITE_EXPIRATION_UNIT).toISOString();
