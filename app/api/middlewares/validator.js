@@ -17,6 +17,7 @@ const DangerClassesService = require('services/tables/danger-classes');
 const VehicleClassesService = require('services/tables/vehicle-types');
 const CargosService = require('services/tables/cargos');
 const EconomicSettingsService = require('services/tables/economic-settings');
+const LanguagesService = require('services/tables/languages');
 
 // constants
 const { ERRORS } = require('constants/errors');
@@ -48,6 +49,12 @@ ajv.addKeyword('country_not_exist', {
     async: true,
     type: 'string',
     validate: CountriesService.checkCountryExists,
+});
+
+ajv.addKeyword('language_not_exist', {
+    async: true,
+    type: 'string',
+    validate: LanguagesService.checkLanguageExists,
 });
 
 ajv.addKeyword('company_with_settlement_account_exists', {

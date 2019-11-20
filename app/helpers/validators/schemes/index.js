@@ -78,6 +78,10 @@ const registration = {
             type: 'string',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
+        [colsUsers.LANGUAGE_ID]: {
+            type: 'string',
+            format: 'uuid',
+        },
         [HOMELESS_COLUMNS.ROLE_ID]: {
             type: 'string',
             format: 'uuid',
@@ -107,6 +111,9 @@ const registrationAsync = {
     properties: {
         [colsUsers.EMAIL]: {
             email_exists: {},
+        },
+        [colsUsers.LANGUAGE_ID]: {
+            language_not_exist: {},
         },
         [HOMELESS_COLUMNS.ROLE_ID]: {
             role_not_exist: {},
