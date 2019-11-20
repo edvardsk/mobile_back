@@ -9,6 +9,9 @@ const DOCUMENTS = {
     RESIDENCY_CERTIFICATE: 'residency_certificate',
     DRIVER_LICENSE: 'driver_license',
     VISA: 'visa',
+    DANGER_CLASS: 'danger_class',
+    VEHICLE_REGISTRATION_PASSPORT: 'vehicle_registration_passport',
+    VEHICLE_TECHNICAL_INSPECTION: 'vehicle_technical_inspection',
 };
 
 const DOCUMENTS_SET = new Set(Object.values(DOCUMENTS));

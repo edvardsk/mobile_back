@@ -47,6 +47,7 @@ const BASES = {
     SETTINGS: '/settings',
     ECONOMICS: '/economics',
     DEFAULT: '/default',
+    CARS: '/cars',
 };
 
 const IDS = {
@@ -261,6 +262,11 @@ const ROUTES = {
             PUT: IDS.CARGO_ID,
             DELETE: IDS.CARGO_ID,
         },
+        CARS: {
+            BASE: IDS.ME_OR_ID + BASES.CARS,
+            POST: '',
+        },
+
     },
     OTHERS: {
         BASE: BASES.OTHERS,

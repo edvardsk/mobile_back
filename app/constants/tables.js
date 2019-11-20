@@ -278,6 +278,77 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    CARS: {
+        NAME: 'cars',
+        COLUMNS: {
+            COMPANY_ID: 'company_id',
+            CAR_MARK: 'car_mark',
+            CAR_MODEL: 'car_model',
+            CAR_MADE_YEAR_AT: 'car_made_year_at',
+            CAR_TYPE: 'car_type',
+            CAR_LOADING_METHODS: 'car_loading_methods',
+            CAR_VEHICLE_TYPE_ID: 'car_vehicle_type_id',
+            CAR_DANGER_CLASS_ID: 'car_danger_class_id',
+            CAR_WIDTH: 'car_width',
+            CAR_HEIGHT: 'car_height',
+            CAR_LENGTH: 'car_length',
+            CAR_WEIGHT: 'car_weight',
+            CREATED_AT: 'created_at',
+            DELETED: 'deleted',
+        },
+    },
+    TRAILERS: {
+        NAME: 'trailers',
+        COLUMNS: {
+            CAR_ID: 'car_id',
+            TRAILER_MARK: 'trailer_mark',
+            TRAILER_MODEL: 'trailer_model',
+            TRAILER_MADE_YEAR_AT: 'trailer_made_year_at',
+            TRAILER_LOADING_METHODS: 'trailer_loading_methods',
+            TRAILER_VEHICLE_TYPE_ID: 'trailer_vehicle_type_id',
+            TRAILER_DANGER_CLASS_ID: 'trailer_danger_class_id',
+            TRAILER_WIDTH: 'trailer_width',
+            TRAILER_HEIGHT: 'trailer_height',
+            TRAILER_LENGTH: 'trailer_length',
+            TRAILER_WEIGHT: 'trailer_weight',
+            CREATED_AT: 'created_at',
+            DELETED: 'deleted',
+        },
+    },
+    CARS_TO_FILES: {
+        NAME: 'cars_to_files',
+        COLUMNS: {
+            CAR_ID: 'car_id',
+            FILE_ID: 'file_id',
+            CREATED_AT: 'created_at',
+        },
+    },
+    TRAILERS_TO_FILES: {
+        NAME: 'trailers_to_files',
+        COLUMNS: {
+            TRAILER_ID: 'trailer_id',
+            FILE_ID: 'file_id',
+            CREATED_AT: 'created_at',
+        },
+    },
+    CARS_STATE_NUMBERS: {
+        NAME: 'cars_state_numbers',
+        COLUMNS: {
+            CAR_ID: 'car_id',
+            NUMBER: 'number',
+            IS_ACTIVE: 'is_active',
+            CREATED_AT: 'created_at',
+        },
+    },
+    TRAILERS_STATE_NUMBERS: {
+        NAME: 'trailers_state_numbers',
+        COLUMNS: {
+            TRAILER_ID: 'trailer_id',
+            NUMBER: 'number',
+            IS_ACTIVE: 'is_active',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
@@ -305,6 +376,9 @@ const HOMELESS_COLUMNS = {
     STATUS: 'status',
     DANGER_CLASS_NAME: 'danger_class_name',
     VEHICLE_TYPE_NAME: 'vehicle_type_name',
+    IS_CAR: 'is_car',
+    CAR_STATE_NUMBER: 'car_state_number',
+    TRAILER_STATE_NUMBER: 'trailer_state_number',
 };
 
 module.exports = {
