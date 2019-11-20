@@ -125,6 +125,9 @@ const usersFilterQuery = {
 
                     },
                 },
+                [HOMELESS_COLUMNS.SEARCH]: {
+                    type: 'string',
+                },
             },
             additionalProperties: false,
         },

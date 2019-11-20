@@ -288,6 +288,7 @@ const HOMELESS_COLUMNS = {
     ROLE: 'role',
     ROLE_ID: 'role_id',
     ROLES: 'roles',
+    SEARCH: 'search',
     PHONE_NUMBER: 'phone_number',
     PHONE_PREFIX_ID: 'phone_prefix_id',
     OWNER_ID: 'owner_id',
