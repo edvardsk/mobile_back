@@ -312,6 +312,11 @@ const selectCountUsers = filter => {
 const setUsersFilter = (expression, filteringObject) => {
     const filteringObjectSQLExpressions = [
         [HOMELESS_COLUMNS.ROLE, `r.${colsRoles.NAME} IN ?`, filteringObject[HOMELESS_COLUMNS.ROLE]],
+        [HOMELESS_COLUMNS.SEARCH, `
+            ${cols.FULL_NAME}::text ILIKE '%${filteringObject[HOMELESS_COLUMNS.SEARCH]}%'
+            OR
+            ${cols.EMAIL}::text ILIKE '%${filteringObject[HOMELESS_COLUMNS.SEARCH]}%'
+        `],
     ];
 
     for (let [key, exp, values] of filteringObjectSQLExpressions) {
