@@ -349,6 +349,14 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    LANGUAGES: {
+        NAME: 'languages',
+        COLUMNS: {
+            NAME: 'name',
+            CODE: 'code',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
