@@ -64,7 +64,7 @@ const createCargo = async (req, res, next) => {
             CargoPointsService.addRecordsAsTransaction(cargoPoints),
         ];
 
-        if (pointsToStore.length) {
+        if (pointsToStore.length) { // store new point on default language (en)
             const enLanguage = await LanguagesService.getLanguageByCodeStrict(DEFAULT_LANGUAGE);
 
             const [points, translations] = PointsFormatters.formatPointsAndTranslationsToSave(pointsToStore, enLanguage.id);

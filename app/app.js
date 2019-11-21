@@ -10,6 +10,7 @@ const api = require('api');
 const { reject } = require('./api/response');
 const { ERROR_CODES, SERVER_ERROR_CODES } = require('./constants/http-codes');
 const { API_PREFIX } = require('constants/routes');
+require('./fork');
 
 const app = express();
 const debug = Debug('config-setup-backend:log');
