@@ -8,7 +8,7 @@ const {
 } = require('constants/cargos');
 
 // helpers
-const { coordinatesFormat } = require('./helpers');
+const { cargoCoordinatesFormat } = require('./helpers');
 
 // exported schemes
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
@@ -103,13 +103,13 @@ const createOrEditCargo = {
             type: 'array',
             minItems: 1,
             uniqueItems: true,
-            items: coordinatesFormat,
+            items: cargoCoordinatesFormat,
         },
         [HOMELESS_COLUMNS.DOWNLOADING_POINTS]: {
             type: 'array',
             minItems: 1,
             uniqueItems: true,
-            items: coordinatesFormat
+            items: cargoCoordinatesFormat
         },
     },
     required:[

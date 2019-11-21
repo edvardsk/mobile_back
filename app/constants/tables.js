@@ -358,6 +358,22 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    POINTS: {
+        NAME: 'points',
+        COLUMNS: {
+            POINT: 'point',
+            CREATED_AT: 'created_at',
+        },
+    },
+    POINT_TRANSLATIONS: {
+        NAME: 'point_translations',
+        COLUMNS: {
+            POINT_ID: 'point_id',
+            LANGUAGE_ID: 'language_id',
+            VALUE: 'value',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
@@ -389,6 +405,7 @@ const HOMELESS_COLUMNS = {
     CAR_STATE_NUMBER: 'car_state_number',
     TRAILER_STATE_NUMBER: 'trailer_state_number',
     LANGUAGE_CODE: 'language_code',
+    NAME_EN: 'name_en',
 };
 
 module.exports = {

@@ -5,10 +5,18 @@ const squelPostgres = squel.useFlavour('postgres');
 
 const table = SQL_TABLES.LANGUAGES;
 
+const cols = table.COLUMNS;
+
 const selectLanguageById = id => squelPostgres
     .select()
     .from(table.NAME)
     .where(`id = '${id}'`)
+    .toString();
+
+const selectLanguageByCode = code => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where(`${cols.CODE} = '${code}'`)
     .toString();
 
 const selectLanguages = () => squelPostgres
@@ -18,5 +26,6 @@ const selectLanguages = () => squelPostgres
 
 module.exports = {
     selectLanguageById,
+    selectLanguageByCode,
     selectLanguages,
 };
