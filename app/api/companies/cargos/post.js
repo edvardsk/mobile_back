@@ -9,6 +9,7 @@ const PointsService = require('services/tables/points');
 const PointTranslationsService = require('services/tables/point-translations');
 const LanguagesService = require('services/tables/languages');
 const TablesService = require('services/tables');
+const BackgroundService = require('services/background/creators');
 
 // constants
 const { SUCCESS_CODES } = require('constants/http-codes');
@@ -25,6 +26,7 @@ const PointsFormatters = require('formatters/points');
 const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
 const colsCargoPoints = SQL_TABLES.CARGO_POINTS.COLUMNS;
 const colsPoints = SQL_TABLES.POINTS.COLUMNS;
+const colsTranslations = SQL_TABLES.POINT_TRANSLATIONS.COLUMNS;
 
 const createCargo = async (req, res, next) => {
     try {
@@ -64,10 +66,13 @@ const createCargo = async (req, res, next) => {
             CargoPointsService.addRecordsAsTransaction(cargoPoints),
         ];
 
+        let translationsList = [];
         if (pointsToStore.length) { // store new point on default language (en)
             const enLanguage = await LanguagesService.getLanguageByCodeStrict(DEFAULT_LANGUAGE);
 
             const [points, translations] = PointsFormatters.formatPointsAndTranslationsToSave(pointsToStore, enLanguage.id);
+
+            translationsList = [...translations];
 
             transactionsList.push(
                 PointsService.addRecordsAsTransaction(points)
@@ -78,6 +83,15 @@ const createCargo = async (req, res, next) => {
         }
 
         await TablesService.runTransaction(transactionsList);
+        if (translationsList.length) {
+            const languages = await LanguagesService.getLanguagesWithoutEng();
+            await Promise.all(translationsList.reduce((acc, translate) => {
+                const translations = languages.map(language => (
+                    BackgroundService.translateCoordinatesCreator(translate[colsTranslations.POINT_ID], language, translate[colsTranslations.VALUE]))
+                );
+                return [...acc, translations];
+            }, []));
+        }
 
         return success(res, {}, SUCCESS_CODES.CREATED);
     } catch (error) {

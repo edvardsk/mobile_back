@@ -12,6 +12,14 @@ const insertRecords = values => squelPostgres
     .returning('*')
     .toString();
 
+const insertRecord = data => squelPostgres
+    .insert()
+    .into(table.NAME)
+    .setFields(data)
+    .returning('*')
+    .toString();
+
 module.exports = {
     insertRecords,
+    insertRecord,
 };

@@ -29,6 +29,9 @@ const boss = new PgBoss(dbUrl, {
 });
 
 const PARALLEL_JOBS_NUMBER = +process.env.PARALLEL_JOBS_NUMBER || 5;
+const EXPIRE_IN_JOB = process.env.EXPIRE_IN_JOB || '3 days';
+const RETRY_DELAY_SECONDS_JOB = +process.env.RETRY_DELAY_SECONDS_JOB || 60; // 1 minute
+const INTEGER_MAX_POSTGRES = 2147483647;
 
 boss.on('error', onError);
 boss.start()
@@ -65,6 +68,11 @@ async function translateCoordinates(data) {
         const jobId = await boss.publish(
             ACTION_TYPES.TRANSLATE_COORDINATES_NAME,
             data,
+            {
+                expireIn: EXPIRE_IN_JOB,
+                retryDelay: RETRY_DELAY_SECONDS_JOB,
+                retryLimit: INTEGER_MAX_POSTGRES,
+            }
         );
         logger.info(`Job created id: ${jobId}`);
 

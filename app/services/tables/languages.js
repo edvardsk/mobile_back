@@ -5,6 +5,7 @@ const {
     selectLanguageById,
     selectLanguageByCode,
     selectLanguages,
+    selectLanguagesWithoutEng,
 } = require('sql-helpers/languages');
 
 const getLanguage = id => oneOrNone(selectLanguageById(id));
@@ -14,6 +15,8 @@ const getLanguageStrict = id => one(selectLanguageById(id));
 const getLanguageByCodeStrict = code => one(selectLanguageByCode(code));
 
 const getLanguages = () => manyOrNone(selectLanguages());
+
+const getLanguagesWithoutEng = () => manyOrNone(selectLanguagesWithoutEng());
 
 const checkLanguageExists = async (schema, id) => {
     const language = await getLanguage(id);
@@ -25,6 +28,7 @@ module.exports = {
     getLanguageStrict,
     getLanguageByCodeStrict,
     getLanguages,
+    getLanguagesWithoutEng,
 
     checkLanguageExists,
 };
