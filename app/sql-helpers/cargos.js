@@ -75,12 +75,14 @@ const selectCargosByCompanyIdPaginationSorting = (companyId, limit, offset, sort
         .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
         .field('ARRAY(SELECT ST_AsText(coordinates) from cargo_points cp WHERE cp.cargo_id = c.id AND cp.type = \'upload\')', HOMELESS_COLUMNS.UPLOADING_POINTS)
         .field('ARRAY(SELECT ST_AsText(coordinates) from cargo_points cp WHERE cp.cargo_id = c.id AND cp.type = \'download\')', HOMELESS_COLUMNS.DOWNLOADING_POINTS)
+        .field(`vc.${colsVehicleClasses.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
         .from(table.NAME, 'c')
         .where(`c.${cols.COMPANY_ID} = '${companyId}'`);
 
     expression = setCargosFilter(expression, filter);
     return expression
         .left_join(tableCargoStatuses.NAME, 'cs', `cs.id = c.${cols.STATUS_ID}`)
+        .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
         .order(sortColumn, asc)
         .limit(limit)
         .offset(offset)
