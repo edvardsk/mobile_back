@@ -1,5 +1,5 @@
 // constants
-const { SQL_TABLES } = require('constants/tables');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { CAR_TYPES_MAP } = require('constants/cars');
 const { SqlArray } = require('constants/instances');
 
@@ -30,6 +30,17 @@ const formatCarToSave = (id, companyId, body) => {
     return car;
 };
 
+const formatRecordForList = car => ({
+    id: car.id,
+    [cols.CAR_MARK]: car[cols.CAR_MARK],
+    [cols.CAR_MODEL]: car[cols.CAR_MODEL],
+    [cols.CAR_TYPE]: car[cols.CAR_TYPE],
+    [cols.CAR_MADE_YEAR_AT]: car[cols.CAR_MADE_YEAR_AT],
+    [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
+    [cols.CREATED_AT]: car[cols.CREATED_AT],
+});
+
 module.exports = {
     formatCarToSave,
+    formatRecordForList,
 };

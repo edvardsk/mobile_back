@@ -20,6 +20,7 @@ const putCargo = require('./cargos/put');
 const deleteCargo = require('./cargos/delete');
 
 const postCars = require('./cars/post');
+const getCars = require('./cars/get');
 
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
@@ -331,9 +332,19 @@ router.post(
     validate(ValidatorSchemes.createCarTruckAsync),
     validate(ValidatorSchemes.createCarTruckFiles, ['body', 'files']),
     validate(ValidatorSchemes.modifyCarFloats),
-
-    // validate(ValidatorSchemes.createOrEditCargoAsync),
     postCars.createCar,
+);
+
+router.get(
+    ROUTES.COMPANIES.CARS.BASE + ROUTES.COMPANIES.CARS.GET_ALL,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.basePaginationQuery, 'query'),
+    validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
+    validate(ValidatorSchemes.modifyFilterQuery, 'query'),
+    validate(ValidatorSchemes.carsFilterQuery, 'query'),
+    injectCompanyData,
+    getCars.getListCars,
 );
 
 module.exports = router;

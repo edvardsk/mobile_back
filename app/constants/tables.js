@@ -408,6 +408,7 @@ const HOMELESS_COLUMNS = {
     LANGUAGE_CODE: 'language_code',
     NAME_EN: 'name_en',
     CITY_NAME: 'city_name',
+    QUERY: 'query',
 };
 
 module.exports = {

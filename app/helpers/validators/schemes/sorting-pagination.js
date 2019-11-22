@@ -196,6 +196,21 @@ const cargosFilterQuery = {
     },
 };
 
+const carsFilterQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.FILTER]: {
+            type: 'object',
+            properties: {
+                [HOMELESS_COLUMNS.QUERY]: {
+                    type: 'string',
+                    minLength: 1,
+                },
+            },
+            additionalProperties: false,
+        },
+    },
+};
+
 module.exports = {
     basePaginationQuery,
     basePaginationModifyQuery,
@@ -211,4 +226,5 @@ module.exports = {
     companiesFilterQuery,
     companiesEconomicSettingsFilterQuery,
     cargosFilterQuery,
+    carsFilterQuery,
 };

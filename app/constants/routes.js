@@ -270,6 +270,7 @@ const ROUTES = {
         CARS: {
             BASE: IDS.ME_OR_ID + BASES.CARS,
             POST: '',
+            GET_ALL: '',
         },
 
     },
