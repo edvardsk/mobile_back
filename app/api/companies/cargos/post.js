@@ -53,13 +53,13 @@ const createCargo = async (req, res, next) => {
         const cargoPoints = CargoPointsFormatters.formatRecordsToSave(cargoPointsWithName);
 
         const cargoCoordinates = cargoPointsWithName.map(record => ({
-            [colsCargoPoints.COORDINATES]: record[colsCargoPoints.COORDINATES].toCoordinatesString(),
+            [colsCargoPoints.COORDINATES]: record[colsCargoPoints.COORDINATES].toPointString(),
             [HOMELESS_COLUMNS.NAME_EN]: record[HOMELESS_COLUMNS.NAME_EN],
         }));
 
         const storedPoints = await PointsService.getRecordsByPoints(cargoCoordinates.map(record => record[colsCargoPoints.COORDINATES]));
 
-        const pointsToStore = cargoCoordinates.filter(cargoCoordinate => !storedPoints.find(point => point[colsPoints.POINT] === cargoCoordinate[colsCargoPoints.COORDINATES]));
+        const pointsToStore = cargoCoordinates.filter(cargoCoordinate => !storedPoints.find(point => point[colsPoints.COORDINATES] === cargoCoordinate[colsCargoPoints.COORDINATES]));
 
         const transactionsList = [
             CargosServices.addRecordAsTransaction(cargo),

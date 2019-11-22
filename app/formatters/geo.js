@@ -22,7 +22,21 @@ const formatGeoPointToObject = string => {
     };
 };
 
+const formatGeoPointWithNameFromPostgresJSONToObject = obj => {
+    const coordinatesString = obj.f1;
+    const cityName = obj.f2;
+    const languageId = obj.f3;
+    const [longitude, latitude] = coordinatesString.slice(6, -1).split(' ');
+    return {
+        [HOMELESS_COLUMNS.LONGITUDE]: longitude,
+        [HOMELESS_COLUMNS.LATITUDE]: latitude,
+        [HOMELESS_COLUMNS.CITY_NAME]: cityName,
+        languageId,
+    };
+};
+
 module.exports = {
     formatGeoDataValuesToSave,
     formatGeoPointToObject,
+    formatGeoPointWithNameFromPostgresJSONToObject,
 };

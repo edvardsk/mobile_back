@@ -28,7 +28,7 @@ const getRecord = id => oneOrNone(selectRecordById(id));
 
 const getRecordLight = id => oneOrNone(selectRecordByIdLight(id));
 
-const getRecordStrict = id => one(selectRecordById(id));
+const getRecordStrict = (id, userLanguageId) => one(selectRecordById(id, userLanguageId));
 
 const getRecordsByCompanyId = companyId => manyOrNone(selectRecordsByCompanyId(companyId));
 

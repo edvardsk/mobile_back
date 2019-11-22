@@ -20,7 +20,7 @@ const formatPointsToStore = (ids, records) => records.map((record, i) => formatP
 
 const formatPointToStore = (id, record) => ({
     id,
-    [cols.POINT]: record[colsCargoPoints.COORDINATES],
+    [cols.COORDINATES]: record[colsCargoPoints.COORDINATES],
 });
 
 module.exports = {

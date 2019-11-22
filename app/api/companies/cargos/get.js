@@ -15,6 +15,8 @@ const { formatRecordForList, formatRecordForResponse } = require('formatters/car
 // helpers
 const { getParams } = require('helpers/pagination-sorting');
 
+const colsUsers = SQL_TABLES.USERS.COLUMNS;
+
 const cargosPaginationOptions = {
     DEFAULT_LIMIT: 5,
     DEFAULT_SORT_COLUMN: SQL_TABLES.CARGOS.COLUMNS.CREATED_AT,
@@ -56,9 +58,13 @@ const getCargos = async (req, res, next) => {
 
 const getCargo = async (req, res, next) => {
     try {
+        const { user } = res.locals;
+
+        const userLanguageId = user[colsUsers.LANGUAGE_ID];
+
         const { cargoId } = req.params;
-        const cargo = await CargosServices.getRecordStrict(cargoId);
-        return success(res, { cargo: formatRecordForResponse(cargo) });
+        const cargo = await CargosServices.getRecordStrict(cargoId, userLanguageId);
+        return success(res, { cargo: formatRecordForResponse(cargo, userLanguageId) });
     } catch (error) {
         next(error);
     }

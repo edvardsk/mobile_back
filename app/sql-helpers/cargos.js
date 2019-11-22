@@ -9,11 +9,17 @@ const table = SQL_TABLES.CARGOS;
 const tableCargoStatuses = SQL_TABLES.CARGO_STATUSES;
 const tableDangerClasses = SQL_TABLES.DANGER_CLASSES;
 const tableVehicleClasses = SQL_TABLES.VEHICLE_TYPES;
+const tableCargoPoints = SQL_TABLES.CARGO_POINTS;
+const tablePoints = SQL_TABLES.POINTS;
+const tableTranslations = SQL_TABLES.POINT_TRANSLATIONS;
 
 const cols = table.COLUMNS;
 const colsCargoStatuses = tableCargoStatuses.COLUMNS;
 const colsDangerClasses = tableDangerClasses.COLUMNS;
 const colsVehicleClasses = tableVehicleClasses.COLUMNS;
+const colsCargoPoints = tableCargoPoints.COLUMNS;
+const colsPoints = tablePoints.COLUMNS;
+const colsTranslations = tableTranslations.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -41,12 +47,34 @@ const deleteRecordById = id => squelPostgres
     .returning('*')
     .toString();
 
-const selectRecordById = id => squelPostgres
+const selectRecordById = (id, userLanguageId) => squelPostgres
     .select()
     .field('c.*')
     .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
-    .field('ARRAY(SELECT ST_AsText(coordinates) from cargo_points cp WHERE cp.cargo_id = c.id AND cp.type = \'upload\')', HOMELESS_COLUMNS.UPLOADING_POINTS)
-    .field('ARRAY(SELECT ST_AsText(coordinates) from cargo_points cp WHERE cp.cargo_id = c.id AND cp.type = \'download\')', HOMELESS_COLUMNS.DOWNLOADING_POINTS)
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+            .from(tableCargoPoints.NAME, 'cp')
+            .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
+            .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
+            .where(`t.${colsTranslations.LANGUAGE_ID} = '${userLanguageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
+            .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
+            .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
+            .toString()
+    })`, HOMELESS_COLUMNS.UPLOADING_POINTS)
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+            .from(tableCargoPoints.NAME, 'cp')
+            .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
+            .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
+            .where(`t.${colsTranslations.LANGUAGE_ID} = '${userLanguageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
+            .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
+            .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
+            .toString()
+    })`, HOMELESS_COLUMNS.DOWNLOADING_POINTS)
     .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
     .field(`vc.${colsVehicleClasses.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
     .from(table.NAME, 'c')

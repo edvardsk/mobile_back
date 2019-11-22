@@ -1,7 +1,7 @@
 exports.up = function(knex) {
     return knex.schema.createTable('points', function(table) {
         table.uuid('id').defaultTo(knex.raw('uuid_generate_v4()')).primary().unique();
-        table.string('point', 50).notNull().unique();
+        table.specificType('coordinates', 'geography').unique();
         table.timestamp('created_at').defaultTo(knex.fn.now());
     })
         .then(function () {
@@ -11,6 +11,7 @@ exports.up = function(knex) {
                 table.uuid('language_id').references('languages.id').notNull();
                 table.string('value').notNull();
                 table.timestamp('created_at').defaultTo(knex.fn.now());
+                table.unique(['point_id', 'language_id']);
             });
         });
 };

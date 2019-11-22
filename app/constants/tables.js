@@ -361,7 +361,7 @@ const SQL_TABLES = {
     POINTS: {
         NAME: 'points',
         COLUMNS: {
-            POINT: 'point',
+            COORDINATES: 'coordinates',
             CREATED_AT: 'created_at',
         },
     },
@@ -406,6 +406,7 @@ const HOMELESS_COLUMNS = {
     TRAILER_STATE_NUMBER: 'trailer_state_number',
     LANGUAGE_CODE: 'language_code',
     NAME_EN: 'name_en',
+    CITY_NAME: 'city_name',
 };
 
 module.exports = {

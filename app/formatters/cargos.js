@@ -5,7 +5,7 @@ const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SqlArray } = require('constants/instances');
 
 // formatters
-const { formatGeoPointToObject } = require('./geo');
+const { formatGeoPointToObject, formatGeoPointWithNameFromPostgresJSONToObject } = require('./geo');
 
 const {
     FREEZE_CARGO_UNIT,
@@ -48,30 +48,47 @@ const formatRecordForList = cargo => ({
     [HOMELESS_COLUMNS.VEHICLE_TYPE_NAME]: cargo[HOMELESS_COLUMNS.VEHICLE_TYPE_NAME],
 });
 
-const formatRecordForResponse = cargo => ({
-    id: cargo.id,
-    [cols.UPLOADING_DATE_FROM]: cargo[cols.UPLOADING_DATE_FROM],
-    [cols.UPLOADING_DATE_TO]: cargo[cols.UPLOADING_DATE_TO],
-    [cols.DOWNLOADING_DATE_FROM]: cargo[cols.DOWNLOADING_DATE_FROM],
-    [cols.DOWNLOADING_DATE_TO]: cargo[cols.DOWNLOADING_DATE_TO],
-    [cols.GROSS_WEIGHT]: parseFloat(cargo[cols.GROSS_WEIGHT]),
-    [cols.WIDTH]: parseFloat(cargo[cols.WIDTH]),
-    [cols.HEIGHT]: parseFloat(cargo[cols.HEIGHT]),
-    [cols.LENGTH]: parseFloat(cargo[cols.LENGTH]),
-    [cols.LOADING_METHODS]: cargo[cols.LOADING_METHODS],
-    [cols.LOADING_TYPE]: cargo[cols.LOADING_TYPE],
-    [cols.GUARANTEES]: cargo[cols.GUARANTEES],
-    [cols.DANGER_CLASS_ID]: cargo[cols.DANGER_CLASS_ID],
-    [cols.VEHICLE_TYPE_ID]: cargo[cols.VEHICLE_TYPE_ID],
-    [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: cargo[HOMELESS_COLUMNS.DANGER_CLASS_NAME],
-    [HOMELESS_COLUMNS.VEHICLE_TYPE_NAME]: cargo[HOMELESS_COLUMNS.VEHICLE_TYPE_NAME],
-    [cols.PACKING_DESCRIPTION]: cargo[cols.PACKING_DESCRIPTION],
-    [cols.DESCRIPTION]: cargo[cols.DESCRIPTION],
-    [cols.CREATED_AT]: cargo[cols.CREATED_AT],
-    [HOMELESS_COLUMNS.STATUS]: cargo[HOMELESS_COLUMNS.STATUS],
-    [HOMELESS_COLUMNS.UPLOADING_POINTS]: cargo[HOMELESS_COLUMNS.UPLOADING_POINTS].map(value => formatGeoPointToObject(value)),
-    [HOMELESS_COLUMNS.DOWNLOADING_POINTS]: cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS].map(value => formatGeoPointToObject(value)),
-});
+const formatRecordForResponse = (cargo, userLanguageId) => {
+    const result = {
+        id: cargo.id,
+        [cols.UPLOADING_DATE_FROM]: cargo[cols.UPLOADING_DATE_FROM],
+        [cols.UPLOADING_DATE_TO]: cargo[cols.UPLOADING_DATE_TO],
+        [cols.DOWNLOADING_DATE_FROM]: cargo[cols.DOWNLOADING_DATE_FROM],
+        [cols.DOWNLOADING_DATE_TO]: cargo[cols.DOWNLOADING_DATE_TO],
+        [cols.GROSS_WEIGHT]: parseFloat(cargo[cols.GROSS_WEIGHT]),
+        [cols.WIDTH]: parseFloat(cargo[cols.WIDTH]),
+        [cols.HEIGHT]: parseFloat(cargo[cols.HEIGHT]),
+        [cols.LENGTH]: parseFloat(cargo[cols.LENGTH]),
+        [cols.LOADING_METHODS]: cargo[cols.LOADING_METHODS],
+        [cols.LOADING_TYPE]: cargo[cols.LOADING_TYPE],
+        [cols.GUARANTEES]: cargo[cols.GUARANTEES],
+        [cols.DANGER_CLASS_ID]: cargo[cols.DANGER_CLASS_ID],
+        [cols.VEHICLE_TYPE_ID]: cargo[cols.VEHICLE_TYPE_ID],
+        [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: cargo[HOMELESS_COLUMNS.DANGER_CLASS_NAME],
+        [HOMELESS_COLUMNS.VEHICLE_TYPE_NAME]: cargo[HOMELESS_COLUMNS.VEHICLE_TYPE_NAME],
+        [cols.PACKING_DESCRIPTION]: cargo[cols.PACKING_DESCRIPTION],
+        [cols.DESCRIPTION]: cargo[cols.DESCRIPTION],
+        [cols.CREATED_AT]: cargo[cols.CREATED_AT],
+        [HOMELESS_COLUMNS.STATUS]: cargo[HOMELESS_COLUMNS.STATUS],
+    };
+    const up = cargo[HOMELESS_COLUMNS.UPLOADING_POINTS].map(value => formatGeoPointWithNameFromPostgresJSONToObject(value));
+    const down = cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS].map(value => formatGeoPointWithNameFromPostgresJSONToObject(value));
+
+    const uploadingPoints = uniqueByLanguageId(up, userLanguageId);
+    const downloadingPoints = uniqueByLanguageId(down, userLanguageId);
+
+    return {
+        ...result,
+        [HOMELESS_COLUMNS.UPLOADING_POINTS]: uploadingPoints.map(data => {
+            delete data.languageId;
+            return data;
+        }),
+        [HOMELESS_COLUMNS.DOWNLOADING_POINTS]: downloadingPoints.map(data => {
+            delete data.languageId;
+            return data;
+        }),
+    };
+};
 
 const formatCargoData = body => {
     const CARGOS_PROPS = new Set([
@@ -107,6 +124,28 @@ const formatCargoData = body => {
         }
     });
     return { cargosProps, cargoPointsProps };
+};
+
+const uniqueByLanguageId = (list, languageId) => {
+    const points = [...list];
+    for (let i = 0; i < points.length - 1; i++) {
+        for (let j = i + 1; j < points.length; j++) {
+            if (
+                points[i]['longitude'] === points[j]['longitude'] &&
+                points[i]['latitude'] === points[j]['latitude']
+            ) {
+                if (points[i]['languageId'] === languageId) {
+                    points.splice(j, 1);
+                    j++;
+                } else {
+                    points.splice(i, 1);
+                    i++;
+                    j = i;
+                }
+            }
+        }
+    }
+    return points;
 };
 
 module.exports = {
