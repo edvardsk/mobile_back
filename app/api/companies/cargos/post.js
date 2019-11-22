@@ -93,7 +93,7 @@ const createCargo = async (req, res, next) => {
             }, []));
         }
 
-        return success(res, {}, SUCCESS_CODES.CREATED);
+        return success(res, { id: cargoId }, SUCCESS_CODES.CREATED);
     } catch (error) {
         next(error);
     }

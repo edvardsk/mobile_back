@@ -6,6 +6,7 @@ const {
     updateRecordById,
     deleteRecordById,
     selectRecordById,
+    selectRecordByWithCoordinatesId,
     selectRecordByIdLight,
     selectRecordsByCompanyId,
     selectCargosByCompanyIdPaginationSorting,
@@ -28,7 +29,7 @@ const getRecord = id => oneOrNone(selectRecordById(id));
 
 const getRecordLight = id => oneOrNone(selectRecordByIdLight(id));
 
-const getRecordStrict = (id, userLanguageId) => one(selectRecordById(id, userLanguageId));
+const getRecordStrict = (id, userLanguageId) => one(selectRecordByWithCoordinatesId(id, userLanguageId));
 
 const getRecordsByCompanyId = companyId => manyOrNone(selectRecordsByCompanyId(companyId));
 

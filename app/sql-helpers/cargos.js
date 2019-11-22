@@ -47,7 +47,16 @@ const deleteRecordById = id => squelPostgres
     .returning('*')
     .toString();
 
-const selectRecordById = (id, userLanguageId) => squelPostgres
+const selectRecordById = id => squelPostgres
+    .select()
+    .field('c.*')
+    .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
+    .from(table.NAME, 'c')
+    .where(`c.id = '${id}'`)
+    .left_join(tableCargoStatuses.NAME, 'cs', `cs.id = c.${cols.STATUS_ID}`)
+    .toString();
+
+const selectRecordByWithCoordinatesId = (id, userLanguageId) => squelPostgres
     .select()
     .field('c.*')
     .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
@@ -172,6 +181,7 @@ module.exports = {
     updateRecordById,
     deleteRecordById,
     selectRecordById,
+    selectRecordByWithCoordinatesId,
     selectRecordByIdLight,
     selectRecordsByCompanyId,
     selectCargosByCompanyIdPaginationSorting,
