@@ -5,7 +5,7 @@ const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SqlArray } = require('constants/instances');
 
 // formatters
-const { formatGeoPointToObject, formatGeoPointWithNameFromPostgresJSONToObject } = require('./geo');
+const { formatGeoPointWithNameFromPostgresJSONToObject } = require('./geo');
 
 const {
     FREEZE_CARGO_UNIT,
@@ -30,23 +30,31 @@ const formatRecordToEdit = data => ({
     [cols.GUARANTEES]: new SqlArray(data[cols.GUARANTEES]),
 });
 
-const formatRecordForList = cargo => ({
-    id: cargo.id,
-    [cols.UPLOADING_DATE_FROM]: cargo[cols.UPLOADING_DATE_FROM],
-    [cols.UPLOADING_DATE_TO]: cargo[cols.UPLOADING_DATE_TO],
-    [cols.DOWNLOADING_DATE_FROM]: cargo[cols.DOWNLOADING_DATE_FROM],
-    [cols.DOWNLOADING_DATE_TO]: cargo[cols.DOWNLOADING_DATE_TO],
-    [cols.CREATED_AT]: cargo[cols.CREATED_AT],
-    [cols.WIDTH]: parseFloat(cargo[cols.WIDTH]),
-    [cols.GROSS_WEIGHT]: parseFloat(cargo[cols.GROSS_WEIGHT]),
-    [cols.LENGTH]: parseFloat(cargo[cols.LENGTH]),
-    [cols.HEIGHT]: parseFloat(cargo[cols.HEIGHT]),
-    [cols.DESCRIPTION]: cargo[cols.DESCRIPTION],
-    [HOMELESS_COLUMNS.STATUS]: cargo[HOMELESS_COLUMNS.STATUS],
-    [HOMELESS_COLUMNS.UPLOADING_POINTS]: cargo[HOMELESS_COLUMNS.UPLOADING_POINTS].map(value => formatGeoPointToObject(value)),
-    [HOMELESS_COLUMNS.DOWNLOADING_POINTS]: cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS].map(value => formatGeoPointToObject(value)),
-    [HOMELESS_COLUMNS.VEHICLE_TYPE_NAME]: cargo[HOMELESS_COLUMNS.VEHICLE_TYPE_NAME],
-});
+const formatRecordForList = (cargo, userLanguageId) => {
+    const result = {
+        id: cargo.id,
+        [cols.UPLOADING_DATE_FROM]: cargo[cols.UPLOADING_DATE_FROM],
+        [cols.UPLOADING_DATE_TO]: cargo[cols.UPLOADING_DATE_TO],
+        [cols.DOWNLOADING_DATE_FROM]: cargo[cols.DOWNLOADING_DATE_FROM],
+        [cols.DOWNLOADING_DATE_TO]: cargo[cols.DOWNLOADING_DATE_TO],
+        [cols.CREATED_AT]: cargo[cols.CREATED_AT],
+        [cols.WIDTH]: parseFloat(cargo[cols.WIDTH]),
+        [cols.GROSS_WEIGHT]: parseFloat(cargo[cols.GROSS_WEIGHT]),
+        [cols.LENGTH]: parseFloat(cargo[cols.LENGTH]),
+        [cols.HEIGHT]: parseFloat(cargo[cols.HEIGHT]),
+        [cols.DESCRIPTION]: cargo[cols.DESCRIPTION],
+        [HOMELESS_COLUMNS.STATUS]: cargo[HOMELESS_COLUMNS.STATUS],
+        [HOMELESS_COLUMNS.VEHICLE_TYPE_NAME]: cargo[HOMELESS_COLUMNS.VEHICLE_TYPE_NAME],
+    };
+
+    const [uploadingPoints, downloadingPoints] = formatGeoPoints(cargo, userLanguageId);
+
+    return {
+        ...result,
+        uploadingPoints,
+        downloadingPoints,
+    };
+};
 
 const formatRecordForResponse = (cargo, userLanguageId) => {
     const result = {
@@ -71,22 +79,12 @@ const formatRecordForResponse = (cargo, userLanguageId) => {
         [cols.CREATED_AT]: cargo[cols.CREATED_AT],
         [HOMELESS_COLUMNS.STATUS]: cargo[HOMELESS_COLUMNS.STATUS],
     };
-    const up = cargo[HOMELESS_COLUMNS.UPLOADING_POINTS].map(value => formatGeoPointWithNameFromPostgresJSONToObject(value));
-    const down = cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS].map(value => formatGeoPointWithNameFromPostgresJSONToObject(value));
-
-    const uploadingPoints = uniqueByLanguageId(up, userLanguageId);
-    const downloadingPoints = uniqueByLanguageId(down, userLanguageId);
+    const [uploadingPoints, downloadingPoints] = formatGeoPoints(cargo, userLanguageId);
 
     return {
         ...result,
-        [HOMELESS_COLUMNS.UPLOADING_POINTS]: uploadingPoints.map(data => {
-            delete data.languageId;
-            return data;
-        }),
-        [HOMELESS_COLUMNS.DOWNLOADING_POINTS]: downloadingPoints.map(data => {
-            delete data.languageId;
-            return data;
-        }),
+        uploadingPoints,
+        downloadingPoints,
     };
 };
 
@@ -124,6 +122,15 @@ const formatCargoData = body => {
         }
     });
     return { cargosProps, cargoPointsProps };
+};
+
+const formatGeoPoints = (cargo, userLanguageId) => {
+    const up = cargo[HOMELESS_COLUMNS.UPLOADING_POINTS].map(value => formatGeoPointWithNameFromPostgresJSONToObject(value));
+    const down = cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS].map(value => formatGeoPointWithNameFromPostgresJSONToObject(value));
+
+    const uploadingPoints = uniqueByLanguageId(up, userLanguageId);
+    const downloadingPoints = uniqueByLanguageId(down, userLanguageId);
+    return [uploadingPoints, downloadingPoints];
 };
 
 const uniqueByLanguageId = (list, languageId) => {

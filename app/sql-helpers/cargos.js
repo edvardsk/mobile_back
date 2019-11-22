@@ -96,13 +96,35 @@ const selectRecordsByCompanyId = companyId => squelPostgres
     .where(`${cols.COMPANY_ID} = '${companyId}'`)
     .toString();
 
-const selectCargosByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => {
+const selectCargosByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter, userLanguageId) => {
     let expression = squelPostgres
         .select()
         .field('c.*')
         .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
-        .field('ARRAY(SELECT ST_AsText(coordinates) from cargo_points cp WHERE cp.cargo_id = c.id AND cp.type = \'upload\')', HOMELESS_COLUMNS.UPLOADING_POINTS)
-        .field('ARRAY(SELECT ST_AsText(coordinates) from cargo_points cp WHERE cp.cargo_id = c.id AND cp.type = \'download\')', HOMELESS_COLUMNS.DOWNLOADING_POINTS)
+        .field(`ARRAY(${
+            squelPostgres
+                .select()
+                .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                .from(tableCargoPoints.NAME, 'cp')
+                .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
+                .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
+                .where(`t.${colsTranslations.LANGUAGE_ID} = '${userLanguageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
+                .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
+                .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
+                .toString()
+        })`, HOMELESS_COLUMNS.UPLOADING_POINTS)
+        .field(`ARRAY(${
+            squelPostgres
+                .select()
+                .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                .from(tableCargoPoints.NAME, 'cp')
+                .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
+                .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
+                .where(`t.${colsTranslations.LANGUAGE_ID} = '${userLanguageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
+                .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
+                .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
+                .toString()
+        })`, HOMELESS_COLUMNS.DOWNLOADING_POINTS)
         .field(`vc.${colsVehicleClasses.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
         .from(table.NAME, 'c')
         .where(`c.${cols.COMPANY_ID} = '${companyId}'`);

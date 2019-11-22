@@ -25,7 +25,8 @@ const cargosPaginationOptions = {
 
 const getCargos = async (req, res, next) => {
     try {
-        const { company } = res.locals;
+        const { company, user } = res.locals;
+        const userLanguageId = user[colsUsers.LANGUAGE_ID];
         const {
             page,
             limit,
@@ -36,12 +37,12 @@ const getCargos = async (req, res, next) => {
         const filter = get(req, 'query.filter', {});
 
         const [cargos, cargosCount] = await Promise.all([
-            CargosServices.getCargosPaginationSorting(company.id, limit, limit * page, sortColumn, asc, filter),
+            CargosServices.getCargosPaginationSorting(company.id, limit, limit * page, sortColumn, asc, filter, userLanguageId),
             CargosServices.getCountCargos(company.id, filter)
         ]);
 
         const result = formatPaginationDataForResponse(
-            cargos.map(cargo => formatRecordForList(cargo)),
+            cargos.map(cargo => formatRecordForList(cargo, userLanguageId)),
             cargosCount,
             limit,
             page,

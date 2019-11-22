@@ -32,8 +32,8 @@ const getRecordStrict = (id, userLanguageId) => one(selectRecordById(id, userLan
 
 const getRecordsByCompanyId = companyId => manyOrNone(selectRecordsByCompanyId(companyId));
 
-const getCargosPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
-    manyOrNone(selectCargosByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
+const getCargosPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter, userLanguageId) => (
+    manyOrNone(selectCargosByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter, userLanguageId))
 );
 
 const getCountCargos = (companyId, filter) => (
