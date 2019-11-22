@@ -53,6 +53,7 @@ const selectRecordById = id => squelPostgres
     .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
     .from(table.NAME, 'c')
     .where(`c.id = '${id}'`)
+    .where(`c.${cols.DELETED} = 'f'`)
     .left_join(tableCargoStatuses.NAME, 'cs', `cs.id = c.${cols.STATUS_ID}`)
     .toString();
 
@@ -88,6 +89,7 @@ const selectRecordByWithCoordinatesId = (id, userLanguageId) => squelPostgres
     .field(`vc.${colsVehicleClasses.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
     .from(table.NAME, 'c')
     .where(`c.id = '${id}'`)
+    .where(`c.${cols.DELETED} = 'f'`)
     .left_join(tableCargoStatuses.NAME, 'cs', `cs.id = c.${cols.STATUS_ID}`)
     .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.DANGER_CLASS_ID}`)
     .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
@@ -97,12 +99,14 @@ const selectRecordByIdLight = id => squelPostgres
     .select()
     .from(table.NAME)
     .where(`id = '${id}'`)
+    .where(`${cols.DELETED} = 'f'`)
     .toString();
 
 const selectRecordsByCompanyId = companyId => squelPostgres
     .select()
     .from(table.NAME)
     .where(`${cols.COMPANY_ID} = '${companyId}'`)
+    .where(`${cols.DELETED} = 'f'`)
     .toString();
 
 const selectCargosByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter, userLanguageId) => {
@@ -136,7 +140,8 @@ const selectCargosByCompanyIdPaginationSorting = (companyId, limit, offset, sort
         })`, HOMELESS_COLUMNS.DOWNLOADING_POINTS)
         .field(`vc.${colsVehicleClasses.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
         .from(table.NAME, 'c')
-        .where(`c.${cols.COMPANY_ID} = '${companyId}'`);
+        .where(`c.${cols.COMPANY_ID} = '${companyId}'`)
+        .where(`c.${cols.DELETED} = 'f'`);
 
     expression = setCargosFilter(expression, filter);
     return expression
@@ -153,7 +158,8 @@ const selectCountCargosByCompanyId = (companyId, filter) => {
         .select()
         .field('COUNT(c.id)')
         .from(table.NAME, 'c')
-        .where(`c.${cols.COMPANY_ID} = '${companyId}'`);
+        .where(`c.${cols.COMPANY_ID} = '${companyId}'`)
+        .where(`c.${cols.DELETED} = 'f'`);
 
     expression = setCargosFilter(expression, filter);
     return expression

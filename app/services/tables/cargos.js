@@ -23,6 +23,8 @@ const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
 
 const editRecordAsTransaction = (id, data) => [updateRecordById(id, data), OPERATIONS.ONE];
 
+const editRecord = (id, data) => one(updateRecordById(id, data));
+
 const removeRecordAsTransaction = id => [deleteRecordById(id), OPERATIONS.ONE];
 
 const getRecord = id => oneOrNone(selectRecordById(id));
@@ -42,6 +44,10 @@ const getCountCargos = (companyId, filter) => (
         .then(({ count }) => +count)
 );
 
+const markAsDeleted = id => editRecord(id, {
+    [cols.DELETED]: true,
+});
+
 const checkCargoInCompanyExists = async (meta, cargoId) => {
     const cargo = await getRecordLight(cargoId);
     const { companyId } = meta;
@@ -57,6 +63,7 @@ module.exports = {
     getRecordsByCompanyId,
     getCargosPaginationSorting,
     getCountCargos,
+    markAsDeleted,
 
     checkCargoInCompanyExists,
 };

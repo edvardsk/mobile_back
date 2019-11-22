@@ -251,6 +251,7 @@ const SQL_TABLES = {
             DESCRIPTION: 'description',
             FREEZED_AFTER: 'freezed_after',
             CREATED_AT: 'created_at',
+            DELETED: 'deleted',
         },
     },
     CARGO_POINTS: {
