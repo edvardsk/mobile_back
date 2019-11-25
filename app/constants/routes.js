@@ -273,6 +273,7 @@ const ROUTES = {
             POST: '',
             GET_ALL: '',
             GET: IDS.CAR_ID,
+            PUT: IDS.CAR_ID,
         },
 
     },

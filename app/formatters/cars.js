@@ -31,6 +31,36 @@ const formatCarToSave = (id, companyId, body) => {
     return car;
 };
 
+const formatCarToEdit = (body) => {
+    const carType = body[cols.CAR_TYPE];
+    let car = {
+        [cols.CAR_MARK]: body[cols.CAR_MARK],
+        [cols.CAR_MODEL]: body[cols.CAR_MODEL],
+        [cols.CAR_MADE_YEAR_AT]: body[cols.CAR_MADE_YEAR_AT],
+        [cols.CAR_TYPE]: carType,
+        [cols.CAR_LOADING_METHODS]: null,
+        [cols.CAR_VEHICLE_TYPE_ID]: null,
+        [cols.CAR_WEIGHT]: null,
+        [cols.CAR_LENGTH]: null,
+        [cols.CAR_HEIGHT]: null,
+        [cols.CAR_WIDTH]: null,
+        [cols.CAR_DANGER_CLASS_ID]: null,
+    };
+    if (carType === CAR_TYPES_MAP.TRUCK) {
+        car = {
+            ...car,
+            [cols.CAR_LOADING_METHODS]: new SqlArray(body[cols.CAR_LOADING_METHODS]),
+            [cols.CAR_VEHICLE_TYPE_ID]: body[cols.CAR_VEHICLE_TYPE_ID],
+            [cols.CAR_WEIGHT]: body[cols.CAR_WEIGHT],
+            [cols.CAR_LENGTH]: body[cols.CAR_LENGTH],
+            [cols.CAR_HEIGHT]: body[cols.CAR_HEIGHT],
+            [cols.CAR_WIDTH]: body[cols.CAR_WIDTH],
+            [cols.CAR_DANGER_CLASS_ID]: body[cols.CAR_DANGER_CLASS_ID] || null,
+        };
+    }
+    return car;
+};
+
 const formatRecordForList = car => ({
     id: car.id,
     [cols.CAR_MARK]: car[cols.CAR_MARK],
@@ -96,6 +126,7 @@ const formatCarTruckFiles = data => {
 
 module.exports = {
     formatCarToSave,
+    formatCarToEdit,
     formatRecordForList,
     formatRecordForResponse,
 };

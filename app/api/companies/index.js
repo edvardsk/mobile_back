@@ -21,6 +21,7 @@ const deleteCargo = require('./cargos/delete');
 
 const postCars = require('./cars/post');
 const getCars = require('./cars/get');
+const putCars = require('./cars/put');
 
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
@@ -326,13 +327,14 @@ router.post(
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
     formDataHandler(uploadData),
-    validate(ValidatorSchemes.modifyCarArrays),
-    validate(ValidatorSchemes.createCarCommon),
-    validate(ValidatorSchemes.createCarCommonAsync),
+    validate(ValidatorSchemes.modifyCreateCarTrailerArrays),
+    validate(ValidatorSchemes.createCarTrailerCommon),
+    validate(ValidatorSchemes.createCarTrailerCommonAsync),
+    validate(ValidatorSchemes.createCarTrailerCommonFiles, ['body', 'files']),
     validate(ValidatorSchemes.createCarTruck),
     validate(ValidatorSchemes.createCarTruckAsync),
     validate(ValidatorSchemes.createCarTruckFiles, ['body', 'files']),
-    validate(ValidatorSchemes.modifyCarFloats),
+    validate(ValidatorSchemes.modifyCreateCarFloats),
     postCars.createCar,
 );
 
@@ -356,6 +358,26 @@ router.get(
     validate(ValidatorSchemes.requiredCarId, 'params'),
     validate(({ company }) => ValidatorSchemes.requiredExistingCarInCompanyAsyncFunc({ companyId: company.id }), 'params'),
     getCars.getCar,
+);
+
+router.put(
+    ROUTES.COMPANIES.CARS.BASE + ROUTES.COMPANIES.CARS.PUT,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredCarId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingCarInCompanyAsyncFunc({ companyId: company.id }), 'params'),
+    formDataHandler(uploadData),
+    validate(ValidatorSchemes.modifyEditCarArrays),
+    validate(ValidatorSchemes.editCarCommon),
+    validate(({ requestParams }) => ValidatorSchemes.editCarCommonAsyncFunc({ carId: requestParams.carId })),
+    validate(ValidatorSchemes.editCarCommonFiles, 'files'),
+    validate(ValidatorSchemes.editCarTruck),
+    validate(ValidatorSchemes.editCarTruckAsync),
+    validate(ValidatorSchemes.editCarTruckFiles, ['body', 'files']),
+    validate(({ requestParams }) => ValidatorSchemes.editCarTruckFilesCheckDangerClassAsyncFunc({ carId: requestParams.carId}), ['body', 'files']),
+    validate(ValidatorSchemes.modifyEditCarTruckFloats),
+    putCars.editCar,
 );
 
 module.exports = router;
