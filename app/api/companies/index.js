@@ -292,7 +292,6 @@ router.get(
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
     validate(({ company }) => ValidatorSchemes.requiredExistingCargoInCompanyAsyncFunc({ companyId: company.id }), 'params'),
-    injectCompanyData,
     getCargo.getCargo,
 );
 
@@ -302,7 +301,6 @@ router.put(
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
     validate(({ company }) => ValidatorSchemes.requiredExistingCargoInCompanyAsyncFunc({ companyId: company.id }), 'params'),
-    injectCompanyData,
     validate(ValidatorSchemes.createOrEditCargo),
     validate(ValidatorSchemes.createOrEditCargoAsync),
     putCargo.editCargo,
@@ -314,7 +312,6 @@ router.delete(
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
     validate(({ company }) => ValidatorSchemes.requiredExistingCargoInCompanyAsyncFunc({ companyId: company.id }), 'params'),
-    injectCompanyData,
     deleteCargo.removeCargo,
 );
 
@@ -346,6 +343,16 @@ router.get(
     validate(ValidatorSchemes.carsFilterQuery, 'query'),
     injectCompanyData,
     getCars.getListCars,
+);
+
+router.get(
+    ROUTES.COMPANIES.CARS.BASE + ROUTES.COMPANIES.CARS.GET,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredCarId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingCarInCompanyAsyncFunc({ companyId: company.id }), 'params'),
+    getCars.getCar,
 );
 
 module.exports = router;

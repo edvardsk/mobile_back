@@ -141,6 +141,7 @@ const createCarCommon = {
         required: [
             colsCars.CAR_MARK,
             colsCars.CAR_MODEL,
+            colsCars.CAR_TYPE,
             HOMELESS_COLUMNS.CAR_STATE_NUMBER,
             colsCars.CAR_MADE_YEAR_AT,
         ],
@@ -263,18 +264,33 @@ const createCarTruckFiles = {
             prohibited: [
                 colsCars.CAR_DANGER_CLASS_ID,
                 DOCUMENTS.DANGER_CLASS,
+                DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT,
             ],
         },
     ],
-    required: [DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT, DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION],
     additionalProperties: false,
 };
 
-// const requiredExistingCarInCompanyAsyncFunc = ({  }) => ({
-//     $async: true,
-//     properties: {
-//     },
-// });
+const requiredExistingCarInCompanyAsyncFunc = ({ companyId }) => ({
+    $async: true,
+    properties: {
+        carId: {
+            car_in_company_not_exists: {
+                companyId,
+            },
+        },
+    },
+});
+
+const requiredCarId = {
+    $async: true,
+    properties: {
+        carId: {
+            type: 'string',
+            format: 'uuid',
+        },
+    },
+};
 
 module.exports = {
     modifyCarArrays,
@@ -284,5 +300,6 @@ module.exports = {
     createCarTruck,
     createCarTruckAsync,
     createCarTruckFiles,
-    // requiredExistingCarInCompanyAsyncFunc,
+    requiredExistingCarInCompanyAsyncFunc,
+    requiredCarId,
 };

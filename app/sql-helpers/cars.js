@@ -7,9 +7,17 @@ const squelPostgres = squel.useFlavour('postgres');
 
 const table = SQL_TABLES.CARS;
 const tableCarsStateNumbers = SQL_TABLES.CARS_STATE_NUMBERS;
+const tableFiles = SQL_TABLES.FILES;
+const tableCarsFiles = SQL_TABLES.CARS_TO_FILES;
+const tableVehicleTypes = SQL_TABLES.VEHICLE_TYPES;
+const tableDangerClasses = SQL_TABLES.DANGER_CLASSES;
 
 const cols = table.COLUMNS;
 const colsCarsStateNumbers = tableCarsStateNumbers.COLUMNS;
+const colsFiles = tableFiles.COLUMNS;
+const colsCarsFiles = tableCarsFiles.COLUMNS;
+const colsVehicleTypes = tableVehicleTypes.COLUMNS;
+const colsDangerClasses = tableDangerClasses.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -87,9 +95,39 @@ const selectRecordByStateNumberAndActive = stateNumber => squelPostgres
     .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = c.id`)
     .toString();
 
+const selectRecordByIdAndCompanyIdLight = (id, companyId) => squelPostgres
+    .select()
+    .field('id')
+    .from(table.NAME)
+    .where(`id = '${id}'`)
+    .where(`${cols.COMPANY_ID} = '${companyId}'`)
+    .toString();
+
+const selectRecordByIdFull = id => squelPostgres
+    .select()
+    .field('c.*')
+    .field(`vt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
+    .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(f.id, f.${colsFiles.NAME}, f.${colsFiles.LABELS}, f.${colsFiles.URL}))`)
+            .from(tableFiles.NAME, 'f')
+            .where(`cf.${colsCarsFiles.CAR_ID} = '${id}'`)
+            .left_join(tableCarsFiles.NAME, 'cf', `cf.${colsCarsFiles.FILE_ID} = f.id`)
+            .toString()
+    })`, HOMELESS_COLUMNS.FILES)
+    .from(table.NAME, 'c')
+    .where(`c.id = '${id}'`)
+    .left_join(tableVehicleTypes.NAME, 'vt', `vt.id = c.${cols.CAR_VEHICLE_TYPE_ID}`)
+    .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.CAR_DANGER_CLASS_ID}`)
+    .toString();
+
 module.exports = {
     insertRecord,
     selectCarsByCompanyIdPaginationSorting,
     selectCountCarsByCompanyId,
     selectRecordByStateNumberAndActive,
+    selectRecordByIdAndCompanyIdLight,
+    selectRecordByIdFull,
 };

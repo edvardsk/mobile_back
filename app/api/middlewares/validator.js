@@ -166,6 +166,12 @@ ajv.addKeyword('car_state_number_exists', {
     validate: CarsService.checkCarStateNumberExistsOpposite,
 });
 
+ajv.addKeyword('car_in_company_not_exists', {
+    async: true,
+    type: 'string',
+    validate: CarsService.checkCarInCompanyExist,
+});
+
 ajv.addKeyword('parse_string_to_json', {
     modifying: true,
     schema: false,

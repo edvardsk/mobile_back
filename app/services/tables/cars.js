@@ -6,6 +6,8 @@ const {
     selectCarsByCompanyIdPaginationSorting,
     selectCountCarsByCompanyId,
     selectRecordByStateNumberAndActive,
+    selectRecordByIdAndCompanyIdLight,
+    selectRecordByIdFull,
 } = require('sql-helpers/cars');
 
 // constants
@@ -24,15 +26,27 @@ const getCountCars = (companyId, filter) => (
 
 const getRecordByStateNumberAndActive = stateNumber => oneOrNone(selectRecordByStateNumberAndActive(stateNumber));
 
+const getRecordByIdAndCompanyIdLight = (id, companyId) => oneOrNone(selectRecordByIdAndCompanyIdLight(id, companyId));
+
+const getRecordFullStrict = id => one(selectRecordByIdFull(id));
+
 const checkCarStateNumberExistsOpposite = async (meta, stateNumber) => {
     const car = await getRecordByStateNumberAndActive(stateNumber);
     return !car;
+};
+
+const checkCarInCompanyExist = async (meta, id) => {
+    const { companyId } = meta;
+    const car = await getRecordByIdAndCompanyIdLight(id, companyId);
+    return !!car;
 };
 
 module.exports = {
     addRecordAsTransaction,
     getCarsPaginationSorting,
     getCountCars,
+    getRecordFullStrict,
 
     checkCarStateNumberExistsOpposite,
+    checkCarInCompanyExist,
 };
