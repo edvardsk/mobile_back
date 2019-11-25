@@ -283,13 +283,15 @@ const requiredExistingCarInCompanyAsyncFunc = ({ companyId }) => ({
 });
 
 const requiredCarId = {
-    $async: true,
     properties: {
         carId: {
             type: 'string',
             format: 'uuid',
         },
     },
+    required: [
+        'carId',
+    ]
 };
 
 module.exports = {
