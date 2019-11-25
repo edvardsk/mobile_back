@@ -1,10 +1,11 @@
-const { one, manyOrNone } = require('db');
+const { one, oneOrNone, manyOrNone } = require('db');
 
 // sql-helpers
 const {
     insertRecord,
     selectCarsByCompanyIdPaginationSorting,
     selectCountCarsByCompanyId,
+    selectRecordByStateNumberAndActive,
 } = require('sql-helpers/cars');
 
 // constants
@@ -21,8 +22,17 @@ const getCountCars = (companyId, filter) => (
         .then(({ count }) => +count)
 );
 
+const getRecordByStateNumberAndActive = stateNumber => oneOrNone(selectRecordByStateNumberAndActive(stateNumber));
+
+const checkCarStateNumberExistsOpposite = async (meta, stateNumber) => {
+    const car = await getRecordByStateNumberAndActive(stateNumber);
+    return !car;
+};
+
 module.exports = {
     addRecordAsTransaction,
     getCarsPaginationSorting,
     getCountCars,
+
+    checkCarStateNumberExistsOpposite,
 };

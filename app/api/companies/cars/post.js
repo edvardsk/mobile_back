@@ -66,7 +66,7 @@ const createCar = async (req, res, next) => {
 
         await TablesService.runTransaction(transactionsList);
 
-        return success(res, { body }, SUCCESS_CODES.CREATED);
+        return success(res, { id: carId }, SUCCESS_CODES.CREATED);
     } catch (error) {
         next(error);
     }

@@ -328,6 +328,7 @@ router.post(
     formDataHandler(uploadData),
     validate(ValidatorSchemes.modifyCarArrays),
     validate(ValidatorSchemes.createCarCommon),
+    validate(ValidatorSchemes.createCarCommonAsync),
     validate(ValidatorSchemes.createCarTruck),
     validate(ValidatorSchemes.createCarTruckAsync),
     validate(ValidatorSchemes.createCarTruckFiles, ['body', 'files']),

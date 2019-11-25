@@ -18,6 +18,7 @@ const VehicleClassesService = require('services/tables/vehicle-types');
 const CargosService = require('services/tables/cargos');
 const EconomicSettingsService = require('services/tables/economic-settings');
 const LanguagesService = require('services/tables/languages');
+const CarsService = require('services/tables/cars');
 
 // constants
 const { ERRORS } = require('constants/errors');
@@ -157,6 +158,12 @@ ajv.addKeyword('company_economic_settings_not_exists', {
     async: true,
     type: 'string',
     validate: EconomicSettingsService.checkEconomicSettingsExists,
+});
+
+ajv.addKeyword('car_state_number_exists', {
+    async: true,
+    type: 'string',
+    validate: CarsService.checkCarStateNumberExistsOpposite,
 });
 
 ajv.addKeyword('parse_string_to_json', {

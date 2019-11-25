@@ -151,6 +151,16 @@ const createCarCommon = {
     additionalProperties: false,
 };
 
+const createCarCommonAsync = {
+    $async: true,
+    properties: {
+        [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: {
+            car_state_number_exists: {},
+        }
+    },
+    additionalProperties: true,
+};
+
 const createCarTruck = {
     properties: {
         ...CAR_PROPS,
@@ -270,6 +280,7 @@ module.exports = {
     modifyCarArrays,
     modifyCarFloats,
     createCarCommon,
+    createCarCommonAsync,
     createCarTruck,
     createCarTruckAsync,
     createCarTruckFiles,

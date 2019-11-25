@@ -79,8 +79,17 @@ const setCarsFilter = (expression, filteringObject) => {
     return expression;
 };
 
+const selectRecordByStateNumberAndActive = stateNumber => squelPostgres
+    .select()
+    .from(table.NAME, 'c')
+    .where(`csn.${colsCarsStateNumbers.NUMBER} = '${stateNumber}'`)
+    .where(`csn.${colsCarsStateNumbers.IS_ACTIVE} = 't'`)
+    .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = c.id`)
+    .toString();
+
 module.exports = {
     insertRecord,
     selectCarsByCompanyIdPaginationSorting,
     selectCountCarsByCompanyId,
+    selectRecordByStateNumberAndActive,
 };
