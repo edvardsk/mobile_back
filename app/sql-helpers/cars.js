@@ -42,6 +42,7 @@ const selectRecordById = id => squelPostgres
     .select()
     .from(table.NAME)
     .where(`id = '${id}'`)
+    .where(`${cols.DELETED} = 'f'`)
     .toString();
 
 const selectCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => {
@@ -116,6 +117,7 @@ const selectRecordByIdAndCompanyIdLight = (id, companyId) => squelPostgres
     .from(table.NAME)
     .where(`id = '${id}'`)
     .where(`${cols.COMPANY_ID} = '${companyId}'`)
+    .where(`${cols.DELETED} = 'f'`)
     .toString();
 
 const selectRecordByIdFull = id => squelPostgres
@@ -134,6 +136,7 @@ const selectRecordByIdFull = id => squelPostgres
     })`, HOMELESS_COLUMNS.FILES)
     .from(table.NAME, 'c')
     .where(`c.id = '${id}'`)
+    .where(`c.${cols.DELETED} = 'f'`)
     .left_join(tableVehicleTypes.NAME, 'vt', `vt.id = c.${cols.CAR_VEHICLE_TYPE_ID}`)
     .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.CAR_DANGER_CLASS_ID}`)
     .toString();
