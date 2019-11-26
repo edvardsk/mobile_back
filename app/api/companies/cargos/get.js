@@ -15,6 +15,8 @@ const { formatRecordForList, formatRecordForResponse } = require('formatters/car
 // helpers
 const { getParams } = require('helpers/pagination-sorting');
 
+const colsUsers = SQL_TABLES.USERS.COLUMNS;
+
 const cargosPaginationOptions = {
     DEFAULT_LIMIT: 5,
     DEFAULT_SORT_COLUMN: SQL_TABLES.CARGOS.COLUMNS.CREATED_AT,
@@ -23,7 +25,8 @@ const cargosPaginationOptions = {
 
 const getCargos = async (req, res, next) => {
     try {
-        const { company } = res.locals;
+        const { company, user } = res.locals;
+        const userLanguageId = user[colsUsers.LANGUAGE_ID];
         const {
             page,
             limit,
@@ -34,12 +37,12 @@ const getCargos = async (req, res, next) => {
         const filter = get(req, 'query.filter', {});
 
         const [cargos, cargosCount] = await Promise.all([
-            CargosServices.getCargosPaginationSorting(company.id, limit, limit * page, sortColumn, asc, filter),
+            CargosServices.getCargosPaginationSorting(company.id, limit, limit * page, sortColumn, asc, filter, userLanguageId),
             CargosServices.getCountCargos(company.id, filter)
         ]);
 
         const result = formatPaginationDataForResponse(
-            cargos.map(cargo => formatRecordForList(cargo)),
+            cargos.map(cargo => formatRecordForList(cargo, userLanguageId)),
             cargosCount,
             limit,
             page,
@@ -56,9 +59,13 @@ const getCargos = async (req, res, next) => {
 
 const getCargo = async (req, res, next) => {
     try {
+        const { user } = res.locals;
+
+        const userLanguageId = user[colsUsers.LANGUAGE_ID];
+
         const { cargoId } = req.params;
-        const cargo = await CargosServices.getRecordStrict(cargoId);
-        return success(res, { cargo: formatRecordForResponse(cargo) });
+        const cargo = await CargosServices.getRecordStrict(cargoId, userLanguageId);
+        return success(res, { cargo: formatRecordForResponse(cargo, userLanguageId) });
     } catch (error) {
         next(error);
     }

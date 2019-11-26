@@ -48,6 +48,7 @@ const BASES = {
     ECONOMICS: '/economics',
     DEFAULT: '/default',
     CARS: '/cars',
+    LANGUAGES: '/languages',
 };
 
 const IDS = {
@@ -58,6 +59,7 @@ const IDS = {
     FILE_GROUP: '/:fileGroup',
     COMPANY_ID: '/:companyId',
     CARGO_ID: '/:cargoId',
+    CAR_ID: '/:carId',
 };
 
 const ROUTES = {
@@ -76,7 +78,11 @@ const ROUTES = {
             },
             COUNTRIES: {
                 BASE: BASES.COUNTRIES,
-                GET: '',
+                GET_ALL: '',
+            },
+            LANGUAGES: {
+                BASE: BASES.LANGUAGES,
+                GET_ALL: '',
             },
         },
         AUTHORIZATION: {
@@ -265,6 +271,10 @@ const ROUTES = {
         CARS: {
             BASE: IDS.ME_OR_ID + BASES.CARS,
             POST: '',
+            GET_ALL: '',
+            GET: IDS.CAR_ID,
+            PUT: IDS.CAR_ID,
+            DELETE: IDS.CAR_ID,
         },
 
     },
@@ -308,6 +318,7 @@ const ALLOWED_ROUTES = {
     GET: new Set([
         API_PREFIX + ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.ROLES.BASE + ROUTES.AUTH.REGISTRATION.ROLES.GET,
         API_PREFIX + ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.PHONE_PREFIXES.BASE + ROUTES.AUTH.REGISTRATION.PHONE_PREFIXES.GET,
+        API_PREFIX + ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.LANGUAGES.BASE + ROUTES.AUTH.REGISTRATION.LANGUAGES.GET_ALL,
     ]),
     POST: new Set([
         API_PREFIX + ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.POST,

@@ -12,6 +12,7 @@ const SQL_TABLES = {
             PASSPORT_EXPIRED_AT: 'passport_expired_at',
             PASSPORT_ISSUING_AUTHORITY: 'passport_issuing_authority',
             FREEZED: 'freezed',
+            LANGUAGE_ID: 'language_id',
         },
     },
     EMAIL_CONFIRMATION_HASHES: {
@@ -97,7 +98,6 @@ const SQL_TABLES = {
             OWNERSHIP_TYPE: 'ownership_type',
             REGISTERED_AT: 'registered_at',
             WEBSITE: 'website',
-            LEGAL_CITY_NAME: 'legal_city_name',
             LEGAL_CITY_COORDINATES: 'legal_city_coordinates',
             LEGAL_ADDRESS: 'legal_address',
             SETTLEMENT_ACCOUNT: 'settlement_account',
@@ -250,6 +250,7 @@ const SQL_TABLES = {
             DESCRIPTION: 'description',
             FREEZED_AFTER: 'freezed_after',
             CREATED_AT: 'created_at',
+            DELETED: 'deleted',
         },
     },
     CARGO_POINTS: {
@@ -349,6 +350,30 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    LANGUAGES: {
+        NAME: 'languages',
+        COLUMNS: {
+            NAME: 'name',
+            CODE: 'code',
+            CREATED_AT: 'created_at',
+        },
+    },
+    POINTS: {
+        NAME: 'points',
+        COLUMNS: {
+            COORDINATES: 'coordinates',
+            CREATED_AT: 'created_at',
+        },
+    },
+    POINT_TRANSLATIONS: {
+        NAME: 'point_translations',
+        COLUMNS: {
+            POINT_ID: 'point_id',
+            LANGUAGE_ID: 'language_id',
+            VALUE: 'value',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
@@ -379,6 +404,12 @@ const HOMELESS_COLUMNS = {
     IS_CAR: 'is_car',
     CAR_STATE_NUMBER: 'car_state_number',
     TRAILER_STATE_NUMBER: 'trailer_state_number',
+    LANGUAGE_CODE: 'language_code',
+    NAME_EN: 'name_en',
+    CITY_NAME: 'city_name',
+    QUERY: 'query',
+    FILES: 'files',
+    COORDINATES: 'coordinates',
 };
 
 module.exports = {

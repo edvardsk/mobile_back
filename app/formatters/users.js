@@ -2,12 +2,13 @@ const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
 const cols = SQL_TABLES.USERS.COLUMNS;
 
-const formatUserForSaving = (id, user, password, key) => ({
+const formatUserForSaving = (id, body, password, key) => ({
     id,
-    [cols.EMAIL]: user[cols.EMAIL],
+    [cols.EMAIL]: body[cols.EMAIL],
     [cols.PASSWORD]: password,
     [cols.KEY]: key,
-    [cols.FULL_NAME]: user[cols.FULL_NAME],
+    [cols.FULL_NAME]: body[cols.FULL_NAME],
+    [cols.LANGUAGE_ID]: body[cols.LANGUAGE_ID],
 });
 
 const formatUserForResponse = user => ({
@@ -25,6 +26,7 @@ const formatUserWithPermissionsForResponse = (user, permissions) => ({
     [cols.EMAIL]: user[cols.EMAIL],
     [cols.CREATED_AT]: user[cols.CREATED_AT],
     [cols.FULL_NAME]: user[cols.FULL_NAME],
+    [HOMELESS_COLUMNS.LANGUAGE_CODE]: user[HOMELESS_COLUMNS.LANGUAGE_CODE],
     [HOMELESS_COLUMNS.ROLE]: user[HOMELESS_COLUMNS.ROLE],
     permissions: Array.from(permissions),
 });

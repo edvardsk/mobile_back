@@ -17,6 +17,8 @@ const DangerClassesService = require('services/tables/danger-classes');
 const VehicleClassesService = require('services/tables/vehicle-types');
 const CargosService = require('services/tables/cargos');
 const EconomicSettingsService = require('services/tables/economic-settings');
+const LanguagesService = require('services/tables/languages');
+const CarsService = require('services/tables/cars');
 
 // constants
 const { ERRORS } = require('constants/errors');
@@ -48,6 +50,12 @@ ajv.addKeyword('country_not_exist', {
     async: true,
     type: 'string',
     validate: CountriesService.checkCountryExists,
+});
+
+ajv.addKeyword('language_not_exist', {
+    async: true,
+    type: 'string',
+    validate: LanguagesService.checkLanguageExists,
 });
 
 ajv.addKeyword('company_with_settlement_account_exists', {
@@ -150,6 +158,24 @@ ajv.addKeyword('company_economic_settings_not_exists', {
     async: true,
     type: 'string',
     validate: EconomicSettingsService.checkEconomicSettingsExists,
+});
+
+ajv.addKeyword('car_state_number_exists', {
+    async: true,
+    type: 'string',
+    validate: CarsService.checkCarStateNumberExistsOpposite,
+});
+
+ajv.addKeyword('car_in_company_not_exists', {
+    async: true,
+    type: 'string',
+    validate: CarsService.checkCarInCompanyExist,
+});
+
+ajv.addKeyword('new_danger_class_without_file', {
+    async: true,
+    type: 'string',
+    validate: CarsService.checkIsPassedFileWithNewDangerClass,
 });
 
 ajv.addKeyword('parse_string_to_json', {

@@ -12,11 +12,13 @@ const S3Service = require('services/aws/s3');
 // constants
 const { SUCCESS_CODES } = require('constants/http-codes');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
+const { CAR_TYPES_MAP } = require('constants/cars');
 
 // formatters
 const CarsFormatters = require('formatters/cars');
 const FilesFormatters = require('formatters/files');
 
+const colsCars = SQL_TABLES.CARS.COLUMNS;
 const colsCarsNumbers = SQL_TABLES.CARS_STATE_NUMBERS.COLUMNS;
 
 const createCar = async (req, res, next) => {
@@ -30,7 +32,6 @@ const createCar = async (req, res, next) => {
 
         const isCar = body[HOMELESS_COLUMNS.IS_CAR];
         const carId = uuid();
-
 
         if (isCar) {
             const carStateNumberData = {
@@ -47,17 +48,20 @@ const createCar = async (req, res, next) => {
                 CarsStateNumbersService.addRecordAsTransaction(carStateNumberData)
             );
 
-            const [dbFiles, dbCarsFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForCars(files, carId);
-            filesToStore = [
-                ...filesToStore,
-                ...storageFiles,
-            ];
-            transactionsList.push(
-                FilesService.addFilesAsTransaction(dbFiles)
-            );
-            transactionsList.push(
-                CarsFilesService.addRecordsAsTransaction(dbCarsFiles)
-            );
+            const carType = body[colsCars.CAR_TYPE];
+            if (carType === CAR_TYPES_MAP.TRUCK) {
+                const [dbFiles, dbCarsFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForCars(files, carId);
+                filesToStore = [
+                    ...filesToStore,
+                    ...storageFiles,
+                ];
+                transactionsList.push(
+                    FilesService.addFilesAsTransaction(dbFiles)
+                );
+                transactionsList.push(
+                    CarsFilesService.addRecordsAsTransaction(dbCarsFiles)
+                );
+            }
         }
 
         await Promise.all(filesToStore.map(({ bucket, path, data, contentType }) => {
@@ -66,7 +70,7 @@ const createCar = async (req, res, next) => {
 
         await TablesService.runTransaction(transactionsList);
 
-        return success(res, { body }, SUCCESS_CODES.CREATED);
+        return success(res, { id: carId }, SUCCESS_CODES.CREATED);
     } catch (error) {
         next(error);
     }
