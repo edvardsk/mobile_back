@@ -157,6 +157,7 @@ const SQL_TABLES = {
         NAME: 'countries',
         COLUMNS: {
             NAME: 'name',
+            CURRENCY_ID: 'currency_id',
             CREATED_AT: 'created_at',
         },
     },
@@ -371,6 +372,13 @@ const SQL_TABLES = {
             POINT_ID: 'point_id',
             LANGUAGE_ID: 'language_id',
             VALUE: 'value',
+            CREATED_AT: 'created_at',
+        },
+    },
+    CURRENCIES: {
+        NAME: 'currencies',
+        COLUMNS: {
+            CODE: 'code',
             CREATED_AT: 'created_at',
         },
     },
