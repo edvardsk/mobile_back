@@ -45,21 +45,6 @@ const coordinatesFormat = {
             type: 'string',
             pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
         },
-    },
-    required: [HOMELESS_COLUMNS.LATITUDE, HOMELESS_COLUMNS.LONGITUDE],
-    additionalProperties: false,
-};
-
-const cargoCoordinatesFormat = {
-    properties: {
-        [HOMELESS_COLUMNS.LATITUDE]: {
-            type: 'string',
-            pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
-        },
-        [HOMELESS_COLUMNS.LONGITUDE]: {
-            type: 'string',
-            pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
-        },
         [HOMELESS_COLUMNS.NAME_EN]: {
             type: 'string',
             minLength: 1,
@@ -96,6 +81,5 @@ const otherOrganizations = {
 module.exports = {
     fileFormat,
     coordinatesFormat,
-    cargoCoordinatesFormat,
     otherOrganizations,
 };

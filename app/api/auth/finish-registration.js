@@ -3,8 +3,12 @@ const { success } = require('api/response');
 // services
 const CompaniesService = require('services/tables/companies');
 const RoutesService = require('services/tables/routes');
+const PointsService = require('services/tables/points');
 const UsersRolesService = require('services/tables/users-to-roles');
 const UserPermissionsService = require('services/tables/users-to-permissions');
+const PointTranslationsService = require('services/tables/point-translations');
+const LanguagesService = require('services/tables/languages');
+const BackgroundService = require('services/background/creators');
 const TablesService = require('services/tables');
 
 // constants
@@ -14,12 +18,19 @@ const {
     MAP_FROM_PENDING_ROLE_TO_MAIN,
 } = require('constants/system');
 const { SUCCESS_CODES } = require('constants/http-codes');
+const { DEFAULT_LANGUAGE } = require('constants/languages');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
 // formatters
 const FinishRegistrationFormatters = require('formatters/finish-registration');
+const PointsFormatters = require('formatters/points');
 const { formatGeoDataValuesToSave } = require('formatters/geo');
 const { formatRoutesToSave } = require('formatters/routes');
 const { formatCompanyDataOnStep2 } = require('formatters/companies');
+
+const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
+const colsPoints = SQL_TABLES.POINTS.COLUMNS;
+const colsTranslations = SQL_TABLES.POINT_TRANSLATIONS.COLUMNS;
 
 const MAP_ROLES_AND_FORMATTERS_STEP_1 = {
     [ROLES.CONFIRMED_EMAIL_AND_PHONE_TRANSPORTER]: FinishRegistrationFormatters.formatCompanyForTransporterToSave,
@@ -82,14 +93,50 @@ const finishRegistrationStep2 = async (req, res, next) => {
 
         const companyData = formatCompanyDataOnStep2(body);
 
-        const transactionList = [
+        const transactionsList = [
             CompaniesService.updateCompanyAsTransaction(company.id, companyData),
         ];
 
-        if (!userPermissions.has(PERMISSIONS.REGISTRATION_SAVE_STEP_3)) {
-            transactionList.push(UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.REGISTRATION_SAVE_STEP_3));
+        const coordinates = companyData.legal_city_coordinates.toPointString();
+
+        const point = await PointsService.getRecordsByPoint(coordinates);
+        let translationsList = [];
+        if (!point) {
+            const enLanguage = await LanguagesService.getLanguageByCodeStrict(DEFAULT_LANGUAGE);
+
+            const point = {
+                [colsPoints.COORDINATES]: coordinates,
+                [HOMELESS_COLUMNS.NAME_EN]: body[colsCompanies.LEGAL_CITY_COORDINATES][HOMELESS_COLUMNS.NAME_EN],
+            };
+
+            const [points, translations] = PointsFormatters.formatPointsAndTranslationsToSave([point], enLanguage.id);
+
+            translationsList = [...translations];
+
+            transactionsList.push(
+                PointsService.addRecordsAsTransaction(points)
+            );
+            transactionsList.push(
+                PointTranslationsService.addRecordsAsTransaction(translations)
+            );
         }
-        await TablesService.runTransaction(transactionList);
+
+        if (!userPermissions.has(PERMISSIONS.REGISTRATION_SAVE_STEP_3)) {
+            transactionsList.push(
+                UserPermissionsService.addUserPermissionAsTransaction(userId, PERMISSIONS.REGISTRATION_SAVE_STEP_3)
+            );
+        }
+        await TablesService.runTransaction(transactionsList);
+
+        if (translationsList.length) {
+            const languages = await LanguagesService.getLanguagesWithoutEng();
+            await Promise.all(translationsList.reduce((acc, translate) => {
+                const translations = languages.map(language => (
+                    BackgroundService.translateCoordinatesCreator(translate[colsTranslations.POINT_ID], language))
+                );
+                return [...acc, translations];
+            }, []));
+        }
 
         return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
     } catch (error) {

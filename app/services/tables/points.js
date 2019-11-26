@@ -4,7 +4,9 @@ const { one, manyOrNone } = require('db');
 const {
     insertRecords,
     selectRecordsByPoints,
+    selectRecordsByPoint,
     selectRecordById,
+    selectRecordsByPointAndLanguageIdWithTranslations,
 } = require('sql-helpers/points');
 
 // constants
@@ -14,10 +16,18 @@ const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MAN
 
 const getRecordsByPoints = points => manyOrNone(selectRecordsByPoints(points));
 
+const getRecordsByPoint = point => one(selectRecordsByPoint(point));
+
 const getRecordStrict = id => one(selectRecordById(id));
+
+const getRecordsByPointAndLanguageIdWithTranslationsStrict = (point, languageId) => one(
+    selectRecordsByPointAndLanguageIdWithTranslations(point, languageId)
+);
 
 module.exports = {
     addRecordsAsTransaction,
     getRecordsByPoints,
+    getRecordsByPoint,
     getRecordStrict,
+    getRecordsByPointAndLanguageIdWithTranslationsStrict,
 };

@@ -64,7 +64,6 @@ const formatDataForSoleProprietorForwarderForStep1Response = data => ({
 
 const formatDataForTransporterAndHolderForStep2Response = data => ({
     [colsCompanies.LEGAL_CITY_COORDINATES]: data[colsCompanies.LEGAL_CITY_COORDINATES] && formatGeoPointToObject(data[colsCompanies.LEGAL_CITY_COORDINATES]),
-    [colsCompanies.LEGAL_CITY_NAME]: data[colsCompanies.LEGAL_CITY_NAME],
     [colsCompanies.LEGAL_ADDRESS]: data[colsCompanies.LEGAL_ADDRESS],
     [colsCompanies.POST_ADDRESS]: data[colsCompanies.POST_ADDRESS],
     [colsCompanies.HEAD_COMPANY_FULL_NAME]: data[colsCompanies.HEAD_COMPANY_FULL_NAME],

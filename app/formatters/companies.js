@@ -3,7 +3,7 @@ const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { Geo } = require('constants/instances');
 
 // formatters
-const { formatGeoPointToObject } = require('./geo');
+const { formatGeoPointToObjectWithTranslation } = require('./geo');
 
 const cols = SQL_TABLES.COMPANIES.COLUMNS;
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
@@ -22,8 +22,9 @@ const formatCompanyDataOnStep2 = data => ({
 });
 
 const formatLegalDataForTransporterAndHolderForResponse = company => ({
-    [cols.LEGAL_CITY_COORDINATES]: company[cols.LEGAL_CITY_COORDINATES] && formatGeoPointToObject(company[cols.LEGAL_CITY_COORDINATES]),
-    [cols.LEGAL_CITY_NAME]: company[cols.LEGAL_CITY_NAME],
+    [cols.LEGAL_CITY_COORDINATES]: company[cols.LEGAL_CITY_COORDINATES] && formatGeoPointToObjectWithTranslation(
+        company[cols.LEGAL_CITY_COORDINATES], company[HOMELESS_COLUMNS.CITY_NAME]
+    ),
     [cols.LEGAL_ADDRESS]: company[cols.LEGAL_ADDRESS],
     [cols.POST_ADDRESS]: company[cols.POST_ADDRESS],
     [cols.HEAD_COMPANY_FULL_NAME]: company[cols.HEAD_COMPANY_FULL_NAME],
@@ -43,8 +44,9 @@ const formatLegalDataForIndividualForwarderForResponse = (company, user) => ({
 });
 
 const formatLegalDataForSoleProprietorForwarderForResponse = (company, user) => ({
-    [cols.LEGAL_CITY_COORDINATES]: company[cols.LEGAL_CITY_COORDINATES] && formatGeoPointToObject(company[cols.LEGAL_CITY_COORDINATES]),
-    [cols.LEGAL_CITY_NAME]: company[cols.LEGAL_CITY_NAME],
+    [cols.LEGAL_CITY_COORDINATES]: company[cols.LEGAL_CITY_COORDINATES] && formatGeoPointToObjectWithTranslation(
+        company[cols.LEGAL_CITY_COORDINATES], company[HOMELESS_COLUMNS.CITY_NAME]
+    ),
     [cols.LEGAL_ADDRESS]: company[cols.LEGAL_ADDRESS],
     [cols.POST_ADDRESS]: company[cols.POST_ADDRESS],
     [cols.HEAD_COMPANY_FULL_NAME]: user[colsUsers.FULL_NAME],
