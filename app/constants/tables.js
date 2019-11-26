@@ -429,6 +429,7 @@ const HOMELESS_COLUMNS = {
     QUERY: 'query',
     FILES: 'files',
     COORDINATES: 'coordinates',
+    CURRENCY_CODE: 'currency_code',
 };
 
 module.exports = {

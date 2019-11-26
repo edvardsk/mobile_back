@@ -3,6 +3,7 @@
 // services
 const PointsService = require('services/tables/points');
 const PointTranslationsService = require('services/tables/point-translations');
+const CountriesService = require('services/tables/countries');
 const GeoService = require('services/google/geo');
 
 // constants
@@ -41,6 +42,23 @@ const translateCoordinates = async job => {
         await job.done(err);
         onError(err);
     }
+}
+
+;const extractExchangeRate = async job => {
+    logger.info(`received ${job.name} ${job.id}`);
+    try {
+        const { countryId } = job.data;
+        const currency = await CountriesService.getCountryStrict(countryId);
+        logger.info(currency);
+
+        await job.done();
+        logger.info(`Job completed id: ${job.id}`);
+
+    } catch (err) {
+        logger.error(`Job failed id: ${job.id}`);
+        await job.done(err);
+        onError(err);
+    }
 };
 
 const onError = error => {
@@ -49,4 +67,5 @@ const onError = error => {
 
 module.exports = {
     translateCoordinates,
+    extractExchangeRate,
 };
