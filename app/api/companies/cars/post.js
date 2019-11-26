@@ -31,7 +31,6 @@ const createCar = async (req, res, next) => {
         const isCar = body[HOMELESS_COLUMNS.IS_CAR];
         const carId = uuid();
 
-
         if (isCar) {
             const carStateNumberData = {
                 [colsCarsNumbers.CAR_ID]: carId,

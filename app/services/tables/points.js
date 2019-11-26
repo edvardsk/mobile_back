@@ -1,9 +1,10 @@
-const { manyOrNone } = require('db');
+const { one, manyOrNone } = require('db');
 
 // sql-helpers
 const {
     insertRecords,
     selectRecordsByPoints,
+    selectRecordById,
 } = require('sql-helpers/points');
 
 // constants
@@ -13,7 +14,10 @@ const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MAN
 
 const getRecordsByPoints = points => manyOrNone(selectRecordsByPoints(points));
 
+const getRecordStrict = id => one(selectRecordById(id));
+
 module.exports = {
     addRecordsAsTransaction,
     getRecordsByPoints,
+    getRecordStrict,
 };
