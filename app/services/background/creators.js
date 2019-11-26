@@ -1,12 +1,11 @@
 const childProcess = require('fork');
 const { ACTION_TYPES } = require('constants/background');
 
-const translateCoordinatesCreator = (pointId, language, originalValue) => {
+const translateCoordinatesCreator = (pointId, language) => {
     const msg = {
         payload: {
             pointId,
             language,
-            originalValue,
         },
         type: ACTION_TYPES.TRANSLATE_COORDINATES_NAME,
     };

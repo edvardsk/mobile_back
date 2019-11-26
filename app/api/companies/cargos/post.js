@@ -87,7 +87,7 @@ const createCargo = async (req, res, next) => {
             const languages = await LanguagesService.getLanguagesWithoutEng();
             await Promise.all(translationsList.reduce((acc, translate) => {
                 const translations = languages.map(language => (
-                    BackgroundService.translateCoordinatesCreator(translate[colsTranslations.POINT_ID], language, translate[colsTranslations.VALUE]))
+                    BackgroundService.translateCoordinatesCreator(translate[colsTranslations.POINT_ID], language))
                 );
                 return [...acc, translations];
             }, []));

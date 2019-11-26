@@ -3,13 +3,19 @@ const { success } = require('api/response');
 // services
 const UsersService = require('services/tables/users');
 const OtherOrganizationsService = require('services/tables/other-organizations');
+const PointsService = require('services/tables/points');
+const LanguagesService = require('services/tables/languages');
 
 // constants
 const { ROLES } = require('constants/system');
-const { HOMELESS_COLUMNS } = require('constants/tables');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
+const { DEFAULT_LANGUAGE } = require('constants/languages');
 
 // formatters
 const FinishRegistrationFormatters = require('formatters/finish-registration');
+
+const colsUsers = SQL_TABLES.USERS.COLUMNS;
+const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
 
 const MAP_ROLES_AND_FORMATTERS_STEP_1 = {
     [ROLES.TRANSPORTER]: FinishRegistrationFormatters.formatDataForTransporterAndHolderForStep1Response,
@@ -45,7 +51,20 @@ const getStep1 = async (req, res, next) => {
 * */
 const getStep2 = async (req, res, next) => {
     try {
-        const { company } = res.locals;
+        const { company, user } = res.locals;
+        const userLanguageId = user[colsUsers.LANGUAGE_ID];
+
+        let point = await PointsService.getRecordsByPointAndLanguageIdWithTranslationsStrict(
+            company[colsCompanies.LEGAL_CITY_COORDINATES], userLanguageId
+        );
+        if (!point) {
+            const enLanguage = await LanguagesService.getLanguageByCodeStrict(DEFAULT_LANGUAGE);
+            point = await PointsService.getRecordsByPointAndLanguageIdWithTranslationsStrict(
+                company[colsCompanies.LEGAL_CITY_COORDINATES], enLanguage.id
+            );
+        }
+        company[HOMELESS_COLUMNS.CITY_NAME] = point[HOMELESS_COLUMNS.CITY_NAME];
+
         const formattedData = FinishRegistrationFormatters.formatDataForTransporterAndHolderForStep2Response(company);
 
         return success(res, { company: formattedData });

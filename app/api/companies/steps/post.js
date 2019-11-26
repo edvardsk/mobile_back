@@ -3,14 +3,20 @@ const { success } = require('api/response');
 // services
 const CompaniesService = require('services/tables/companies');
 const TablesService = require('services/tables');
+const PointsService = require('services/tables/points');
+const PointTranslationsService = require('services/tables/point-translations');
+const LanguagesService = require('services/tables/languages');
+const BackgroundService = require('services/background/creators');
 
 // constants
 const { ROLES } = require('constants/system');
 const { SUCCESS_CODES } = require('constants/http-codes');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
+const { DEFAULT_LANGUAGE } = require('constants/languages');
 
 // formatters
 const FinishRegistrationFormatters = require('formatters/finish-registration');
+const PointsFormatters = require('formatters/points');
 const { formatCompanyDataOnStep2 } = require('formatters/companies');
 
 const MAP_ROLES_AND_FORMATTERS_STEP_1 = {
@@ -21,6 +27,8 @@ const MAP_ROLES_AND_FORMATTERS_STEP_1 = {
 };
 
 const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
+const colsPoints = SQL_TABLES.POINTS.COLUMNS;
+const colsTranslations = SQL_TABLES.POINT_TRANSLATIONS.COLUMNS;
 
 /*
 * @res.locals {company} - current company
@@ -61,7 +69,7 @@ const editStep2 = async (req, res, next) => {
     try {
         const { isControlRole, company } = res.locals;
         const { body } = req;
-        const transactionList = [];
+        const transactionsList = [];
 
         const companyData = formatCompanyDataOnStep2(body);
 
@@ -69,11 +77,46 @@ const editStep2 = async (req, res, next) => {
             companyData[colsCompanies.EDITING_CONFIRMED] = false;
         }
 
-        transactionList.push(
+        transactionsList.push(
             CompaniesService.updateCompanyAsTransaction(company.id, companyData)
         );
 
-        await TablesService.runTransaction(transactionList);
+        const coordinates = companyData[colsCompanies.LEGAL_CITY_COORDINATES].toPointString();
+
+        const point = await PointsService.getRecordsByPoint(coordinates);
+        let translationsList = [];
+        if (!point) {
+            const enLanguage = await LanguagesService.getLanguageByCodeStrict(DEFAULT_LANGUAGE);
+
+            const point = {
+                [colsPoints.COORDINATES]: coordinates,
+                [HOMELESS_COLUMNS.NAME_EN]: body[colsCompanies.LEGAL_CITY_COORDINATES][HOMELESS_COLUMNS.NAME_EN],
+            };
+
+            const [points, translations] = PointsFormatters.formatPointsAndTranslationsToSave([point], enLanguage.id);
+
+            translationsList = [...translations];
+
+            transactionsList.push(
+                PointsService.addRecordsAsTransaction(points)
+            );
+            transactionsList.push(
+                PointTranslationsService.addRecordsAsTransaction(translations)
+            );
+        }
+
+        await TablesService.runTransaction(transactionsList);
+
+        if (translationsList.length) {
+            const languages = await LanguagesService.getLanguagesWithoutEng();
+            await Promise.all(translationsList.reduce((acc, translate) => {
+                const translations = languages.map(language => (
+                    BackgroundService.translateCoordinatesCreator(translate[colsTranslations.POINT_ID], language))
+                );
+                return [...acc, translations];
+            }, []));
+        }
+
         return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
     } catch (error) {
         next(error);
