@@ -23,6 +23,8 @@ const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
 
 const editRecordAsTransaction = (id, data) => [updateRecord(id, data), OPERATIONS.ONE];
 
+const editRecord = (id, data) => one(updateRecord(id, data));
+
 const getRecordStrict = id => one(selectRecordById(id));
 
 const getCarsPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
@@ -39,6 +41,10 @@ const getRecordByStateNumberAndActive = stateNumber => oneOrNone(selectRecordByS
 const getRecordByIdAndCompanyIdLight = (id, companyId) => oneOrNone(selectRecordByIdAndCompanyIdLight(id, companyId));
 
 const getRecordFullStrict = id => one(selectRecordByIdFull(id));
+
+const markAsDeleted = id => editRecord(id, {
+    [colsCars.DELETED]: true,
+});
 
 const checkCarStateNumberExistsOpposite = async (meta, stateNumber) => {
     const { carId } = meta;
@@ -69,6 +75,7 @@ module.exports = {
     getCarsPaginationSorting,
     getCountCars,
     getRecordFullStrict,
+    markAsDeleted,
 
     checkCarStateNumberExistsOpposite,
     checkCarInCompanyExist,

@@ -22,6 +22,7 @@ const deleteCargo = require('./cargos/delete');
 const postCars = require('./cars/post');
 const getCars = require('./cars/get');
 const putCars = require('./cars/put');
+const deleteCars = require('./cars/delete');
 
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
@@ -378,6 +379,16 @@ router.put(
     validate(({ requestParams }) => ValidatorSchemes.editCarTruckFilesCheckDangerClassAsyncFunc({ carId: requestParams.carId}), ['body', 'files']),
     validate(ValidatorSchemes.modifyEditCarTruckFloats),
     putCars.editCar,
+);
+
+router.delete(
+    ROUTES.COMPANIES.CARS.BASE + ROUTES.COMPANIES.CARS.DELETE,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredCarId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingCarInCompanyAsyncFunc({ companyId: company.id }), 'params'),
+    deleteCars.removeCar,
 );
 
 module.exports = router;
