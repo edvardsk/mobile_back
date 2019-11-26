@@ -24,7 +24,7 @@ const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 // formatters
 const FinishRegistrationFormatters = require('formatters/finish-registration');
 const PointsFormatters = require('formatters/points');
-const { formatGeoDataValuesToSave } = require('formatters/geo');
+const { formatGeoDataValuesToSave, formatGeoDataValuesWithNamesToSave } = require('formatters/geo');
 const { formatRoutesToSave } = require('formatters/routes');
 const { formatCompanyDataOnStep2 } = require('formatters/companies');
 
@@ -179,7 +179,29 @@ const finishRegistrationStep4 = async (req, res, next) => {
 
         const routes = formatRoutesToSave(coordinates, company.id);
 
+        const points = formatGeoDataValuesWithNamesToSave(body.routes);
+
+        const storedPoints = await PointsService.getRecordsByPoints(points.map(record => record[HOMELESS_COLUMNS.COORDINATES]));
+
+        const pointsToStore = points.filter(point => !storedPoints.find(storedPoint => storedPoint[colsPoints.COORDINATES] === point[HOMELESS_COLUMNS.COORDINATES]));
+
         const transactionsList = [];
+        let translationsList = [];
+        if (pointsToStore.length) { // store new point on default language (en)
+            const enLanguage = await LanguagesService.getLanguageByCodeStrict(DEFAULT_LANGUAGE);
+
+            const [points, translations] = PointsFormatters.formatPointsAndTranslationsToSave(pointsToStore, enLanguage.id);
+
+            translationsList = [...translations];
+
+            transactionsList.push(
+                PointsService.addRecordsAsTransaction(points)
+            );
+            transactionsList.push(
+                PointTranslationsService.addRecordsAsTransaction(translations)
+            );
+        }
+
         if (userPermissions.has(PERMISSIONS.REGISTRATION_SAVE_STEP_5)) {
             // update
             transactionsList.push(RoutesService.removeRecordsByCompanyIdAsTransaction(company.id));
@@ -191,6 +213,16 @@ const finishRegistrationStep4 = async (req, res, next) => {
         transactionsList.push(RoutesService.addRecordsAsTransaction(routes));
 
         await TablesService.runTransaction(transactionsList);
+
+        if (translationsList.length) {
+            const languages = await LanguagesService.getLanguagesWithoutEng();
+            await Promise.all(translationsList.reduce((acc, translate) => {
+                const translations = languages.map(language => (
+                    BackgroundService.translateCoordinatesCreator(translate[colsTranslations.POINT_ID], language))
+                );
+                return [...acc, translations];
+            }, []));
+        }
 
         return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
     } catch (error) {

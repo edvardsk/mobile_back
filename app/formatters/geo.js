@@ -3,6 +3,20 @@ const { Geo } = require('constants/instances');
 
 const colsRoutes = SQL_TABLES.ROUTES.COLUMNS;
 
+const formatGeoDataValuesWithNamesToSave = values => values.reduce((acc, value) => {
+    const coordinatesFrom = value.coordinates_from;
+    const coordinatesTo = value.coordinates_to;
+    acc.push({
+        [HOMELESS_COLUMNS.COORDINATES]: new Geo(coordinatesFrom[HOMELESS_COLUMNS.LONGITUDE], coordinatesFrom[HOMELESS_COLUMNS.LATITUDE]).toPointString(),
+        [HOMELESS_COLUMNS.NAME_EN]: coordinatesFrom[HOMELESS_COLUMNS.NAME_EN],
+    });
+    acc.push({
+        [HOMELESS_COLUMNS.COORDINATES]: new Geo(coordinatesTo[HOMELESS_COLUMNS.LONGITUDE], coordinatesTo[HOMELESS_COLUMNS.LATITUDE]).toPointString(),
+        [HOMELESS_COLUMNS.NAME_EN]: coordinatesTo[HOMELESS_COLUMNS.NAME_EN],
+    });
+    return acc;
+}, []);
+
 const formatGeoDataValuesToSave = values => values.map(value => formatGeoDataValueToSave(value));
 
 const formatGeoDataValueToSave = value => {
@@ -45,6 +59,7 @@ const formatGeoPointWithNameFromPostgresJSONToObject = obj => {
 };
 
 module.exports = {
+    formatGeoDataValuesWithNamesToSave,
     formatGeoDataValuesToSave,
     formatGeoPointToObject,
     formatGeoPointToObjectWithTranslation,
