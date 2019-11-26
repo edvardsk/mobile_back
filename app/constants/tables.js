@@ -389,7 +389,7 @@ const SQL_TABLES = {
             CURRENCY_ID: 'currency_id',
             VALUE: 'value',
             NOMINAL: 'nominal',
-            CURRENT_DATE: 'current_date',
+            ACTUAL_DATE: 'actual_date',
             CREATED_AT: 'created_at',
         },
     },
@@ -430,6 +430,8 @@ const HOMELESS_COLUMNS = {
     FILES: 'files',
     COORDINATES: 'coordinates',
     CURRENCY_CODE: 'currency_code',
+    CURRENCY_SCALE: 'currency_scale',
+    CURRENCY_RATE: 'currency_rate',
 };
 
 module.exports = {

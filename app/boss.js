@@ -76,7 +76,7 @@ async function subscribe() {
 }
 
 function startJobs() {
-    if (process.env.NODE_ENV !== 'development') {
+    if (process.env.NODE_ENV !== 'development2') {
         checkExchangeRatesStart();
     }
 }

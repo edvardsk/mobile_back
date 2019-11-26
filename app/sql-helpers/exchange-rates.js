@@ -13,6 +13,14 @@ const selectRecordsByCountriesIds = ids => squelPostgres
     .where(`${cols.COUNTRY_ID} IN ?`, ids)
     .toString();
 
+const insertRecords = values => squelPostgres
+    .insert()
+    .into(table.NAME)
+    .setFieldsRows(values)
+    .returning('*')
+    .toString();
+
 module.exports = {
     selectRecordsByCountriesIds,
+    insertRecords,
 };

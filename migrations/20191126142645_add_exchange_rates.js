@@ -1,12 +1,13 @@
 exports.up = function(knex) {
     return knex.schema.createTable('exchange_rates', function(table) {
         table.uuid('id').defaultTo(knex.raw('uuid_generate_v4()')).primary().unique();
-        table.uuid('country_id').references('countries.id').unique().notNull();
+        table.uuid('country_id').references('countries.id').notNull();
         table.uuid('currency_id').references('currencies.id').notNull();
-        table.integer('value').notNull();
+        table.decimal('value', 10, 4).notNull();
         table.integer('nominal').notNull();
-        table.date('current_date').defaultTo(knex.fn.now()).notNull();
+        table.date('actual_date').notNull();
         table.timestamp('created_at').defaultTo(knex.fn.now());
+        table.unique(['country_id', 'currency_id']);
     })
         .then(function () {
             return Promise.all([
