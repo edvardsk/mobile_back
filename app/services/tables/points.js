@@ -1,10 +1,10 @@
-const { one, manyOrNone } = require('db');
+const { one, oneOrNone, manyOrNone } = require('db');
 
 // sql-helpers
 const {
     insertRecords,
     selectRecordsByPoints,
-    selectRecordsByPoint,
+    selectRecordByPoint,
     selectRecordById,
     selectRecordsByPointAndLanguageIdWithTranslations,
 } = require('sql-helpers/points');
@@ -16,7 +16,7 @@ const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MAN
 
 const getRecordsByPoints = points => manyOrNone(selectRecordsByPoints(points));
 
-const getRecordsByPoint = point => one(selectRecordsByPoint(point));
+const getRecordsByPoint = point => oneOrNone(selectRecordByPoint(point));
 
 const getRecordStrict = id => one(selectRecordById(id));
 

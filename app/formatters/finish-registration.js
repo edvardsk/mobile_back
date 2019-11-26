@@ -2,7 +2,7 @@
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
 // formatters
-const { formatGeoPointToObject } = require('./geo');
+const { formatGeoPointToObjectWithTranslation } = require('./geo');
 
 const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
@@ -63,7 +63,9 @@ const formatDataForSoleProprietorForwarderForStep1Response = data => ({
 });
 
 const formatDataForTransporterAndHolderForStep2Response = data => ({
-    [colsCompanies.LEGAL_CITY_COORDINATES]: data[colsCompanies.LEGAL_CITY_COORDINATES] && formatGeoPointToObject(data[colsCompanies.LEGAL_CITY_COORDINATES]),
+    [colsCompanies.LEGAL_CITY_COORDINATES]: data[colsCompanies.LEGAL_CITY_COORDINATES] && formatGeoPointToObjectWithTranslation(
+        data[colsCompanies.LEGAL_CITY_COORDINATES], data[HOMELESS_COLUMNS.CITY_NAME]
+    ),
     [colsCompanies.LEGAL_ADDRESS]: data[colsCompanies.LEGAL_ADDRESS],
     [colsCompanies.POST_ADDRESS]: data[colsCompanies.POST_ADDRESS],
     [colsCompanies.HEAD_COMPANY_FULL_NAME]: data[colsCompanies.HEAD_COMPANY_FULL_NAME],

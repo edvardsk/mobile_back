@@ -97,7 +97,7 @@ const finishRegistrationStep2 = async (req, res, next) => {
             CompaniesService.updateCompanyAsTransaction(company.id, companyData),
         ];
 
-        const coordinates = companyData.legal_city_coordinates.toPointString();
+        const coordinates = companyData[colsCompanies.LEGAL_CITY_COORDINATES].toPointString();
 
         const point = await PointsService.getRecordsByPoint(coordinates);
         let translationsList = [];

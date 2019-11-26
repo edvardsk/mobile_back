@@ -29,7 +29,7 @@ const selectRecordsByPoints = points => squelPostgres
     .where(`${cols.COORDINATES} IN ?`, points)
     .toString();
 
-const selectRecordsByPoint = point => squelPostgres
+const selectRecordByPoint = point => squelPostgres
     .select()
     .from(table.NAME)
     .field('*')
@@ -59,7 +59,7 @@ const selectRecordsByPointAndLanguageIdWithTranslations = (point, languageId) =>
 module.exports = {
     insertRecords,
     selectRecordsByPoints,
-    selectRecordsByPoint,
+    selectRecordByPoint,
     selectRecordsByPointAndLanguageIdWithTranslations,
     selectRecordById,
 };
