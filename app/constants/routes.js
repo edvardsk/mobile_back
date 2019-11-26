@@ -59,6 +59,7 @@ const IDS = {
     FILE_GROUP: '/:fileGroup',
     COMPANY_ID: '/:companyId',
     CARGO_ID: '/:cargoId',
+    CAR_ID: '/:carId',
 };
 
 const ROUTES = {
@@ -270,6 +271,10 @@ const ROUTES = {
         CARS: {
             BASE: IDS.ME_OR_ID + BASES.CARS,
             POST: '',
+            GET_ALL: '',
+            GET: IDS.CAR_ID,
+            PUT: IDS.CAR_ID,
+            DELETE: IDS.CAR_ID,
         },
 
     },

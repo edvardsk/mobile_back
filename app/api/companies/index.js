@@ -20,6 +20,9 @@ const putCargo = require('./cargos/put');
 const deleteCargo = require('./cargos/delete');
 
 const postCars = require('./cars/post');
+const getCars = require('./cars/get');
+const putCars = require('./cars/put');
+const deleteCars = require('./cars/delete');
 
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
@@ -289,9 +292,9 @@ router.get(
     ROUTES.COMPANIES.CARGOS.BASE + ROUTES.COMPANIES.CARGOS.GET,
     isHasPermissions([PERMISSIONS.CRUD_CARGO]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.requiredCargoId, 'params'),
     injectCompanyData,
     validate(({ company }) => ValidatorSchemes.requiredExistingCargoInCompanyAsyncFunc({ companyId: company.id }), 'params'),
-    injectCompanyData,
     getCargo.getCargo,
 );
 
@@ -299,9 +302,9 @@ router.put(
     ROUTES.COMPANIES.CARGOS.BASE + ROUTES.COMPANIES.CARGOS.PUT,
     isHasPermissions([PERMISSIONS.CRUD_CARGO]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.requiredCargoId, 'params'),
     injectCompanyData,
     validate(({ company }) => ValidatorSchemes.requiredExistingCargoInCompanyAsyncFunc({ companyId: company.id }), 'params'),
-    injectCompanyData,
     validate(ValidatorSchemes.createOrEditCargo),
     validate(ValidatorSchemes.createOrEditCargoAsync),
     putCargo.editCargo,
@@ -311,9 +314,9 @@ router.delete(
     ROUTES.COMPANIES.CARGOS.BASE + ROUTES.COMPANIES.CARGOS.DELETE,
     isHasPermissions([PERMISSIONS.CRUD_CARGO]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.requiredCargoId, 'params'),
     injectCompanyData,
     validate(({ company }) => ValidatorSchemes.requiredExistingCargoInCompanyAsyncFunc({ companyId: company.id }), 'params'),
-    injectCompanyData,
     deleteCargo.removeCargo,
 );
 
@@ -325,15 +328,67 @@ router.post(
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
     formDataHandler(uploadData),
-    validate(ValidatorSchemes.modifyCarArrays),
-    validate(ValidatorSchemes.createCarCommon),
+    validate(ValidatorSchemes.modifyCreateCarTrailerArrays),
+    validate(ValidatorSchemes.createCarTrailerCommon),
+    validate(ValidatorSchemes.createCarTrailerCommonAsync),
+    validate(ValidatorSchemes.createCarTrailerCommonFiles, ['body', 'files']),
     validate(ValidatorSchemes.createCarTruck),
     validate(ValidatorSchemes.createCarTruckAsync),
     validate(ValidatorSchemes.createCarTruckFiles, ['body', 'files']),
-    validate(ValidatorSchemes.modifyCarFloats),
-
-    // validate(ValidatorSchemes.createOrEditCargoAsync),
+    validate(ValidatorSchemes.modifyCreateCarFloats),
     postCars.createCar,
+);
+
+router.get(
+    ROUTES.COMPANIES.CARS.BASE + ROUTES.COMPANIES.CARS.GET_ALL,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.basePaginationQuery, 'query'),
+    validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
+    validate(ValidatorSchemes.modifyFilterQuery, 'query'),
+    validate(ValidatorSchemes.carsFilterQuery, 'query'),
+    injectCompanyData,
+    getCars.getListCars,
+);
+
+router.get(
+    ROUTES.COMPANIES.CARS.BASE + ROUTES.COMPANIES.CARS.GET,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredCarId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingCarInCompanyAsyncFunc({ companyId: company.id }), 'params'),
+    getCars.getCar,
+);
+
+router.put(
+    ROUTES.COMPANIES.CARS.BASE + ROUTES.COMPANIES.CARS.PUT,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredCarId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingCarInCompanyAsyncFunc({ companyId: company.id }), 'params'),
+    formDataHandler(uploadData),
+    validate(ValidatorSchemes.modifyEditCarArrays),
+    validate(ValidatorSchemes.editCarCommon),
+    validate(({ requestParams }) => ValidatorSchemes.editCarCommonAsyncFunc({ carId: requestParams.carId })),
+    validate(ValidatorSchemes.editCarCommonFiles, 'files'),
+    validate(ValidatorSchemes.editCarTruck),
+    validate(ValidatorSchemes.editCarTruckAsync),
+    validate(ValidatorSchemes.editCarTruckFiles, ['body', 'files']),
+    validate(({ requestParams }) => ValidatorSchemes.editCarTruckFilesCheckDangerClassAsyncFunc({ carId: requestParams.carId}), ['body', 'files']),
+    validate(ValidatorSchemes.modifyEditCarTruckFloats),
+    putCars.editCar,
+);
+
+router.delete(
+    ROUTES.COMPANIES.CARS.BASE + ROUTES.COMPANIES.CARS.DELETE,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredCarId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingCarInCompanyAsyncFunc({ companyId: company.id }), 'params'),
+    deleteCars.removeCar,
 );
 
 module.exports = router;
