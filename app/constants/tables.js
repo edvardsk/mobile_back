@@ -382,6 +382,17 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    EXCHANGE_RATES: {
+        NAME: 'exchange_rates',
+        COLUMNS: {
+            COUNTRY_ID: 'country_id',
+            CURRENCY_ID: 'currency_id',
+            VALUE: 'value',
+            NOMINAL: 'nominal',
+            CURRENT_DATE: 'current_date',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
