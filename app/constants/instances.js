@@ -1,6 +1,6 @@
 function Geo(longitude, latitude) {
-    this.longitude = parseFloat(longitude).toString();
-    this.latitude = parseFloat(latitude).toString();
+    this.longitude = parseFloat(parseFloat(longitude).toFixed(6));
+    this.latitude = parseFloat(parseFloat(latitude).toFixed(6));
     this.toString = function () {
         return `ST_GeographyFromText('Point(${this.longitude} ${this.latitude})')`;
     };

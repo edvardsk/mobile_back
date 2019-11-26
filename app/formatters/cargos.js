@@ -51,8 +51,8 @@ const formatRecordForList = (cargo, userLanguageId) => {
 
     return {
         ...result,
-        uploadingPoints,
-        downloadingPoints,
+        [HOMELESS_COLUMNS.UPLOADING_POINTS]: uploadingPoints,
+        [HOMELESS_COLUMNS.DOWNLOADING_POINTS]: downloadingPoints,
     };
 };
 
@@ -83,8 +83,8 @@ const formatRecordForResponse = (cargo, userLanguageId) => {
 
     return {
         ...result,
-        uploadingPoints,
-        downloadingPoints,
+        [HOMELESS_COLUMNS.UPLOADING_POINTS]: uploadingPoints,
+        [HOMELESS_COLUMNS.DOWNLOADING_POINTS]: downloadingPoints,
     };
 };
 
