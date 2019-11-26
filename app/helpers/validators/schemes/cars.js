@@ -77,7 +77,7 @@ const CAR_PROPS = {
     },
 };
 
-const modifyCarArrays = {
+const modifyCreateCarTrailerArrays = {
     if: {
         properties: {
             [HOMELESS_COLUMNS.IS_CAR]: {
@@ -97,7 +97,24 @@ const modifyCarArrays = {
     },
 };
 
-const modifyCarFloats = {
+const modifyEditCarArrays = {
+    if: {
+        properties: {
+            [colsCars.CAR_TYPE]: {
+                const: CAR_TYPES_MAP.TRUCK,
+            }
+        },
+    },
+    then: {
+        properties: {
+            [colsCars.CAR_LOADING_METHODS]: {
+                parse_string_to_json: {},
+            },
+        },
+    },
+};
+
+const modifyCreateCarFloats = {
     if: {
         properties: {
             [HOMELESS_COLUMNS.IS_CAR]: {
@@ -126,7 +143,33 @@ const modifyCarFloats = {
     },
 };
 
-const createCarCommon = {
+const modifyEditCarTruckFloats = {
+    if: {
+        properties: {
+            [colsCars.CAR_TYPE]: {
+                const: CAR_TYPES_MAP.TRUCK,
+            }
+        },
+    },
+    then: {
+        properties: {
+            [colsCars.CAR_WIDTH]: {
+                parse_string_to_float: {},
+            },
+            [colsCars.CAR_HEIGHT]: {
+                parse_string_to_float: {},
+            },
+            [colsCars.CAR_LENGTH]: {
+                parse_string_to_float: {},
+            },
+            [colsCars.CAR_WEIGHT]: {
+                parse_string_to_float: {},
+            },
+        },
+    },
+};
+
+const createCarTrailerCommon = {
     properties: {
         ...CAR_PROPS,
     },
@@ -141,6 +184,7 @@ const createCarCommon = {
         required: [
             colsCars.CAR_MARK,
             colsCars.CAR_MODEL,
+            colsCars.CAR_TYPE,
             HOMELESS_COLUMNS.CAR_STATE_NUMBER,
             colsCars.CAR_MADE_YEAR_AT,
         ],
@@ -151,15 +195,81 @@ const createCarCommon = {
     additionalProperties: false,
 };
 
-const createCarCommonAsync = {
-    $async: true,
+const editCarCommon = {
     properties: {
-        [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: {
-            car_state_number_exists: {},
-        }
+        ...CAR_PROPS,
+    },
+    required:[
+        colsCars.CAR_MARK,
+        colsCars.CAR_MODEL,
+        colsCars.CAR_TYPE,
+        HOMELESS_COLUMNS.CAR_STATE_NUMBER,
+        colsCars.CAR_MADE_YEAR_AT,
+    ],
+    additionalProperties: false,
+};
+
+const createCarTrailerCommonAsync = {
+    $async: true,
+    if: {
+        properties: {
+            [HOMELESS_COLUMNS.IS_CAR]: {
+                const: STRING_BOOLEANS_MAP.TRUE,
+            },
+        },
+    },
+    then: {
+        properties: {
+            [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: {
+                car_state_number_exists: {},
+            }
+        },
     },
     additionalProperties: true,
 };
+
+const createCarTrailerCommonFiles = {
+    $async: true,
+    if: {
+        properties: {
+            [HOMELESS_COLUMNS.IS_CAR]: {
+                const: STRING_BOOLEANS_MAP.TRUE,
+            },
+        },
+    },
+    then: {
+        properties: {
+            [DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT]: fileFormat,
+            [DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION]: fileFormat,
+        },
+        required: [
+            DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT,
+            DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION,
+        ]
+    },
+    additionalProperties: true,
+};
+
+const editCarCommonFiles = {
+    properties: {
+        [DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT]: fileFormat,
+        [DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION]: fileFormat,
+        [DOCUMENTS.DANGER_CLASS]: fileFormat,
+    },
+    additionalProperties: false,
+};
+
+const editCarCommonAsyncFunc = ({ carId }) => ({
+    $async: true,
+    properties: {
+        [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: {
+            car_state_number_exists: {
+                carId,
+            },
+        }
+    },
+    additionalProperties: true,
+});
 
 const createCarTruck = {
     properties: {
@@ -170,6 +280,29 @@ const createCarTruck = {
             [HOMELESS_COLUMNS.IS_CAR]: {
                 const: STRING_BOOLEANS_MAP.TRUE,
             },
+            [colsCars.CAR_TYPE]: {
+                const: CAR_TYPES_MAP.TRUCK,
+            }
+        },
+    },
+    then: {
+        required: [
+            colsCars.CAR_LOADING_METHODS,
+            colsCars.CAR_VEHICLE_TYPE_ID,
+            colsCars.CAR_WIDTH,
+            colsCars.CAR_HEIGHT,
+            colsCars.CAR_LENGTH,
+            colsCars.CAR_WEIGHT,
+        ],
+    },
+};
+
+const editCarTruck = {
+    properties: {
+        ...CAR_PROPS,
+    },
+    if: {
+        properties: {
             [colsCars.CAR_TYPE]: {
                 const: CAR_TYPES_MAP.TRUCK,
             }
@@ -215,6 +348,31 @@ const createCarTruckAsync = {
     additionalProperties: true,
 };
 
+const editCarTruckAsync = {
+    $async: true,
+    properties: {
+        ...CAR_PROPS,
+    },
+    if: {
+        properties: {
+            [colsCars.CAR_TYPE]: {
+                const: CAR_TYPES_MAP.TRUCK,
+            }
+        },
+    },
+    then: {
+        properties: {
+            [colsCars.CAR_DANGER_CLASS_ID]: {
+                danger_class_not_exist: {},
+            },
+            [colsCars.CAR_VEHICLE_TYPE_ID]: {
+                vehicle_type_not_exist: {},
+            },
+        },
+    },
+    additionalProperties: true,
+};
+
 const createCarTruckFiles = {
     properties: {
         ...CAR_PROPS,
@@ -235,6 +393,8 @@ const createCarTruckFiles = {
             required: [
                 colsCars.CAR_DANGER_CLASS_ID,
                 DOCUMENTS.DANGER_CLASS,
+                DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT,
+                DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION,
             ],
         },
         {
@@ -266,23 +426,80 @@ const createCarTruckFiles = {
             ],
         },
     ],
-    required: [DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT, DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION],
     additionalProperties: false,
 };
 
-// const requiredExistingCarInCompanyAsyncFunc = ({  }) => ({
-//     $async: true,
-//     properties: {
-//     },
-// });
+const editCarTruckFiles = {
+    properties: {
+        ...CAR_PROPS,
+        [DOCUMENTS.DANGER_CLASS]: fileFormat,
+        [DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT]: fileFormat,
+        [DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION]: fileFormat,
+    },
+    additionalProperties: false,
+};
+
+const editCarTruckFilesCheckDangerClassAsyncFunc = ({ carId }) => ({
+    $async: true,
+    if: {
+        properties: {
+            [colsCars.CAR_TYPE]: {
+                const: CAR_TYPES_MAP.TRUCK,
+            }
+        },
+    },
+    then: {
+        properties: {
+            [colsCars.CAR_DANGER_CLASS_ID]: {
+                new_danger_class_without_file: {
+                    carId,
+                },
+            },
+        },
+    },
+});
+
+const requiredExistingCarInCompanyAsyncFunc = ({ companyId }) => ({
+    $async: true,
+    properties: {
+        carId: {
+            car_in_company_not_exists: {
+                companyId,
+            },
+        },
+    },
+});
+
+const requiredCarId = {
+    properties: {
+        carId: {
+            type: 'string',
+            format: 'uuid',
+        },
+    },
+    required: [
+        'carId',
+    ]
+};
 
 module.exports = {
-    modifyCarArrays,
-    modifyCarFloats,
-    createCarCommon,
-    createCarCommonAsync,
+    modifyCreateCarTrailerArrays,
+    modifyEditCarArrays,
+    modifyCreateCarFloats,
+    createCarTrailerCommon,
+    createCarTrailerCommonAsync,
+    createCarTrailerCommonFiles,
+    editCarCommon,
+    editCarCommonAsyncFunc,
+    editCarCommonFiles,
     createCarTruck,
     createCarTruckAsync,
     createCarTruckFiles,
-    // requiredExistingCarInCompanyAsyncFunc,
+    editCarTruck,
+    editCarTruckAsync,
+    editCarTruckFiles,
+    editCarTruckFilesCheckDangerClassAsyncFunc,
+    modifyEditCarTruckFloats,
+    requiredExistingCarInCompanyAsyncFunc,
+    requiredCarId,
 };

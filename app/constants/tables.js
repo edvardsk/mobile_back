@@ -409,6 +409,7 @@ const HOMELESS_COLUMNS = {
     NAME_EN: 'name_en',
     CITY_NAME: 'city_name',
     QUERY: 'query',
+    FILES: 'files',
 };
 
 module.exports = {

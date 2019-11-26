@@ -142,6 +142,18 @@ const createOrEditCargoAsync = {
     additionalProperties: true,
 };
 
+const requiredCargoId = {
+    properties: {
+        cargoId: {
+            type: 'string',
+            format: 'uuid',
+        },
+    },
+    required: [
+        'cargoId',
+    ]
+};
+
 const requiredExistingCargoInCompanyAsyncFunc = ({ companyId }) => ({
     $async: true,
     properties: {
@@ -156,5 +168,6 @@ const requiredExistingCargoInCompanyAsyncFunc = ({ companyId }) => ({
 module.exports = {
     createOrEditCargo,
     createOrEditCargoAsync,
+    requiredCargoId,
     requiredExistingCargoInCompanyAsyncFunc,
 };
