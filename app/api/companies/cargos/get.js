@@ -3,9 +3,10 @@ const { success } = require('api/response');
 
 // services
 const CargosServices = require('services/tables/cargos');
+const ExchangeRatesServices = require('services/tables/exchange-rates');
 
 // constants
-const { SQL_TABLES } = require('constants/tables');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SORTING_DIRECTIONS } = require('constants/pagination-sorting');
 
 // formatters
@@ -14,6 +15,7 @@ const { formatRecordForList, formatRecordForResponse } = require('formatters/car
 
 // helpers
 const { getParams } = require('helpers/pagination-sorting');
+const { calculateCargoPrice } = require('helpers/cargos');
 
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 
@@ -62,10 +64,19 @@ const getCargo = async (req, res, next) => {
         const { user } = res.locals;
 
         const userLanguageId = user[colsUsers.LANGUAGE_ID];
+        const userCountryId = user[HOMELESS_COLUMNS.COUNTRY_ID];
+        const userCurrencyId = user[HOMELESS_COLUMNS.CURRENCY_ID];
+        const userCurrencyCode = user[HOMELESS_COLUMNS.CURRENCY_CODE];
 
         const { cargoId } = req.params;
-        const cargo = await CargosServices.getRecordStrict(cargoId, userLanguageId);
-        return success(res, { cargo: formatRecordForResponse(cargo, userLanguageId) });
+        const [cargo, rates] = await Promise.all([
+            CargosServices.getRecordStrict(cargoId, userLanguageId),
+            ExchangeRatesServices.getRecordsByCountryId(userCountryId)
+        ]);
+
+        const prices = calculateCargoPrice(cargo, rates, userCurrencyId, userCurrencyCode);
+
+        return success(res, { cargo: formatRecordForResponse(cargo, prices, userLanguageId) });
     } catch (error) {
         next(error);
     }

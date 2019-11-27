@@ -263,6 +263,7 @@ const selectUserWithRoleAndFreezingStatus = id => squelPostgres
     .field(`fh.${colsFreezingHistory.INITIATOR_ID}`)
     .field(`l.${colsLanguages.CODE}`, HOMELESS_COLUMNS.LANGUAGE_CODE)
     .field(`cur.${colsCurrencies.CODE}`, HOMELESS_COLUMNS.CURRENCY_CODE)
+    .field('cou.id', HOMELESS_COLUMNS.COUNTRY_ID)
     .field('cur.id', HOMELESS_COLUMNS.CURRENCY_ID)
     .where(`u.id = '${id}'`)
     .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)

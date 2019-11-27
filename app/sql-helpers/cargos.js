@@ -12,6 +12,7 @@ const tableVehicleClasses = SQL_TABLES.VEHICLE_TYPES;
 const tableCargoPoints = SQL_TABLES.CARGO_POINTS;
 const tablePoints = SQL_TABLES.POINTS;
 const tableTranslations = SQL_TABLES.POINT_TRANSLATIONS;
+const tableCurrencies = SQL_TABLES.CURRENCIES;
 
 const cols = table.COLUMNS;
 const colsCargoStatuses = tableCargoStatuses.COLUMNS;
@@ -20,6 +21,7 @@ const colsVehicleClasses = tableVehicleClasses.COLUMNS;
 const colsCargoPoints = tableCargoPoints.COLUMNS;
 const colsPoints = tablePoints.COLUMNS;
 const colsTranslations = tableTranslations.COLUMNS;
+const colsCurrencies = tableCurrencies.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -61,6 +63,7 @@ const selectRecordByWithCoordinatesId = (id, userLanguageId) => squelPostgres
     .select()
     .field('c.*')
     .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
+    .field(`cur.${colsCurrencies.CODE}`, HOMELESS_COLUMNS.CURRENCY_CODE)
     .field(`ARRAY(${
         squelPostgres
             .select()
@@ -93,6 +96,7 @@ const selectRecordByWithCoordinatesId = (id, userLanguageId) => squelPostgres
     .left_join(tableCargoStatuses.NAME, 'cs', `cs.id = c.${cols.STATUS_ID}`)
     .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.DANGER_CLASS_ID}`)
     .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
+    .left_join(tableCurrencies.NAME, 'cur', `cur.id = c.${cols.CURRENCY_ID}`)
     .toString();
 
 const selectRecordByIdLight = id => squelPostgres

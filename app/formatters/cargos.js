@@ -56,7 +56,7 @@ const formatRecordForList = (cargo, userLanguageId) => {
     };
 };
 
-const formatRecordForResponse = (cargo, userLanguageId) => {
+const formatRecordForResponse = (cargo, prices, userLanguageId) => {
     const result = {
         id: cargo.id,
         [cols.UPLOADING_DATE_FROM]: cargo[cols.UPLOADING_DATE_FROM],
@@ -77,6 +77,7 @@ const formatRecordForResponse = (cargo, userLanguageId) => {
         [cols.PACKING_DESCRIPTION]: cargo[cols.PACKING_DESCRIPTION],
         [cols.DESCRIPTION]: cargo[cols.DESCRIPTION],
         [cols.CREATED_AT]: cargo[cols.CREATED_AT],
+        [HOMELESS_COLUMNS.PRICES]: prices,
         [HOMELESS_COLUMNS.STATUS]: cargo[HOMELESS_COLUMNS.STATUS],
     };
     const [uploadingPoints, downloadingPoints] = formatGeoPoints(cargo, userLanguageId);

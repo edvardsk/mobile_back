@@ -435,6 +435,8 @@ const HOMELESS_COLUMNS = {
     CURRENCY_CODE: 'currency_code',
     CURRENCY_SCALE: 'currency_scale',
     CURRENCY_RATE: 'currency_rate',
+    COUNTRY_ID: 'country_id',
+    PRICES: 'prices',
 };
 
 module.exports = {
