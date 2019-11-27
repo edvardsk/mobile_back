@@ -28,6 +28,7 @@ const colsRates = SQL_TABLES.EXCHANGE_RATES.COLUMNS;
 const MAP_COUNTRIES_AND_SERVICES = {
     [COUNTRIES_MAP.BELARUS]: ExchangeRatesApiService.extractBelarusRates,
     [COUNTRIES_MAP.RUSSIA]: ExchangeRatesApiService.extractRussiaRates,
+    [COUNTRIES_MAP.UKRAINE]: ExchangeRatesApiService.extractUkraineRates,
 };
 
 const translateCoordinates = async job => {
@@ -64,17 +65,16 @@ const translateCoordinates = async job => {
         const { countryId } = job.data;
         const country = await CountriesService.getCountryStrict(countryId);
         const countryName = country[colsCountries.NAME];
-        const downloadedCurrencies = await MAP_COUNTRIES_AND_SERVICES[countryName]();
+
 
         const currenciesFromDb = await CurrenciesService.getCurrencies();
         const currenciesMap = new Map(currenciesFromDb.map(currency => [currency[colsCurrencies.CODE], currency]));
-        const filteredDownloadedCurrencies = downloadedCurrencies.filter(
-            currency => currenciesMap.has(currency[HOMELESS_COLUMNS.CURRENCY_CODE])
-        );
+
+        const downloadedCurrencies = await MAP_COUNTRIES_AND_SERVICES[countryName](currenciesMap);
 
         const today = moment().format('YYYY-MM-DD');
 
-        const exchangeRatesArray = filteredDownloadedCurrencies.map(currency => ({
+        const exchangeRatesArray = downloadedCurrencies.map(currency => ({
             [colsRates.COUNTRY_ID]: countryId,
             [colsRates.CURRENCY_ID]: currenciesMap.get(currency[HOMELESS_COLUMNS.CURRENCY_CODE]).id,
             [colsRates.VALUE]: currency[HOMELESS_COLUMNS.CURRENCY_RATE],
