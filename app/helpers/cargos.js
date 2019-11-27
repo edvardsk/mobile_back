@@ -16,13 +16,17 @@ const calculateCargoPrice = (cargo, rates, userCurrencyId, userCurrencyCode) => 
             const nominal = rate[colsRates.NOMINAL];
             const result = parseFloat((originalCargoPrice / (value / nominal)).toFixed(2));
             return {
+                id: rate[colsRates.CURRENCY_ID],
                 [HOMELESS_COLUMNS.CURRENCY_CODE]: rate[HOMELESS_COLUMNS.CURRENCY_CODE],
                 [colsCargos.PRICE]: result,
+                [HOMELESS_COLUMNS.ORIGINAL]: false,
             };
         });
         prices.push({
+            id: originalPriceCurrencyId,
             [HOMELESS_COLUMNS.CURRENCY_CODE]: cargo[HOMELESS_COLUMNS.CURRENCY_CODE],
             [colsCargos.PRICE]: originalCargoPrice,
+            [HOMELESS_COLUMNS.ORIGINAL]: true,
         });
     } else {
         const rateFromPriceIndex = rates.findIndex(rate => rate[colsRates.CURRENCY_ID] === originalPriceCurrencyId);
@@ -34,13 +38,17 @@ const calculateCargoPrice = (cargo, rates, userCurrencyId, userCurrencyCode) => 
         const userCurrencyPriceValue = parseFloat((originalCargoPrice / (valueFromPrice / nominalFromPrice)).toFixed(2));
 
         prices.push({
+            id: userCurrencyId,
             [HOMELESS_COLUMNS.CURRENCY_CODE]: userCurrencyCode,
             [colsCargos.PRICE]: userCurrencyPriceValue,
+            [HOMELESS_COLUMNS.ORIGINAL]: false,
         });
 
         prices.push({
+            id: originalPriceCurrencyId,
             [HOMELESS_COLUMNS.CURRENCY_CODE]: rateFromPrice[HOMELESS_COLUMNS.CURRENCY_CODE],
             [colsCargos.PRICE]: originalCargoPrice,
+            [HOMELESS_COLUMNS.ORIGINAL]: true,
         });
 
         prices = [
@@ -50,8 +58,10 @@ const calculateCargoPrice = (cargo, rates, userCurrencyId, userCurrencyCode) => 
                 const nominal = rate[colsRates.NOMINAL];
                 const result = parseFloat((userCurrencyPriceValue / (value / nominal)).toFixed(2));
                 return {
+                    id: rate[colsRates.CURRENCY_ID],
                     [HOMELESS_COLUMNS.CURRENCY_CODE]: rate[HOMELESS_COLUMNS.CURRENCY_CODE],
                     [colsCargos.PRICE]: result,
+                    [HOMELESS_COLUMNS.ORIGINAL]: false,
                 };
             })
         ];
