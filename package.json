@@ -30,6 +30,7 @@
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
+    "cron": "^1.7.2",
     "crypto-random-string": "^3.0.1",
     "dotenv": "^7.0.0",
     "email-templates": "^6.0.2",
