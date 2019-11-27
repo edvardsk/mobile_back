@@ -128,7 +128,7 @@ async function checkExchangeRatesStart() {
         const rates = await ExchangeRatesService.getRecordsByCountriesIds(countries.map(country => country.id));
 
         const countriesToUpdateCurrency = countries.filter(country => {
-            const rate = rates.find(rate => rate[colsRates.COUNTRY_ID] = country.id);
+            const rate = rates.find(rate => rate[colsRates.COUNTRY_ID] === country.id);
             const startDayToday = moment().startOf('day');
             return !rate || moment(rate[colsRates.ACTUAL_DATE]) < startDayToday;
         });
