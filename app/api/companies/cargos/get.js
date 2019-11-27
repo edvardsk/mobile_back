@@ -29,6 +29,10 @@ const getCargos = async (req, res, next) => {
     try {
         const { company, user } = res.locals;
         const userLanguageId = user[colsUsers.LANGUAGE_ID];
+        const userCountryId = user[HOMELESS_COLUMNS.COUNTRY_ID];
+        const userCurrencyId = user[HOMELESS_COLUMNS.CURRENCY_ID];
+        const userCurrencyCode = user[HOMELESS_COLUMNS.CURRENCY_CODE];
+
         const {
             page,
             limit,
@@ -38,13 +42,20 @@ const getCargos = async (req, res, next) => {
 
         const filter = get(req, 'query.filter', {});
 
-        const [cargos, cargosCount] = await Promise.all([
+        const [cargos, cargosCount, rates] = await Promise.all([
             CargosServices.getCargosPaginationSorting(company.id, limit, limit * page, sortColumn, asc, filter, userLanguageId),
-            CargosServices.getCountCargos(company.id, filter)
+            CargosServices.getCountCargos(company.id, filter),
+            ExchangeRatesServices.getRecordsByCountryId(userCountryId)
         ]);
 
         const result = formatPaginationDataForResponse(
-            cargos.map(cargo => formatRecordForList(cargo, userLanguageId)),
+            cargos.map(cargo => {
+                const formattedCargo = formatRecordForList(cargo, userLanguageId);
+                return {
+                    ...formattedCargo,
+                    [HOMELESS_COLUMNS.PRICES]: calculateCargoPrice(cargo, [...rates], userCurrencyId, userCurrencyCode),
+                };
+            }),
             cargosCount,
             limit,
             page,
