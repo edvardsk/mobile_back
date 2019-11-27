@@ -15,6 +15,15 @@ const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 
 const createOrEditCargo = {
     properties: {
+        [colsCargos.CURRENCY_ID]: {
+            type: 'string',
+            format: 'uuid',
+        },
+        [colsCargos.PRICE]: {
+            type: 'number',
+            format: 'price',
+            exclusiveMinimum: 0,
+        },
         [colsCargos.UPLOADING_DATE_FROM]: {
             type: 'string',
             format: 'date-time',
@@ -113,6 +122,8 @@ const createOrEditCargo = {
         },
     },
     required:[
+        colsCargos.CURRENCY_ID,
+        colsCargos.PRICE,
         colsCargos.UPLOADING_DATE_FROM,
         colsCargos.DOWNLOADING_DATE_FROM,
         colsCargos.GROSS_WEIGHT,
@@ -137,6 +148,9 @@ const createOrEditCargoAsync = {
         },
         [colsCargos.VEHICLE_TYPE_ID]: {
             vehicle_type_not_exist: {},
+        },
+        [colsCargos.CURRENCY_ID]: {
+            currency_not_exist: {},
         },
     },
     additionalProperties: true,

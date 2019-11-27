@@ -18,5 +18,6 @@ const checkRecordExists = async (schema, id) => {
 module.exports = {
     getRecord,
     getRecords,
+
     checkRecordExists,
 };

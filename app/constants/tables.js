@@ -233,6 +233,8 @@ const SQL_TABLES = {
         NAME: 'cargos',
         COLUMNS: {
             COMPANY_ID: 'company_id',
+            CURRENCY_ID: 'currency_id',
+            PRICE: 'price',
             STATUS_ID: 'status_id',
             UPLOADING_DATE_FROM: 'uploading_date_from',
             UPLOADING_DATE_TO: 'uploading_date_to',

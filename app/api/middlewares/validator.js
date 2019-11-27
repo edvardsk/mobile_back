@@ -16,6 +16,7 @@ const RolesService = require('services/tables/roles');
 const DangerClassesService = require('services/tables/danger-classes');
 const VehicleClassesService = require('services/tables/vehicle-types');
 const CargosService = require('services/tables/cargos');
+const CurrenciesService = require('services/tables/currencies');
 const EconomicSettingsService = require('services/tables/economic-settings');
 const LanguagesService = require('services/tables/languages');
 const CarsService = require('services/tables/cars');
@@ -148,6 +149,12 @@ ajv.addKeyword('cargo_in_company_not_exist', {
     validate: CargosService.checkCargoInCompanyExists,
 });
 
+ajv.addKeyword('currency_not_exist', {
+    async: true,
+    type: 'string',
+    validate: CurrenciesService.checkRecordExists,
+});
+
 ajv.addKeyword('company_economic_settings_exists', {
     async: true,
     type: 'string',
@@ -216,7 +223,15 @@ ajv.addFormat('price', {
     validate: (number) => {
         const str = number.toString();
         const splitArray = str.split('.');
-        return splitArray.length < 2 && splitArray.shift().length < 14 && splitArray.shift().length < 3;
+        if (splitArray.length === 1 && splitArray[0].toString().length < 14) {
+            return true;
+        } else if (splitArray.length === 2) {
+            const int = splitArray.shift();
+            const fraction = splitArray.shift();
+            return int.toString().length < 14 && fraction.toString().length < 3;
+        } else {
+            return false;
+        }
     },
 });
 
