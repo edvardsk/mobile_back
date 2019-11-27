@@ -12,6 +12,17 @@ const translateCoordinatesCreator = (pointId, language) => {
     childProcess.send(msg);
 };
 
+const extractExchangeRateCreator = countryId => {
+    const msg = {
+        payload: {
+            countryId,
+        },
+        type: ACTION_TYPES.EXTRACT_CHANGE_RATE,
+    };
+    childProcess.send(msg);
+};
+
 module.exports = {
     translateCoordinatesCreator,
+    extractExchangeRateCreator,
 };

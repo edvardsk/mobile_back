@@ -24,7 +24,7 @@ exports.up = function(knex) {
         })
         .then(function () {
             return knex.schema.alterTable('users', function(table) {
-                table.uuid('language_id').defaultTo(RUSSIAN_LANGUAGE_ID).notNull();
+                table.uuid('language_id').defaultTo(RUSSIAN_LANGUAGE_ID).notNull().references('languages.id');
             });
         });
 };

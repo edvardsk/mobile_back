@@ -157,6 +157,7 @@ const SQL_TABLES = {
         NAME: 'countries',
         COLUMNS: {
             NAME: 'name',
+            CURRENCY_ID: 'currency_id',
             CREATED_AT: 'created_at',
         },
     },
@@ -374,6 +375,24 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    CURRENCIES: {
+        NAME: 'currencies',
+        COLUMNS: {
+            CODE: 'code',
+            CREATED_AT: 'created_at',
+        },
+    },
+    EXCHANGE_RATES: {
+        NAME: 'exchange_rates',
+        COLUMNS: {
+            COUNTRY_ID: 'country_id',
+            CURRENCY_ID: 'currency_id',
+            VALUE: 'value',
+            NOMINAL: 'nominal',
+            ACTUAL_DATE: 'actual_date',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
@@ -410,6 +429,9 @@ const HOMELESS_COLUMNS = {
     QUERY: 'query',
     FILES: 'files',
     COORDINATES: 'coordinates',
+    CURRENCY_CODE: 'currency_code',
+    CURRENCY_SCALE: 'currency_scale',
+    CURRENCY_RATE: 'currency_rate',
 };
 
 module.exports = {

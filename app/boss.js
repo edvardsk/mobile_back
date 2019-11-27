@@ -19,8 +19,16 @@ const logger = createLogger({
 global.logger = logger;
 
 const PgBoss = require('pg-boss');
+const moment = require('moment');
+
+// constants
 const { ACTION_TYPES } = require('./constants/background');
+const { SQL_TABLES } = require('./constants/tables');
+
+// services
 const WorkerServices = require('./services/background/workers');
+const CountriesService = require('./services/tables/countries');
+const ExchangeRatesService = require('./services/tables/exchange-rates');
 
 const { dbUrl } = require('./db');
 
@@ -32,6 +40,7 @@ const PARALLEL_JOBS_NUMBER = +process.env.PARALLEL_JOBS_NUMBER || 5;
 const EXPIRE_IN_JOB = process.env.EXPIRE_IN_JOB || '3 days';
 const RETRY_DELAY_SECONDS_JOB = +process.env.RETRY_DELAY_SECONDS_JOB || 60; // 1 minute
 const INTEGER_MAX_POSTGRES = 2147483647;
+const EXTRACT_EXCHANGE_RATE_EXPIRE_IN = '1 day';
 
 boss.on('error', onError);
 boss.start()
@@ -43,6 +52,10 @@ process.on('message', function (msg) {
     case ACTION_TYPES.TRANSLATE_COORDINATES_NAME:
         translateCoordinates(msg.payload);
         break;
+
+    case ACTION_TYPES.EXTRACT_CHANGE_RATE:
+        extractExchangeRate(msg.payload);
+        break;
     }
 });
 
@@ -53,14 +66,41 @@ async function subscribe() {
                 teamSize: PARALLEL_JOBS_NUMBER,
                 teamConcurrency: PARALLEL_JOBS_NUMBER
             }, WorkerServices.translateCoordinates),
+            boss.subscribe(ACTION_TYPES.EXTRACT_CHANGE_RATE, {
+                teamSize: PARALLEL_JOBS_NUMBER,
+                teamConcurrency: PARALLEL_JOBS_NUMBER
+            }, WorkerServices.extractExchangeRate),
         ]);
+        startJobs();
     } catch (error) {
         onError(error);
     }
 }
 
+function startJobs() {
+    checkExchangeRatesStart();
+}
+
 function onError(error) {
     logger.error(error);
+}
+
+async function extractExchangeRate(data) {
+    try {
+        const jobId = await boss.publish(
+            ACTION_TYPES.EXTRACT_CHANGE_RATE,
+            data,
+            {
+                expireIn: EXTRACT_EXCHANGE_RATE_EXPIRE_IN,
+                retryDelay: RETRY_DELAY_SECONDS_JOB,
+                retryLimit: INTEGER_MAX_POSTGRES,
+            }
+        );
+        logger.info(`Job created id: ${jobId}`);
+
+    } catch(err) {
+        onError(err);
+    }
 }
 
 async function translateCoordinates(data) {
@@ -77,6 +117,28 @@ async function translateCoordinates(data) {
         logger.info(`Job created id: ${jobId}`);
 
     } catch(err) {
+        onError(err);
+    }
+}
+
+async function checkExchangeRatesStart() {
+    const colsRates = SQL_TABLES.EXCHANGE_RATES.COLUMNS;
+    try {
+        const countries = await CountriesService.getCountriesWithCurrencies();
+        const rates = await ExchangeRatesService.getRecordsByCountriesIds(countries.map(country => country.id));
+
+        const countriesToUpdateCurrency = countries.filter(country => {
+            const rate = rates.find(rate => rate[colsRates.COUNTRY_ID] === country.id);
+            const startDayToday = moment().startOf('day');
+            return !rate || moment(rate[colsRates.ACTUAL_DATE]) < startDayToday;
+        });
+        if (countriesToUpdateCurrency.length) {
+            await Promise.all(countriesToUpdateCurrency.map(country => {
+                return extractExchangeRate({ countryId: country.id });
+            }));
+        }
+    } catch (err) {
+        logger.info('Check exchange rates failed');
         onError(err);
     }
 }
