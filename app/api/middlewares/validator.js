@@ -206,9 +206,18 @@ ajv.addFormat('size', {
     validate: (number) => {
         const str = number.toString();
         const splitArray = str.split('.');
-        return splitArray.length < 2 || splitArray.pop().length < 3;
+        return splitArray.length < 2 || splitArray.pop().length < 3; // todo: check condition
     },
-    compare: compareYears,
+    compare: compareYears, // todo: check
+});
+
+ajv.addFormat('price', {
+    type: 'number',
+    validate: (number) => {
+        const str = number.toString();
+        const splitArray = str.split('.');
+        return splitArray.length < 2 && splitArray.shift().length < 14 && splitArray.shift().length < 3;
+    },
 });
 
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {

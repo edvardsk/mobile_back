@@ -28,6 +28,8 @@ const formatUserWithPermissionsForResponse = (user, permissions) => ({
     [cols.FULL_NAME]: user[cols.FULL_NAME],
     [HOMELESS_COLUMNS.LANGUAGE_CODE]: user[HOMELESS_COLUMNS.LANGUAGE_CODE],
     [HOMELESS_COLUMNS.ROLE]: user[HOMELESS_COLUMNS.ROLE],
+    [HOMELESS_COLUMNS.CURRENCY_ID]: user[HOMELESS_COLUMNS.CURRENCY_ID],
+    [HOMELESS_COLUMNS.CURRENCY_CODE]: user[HOMELESS_COLUMNS.CURRENCY_CODE],
     permissions: Array.from(permissions),
 });
 

@@ -40,7 +40,7 @@ const isAuthenticated = async (req, res) => {
                 return reject(res, ERRORS.AUTHENTICATION.INVALID_TOKEN);
             }
 
-            const user = await UsersService.getUserForAuthentication(userId);
+            const user = await UsersService.getUserForAuthentication(userId); // todo: remove extra joins
 
             if (!user) {
                 return reject(res, ERRORS.AUTHENTICATION.INVALID_TOKEN);
