@@ -40,6 +40,7 @@ const PARALLEL_JOBS_NUMBER = +process.env.PARALLEL_JOBS_NUMBER || 5;
 const EXPIRE_IN_JOB = process.env.EXPIRE_IN_JOB || '3 days';
 const RETRY_DELAY_SECONDS_JOB = +process.env.RETRY_DELAY_SECONDS_JOB || 60; // 1 minute
 const INTEGER_MAX_POSTGRES = 2147483647;
+const EXTRACT_EXCHANGE_RATE_EXPIRE_IN = '1 day';
 
 boss.on('error', onError);
 boss.start()
@@ -77,9 +78,7 @@ async function subscribe() {
 }
 
 function startJobs() {
-    if (process.env.NODE_ENV !== 'development2') {
-        checkExchangeRatesStart();
-    }
+    checkExchangeRatesStart();
 }
 
 function onError(error) {
@@ -92,7 +91,7 @@ async function extractExchangeRate(data) {
             ACTION_TYPES.EXTRACT_CHANGE_RATE,
             data,
             {
-                expireIn: '6 hours',
+                expireIn: EXTRACT_EXCHANGE_RATE_EXPIRE_IN,
                 retryDelay: RETRY_DELAY_SECONDS_JOB,
                 retryLimit: INTEGER_MAX_POSTGRES,
             }
