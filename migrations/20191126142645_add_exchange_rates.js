@@ -3,7 +3,7 @@ exports.up = function(knex) {
         table.uuid('id').defaultTo(knex.raw('uuid_generate_v4()')).primary().unique();
         table.uuid('country_id').references('countries.id').notNull();
         table.uuid('currency_id').references('currencies.id').notNull();
-        table.decimal('value', 10, 4).notNull();
+        table.decimal('value', 20, 4).notNull();
         table.integer('nominal').notNull();
         table.date('actual_date').notNull();
         table.timestamp('created_at').defaultTo(knex.fn.now());
