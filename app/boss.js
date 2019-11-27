@@ -19,6 +19,7 @@ const logger = createLogger({
 global.logger = logger;
 
 const PgBoss = require('pg-boss');
+const moment = require('moment');
 
 // constants
 const { ACTION_TYPES } = require('./constants/background');
@@ -127,7 +128,11 @@ async function checkExchangeRatesStart() {
         const countries = await CountriesService.getCountriesWithCurrencies();
         const rates = await ExchangeRatesService.getRecordsByCountriesIds(countries.map(country => country.id));
 
-        const countriesToUpdateCurrency = countries.filter(country => !rates.find(rate => rate[colsRates.COUNTRY_ID] = country.id));
+        const countriesToUpdateCurrency = countries.filter(country => {
+            const rate = rates.find(rate => rate[colsRates.COUNTRY_ID] = country.id);
+            const startDayToday = moment().startOf('day');
+            return !rate || moment(rate[colsRates.ACTUAL_DATE]) < startDayToday;
+        });
         if (countriesToUpdateCurrency.length) {
             await Promise.all(countriesToUpdateCurrency.map(country => {
                 return extractExchangeRate({ countryId: country.id });

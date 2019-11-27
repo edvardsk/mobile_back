@@ -9,6 +9,7 @@ const CurrenciesService = require('services/tables/currencies');
 const ExchangeRatesService = require('services/tables/exchange-rates');
 const ExchangeRatesApiService = require('services/exchange-rates-api');
 const GeoService = require('services/google/geo');
+const TablesService = require('services/tables');
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
@@ -81,7 +82,12 @@ const translateCoordinates = async job => {
             [colsRates.ACTUAL_DATE]: today,
         }));
 
-        await ExchangeRatesService.addRecords(exchangeRatesArray);
+        const transactionsList = [
+            ExchangeRatesService.removeRecordsByCountryIdAsTransaction(countryId),
+            ExchangeRatesService.addRecordsAsTransaction(exchangeRatesArray),
+        ];
+
+        await TablesService.runTransaction(transactionsList);
 
         await job.done();
         logger.info(`Job completed id: ${job.id}`);

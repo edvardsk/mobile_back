@@ -20,7 +20,15 @@ const insertRecords = values => squelPostgres
     .returning('*')
     .toString();
 
+const deleteRecordsByCountryId = countryId => squelPostgres
+    .delete()
+    .from(table.NAME)
+    .where(`${cols.COUNTRY_ID} = '${countryId}' `)
+    .returning('*')
+    .toString();
+
 module.exports = {
     selectRecordsByCountriesIds,
     insertRecords,
+    deleteRecordsByCountryId,
 };
