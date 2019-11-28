@@ -1,11 +1,12 @@
 const moment = require('moment');
+const { groupBy } = require('lodash');
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SqlArray } = require('constants/instances');
 
 // formatters
-const { formatGeoPointWithNameFromPostgresJSONToObject } = require('./geo');
+const { formatGeoPointWithName, formatGeoPointWithNameFromPostgresJSONToObject } = require('./geo');
 const { formatPricesFromPostgresJSON } = require('./cargo-prices');
 
 const {
@@ -133,31 +134,25 @@ const formatGeoPoints = (cargo, userLanguageId) => {
     const up = cargo[HOMELESS_COLUMNS.UPLOADING_POINTS].map(value => formatGeoPointWithNameFromPostgresJSONToObject(value));
     const down = cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS].map(value => formatGeoPointWithNameFromPostgresJSONToObject(value));
 
-    const uploadingPoints = uniqueByLanguageId(up, userLanguageId);
-    const downloadingPoints = uniqueByLanguageId(down, userLanguageId);
+    const uniqueUp = uniqueByLanguageId(up, userLanguageId);
+    const uniqueDown = uniqueByLanguageId(down, userLanguageId);
+
+    const uploadingPoints = uniqueUp.map(point => formatGeoPointWithName(point));
+    const downloadingPoints = uniqueDown.map(point => formatGeoPointWithName(point));
     return [uploadingPoints, downloadingPoints];
 };
 
 const uniqueByLanguageId = (list, languageId) => {
-    const points = [...list];
-    for (let i = 0; i < points.length - 1; i++) {
-        for (let j = i + 1; j < points.length; j++) {
-            if (
-                points[i]['longitude'] === points[j]['longitude'] &&
-                points[i]['latitude'] === points[j]['latitude']
-            ) {
-                if (points[i]['languageId'] === languageId) {
-                    points.splice(j, 1);
-                    j++;
-                } else {
-                    points.splice(i, 1);
-                    i++;
-                    j = i;
-                }
-            }
+    const grouped = groupBy(list, HOMELESS_COLUMNS.COORDINATES);
+    return Object.keys(grouped).map(coordinate => {
+        const translates = grouped[coordinate];
+        if (translates.length === 1) {
+            return translates.pop();
+        } else {
+            const [language1, language2] = translates;
+            return language1['languageId'] === languageId ? language1 : language2;
         }
-    }
-    return points;
+    });
 };
 
 module.exports = {

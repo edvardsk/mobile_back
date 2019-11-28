@@ -17,6 +17,7 @@ const { COUNTRIES_MAP } = require('constants/countries');
 // formatters
 const PointTranslationsFormatters = require('formatters/point-translations');
 const GeoFormatters = require('formatters/geo');
+const GoogleGeoFormatters = require('formatters/google/geo');
 
 const colsLanguages = SQL_TABLES.LANGUAGES.COLUMNS;
 const colsPoints = SQL_TABLES.POINTS.COLUMNS;
@@ -39,7 +40,8 @@ const translateCoordinates = async job => {
         const { longitude, latitude } = GeoFormatters.formatGeoPointToObject(point[colsPoints.COORDINATES]);
         const languageToCode = language[colsLanguages.CODE];
 
-        const cityName = await GeoService.getCityByCoordinates(latitude, longitude, languageToCode);
+        const place = await GeoService.getPlaceByCoordinates(latitude, longitude, languageToCode);
+        const cityName = GoogleGeoFormatters.formatCityName(place);
 
         if (cityName) {
             const translationData = PointTranslationsFormatters.formatTranslationToSave(pointId, cityName, language.id);
