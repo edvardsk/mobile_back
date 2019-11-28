@@ -75,19 +75,11 @@ const getCargo = async (req, res, next) => {
         const { user } = res.locals;
 
         const userLanguageId = user[colsUsers.LANGUAGE_ID];
-        const userCountryId = user[HOMELESS_COLUMNS.COUNTRY_ID];
-        const userCurrencyId = user[HOMELESS_COLUMNS.CURRENCY_ID];
-        const userCurrencyCode = user[HOMELESS_COLUMNS.CURRENCY_CODE];
 
         const { cargoId } = req.params;
-        const [cargo, rates] = await Promise.all([
-            CargosServices.getRecordStrict(cargoId, userLanguageId),
-            ExchangeRatesServices.getRecordsByCountryId(userCountryId)
-        ]);
+        const cargo = await CargosServices.getRecordStrict(cargoId, userLanguageId);
 
-        const prices = calculateCargoPrice(cargo, rates, userCurrencyId, userCurrencyCode);
-
-        return success(res, { cargo: formatRecordForResponse(cargo, prices, userLanguageId) });
+        return success(res, { cargo: formatRecordForResponse(cargo, userLanguageId) });
     } catch (error) {
         next(error);
     }

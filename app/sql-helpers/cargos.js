@@ -10,6 +10,7 @@ const tableCargoStatuses = SQL_TABLES.CARGO_STATUSES;
 const tableDangerClasses = SQL_TABLES.DANGER_CLASSES;
 const tableVehicleClasses = SQL_TABLES.VEHICLE_TYPES;
 const tableCargoPoints = SQL_TABLES.CARGO_POINTS;
+const tableCargoPrices = SQL_TABLES.CARGO_PRICES;
 const tablePoints = SQL_TABLES.POINTS;
 const tableTranslations = SQL_TABLES.POINT_TRANSLATIONS;
 const tableCurrencies = SQL_TABLES.CURRENCIES;
@@ -19,6 +20,7 @@ const colsCargoStatuses = tableCargoStatuses.COLUMNS;
 const colsDangerClasses = tableDangerClasses.COLUMNS;
 const colsVehicleClasses = tableVehicleClasses.COLUMNS;
 const colsCargoPoints = tableCargoPoints.COLUMNS;
+const colsCargoPrices = tableCargoPrices.COLUMNS;
 const colsPoints = tablePoints.COLUMNS;
 const colsTranslations = tableTranslations.COLUMNS;
 const colsCurrencies = tableCurrencies.COLUMNS;
@@ -63,7 +65,17 @@ const selectRecordByWithCoordinatesId = (id, userLanguageId) => squelPostgres
     .select()
     .field('c.*')
     .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
-    .field(`cur.${colsCurrencies.CODE}`, HOMELESS_COLUMNS.CURRENCY_CODE)
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(
+            cpr.${colsCargoPrices.CURRENCY_ID}, cpr.${colsCargoPrices.NEXT_CURRENCY_ID}, cpr.${colsCargoPrices.PRICE}, cur.${colsCurrencies.CODE}
+            ))`)
+            .from(tableCargoPrices.NAME, 'cpr')
+            .where(`cpr.${colsCargoPrices.CARGO_ID} = c.id`)
+            .left_join(tableCurrencies.NAME, 'cur', `cur.id= cpr.${colsCargoPrices.CURRENCY_ID}`)
+            .toString()
+    })`, HOMELESS_COLUMNS.PRICES)
     .field(`ARRAY(${
         squelPostgres
             .select()
@@ -96,7 +108,6 @@ const selectRecordByWithCoordinatesId = (id, userLanguageId) => squelPostgres
     .left_join(tableCargoStatuses.NAME, 'cs', `cs.id = c.${cols.STATUS_ID}`)
     .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.DANGER_CLASS_ID}`)
     .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
-    .left_join(tableCurrencies.NAME, 'cur', `cur.id = c.${cols.CURRENCY_ID}`)
     .toString();
 
 const selectRecordByIdLight = id => squelPostgres

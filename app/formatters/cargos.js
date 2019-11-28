@@ -6,6 +6,7 @@ const { SqlArray } = require('constants/instances');
 
 // formatters
 const { formatGeoPointWithNameFromPostgresJSONToObject } = require('./geo');
+const { formatPricesFromPostgresJSON } = require('./cargo-prices');
 
 const {
     FREEZE_CARGO_UNIT,
@@ -56,7 +57,7 @@ const formatRecordForList = (cargo, userLanguageId) => {
     };
 };
 
-const formatRecordForResponse = (cargo, prices, userLanguageId) => {
+const formatRecordForResponse = (cargo, userLanguageId) => {
     const result = {
         id: cargo.id,
         [cols.UPLOADING_DATE_FROM]: cargo[cols.UPLOADING_DATE_FROM],
@@ -77,15 +78,16 @@ const formatRecordForResponse = (cargo, prices, userLanguageId) => {
         [cols.PACKING_DESCRIPTION]: cargo[cols.PACKING_DESCRIPTION],
         [cols.DESCRIPTION]: cargo[cols.DESCRIPTION],
         [cols.CREATED_AT]: cargo[cols.CREATED_AT],
-        [HOMELESS_COLUMNS.PRICES]: prices,
         [HOMELESS_COLUMNS.STATUS]: cargo[HOMELESS_COLUMNS.STATUS],
     };
     const [uploadingPoints, downloadingPoints] = formatGeoPoints(cargo, userLanguageId);
+    const prices = formatPricesFromPostgresJSON(cargo[HOMELESS_COLUMNS.PRICES]);
 
     return {
         ...result,
         [HOMELESS_COLUMNS.UPLOADING_POINTS]: uploadingPoints,
         [HOMELESS_COLUMNS.DOWNLOADING_POINTS]: downloadingPoints,
+        [HOMELESS_COLUMNS.PRICES]: prices,
     };
 };
 
