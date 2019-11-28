@@ -4,6 +4,8 @@ const USD = {
     code: 'usd',
 };
 
+exports.USD = USD;
+
 exports.up = function(knex) {
     return knex('currencies')
         .insert({
