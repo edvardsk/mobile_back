@@ -93,6 +93,7 @@ const createCargo = async (req, res, next) => {
             }, []));
         }
 
+        // todo: notify clients about creating new cargo
         return success(res, { id: cargoId }, SUCCESS_CODES.CREATED);
     } catch (error) {
         next(error);

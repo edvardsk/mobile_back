@@ -1,5 +1,4 @@
 // this file uses only in boss.js file!
-const moment = require('moment');
 
 // services
 const PointsService = require('services/tables/points');
@@ -60,26 +59,24 @@ const translateCoordinates = async job => {
 }
 
 ;const extractExchangeRate = async job => {
-    logger.info(`received ${job.name} ${job.id}`);
+    const { countryId, extractingDate } = job.data;
+
+    logger.info(`received ${job.name} ${job.id} | country id: ${countryId}`);
     try {
-        const { countryId } = job.data;
         const country = await CountriesService.getCountryStrict(countryId);
         const countryName = country[colsCountries.NAME];
-
 
         const currenciesFromDb = await CurrenciesService.getCurrencies();
         const currenciesMap = new Map(currenciesFromDb.map(currency => [currency[colsCurrencies.CODE], currency]));
 
-        const downloadedCurrencies = await MAP_COUNTRIES_AND_SERVICES[countryName](currenciesMap);
-
-        const today = moment().format('YYYY-MM-DD');
+        const downloadedCurrencies = await MAP_COUNTRIES_AND_SERVICES[countryName](currenciesMap, extractingDate);
 
         const exchangeRatesArray = downloadedCurrencies.map(currency => ({
             [colsRates.COUNTRY_ID]: countryId,
             [colsRates.CURRENCY_ID]: currenciesMap.get(currency[HOMELESS_COLUMNS.CURRENCY_CODE]).id,
             [colsRates.VALUE]: currency[HOMELESS_COLUMNS.CURRENCY_RATE],
             [colsRates.NOMINAL]: currency[HOMELESS_COLUMNS.CURRENCY_SCALE],
-            [colsRates.ACTUAL_DATE]: today,
+            [colsRates.ACTUAL_DATE]: extractingDate,
         }));
 
         const transactionsList = [
@@ -93,6 +90,7 @@ const translateCoordinates = async job => {
         logger.info(`Job completed id: ${job.id}`);
 
     } catch (err) {
+        // todo: notify admin
         logger.error(`Job failed id: ${job.id}`);
         await job.done(err);
         onError(err);
