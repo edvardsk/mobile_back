@@ -1,10 +1,11 @@
-const  { manyOrNone } = require('db');
+const  { many, manyOrNone } = require('db');
 
 // sql-helpers
 const {
     selectRecordsByCountriesIds,
     insertRecords,
     deleteRecordsByCountryId,
+    selectRecordsByCountryId,
 } = require('sql-helpers/exchange-rates');
 
 // constants
@@ -18,9 +19,12 @@ const addRecords = values => manyOrNone(insertRecords(values));
 
 const getRecordsByCountriesIds = ids => manyOrNone(selectRecordsByCountriesIds(ids));
 
+const getRecordsByCountryId = countryId => many(selectRecordsByCountryId(countryId));
+
 module.exports = {
     addRecordsAsTransaction,
     removeRecordsByCountryIdAsTransaction,
     getRecordsByCountriesIds,
     addRecords,
+    getRecordsByCountryId,
 };

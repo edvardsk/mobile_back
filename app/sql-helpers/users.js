@@ -16,6 +16,9 @@ const tableRoles = SQL_TABLES.ROLES;
 const tablePermissions = SQL_TABLES.PERMISSIONS;
 const tableUsersRoles = SQL_TABLES.USERS_TO_ROLES;
 const tableUsersPermissions = SQL_TABLES.USERS_TO_PERMISSIONS;
+const tableCompanies = SQL_TABLES.COMPANIES;
+const tableCountries = SQL_TABLES.COUNTRIES;
+const tableCurrencies = SQL_TABLES.CURRENCIES;
 const tableUsersCompanies = SQL_TABLES.USERS_TO_COMPANIES;
 const tablePhoneNumbers = SQL_TABLES.PHONE_NUMBERS;
 const tablePhonePrefixes = SQL_TABLES.PHONE_PREFIXES;
@@ -29,6 +32,9 @@ const colsRoles = tableRoles.COLUMNS;
 const colsPermissions = tablePermissions.COLUMNS;
 const colsUsersRoles = tableUsersRoles.COLUMNS;
 const colsUsersPermissions = tableUsersPermissions.COLUMNS;
+const colsCompanies = tableCompanies.COLUMNS;
+const colsCountries = tableCountries.COLUMNS;
+const colsCurrencies = tableCurrencies.COLUMNS;
 const colsUsersCompanies = tableUsersCompanies.COLUMNS;
 const colsPhoneNumbers = tablePhoneNumbers.COLUMNS;
 const colsPhonePrefixes = tablePhonePrefixes.COLUMNS;
@@ -256,11 +262,18 @@ const selectUserWithRoleAndFreezingStatus = id => squelPostgres
     .field('r.name', HOMELESS_COLUMNS.ROLE)
     .field(`fh.${colsFreezingHistory.INITIATOR_ID}`)
     .field(`l.${colsLanguages.CODE}`, HOMELESS_COLUMNS.LANGUAGE_CODE)
+    .field(`cur.${colsCurrencies.CODE}`, HOMELESS_COLUMNS.CURRENCY_CODE)
+    .field('cou.id', HOMELESS_COLUMNS.COUNTRY_ID)
+    .field('cur.id', HOMELESS_COLUMNS.CURRENCY_ID)
     .where(`u.id = '${id}'`)
     .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
     .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
     .left_join(tableFreezingHistory.NAME, 'fh', `fh.${colsFreezingHistory.TARGET_ID} = u.id`)
     .left_join(tableLanguages.NAME, 'l', `l.id = u.${cols.LANGUAGE_ID}`)
+    .left_join(tableUsersCompanies.NAME, 'uc', `uc.${colsUsersCompanies.USER_ID} = u.id`)
+    .left_join(tableCompanies.NAME, 'c', `c.id = uc.${colsUsersCompanies.COMPANY_ID}`)
+    .left_join(tableCountries.NAME, 'cou', `cou.id = c.${colsCompanies.COUNTRY_ID}`)
+    .left_join(tableCurrencies.NAME, 'cur', `cur.id = cou.${colsCountries.CURRENCY_ID}`)
     .order(`fh.${colsFreezingHistory.CREATED_AT}`, false)
     .limit(1)
     .toString();

@@ -233,6 +233,8 @@ const SQL_TABLES = {
         NAME: 'cargos',
         COLUMNS: {
             COMPANY_ID: 'company_id',
+            CURRENCY_ID: 'currency_id',
+            PRICE: 'price',
             STATUS_ID: 'status_id',
             UPLOADING_DATE_FROM: 'uploading_date_from',
             UPLOADING_DATE_TO: 'uploading_date_to',
@@ -429,9 +431,13 @@ const HOMELESS_COLUMNS = {
     QUERY: 'query',
     FILES: 'files',
     COORDINATES: 'coordinates',
+    CURRENCY_ID: 'currency_id',
     CURRENCY_CODE: 'currency_code',
     CURRENCY_SCALE: 'currency_scale',
     CURRENCY_RATE: 'currency_rate',
+    COUNTRY_ID: 'country_id',
+    PRICES: 'prices',
+    ORIGINAL: 'original',
 };
 
 module.exports = {
