@@ -91,8 +91,6 @@ const formatRecordForResponse = (cargo, prices, userLanguageId) => {
 
 const formatCargoData = body => {
     const CARGOS_PROPS = new Set([
-        cols.CURRENCY_ID,
-        cols.PRICE,
         cols.UPLOADING_DATE_FROM,
         cols.UPLOADING_DATE_TO,
         cols.DOWNLOADING_DATE_FROM,

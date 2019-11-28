@@ -4,6 +4,7 @@ const { success, reject } = require('api/response');
 // services
 const CargosServices = require('services/tables/cargos');
 const CargoPointsService = require('services/tables/cargo-points');
+const CargoPricesService = require('services/tables/cargo-prices');
 const CargoStatusesService = require('services/tables/cargo-statuses');
 const PointsService = require('services/tables/points');
 const PointTranslationsService = require('services/tables/point-translations');
@@ -21,6 +22,7 @@ const { DEFAULT_LANGUAGE } = require('constants/languages');
 // formatters
 const CargosFormatters = require('formatters/cargos');
 const CargoPointsFormatters = require('formatters/cargo-points');
+const CargoPricesFormatters = require('formatters/cargo-prices');
 const PointsFormatters = require('formatters/points');
 
 const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
@@ -51,6 +53,7 @@ const createCargo = async (req, res, next) => {
         const cargo = CargosFormatters.formatRecordToSave(companyId, cargoId, statusId, cargosProps);
         const cargoPointsWithName = CargoPointsFormatters.formatRecordsWithName(cargoId, cargoPointsProps);
         const cargoPoints = CargoPointsFormatters.formatRecordsToSave(cargoPointsWithName);
+        const cargoPrices = CargoPricesFormatters.formatRecordsToSave(body[HOMELESS_COLUMNS.PRICES], cargoId);
 
         const cargoCoordinates = cargoPointsWithName.map(record => ({
             [colsCargoPoints.COORDINATES]: record[colsCargoPoints.COORDINATES].toPointString(),
@@ -64,6 +67,7 @@ const createCargo = async (req, res, next) => {
         const transactionsList = [
             CargosServices.addRecordAsTransaction(cargo),
             CargoPointsService.addRecordsAsTransaction(cargoPoints),
+            CargoPricesService.addRecordsAsTransaction(cargoPrices),
         ];
 
         let translationsList = [];

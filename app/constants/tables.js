@@ -395,6 +395,16 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    CARGO_PRICES: {
+        NAME: 'cargo_prices',
+        COLUMNS: {
+            CARGO_ID: 'cargo_id',
+            CURRENCY_ID: 'currency_id',
+            NEXT_CURRENCY_ID: 'next_currency_id',
+            PRICE: 'price',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
