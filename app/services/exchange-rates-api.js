@@ -1,4 +1,5 @@
 const rp = require('request-promise');
+
 const xml2js = require('xml2js');
 const moment = require('moment');
 
@@ -26,7 +27,12 @@ const extractBelarusRates = async (currenciesMap) => {
 
 const extractRussiaRates = async (currenciesMap) => {
     const today = moment().format('DD/MM/YYYY');
-    const bodyString = await rp(`${RUSSIA_URL}?date_req=${today}`);
+    const bodyString = await rp({
+        uri: `${RUSSIA_URL}?date_req=${today}`,
+        headers: {
+            'User-Agent': 'curl/7.47.0',
+        },
+    });
     const parser = new xml2js.Parser();
     const parsedData = await parser.parseStringPromise(bodyString);
 
