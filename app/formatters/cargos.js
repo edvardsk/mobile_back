@@ -49,11 +49,13 @@ const formatRecordForList = (cargo, userLanguageId) => {
     };
 
     const [uploadingPoints, downloadingPoints] = formatGeoPoints(cargo, userLanguageId);
+    const prices = formatPricesFromPostgresJSON(cargo[HOMELESS_COLUMNS.PRICES]);
 
     return {
         ...result,
         [HOMELESS_COLUMNS.UPLOADING_POINTS]: uploadingPoints,
         [HOMELESS_COLUMNS.DOWNLOADING_POINTS]: downloadingPoints,
+        [HOMELESS_COLUMNS.PRICES]: prices,
     };
 };
 
