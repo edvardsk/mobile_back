@@ -283,6 +283,7 @@ const ROUTES = {
             BASE: IDS.ME_OR_ID + BASES.TRAILERS,
             GET_ALL: '',
             GET: IDS.TRAILER_ID,
+            DELETE: IDS.TRAILER_ID,
         },
 
     },

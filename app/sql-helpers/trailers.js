@@ -144,6 +144,7 @@ const selectRecordByIdAndCompanyIdLight = (id, companyId) => squelPostgres
     .from(table.NAME)
     .where(`id = '${id}'`)
     .where(`${cols.COMPANY_ID} = '${companyId}'`)
+    .where(`${cols.DELETED} = 'f'`)
     .toString();
 
 module.exports = {
