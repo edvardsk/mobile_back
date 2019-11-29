@@ -148,6 +148,7 @@ const createOrEditCargo = {
         colsCargos.LOADING_TYPE,
         colsCargos.GUARANTEES,
         colsCargos.VEHICLE_TYPE_ID,
+        colsCargos.DANGER_CLASS_ID,
         HOMELESS_COLUMNS.UPLOADING_POINTS,
         HOMELESS_COLUMNS.DOWNLOADING_POINTS,
     ],

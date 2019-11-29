@@ -6,6 +6,7 @@ const CarsServices = require('services/tables/cars');
 const CarsStateNumbersService = require('services/tables/cars-state-numbers');
 const FilesService = require('services/tables/files');
 const CarsFilesService = require('services/tables/cars-to-files');
+const DangerClassesService = require('services/tables/danger-classes');
 const TablesService = require('services/tables/index');
 const S3Service = require('services/aws/s3');
 
@@ -18,14 +19,18 @@ const { DOCUMENTS } = require('constants/files');
 const CarsFormatters = require('formatters/cars');
 const FilesFormatters = require('formatters/files');
 
+// helpers
+const { isDangerous } = require('helpers/danger-classes');
+
 const colsCars = SQL_TABLES.CARS.COLUMNS;
 const colsCarsNumbers = SQL_TABLES.CARS_STATE_NUMBERS.COLUMNS;
+const colsDangerClasses = SQL_TABLES.DANGER_CLASSES.COLUMNS;
 
 const editCar = async (req, res, next) => {
     try {
         const { body, files } = req;
         const { carId } = req.params;
-
+        const newCarType = body[colsCars.CAR_TYPE];
         const stateNumber = body[HOMELESS_COLUMNS.CAR_STATE_NUMBER];
         const currentStateNumberRecord = await CarsStateNumbersService.getActiveRecordByCarIdStrict(carId);
         const currentStateNumber = currentStateNumberRecord[colsCarsNumbers.NUMBER];
@@ -38,6 +43,10 @@ const editCar = async (req, res, next) => {
         const carRequiredDocuments = [DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION, DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT];
         const passedFiles = Object.keys(files);
         const fileLabelsToDelete = intersection(carRequiredDocuments, passedFiles);
+
+        const carFromDb = await CarsServices.getRecordStrict(carId);
+        const oldCarType = carFromDb[colsCars.CAR_TYPE];
+
         if (fileLabelsToDelete.length) {
             const filesToDelete = await FilesService.getFilesByCarIdAndLabels(carId, fileLabelsToDelete);
 
@@ -92,14 +101,20 @@ const editCar = async (req, res, next) => {
             );
         }
 
-        const carType = body[colsCars.CAR_TYPE];
-
-        const carFromDb = await CarsServices.getRecordStrict(carId);
         const dangerClassId = body[colsCars.CAR_DANGER_CLASS_ID];
-        const dangerClassFromDb = carFromDb[colsCars.CAR_DANGER_CLASS_ID];
+        const dangerClassIdFromDb = carFromDb[colsCars.CAR_DANGER_CLASS_ID];
+
+        const [oldDangerClass, newDangerClass] = await Promise.all([
+            dangerClassIdFromDb && DangerClassesService.getRecord(dangerClassIdFromDb),
+            dangerClassId && DangerClassesService.getRecord(dangerClassId),
+        ]);
+
+        const oldDangerClassName = oldDangerClass && oldDangerClass[colsDangerClasses.NAME];
+        const newDangerClassName = newDangerClass && newDangerClass[colsDangerClasses.NAME];
+
         if (
-            (dangerClassId !== dangerClassFromDb && dangerClassFromDb) ||
-            (carType === CAR_TYPES_MAP.QUAD && carFromDb[colsCars.CAR_TYPE] === CAR_TYPES_MAP.TRUCK)
+            (newCarType === CAR_TYPES_MAP.QUAD && oldCarType === CAR_TYPES_MAP.TRUCK) ||
+            (oldCarType === CAR_TYPES_MAP.TRUCK && isDangerous(oldDangerClassName) && !isDangerous(newDangerClassName))
         ) { // remove old file with danger class
             const filesToDelete = await FilesService.getFilesByCarIdAndLabels(carId, [DOCUMENTS.DANGER_CLASS]);
 
@@ -117,7 +132,7 @@ const editCar = async (req, res, next) => {
                 return S3Service.deleteObject(bucket, path);
             }));
         }
-        if (carType === CAR_TYPES_MAP.TRUCK && dangerClassId !== dangerClassFromDb && dangerClassId) { // add new version of danger class
+        if (files[DOCUMENTS.DANGER_CLASS]) { // add new version of danger class
             const [dbFiles, dbCarsFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForCars({
                 [DOCUMENTS.DANGER_CLASS]: files[DOCUMENTS.DANGER_CLASS],
             }, carId);

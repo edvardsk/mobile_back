@@ -287,6 +287,7 @@ const createCarTruck = {
     },
     then: {
         required: [
+            colsCars.CAR_DANGER_CLASS_ID,
             colsCars.CAR_LOADING_METHODS,
             colsCars.CAR_VEHICLE_TYPE_ID,
             colsCars.CAR_WIDTH,
@@ -310,6 +311,7 @@ const editCarTruck = {
     },
     then: {
         required: [
+            colsCars.CAR_DANGER_CLASS_ID,
             colsCars.CAR_LOADING_METHODS,
             colsCars.CAR_VEHICLE_TYPE_ID,
             colsCars.CAR_WIDTH,
@@ -393,8 +395,6 @@ const createCarTruckFiles = {
             required: [
                 colsCars.CAR_DANGER_CLASS_ID,
                 DOCUMENTS.DANGER_CLASS,
-                DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT,
-                DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION,
             ],
         },
         {
@@ -406,9 +406,8 @@ const createCarTruckFiles = {
                     const: CAR_TYPES_MAP.TRUCK,
                 },
             },
-            prohibited: [
+            required: [
                 colsCars.CAR_DANGER_CLASS_ID,
-                DOCUMENTS.DANGER_CLASS,
             ],
         },
         {
@@ -421,8 +420,7 @@ const createCarTruckFiles = {
                 },
             },
             prohibited: [
-                colsCars.CAR_DANGER_CLASS_ID,
-                DOCUMENTS.DANGER_CLASS,
+                DOCUMENTS.DANGER_CLASS
             ],
         },
     ],
@@ -436,7 +434,37 @@ const editCarTruckFiles = {
         [DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT]: fileFormat,
         [DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION]: fileFormat,
     },
+    if: {
+        properties: {
+            [colsCars.CAR_TYPE]: {
+                const: CAR_TYPES_MAP.QUAD,
+            }
+        },
+    },
+    then: {
+        prohibited: [
+            DOCUMENTS.DANGER_CLASS,
+        ],
+    },
     additionalProperties: false,
+};
+
+const createCarTruckFilesCheckDangerClassAsync  = {
+    $async: true,
+    if: {
+        properties: {
+            [colsCars.CAR_TYPE]: {
+                const: CAR_TYPES_MAP.TRUCK,
+            }
+        },
+    },
+    then: {
+        properties: {
+            [colsCars.CAR_DANGER_CLASS_ID]: {
+                danger_class_without_file_or_extra_file: {},
+            },
+        },
+    },
 };
 
 const editCarTruckFilesCheckDangerClassAsyncFunc = ({ carId }) => ({
@@ -451,7 +479,7 @@ const editCarTruckFilesCheckDangerClassAsyncFunc = ({ carId }) => ({
     then: {
         properties: {
             [colsCars.CAR_DANGER_CLASS_ID]: {
-                new_danger_class_without_file: {
+                new_danger_class_without_or_extra_file: {
                     carId,
                 },
             },
@@ -498,6 +526,7 @@ module.exports = {
     editCarTruck,
     editCarTruckAsync,
     editCarTruckFiles,
+    createCarTruckFilesCheckDangerClassAsync,
     editCarTruckFilesCheckDangerClassAsyncFunc,
     modifyEditCarTruckFloats,
     requiredExistingCarInCompanyAsyncFunc,

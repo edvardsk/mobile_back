@@ -8,7 +8,6 @@ const FilesService = require('services/tables/files');
 // constants
 const { SQL_TABLES } = require('constants/tables');
 const { SORTING_DIRECTIONS } = require('constants/pagination-sorting');
-const { CAR_TYPES_MAP } = require('constants/cars');
 
 // formatters
 const { formatPaginationDataForResponse } = require('formatters/pagination-sorting');
@@ -16,8 +15,6 @@ const { formatRecordForList, formatRecordForResponse } = require('formatters/car
 
 // helpers
 const { getParams } = require('helpers/pagination-sorting');
-
-const colsCars = SQL_TABLES.CARS.COLUMNS;
 
 const carsPaginationOptions = {
     DEFAULT_LIMIT: 5,
@@ -63,10 +60,7 @@ const getCar = async (req, res, next) => {
         const { carId } = req.params;
         const car = await CarsService.getRecordFullStrict(carId);
         const formattedData = formatRecordForResponse(car);
-        const carType = car[colsCars.CAR_TYPE];
-        if (carType === CAR_TYPES_MAP.TRUCK) {
-            formattedData.car.files = await FilesService.formatTemporaryLinks(formattedData.car.files);
-        }
+        formattedData.car.files = await FilesService.formatTemporaryLinks(formattedData.car.files);
         return success(res, { ...formattedData });
     } catch (error) {
         next(error);

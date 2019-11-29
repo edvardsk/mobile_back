@@ -185,7 +185,13 @@ ajv.addKeyword('car_in_company_not_exists', {
     validate: CarsService.checkCarInCompanyExist,
 });
 
-ajv.addKeyword('new_danger_class_without_file', {
+ajv.addKeyword('danger_class_without_file_or_extra_file', {
+    async: true,
+    type: 'string',
+    validate: CarsService.checkIsPassedFileWithDangerClass,
+});
+
+ajv.addKeyword('new_danger_class_without_or_extra_file', {
     async: true,
     type: 'string',
     validate: CarsService.checkIsPassedFileWithNewDangerClass,
