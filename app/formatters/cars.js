@@ -103,14 +103,14 @@ const formatRecordForResponse = car => {
             ...result.car.data,
             ...carData,
         };
-
-        result.car.files = formatCarTruckFiles(car);
     }
+
+    result.car.files = formatCarFiles(car);
 
     return result;
 };
 
-const formatCarTruckFiles = data => {
+const formatCarFiles = data => {
     const files = data[HOMELESS_COLUMNS.FILES];
     return files.map(file => {
         const { f1, f2, f3, f4 } = file;

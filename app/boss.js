@@ -85,13 +85,13 @@ function onError(error) {
     logger.error(error);
 }
 
-async function extractExchangeRate(data) {
+async function translateCoordinates(data) {
     try {
         const jobId = await boss.publish(
-            ACTION_TYPES.EXTRACT_CHANGE_RATE,
+            ACTION_TYPES.TRANSLATE_COORDINATES_NAME,
             data,
             {
-                expireIn: EXTRACT_EXCHANGE_RATE_EXPIRE_IN,
+                expireIn: EXPIRE_IN_JOB,
                 retryDelay: RETRY_DELAY_SECONDS_JOB,
                 retryLimit: INTEGER_MAX_POSTGRES,
             }
@@ -103,15 +103,15 @@ async function extractExchangeRate(data) {
     }
 }
 
-async function translateCoordinates(data) {
+async function extractExchangeRate(data) {
     try {
         const jobId = await boss.publish(
-            ACTION_TYPES.TRANSLATE_COORDINATES_NAME,
+            ACTION_TYPES.EXTRACT_CHANGE_RATE,
             data,
             {
-                expireIn: EXPIRE_IN_JOB,
+                expireIn: EXTRACT_EXCHANGE_RATE_EXPIRE_IN,
                 retryDelay: RETRY_DELAY_SECONDS_JOB,
-                retryLimit: INTEGER_MAX_POSTGRES,
+                retryLimit: 1,
             }
         );
         logger.info(`Job created id: ${jobId}`);
@@ -133,8 +133,9 @@ async function checkExchangeRatesStart() {
             return !rate || moment(rate[colsRates.ACTUAL_DATE]) < startDayToday;
         });
         if (countriesToUpdateCurrency.length) {
+            const today = moment().format('YYYY-MM-DD');
             await Promise.all(countriesToUpdateCurrency.map(country => {
-                return extractExchangeRate({ countryId: country.id });
+                return extractExchangeRate({ countryId: country.id, extractingDate: today });
             }));
         }
     } catch (err) {

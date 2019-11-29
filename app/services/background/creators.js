@@ -12,10 +12,11 @@ const translateCoordinatesCreator = (pointId, language) => {
     childProcess.send(msg);
 };
 
-const extractExchangeRateCreator = countryId => {
+const extractExchangeRateCreator = (countryId, extractingDate) => {
     const msg = {
         payload: {
             countryId,
+            extractingDate,
         },
         type: ACTION_TYPES.EXTRACT_CHANGE_RATE,
     };

@@ -155,6 +155,12 @@ ajv.addKeyword('currency_not_exist', {
     validate: CurrenciesService.checkRecordExists,
 });
 
+ajv.addKeyword('currency_in_prices_not_exist', {
+    async: true,
+    type: 'array',
+    validate: CurrenciesService.checkRecordsExists,
+});
+
 ajv.addKeyword('company_economic_settings_exists', {
     async: true,
     type: 'string',
@@ -179,7 +185,13 @@ ajv.addKeyword('car_in_company_not_exists', {
     validate: CarsService.checkCarInCompanyExist,
 });
 
-ajv.addKeyword('new_danger_class_without_file', {
+ajv.addKeyword('danger_class_without_file_or_extra_file', {
+    async: true,
+    type: 'string',
+    validate: CarsService.checkIsPassedFileWithDangerClass,
+});
+
+ajv.addKeyword('new_danger_class_without_or_extra_file', {
     async: true,
     type: 'string',
     validate: CarsService.checkIsPassedFileWithNewDangerClass,
