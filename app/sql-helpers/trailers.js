@@ -50,14 +50,14 @@ const selectTrailersByCompanyIdPaginationSorting = (companyId, limit, offset, so
         .select()
         .field('t.*')
         .field(`tsn.${colsTrailersStateNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
-        .from(table.NAME, 'c')
+        .from(table.NAME, 't')
         .where(`t.${cols.COMPANY_ID} = '${companyId}'`)
         .where(`t.${cols.DELETED} = 'f'`)
         .where(`tsn.${colsTrailersStateNumbers.IS_ACTIVE} = 't'`);
 
     expression = setTrailersFilter(expression, filter);
     return expression
-        .left_join(colsTrailersStateNumbers.NAME, 'tsn', `tsn.${colsTrailersStateNumbers.TRAILER_ID} = t.id`)
+        .left_join(tableTrailersStateNumbers.NAME, 'tsn', `tsn.${colsTrailersStateNumbers.TRAILER_ID} = t.id`)
         .order(sortColumn, asc)
         .limit(limit)
         .offset(offset)
@@ -75,21 +75,23 @@ const selectCountTrailersByCompanyId = (companyId, filter) => {
 
     expression = setTrailersFilter(expression, filter);
     return expression
-        .left_join(colsTrailersStateNumbers.NAME, 'tsn', `tsn.${colsTrailersStateNumbers.CAR_ID} = t.id`)
+        .left_join(tableTrailersStateNumbers.NAME, 'tsn', `tsn.${colsTrailersStateNumbers.TRAILER_ID} = t.id`)
         .toString();
 };
 
 const setTrailersFilter = (expression, filteringObject) => {
+    const paramForCarId = filteringObject[HOMELESS_COLUMNS.LINKED] ? 'NOT' : '';
     const filteringObjectSQLExpressions = [
         [HOMELESS_COLUMNS.QUERY, `
-            c.${cols.TRAILER_MARK}::text ILIKE '%${filteringObject[HOMELESS_COLUMNS.QUERY]}%'
+            t.${cols.TRAILER_MARK}::text ILIKE '%${filteringObject[HOMELESS_COLUMNS.QUERY]}%'
             OR
-            c.${cols.TRAILER_MODEL}::text ILIKE '%${filteringObject[HOMELESS_COLUMNS.QUERY]}%'
+            t.${cols.TRAILER_MODEL}::text ILIKE '%${filteringObject[HOMELESS_COLUMNS.QUERY]}%'
             OR
-            c.${cols.TRAILER_MADE_YEAR_AT}::text ILIKE '%${filteringObject[HOMELESS_COLUMNS.QUERY]}%'
+            t.${cols.TRAILER_MADE_YEAR_AT}::text ILIKE '%${filteringObject[HOMELESS_COLUMNS.QUERY]}%'
             OR
-            csn.${colsTrailersStateNumbers.NUMBER}::text ILIKE '%${filteringObject[HOMELESS_COLUMNS.QUERY]}%'
+            tsn.${colsTrailersStateNumbers.NUMBER}::text ILIKE '%${filteringObject[HOMELESS_COLUMNS.QUERY]}%'
         `],
+        [HOMELESS_COLUMNS.LINKED, `t.${cols.CAR_ID} IS ${paramForCarId} NULL`],
     ];
 
     for (let [key, exp, values] of filteringObjectSQLExpressions) {

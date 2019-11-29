@@ -50,6 +50,7 @@ const BASES = {
     CARS: '/cars',
     LANGUAGES: '/languages',
     CURRENCIES: '/currencies',
+    TRAILERS: '/trailers',
 };
 
 const IDS = {
@@ -276,6 +277,10 @@ const ROUTES = {
             GET: IDS.CAR_ID,
             PUT: IDS.CAR_ID,
             DELETE: IDS.CAR_ID,
+        },
+        TRAILERS: {
+            BASE: IDS.ME_OR_ID + BASES.TRAILERS,
+            GET_ALL: '',
         },
 
     },

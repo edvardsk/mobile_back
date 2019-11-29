@@ -456,6 +456,7 @@ const HOMELESS_COLUMNS = {
     TRAILER_DANGER_CLASS: 'trailer_danger_class',
     TRAILER_VEHICLE_REGISTRATION_PASSPORT: 'trailer_vehicle_registration_passport',
     TRAILER_VEHICLE_TECHNICAL_INSPECTION: 'trailer_vehicle_technical_inspection',
+    LINKED: 'linked',
 };
 
 module.exports = {
