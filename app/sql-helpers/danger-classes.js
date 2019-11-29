@@ -5,6 +5,8 @@ const squelPostgres = squel.useFlavour('postgres');
 
 const table = SQL_TABLES.DANGER_CLASSES;
 
+const cols = table.COLUMNS;
+
 const selectRecordById = id => squelPostgres
     .select()
     .from(table.NAME)
@@ -14,6 +16,7 @@ const selectRecordById = id => squelPostgres
 const selectRecords = () => squelPostgres
     .select()
     .from(table.NAME)
+    .order(cols.CLASS, false)
     .toString();
 
 module.exports = {
