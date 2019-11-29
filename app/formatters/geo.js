@@ -63,6 +63,7 @@ const formatGeoPointWithName = data => {
         [HOMELESS_COLUMNS.LONGITUDE]: longitude,
         [HOMELESS_COLUMNS.LATITUDE]: latitude,
         [HOMELESS_COLUMNS.CITY_NAME]: data[HOMELESS_COLUMNS.CITY_NAME],
+        [HOMELESS_COLUMNS.NAME_EN]: data[HOMELESS_COLUMNS.NAME_EN],
         languageId: data['languageId'],
     };
 };
