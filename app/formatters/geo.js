@@ -49,12 +49,21 @@ const formatGeoPointWithNameFromPostgresJSONToObject = obj => {
     const coordinatesString = obj.f1;
     const cityName = obj.f2;
     const languageId = obj.f3;
+    return {
+        [HOMELESS_COLUMNS.COORDINATES]: coordinatesString,
+        [HOMELESS_COLUMNS.CITY_NAME]: cityName,
+        languageId,
+    };
+};
+
+const formatGeoPointWithName = data => {
+    const coordinatesString = data[HOMELESS_COLUMNS.COORDINATES];
     const [longitude, latitude] = coordinatesString.slice(6, -1).split(' ');
     return {
         [HOMELESS_COLUMNS.LONGITUDE]: longitude,
         [HOMELESS_COLUMNS.LATITUDE]: latitude,
-        [HOMELESS_COLUMNS.CITY_NAME]: cityName,
-        languageId,
+        [HOMELESS_COLUMNS.CITY_NAME]: data[HOMELESS_COLUMNS.CITY_NAME],
+        languageId: data['languageId'],
     };
 };
 
@@ -64,4 +73,5 @@ module.exports = {
     formatGeoPointToObject,
     formatGeoPointToObjectWithTranslation,
     formatGeoPointWithNameFromPostgresJSONToObject,
+    formatGeoPointWithName,
 };

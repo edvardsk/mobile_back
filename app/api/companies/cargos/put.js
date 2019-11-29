@@ -3,6 +3,7 @@ const { success, reject } = require('api/response');
 // services
 const CargosServices = require('services/tables/cargos');
 const CargoPointsService = require('services/tables/cargo-points');
+const CargoPricesService = require('services/tables/cargo-prices');
 const TablesService = require('services/tables');
 const PointsService = require('services/tables/points');
 const BackgroundService = require('services/background/creators');
@@ -12,6 +13,7 @@ const LanguagesService = require('services/tables/languages');
 // formatters
 const CargosFormatters = require('formatters/cargos');
 const CargoPointsFormatters = require('formatters/cargo-points');
+const CargoPricesFormatters = require('formatters/cargo-prices');
 const PointsFormatters = require('formatters/points');
 
 // constants
@@ -41,6 +43,7 @@ const editCargo = async (req, res, next) => {
         const cargo = CargosFormatters.formatRecordToEdit(cargosProps);
         const cargoPointsWithName = CargoPointsFormatters.formatRecordsWithName(cargoId, cargoPointsProps);
         const cargoPoints = CargoPointsFormatters.formatRecordsToSave(cargoPointsWithName);
+        const cargoPrices = CargoPricesFormatters.formatRecordsToSave(body[HOMELESS_COLUMNS.PRICES], cargoId);
 
         const cargoCoordinates = cargoPointsWithName.map(record => ({
             [colsCargoPoints.COORDINATES]: record[colsCargoPoints.COORDINATES].toPointString(),
@@ -53,8 +56,10 @@ const editCargo = async (req, res, next) => {
 
         const transactionsList = [
             CargoPointsService.removeRecordsByCargoIdAsTransaction(cargoId),
+            CargoPricesService.removeRecordsByCargoIdAsTransaction(cargoId),
             CargosServices.editRecordAsTransaction(cargoId, cargo),
-            CargoPointsService.addRecordsAsTransaction(cargoPoints)
+            CargoPointsService.addRecordsAsTransaction(cargoPoints),
+            CargoPricesService.addRecordsAsTransaction(cargoPrices)
         ];
 
         let translationsList = [];

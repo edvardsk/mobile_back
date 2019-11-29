@@ -155,6 +155,12 @@ ajv.addKeyword('currency_not_exist', {
     validate: CurrenciesService.checkRecordExists,
 });
 
+ajv.addKeyword('currency_in_prices_not_exist', {
+    async: true,
+    type: 'array',
+    validate: CurrenciesService.checkRecordsExists,
+});
+
 ajv.addKeyword('company_economic_settings_exists', {
     async: true,
     type: 'string',

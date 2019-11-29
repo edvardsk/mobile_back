@@ -17,6 +17,8 @@ const EUR = {
 
 const CURRENCIES = [BYN, RUB, EUR];
 
+exports.CURRENCIES = CURRENCIES;
+
 exports.up = function(knex) {
     return knex.schema.createTable('currencies', function(table) {
         table.uuid('id').defaultTo(knex.raw('uuid_generate_v4()')).primary().unique();

@@ -5,6 +5,7 @@ const squelPostgres = squel.useFlavour('postgres');
 
 const table = SQL_TABLES.CURRENCIES;
 
+
 const selectCurrencyById = id => squelPostgres
     .select()
     .from(table.NAME)
@@ -16,7 +17,14 @@ const selectCurrencies = () => squelPostgres
     .from(table.NAME)
     .toString();
 
+const selectCurrenciesByIds = ids => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where('id IN ?', ids)
+    .toString();
+
 module.exports = {
     selectCurrencyById,
     selectCurrencies,
+    selectCurrenciesByIds,
 };

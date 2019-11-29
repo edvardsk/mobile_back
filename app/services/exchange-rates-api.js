@@ -1,4 +1,5 @@
 const rp = require('request-promise');
+
 const xml2js = require('xml2js');
 const moment = require('moment');
 
@@ -10,8 +11,8 @@ const BELARUS_URL = 'http://www.nbrb.by/api/exrates/rates?periodicity=0';
 const RUSSIA_URL = 'http://www.cbr.ru/scripts/XML_daily.asp';
 const UKRAINE_URL = 'https://old.bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
 
-const extractBelarusRates = async (currenciesMap) => {
-    const today = moment().format('YYYY-MM-DD');
+const extractBelarusRates = async (currenciesMap, extractingDate) => {
+    const today = moment(extractingDate).format('YYYY-MM-DD');
     const bodyString = await rp(`${BELARUS_URL}&onDate=${today}`);
     const body = JSON.parse(bodyString);
     const filteredDownloadedCurrencies = body.filter(
@@ -24,9 +25,14 @@ const extractBelarusRates = async (currenciesMap) => {
     }));
 };
 
-const extractRussiaRates = async (currenciesMap) => {
-    const today = moment().format('DD/MM/YYYY');
-    const bodyString = await rp(`${RUSSIA_URL}?date_req=${today}`);
+const extractRussiaRates = async (currenciesMap, extractingDate) => {
+    const today = moment(extractingDate).format('DD/MM/YYYY');
+    const bodyString = await rp({
+        uri: `${RUSSIA_URL}?date_req=${today}`,
+        headers: {
+            'User-Agent': 'curl/7.47.0',
+        },
+    });
     const parser = new xml2js.Parser();
     const parsedData = await parser.parseStringPromise(bodyString);
 
@@ -41,8 +47,8 @@ const extractRussiaRates = async (currenciesMap) => {
     }));
 };
 
-const extractUkraineRates = async (currenciesMap) => {
-    const today = moment().format('DD/MM/YYYY');
+const extractUkraineRates = async (currenciesMap, extractingDate) => {
+    const today = moment(extractingDate).format('DD/MM/YYYY');
     const bodyString = await rp(`${UKRAINE_URL}?date=${today}`);
     const body = JSON.parse(bodyString);
     const filteredDownloadedCurrencies = body.filter(

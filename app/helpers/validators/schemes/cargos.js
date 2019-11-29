@@ -12,17 +12,32 @@ const { coordinatesFormat } = require('./helpers');
 
 // exported schemes
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
+const colsCargoPrices = SQL_TABLES.CARGO_PRICES.COLUMNS;
 
 const createOrEditCargo = {
     properties: {
-        [colsCargos.CURRENCY_ID]: {
-            type: 'string',
-            format: 'uuid',
-        },
-        [colsCargos.PRICE]: {
-            type: 'number',
-            format: 'price',
-            exclusiveMinimum: 0,
+        [HOMELESS_COLUMNS.PRICES]: {
+            type: 'array',
+            minItems: 1,
+            uniqueItems: true,
+            items: {
+                properties: {
+                    [colsCargoPrices.CURRENCY_ID]: {
+                        type: 'string',
+                        format: 'uuid',
+                    },
+                    [colsCargoPrices.PRICE]: {
+                        type: 'number',
+                        format: 'price',
+                        exclusiveMinimum: 0,
+                    },
+                },
+                required: [
+                    colsCargoPrices.CURRENCY_ID,
+                    colsCargoPrices.PRICE,
+                ],
+                additionalProperties: false,
+            },
         },
         [colsCargos.UPLOADING_DATE_FROM]: {
             type: 'string',
@@ -122,8 +137,7 @@ const createOrEditCargo = {
         },
     },
     required:[
-        colsCargos.CURRENCY_ID,
-        colsCargos.PRICE,
+        HOMELESS_COLUMNS.PRICES,
         colsCargos.UPLOADING_DATE_FROM,
         colsCargos.DOWNLOADING_DATE_FROM,
         colsCargos.GROSS_WEIGHT,
@@ -149,8 +163,8 @@ const createOrEditCargoAsync = {
         [colsCargos.VEHICLE_TYPE_ID]: {
             vehicle_type_not_exist: {},
         },
-        [colsCargos.CURRENCY_ID]: {
-            currency_not_exist: {},
+        [HOMELESS_COLUMNS.PRICES]: {
+            currency_in_prices_not_exist: {},
         },
     },
     additionalProperties: true,
