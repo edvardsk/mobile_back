@@ -8,15 +8,18 @@ const {
 
 const getRecord = id => oneOrNone(selectRecordById(id));
 
+const getRecordStrict = id => oneOrNone(selectRecordById(id));
+
 const getRecords = () => manyOrNone(selectRecords());
 
 const checkRecordExists = async (schema, id) => {
-    const country = await getRecord(id);
-    return !!country;
+    const dangerClass = await getRecord(id);
+    return !!dangerClass;
 };
 
 module.exports = {
     getRecord,
+    getRecordStrict,
     getRecords,
     checkRecordExists,
 };

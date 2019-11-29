@@ -12,12 +12,20 @@ const {
     selectRecordByIdFull,
 } = require('sql-helpers/cars');
 
+// services
+const DangerClassesService = require('./danger-classes');
+
 // constants
 const { OPERATIONS } = require('constants/postgres');
 const { SQL_TABLES } = require('constants/tables');
 const { DOCUMENTS } = require('constants/files');
+const { CAR_TYPES_MAP } = require('constants/cars');
+
+// helpers
+const { isDangerous } = require('helpers/danger-classes');
 
 const colsCars = SQL_TABLES.CARS.COLUMNS;
+const colsDangerClasses = SQL_TABLES.DANGER_CLASSES.COLUMNS;
 
 const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
 
@@ -58,13 +66,49 @@ const checkCarInCompanyExist = async (meta, id) => {
     return !!car;
 };
 
-const checkIsPassedFileWithNewDangerClass = async (meta, dangerClassId, schema, key, data) => {
-    const { carId } = meta;
-    const car = await getRecordStrict(carId);
-    const dangerClassIdFromDb = car[colsCars.CAR_DANGER_CLASS_ID];
+const checkIsPassedFileWithDangerClass = async (meta, dangerClassId, schema, key, data) => {
+    const dangerClassFromDb = await DangerClassesService.getRecordStrict(dangerClassId);
+    const dangerClassName = dangerClassFromDb[colsDangerClasses.NAME];
+
     const dangerClassFile = data[DOCUMENTS.DANGER_CLASS];
 
-    return !(dangerClassId && dangerClassId !== dangerClassIdFromDb && !dangerClassFile);
+    return (!isDangerous(dangerClassName) && !dangerClassFile) ||
+        (isDangerous(dangerClassName) && dangerClassFile);
+};
+
+const checkIsPassedFileWithNewDangerClass = async (meta, newDangerClassId, schema, key, data) => {
+    const { carId } = meta;
+    const dangerClassFile = data[DOCUMENTS.DANGER_CLASS];
+    const newCarType = data[colsCars.CAR_TYPE];
+    if (newCarType === CAR_TYPES_MAP.QUAD) {
+        return !dangerClassFile;
+    }
+    const car = await getRecordStrict(carId);
+    const carType = car[colsCars.CAR_TYPE];
+
+    if (carType === CAR_TYPES_MAP.QUAD) {
+        const newDangerClass = await DangerClassesService.getRecordStrict(newDangerClassId);
+        const newDangerClassName = newDangerClass[colsDangerClasses.NAME];
+        return (
+            (!isDangerous(newDangerClassName) && !dangerClassFile) ||
+            (isDangerous(newDangerClassName) && dangerClassFile)
+        );
+    } else {
+        const oldDangerClassId = car[colsCars.CAR_DANGER_CLASS_ID];
+        const [oldDangerClass, newDangerClass] = await Promise.all([
+            DangerClassesService.getRecordStrict(oldDangerClassId),
+            DangerClassesService.getRecordStrict(newDangerClassId),
+        ]);
+
+        const olsDangerClassName = oldDangerClass[colsDangerClasses.NAME];
+        const newDangerClassName = newDangerClass[colsDangerClasses.NAME];
+
+        return !(
+            (!isDangerous(olsDangerClassName) && isDangerous(newDangerClassName) && !dangerClassFile) ||
+            (!isDangerous(olsDangerClassName) && !isDangerous(newDangerClassName) && dangerClassFile) ||
+            (isDangerous(olsDangerClassName) && !isDangerous(newDangerClassName) && dangerClassFile)
+        );
+    }
 };
 
 module.exports = {
@@ -79,5 +123,6 @@ module.exports = {
 
     checkCarStateNumberExistsOpposite,
     checkCarInCompanyExist,
+    checkIsPassedFileWithDangerClass,
     checkIsPassedFileWithNewDangerClass,
 };

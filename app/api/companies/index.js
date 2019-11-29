@@ -335,6 +335,7 @@ router.post(
     validate(ValidatorSchemes.createCarTruck),
     validate(ValidatorSchemes.createCarTruckAsync),
     validate(ValidatorSchemes.createCarTruckFiles, ['body', 'files']),
+    validate(ValidatorSchemes.createCarTruckFilesCheckDangerClassAsync, ['body', 'files']),
     validate(ValidatorSchemes.modifyCreateCarFloats),
     postCars.createCar,
 );

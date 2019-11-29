@@ -24,6 +24,11 @@ exports.down = function(knex) {
             .del()
     )))
         .then(function () {
+            return knex.schema.alterTable('danger_classes', function(table) {
+                table.dropUnique('name');
+            });
+        })
+        .then(function () {
             return knex.raw('ALTER TABLE danger_classes ALTER COLUMN class SET NOT NULL;');
         });
 };
