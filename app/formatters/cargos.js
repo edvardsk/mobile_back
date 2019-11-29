@@ -147,10 +147,14 @@ const uniqueByLanguageId = (list, languageId) => {
     return Object.keys(grouped).map(coordinate => {
         const translates = grouped[coordinate];
         if (translates.length === 1) {
-            return translates.pop();
+            const singleValue = translates.pop();
+            return {
+                ...singleValue,
+                [HOMELESS_COLUMNS.NAME_EN]: singleValue[HOMELESS_COLUMNS.CITY_NAME],
+            };
         } else {
             const [language1, language2] = translates;
-            return language1['languageId'] === languageId ? language1 : language2;
+            return language1['languageId'] === languageId ? { ...language1, [HOMELESS_COLUMNS.NAME_EN]: language2[HOMELESS_COLUMNS.CITY_NAME] } : { ...language2, [HOMELESS_COLUMNS.NAME_EN]: language1[HOMELESS_COLUMNS.CITY_NAME] };
         }
     });
 };
