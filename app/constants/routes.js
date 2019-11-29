@@ -62,6 +62,7 @@ const IDS = {
     COMPANY_ID: '/:companyId',
     CARGO_ID: '/:cargoId',
     CAR_ID: '/:carId',
+    TRAILER_ID: '/:trailerId',
 };
 
 const ROUTES = {
@@ -281,6 +282,7 @@ const ROUTES = {
         TRAILERS: {
             BASE: IDS.ME_OR_ID + BASES.TRAILERS,
             GET_ALL: '',
+            GET: IDS.TRAILER_ID,
         },
 
     },

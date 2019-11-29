@@ -9,6 +9,7 @@ const {
     selectCountTrailersByCompanyId,
     selectRecordByStateNumberAndActive,
     selectRecordByIdFull,
+    selectRecordByIdAndCompanyIdLight,
 } = require('sql-helpers/trailers');
 
 // services
@@ -45,6 +46,8 @@ const getRecordByStateNumberAndActive = stateNumber => oneOrNone(selectRecordByS
 
 const getRecordFullStrict = id => one(selectRecordByIdFull(id));
 
+const getRecordByIdAndCompanyIdLight = (id, companyId) => oneOrNone(selectRecordByIdAndCompanyIdLight(id, companyId));
+
 const markAsDeleted = id => editRecord(id, {
     [colsCars.DELETED]: true,
 });
@@ -65,6 +68,11 @@ const checkIsPassedFileWithDangerClass = async (meta, dangerClassId, schema, key
         (isDangerous(dangerClassName) && dangerClassFile);
 };
 
+const checkTrailerInCompanyExists = async (meta, id) => {
+    const { companyId } = meta;
+    const trailer = await getRecordByIdAndCompanyIdLight(id, companyId);
+    return !!trailer;
+};
 
 module.exports = {
     addRecordAsTransaction,
@@ -78,4 +86,5 @@ module.exports = {
 
     checkTrailerStateNumberExistsOpposite,
     checkIsPassedFileWithDangerClass,
+    checkTrailerInCompanyExists,
 };

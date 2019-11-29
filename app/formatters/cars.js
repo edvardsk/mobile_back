@@ -121,7 +121,6 @@ const formatCarFiles = data => {
             [colsFiles.URL]: f4,
         };
     });
-
 };
 
 module.exports = {

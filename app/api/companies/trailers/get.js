@@ -3,6 +3,7 @@ const { success } = require('api/response');
 
 // services
 const TrailersService = require('services/tables/trailers');
+const FilesService = require('services/tables/files');
 
 // constants
 const { SQL_TABLES } = require('constants/tables');
@@ -10,7 +11,7 @@ const { SORTING_DIRECTIONS } = require('constants/pagination-sorting');
 
 // formatters
 const { formatPaginationDataForResponse } = require('formatters/pagination-sorting');
-const { formatRecordForList } = require('formatters/trailers');
+const { formatRecordForList, formatRecordForResponse } = require('formatters/trailers');
 
 // helpers
 const { getParams } = require('helpers/pagination-sorting');
@@ -54,6 +55,19 @@ const getListTrailers = async (req, res, next) => {
     }
 };
 
+const getTrailer = async (req, res, next) => {
+    try {
+        const { trailerId } = req.params;
+        const trailer = await TrailersService.getRecordFullStrict(trailerId);
+        const formattedData = formatRecordForResponse(trailer);
+        formattedData.trailer.files = await FilesService.formatTemporaryLinks(formattedData.trailer.files);
+        return success(res, { ...formattedData });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     getListTrailers,
+    getTrailer,
 };

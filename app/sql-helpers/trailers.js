@@ -127,15 +127,23 @@ const selectRecordByIdFull = id => squelPostgres
             .select()
             .field(`row_to_json(row(f.id, f.${colsFiles.NAME}, f.${colsFiles.LABELS}, f.${colsFiles.URL}))`)
             .from(tableFiles.NAME, 'f')
-            .where(`cf.${colsTrailersFiles.TRAILER_ID} = '${id}'`)
+            .where(`tf.${colsTrailersFiles.TRAILER_ID} = '${id}'`)
             .left_join(tableTrailersFiles.NAME, 'tf', `tf.${colsTrailersFiles.FILE_ID} = f.id`)
             .toString()
     })`, HOMELESS_COLUMNS.FILES)
     .from(table.NAME, 't')
     .where(`t.id = '${id}'`)
     .where(`t.${cols.DELETED} = 'f'`)
-    .left_join(tableVehicleTypes.NAME, 'vt', `vt.id = t.${cols.CAR_VEHICLE_TYPE_ID}`)
-    .left_join(tableDangerClasses.NAME, 'dc', `dc.id = t.${cols.CAR_DANGER_CLASS_ID}`)
+    .left_join(tableVehicleTypes.NAME, 'vt', `vt.id = t.${cols.TRAILER_VEHICLE_TYPE_ID}`)
+    .left_join(tableDangerClasses.NAME, 'dc', `dc.id = t.${cols.TRAILER_DANGER_CLASS_ID}`)
+    .toString();
+
+const selectRecordByIdAndCompanyIdLight = (id, companyId) => squelPostgres
+    .select()
+    .field('id')
+    .from(table.NAME)
+    .where(`id = '${id}'`)
+    .where(`${cols.COMPANY_ID} = '${companyId}'`)
     .toString();
 
 module.exports = {
@@ -146,4 +154,5 @@ module.exports = {
     selectCountTrailersByCompanyId,
     selectRecordByStateNumberAndActive,
     selectRecordByIdFull,
+    selectRecordByIdAndCompanyIdLight,
 };

@@ -416,4 +416,14 @@ router.get(
     getTrailers.getListTrailers,
 );
 
+router.get(
+    ROUTES.COMPANIES.TRAILERS.BASE + ROUTES.COMPANIES.TRAILERS.GET,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredTrailerId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingTrailerInCompanyAsyncFunc({ companyId: company.id }), 'params'),
+    getTrailers.getTrailer,
+);
+
 module.exports = router;
