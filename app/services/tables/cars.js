@@ -17,7 +17,7 @@ const DangerClassesService = require('./danger-classes');
 
 // constants
 const { OPERATIONS } = require('constants/postgres');
-const { SQL_TABLES } = require('constants/tables');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { DOCUMENTS } = require('constants/files');
 const { CAR_TYPES_MAP } = require('constants/cars');
 
@@ -70,7 +70,7 @@ const checkIsPassedFileWithDangerClass = async (meta, dangerClassId, schema, key
     const dangerClassFromDb = await DangerClassesService.getRecordStrict(dangerClassId);
     const dangerClassName = dangerClassFromDb[colsDangerClasses.NAME];
 
-    const dangerClassFile = data[DOCUMENTS.DANGER_CLASS];
+    const dangerClassFile = data[HOMELESS_COLUMNS.CAR_DANGER_CLASS];
 
     return (!isDangerous(dangerClassName) && !dangerClassFile) ||
         (isDangerous(dangerClassName) && dangerClassFile);

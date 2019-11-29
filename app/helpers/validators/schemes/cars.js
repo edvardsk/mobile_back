@@ -2,7 +2,7 @@
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { CAR_TYPES, CAR_TYPES_MAP } = require('constants/cars');
 const { LOADING_METHODS } = require('constants/cargos');
-const { STRING_BOOLEANS, STRING_BOOLEANS_MAP } = require('constants/index');
+const { STRING_BOOLEANS_MAP } = require('constants/index');
 const { DOCUMENTS } = require('constants/files');
 
 // patterns
@@ -12,12 +12,9 @@ const { POSTGRES_MAX_STRING_LENGTH, SIZES_VALIDATION_PATTERN } = require('./patt
 const { fileFormat } = require('./helpers');
 
 const colsCars = SQL_TABLES.CARS.COLUMNS;
+const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
 
 const CAR_PROPS = {
-    [HOMELESS_COLUMNS.IS_CAR]: {
-        type: 'string',
-        enum: STRING_BOOLEANS,
-    },
     [colsCars.CAR_MARK]: {
         type: 'string',
         minLength: 1,
@@ -75,13 +72,131 @@ const CAR_PROPS = {
         type: 'string',
         format: 'uuid',
     },
+    [HOMELESS_COLUMNS.CAR_DANGER_CLASS]: fileFormat,
+    [HOMELESS_COLUMNS.CAR_VEHICLE_REGISTRATION_PASSPORT]: fileFormat,
+    [HOMELESS_COLUMNS.CAR_VEHICLE_TECHNICAL_INSPECTION]: fileFormat,
 };
 
-const modifyCreateCarTrailerArrays = {
+const TRAILER_PROPS = {
+    [colsTrailers.TRAILER_MARK]: {
+        type: 'string',
+        minLength: 1,
+        maxLength: POSTGRES_MAX_STRING_LENGTH,
+    },
+    [colsTrailers.TRAILER_MODEL]: {
+        type: 'string',
+        minLength: 1,
+        maxLength: POSTGRES_MAX_STRING_LENGTH,
+    },
+    [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: {
+        type: 'string',
+        minLength: 1,
+        maxLength: POSTGRES_MAX_STRING_LENGTH,
+    },
+    [colsTrailers.TRAILER_MADE_YEAR_AT]: {
+        type: 'string',
+        format: 'year',
+        formatMaximum: 'current',
+        formatMinimum: '1900',
+    },
+    [colsTrailers.TRAILER_LOADING_METHODS]: {
+        type: 'array',
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+            enum: LOADING_METHODS,
+        },
+    },
+    [colsTrailers.TRAILER_VEHICLE_TYPE_ID]: {
+        type: 'string',
+        format: 'uuid',
+    },
+    [colsTrailers.TRAILER_WEIGHT]: {
+        type: 'string',
+        pattern: SIZES_VALIDATION_PATTERN,
+    },
+    [colsTrailers.TRAILER_HEIGHT]: {
+        type: 'string',
+        pattern: SIZES_VALIDATION_PATTERN,
+    },
+    [colsTrailers.TRAILER_LENGTH]: {
+        type: 'string',
+        pattern: SIZES_VALIDATION_PATTERN,
+    },
+    [colsTrailers.TRAILER_WIDTH]: {
+        type: 'string',
+        pattern: SIZES_VALIDATION_PATTERN,
+    },
+    [colsTrailers.TRAILER_DANGER_CLASS_ID]: {
+        type: 'string',
+        format: 'uuid',
+    },
+    [HOMELESS_COLUMNS.TRAILER_DANGER_CLASS]: fileFormat,
+    [HOMELESS_COLUMNS.TRAILER_VEHICLE_REGISTRATION_PASSPORT]: fileFormat,
+    [HOMELESS_COLUMNS.TRAILER_VEHICLE_TECHNICAL_INSPECTION]: fileFormat,
+};
+
+const createCarTrailerCondition = {
+    oneOf: [
+        {
+            properties: {
+                [HOMELESS_COLUMNS.IS_CAR]: {
+                    const: STRING_BOOLEANS_MAP.TRUE,
+                },
+                [HOMELESS_COLUMNS.IS_TRAILER]: {
+                    const: STRING_BOOLEANS_MAP.FALSE,
+                },
+            },
+            prohibited: [
+                ...Object.keys(TRAILER_PROPS),
+            ],
+        },
+        {
+            properties: {
+                [HOMELESS_COLUMNS.IS_CAR]: {
+                    const: STRING_BOOLEANS_MAP.FALSE,
+                },
+                [HOMELESS_COLUMNS.IS_TRAILER]: {
+                    const: STRING_BOOLEANS_MAP.TRUE,
+                },
+            },
+            prohibited: [
+                ...Object.keys(CAR_PROPS),
+            ],
+        },
+        {
+            properties: {
+                [HOMELESS_COLUMNS.IS_CAR]: {
+                    const: STRING_BOOLEANS_MAP.TRUE,
+                },
+                [HOMELESS_COLUMNS.IS_TRAILER]: {
+                    const: STRING_BOOLEANS_MAP.TRUE,
+                },
+            }
+        },
+    ],
+    required:[
+        HOMELESS_COLUMNS.IS_CAR,
+        HOMELESS_COLUMNS.IS_TRAILER,
+    ],
+};
+
+const modifyCarTrailerIdentityKeys = {
+    properties: {
+        [HOMELESS_COLUMNS.IS_CAR]: {
+            parse_string_boolean: {},
+        },
+        [HOMELESS_COLUMNS.IS_TRAILER]: {
+            parse_string_boolean: {},
+        },
+    },
+};
+
+const modifyCreateCarArrays = {
     if: {
         properties: {
             [HOMELESS_COLUMNS.IS_CAR]: {
-                const: STRING_BOOLEANS_MAP.TRUE,
+                const: true,
             },
             [colsCars.CAR_TYPE]: {
                 const: CAR_TYPES_MAP.TRUCK,
@@ -91,6 +206,23 @@ const modifyCreateCarTrailerArrays = {
     then: {
         properties: {
             [colsCars.CAR_LOADING_METHODS]: {
+                parse_string_to_json: {},
+            },
+        },
+    },
+};
+
+const modifyCreateTrailerArrays = {
+    if: {
+        properties: {
+            [HOMELESS_COLUMNS.IS_TRAILER]: {
+                const: true,
+            },
+        },
+    },
+    then: {
+        properties: {
+            [colsTrailers.TRAILER_LOADING_METHODS]: {
                 parse_string_to_json: {},
             },
         },
@@ -118,7 +250,7 @@ const modifyCreateCarFloats = {
     if: {
         properties: {
             [HOMELESS_COLUMNS.IS_CAR]: {
-                const: STRING_BOOLEANS_MAP.TRUE,
+                const: true,
             },
             [colsCars.CAR_TYPE]: {
                 const: CAR_TYPES_MAP.TRUCK,
@@ -137,6 +269,32 @@ const modifyCreateCarFloats = {
                 parse_string_to_float: {},
             },
             [colsCars.CAR_WEIGHT]: {
+                parse_string_to_float: {},
+            },
+        },
+    },
+};
+
+const modifyCreateTrailerFloats = {
+    if: {
+        properties: {
+            [HOMELESS_COLUMNS.IS_TRAILER]: {
+                const: true,
+            },
+        },
+    },
+    then: {
+        properties: {
+            [colsTrailers.TRAILER_WIDTH]: {
+                parse_string_to_float: {},
+            },
+            [colsTrailers.TRAILER_HEIGHT]: {
+                parse_string_to_float: {},
+            },
+            [colsTrailers.TRAILER_LENGTH]: {
+                parse_string_to_float: {},
+            },
+            [colsTrailers.TRAILER_WEIGHT]: {
                 parse_string_to_float: {},
             },
         },
@@ -169,14 +327,21 @@ const modifyEditCarTruckFloats = {
     },
 };
 
-const createCarTrailerCommon = {
+const createCarCommon = {
     properties: {
         ...CAR_PROPS,
+        ...TRAILER_PROPS,
+        [HOMELESS_COLUMNS.IS_CAR]: {
+            type: 'boolean',
+        },
+        [HOMELESS_COLUMNS.IS_TRAILER]: {
+            type: 'boolean',
+        },
     },
     if: {
         properties: {
             [HOMELESS_COLUMNS.IS_CAR]: {
-                const: STRING_BOOLEANS_MAP.TRUE,
+                const: true,
             },
         },
     },
@@ -189,9 +354,42 @@ const createCarTrailerCommon = {
             colsCars.CAR_MADE_YEAR_AT,
         ],
     },
-    required:[
-        HOMELESS_COLUMNS.IS_CAR,
-    ],
+    additionalProperties: false,
+};
+
+const createTrailerCommon = {
+    properties: {
+        ...CAR_PROPS,
+        ...TRAILER_PROPS,
+        [HOMELESS_COLUMNS.IS_CAR]: {
+            type: 'boolean',
+        },
+        [HOMELESS_COLUMNS.IS_TRAILER]: {
+            type: 'boolean',
+        },
+    },
+    if: {
+        properties: {
+            [HOMELESS_COLUMNS.IS_TRAILER]: {
+                const: true,
+            },
+        },
+    },
+    then: {
+        required: [
+            colsTrailers.TRAILER_MARK,
+            colsTrailers.TRAILER_MODEL,
+            colsTrailers.TRAILER_MADE_YEAR_AT,
+            HOMELESS_COLUMNS.TRAILER_STATE_NUMBER,
+            colsTrailers.TRAILER_LOADING_METHODS,
+            colsTrailers.TRAILER_VEHICLE_TYPE_ID,
+            colsTrailers.TRAILER_WEIGHT,
+            colsTrailers.TRAILER_HEIGHT,
+            colsTrailers.TRAILER_LENGTH,
+            colsTrailers.TRAILER_WIDTH,
+            colsTrailers.TRAILER_DANGER_CLASS_ID,
+        ],
+    },
     additionalProperties: false,
 };
 
@@ -209,12 +407,12 @@ const editCarCommon = {
     additionalProperties: false,
 };
 
-const createCarTrailerCommonAsync = {
+const createCarCommonAsync = {
     $async: true,
     if: {
         properties: {
             [HOMELESS_COLUMNS.IS_CAR]: {
-                const: STRING_BOOLEANS_MAP.TRUE,
+                const: true,
             },
         },
     },
@@ -228,26 +426,66 @@ const createCarTrailerCommonAsync = {
     additionalProperties: true,
 };
 
-const createCarTrailerCommonFiles = {
+const createTrailerCommonAsync = {
     $async: true,
     if: {
         properties: {
-            [HOMELESS_COLUMNS.IS_CAR]: {
-                const: STRING_BOOLEANS_MAP.TRUE,
+            [HOMELESS_COLUMNS.IS_TRAILER]: {
+                const: true,
             },
         },
     },
     then: {
         properties: {
-            [DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT]: fileFormat,
-            [DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION]: fileFormat,
+            [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: {
+                trailer_state_number_exists: {},
+            },
+            [colsCars.TRAILER_DANGER_CLASS_ID]: {
+                danger_class_not_exist: {},
+            },
+            [colsCars.TRAILER_VEHICLE_TYPE_ID]: {
+                vehicle_type_not_exist: {},
+            },
+        },
+    },
+};
+
+const createCarCommonFiles = {
+    $async: true,
+    if: {
+        properties: {
+            [HOMELESS_COLUMNS.IS_CAR]: {
+                const: true,
+            },
+        },
+    },
+    then: {
+        properties: {
+            [HOMELESS_COLUMNS.CAR_VEHICLE_REGISTRATION_PASSPORT]: fileFormat,
+            [HOMELESS_COLUMNS.CAR_VEHICLE_TECHNICAL_INSPECTION]: fileFormat,
         },
         required: [
-            DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT,
-            DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION,
+            HOMELESS_COLUMNS.CAR_VEHICLE_REGISTRATION_PASSPORT,
+            HOMELESS_COLUMNS.CAR_VEHICLE_TECHNICAL_INSPECTION,
         ]
     },
-    additionalProperties: true,
+};
+
+const createTrailerCommonFiles = {
+    $async: true,
+    if: {
+        properties: {
+            [HOMELESS_COLUMNS.IS_TRAILER]: {
+                const: true,
+            },
+        },
+    },
+    then: {
+        required: [
+            HOMELESS_COLUMNS.TRAILER_VEHICLE_REGISTRATION_PASSPORT,
+            HOMELESS_COLUMNS.TRAILER_VEHICLE_TECHNICAL_INSPECTION,
+        ]
+    },
 };
 
 const editCarCommonFiles = {
@@ -268,17 +506,13 @@ const editCarCommonAsyncFunc = ({ carId }) => ({
             },
         }
     },
-    additionalProperties: true,
 });
 
 const createCarTruck = {
-    properties: {
-        ...CAR_PROPS,
-    },
     if: {
         properties: {
             [HOMELESS_COLUMNS.IS_CAR]: {
-                const: STRING_BOOLEANS_MAP.TRUE,
+                const: true
             },
             [colsCars.CAR_TYPE]: {
                 const: CAR_TYPES_MAP.TRUCK,
@@ -324,17 +558,14 @@ const editCarTruck = {
 
 const createCarTruckAsync = {
     $async: true,
-    properties: {
-        ...CAR_PROPS,
-    },
     if: {
         properties: {
             [HOMELESS_COLUMNS.IS_CAR]: {
-                const: STRING_BOOLEANS_MAP.TRUE,
+                const: true,
             },
             [colsCars.CAR_TYPE]: {
                 const: CAR_TYPES_MAP.TRUCK,
-            }
+            },
         },
     },
     then: {
@@ -347,7 +578,6 @@ const createCarTruckAsync = {
             },
         },
     },
-    additionalProperties: true,
 };
 
 const editCarTruckAsync = {
@@ -372,21 +602,14 @@ const editCarTruckAsync = {
             },
         },
     },
-    additionalProperties: true,
 };
 
 const createCarTruckFiles = {
-    properties: {
-        ...CAR_PROPS,
-        [DOCUMENTS.DANGER_CLASS]: fileFormat,
-        [DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT]: fileFormat,
-        [DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION]: fileFormat,
-    },
     anyOf: [
         {
             properties: {
                 [HOMELESS_COLUMNS.IS_CAR]: {
-                    const: STRING_BOOLEANS_MAP.TRUE,
+                    const: true,
                 },
                 [colsCars.CAR_TYPE]: {
                     const: CAR_TYPES_MAP.TRUCK,
@@ -394,13 +617,13 @@ const createCarTruckFiles = {
             },
             required: [
                 colsCars.CAR_DANGER_CLASS_ID,
-                DOCUMENTS.DANGER_CLASS,
+                HOMELESS_COLUMNS.CAR_DANGER_CLASS,
             ],
         },
         {
             properties: {
                 [HOMELESS_COLUMNS.IS_CAR]: {
-                    const: STRING_BOOLEANS_MAP.TRUE,
+                    const: true,
                 },
                 [colsCars.CAR_TYPE]: {
                     const: CAR_TYPES_MAP.TRUCK,
@@ -413,18 +636,24 @@ const createCarTruckFiles = {
         {
             properties: {
                 [HOMELESS_COLUMNS.IS_CAR]: {
-                    const: STRING_BOOLEANS_MAP.TRUE,
+                    const: true,
                 },
                 [colsCars.CAR_TYPE]: {
                     const: CAR_TYPES_MAP.QUAD,
                 },
             },
             prohibited: [
-                DOCUMENTS.DANGER_CLASS
+                HOMELESS_COLUMNS.CAR_DANGER_CLASS
             ],
         },
+        {
+            properties: {
+                [HOMELESS_COLUMNS.IS_CAR]: {
+                    const: false,
+                },
+            },
+        },
     ],
-    additionalProperties: false,
 };
 
 const editCarTruckFiles = {
@@ -446,7 +675,6 @@ const editCarTruckFiles = {
             DOCUMENTS.DANGER_CLASS,
         ],
     },
-    additionalProperties: false,
 };
 
 const createCarTruckFilesCheckDangerClassAsync  = {
@@ -461,7 +689,25 @@ const createCarTruckFilesCheckDangerClassAsync  = {
     then: {
         properties: {
             [colsCars.CAR_DANGER_CLASS_ID]: {
-                danger_class_without_file_or_extra_file: {},
+                car_danger_class_without_file_or_extra_file: {},
+            },
+        },
+    },
+};
+
+const createTrailerFilesCheckDangerClassAsync  = {
+    $async: true,
+    if: {
+        properties: {
+            [HOMELESS_COLUMNS.IS_TRAILER]: {
+                const: true,
+            }
+        },
+    },
+    then: {
+        properties: {
+            [colsTrailers.TRAILER_DANGER_CLASS_ID]: {
+                trailer_danger_class_without_file_or_extra_file: {},
             },
         },
     },
@@ -511,12 +757,21 @@ const requiredCarId = {
 };
 
 module.exports = {
-    modifyCreateCarTrailerArrays,
+    modifyCarTrailerIdentityKeys,
+    modifyCreateCarArrays,
+    modifyCreateTrailerArrays,
     modifyEditCarArrays,
     modifyCreateCarFloats,
-    createCarTrailerCommon,
-    createCarTrailerCommonAsync,
-    createCarTrailerCommonFiles,
+    modifyCreateTrailerFloats,
+    createCarTrailerCondition,
+    createCarCommon,
+    createCarCommonAsync,
+    createCarCommonFiles,
+
+    createTrailerCommon,
+    createTrailerCommonAsync,
+    createTrailerCommonFiles,
+
     editCarCommon,
     editCarCommonAsyncFunc,
     editCarCommonFiles,
@@ -527,6 +782,7 @@ module.exports = {
     editCarTruckAsync,
     editCarTruckFiles,
     createCarTruckFilesCheckDangerClassAsync,
+    createTrailerFilesCheckDangerClassAsync,
     editCarTruckFilesCheckDangerClassAsyncFunc,
     modifyEditCarTruckFloats,
     requiredExistingCarInCompanyAsyncFunc,

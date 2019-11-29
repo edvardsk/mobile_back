@@ -305,6 +305,7 @@ const SQL_TABLES = {
         NAME: 'trailers',
         COLUMNS: {
             CAR_ID: 'car_id',
+            COMPANY_ID: 'company_id',
             TRAILER_MARK: 'trailer_mark',
             TRAILER_MODEL: 'trailer_model',
             TRAILER_MADE_YEAR_AT: 'trailer_made_year_at',
@@ -433,6 +434,7 @@ const HOMELESS_COLUMNS = {
     DANGER_CLASS_NAME: 'danger_class_name',
     VEHICLE_TYPE_NAME: 'vehicle_type_name',
     IS_CAR: 'is_car',
+    IS_TRAILER: 'is_trailer',
     CAR_STATE_NUMBER: 'car_state_number',
     TRAILER_STATE_NUMBER: 'trailer_state_number',
     LANGUAGE_CODE: 'language_code',
@@ -448,6 +450,12 @@ const HOMELESS_COLUMNS = {
     COUNTRY_ID: 'country_id',
     PRICES: 'prices',
     ORIGINAL: 'original',
+    CAR_DANGER_CLASS: 'car_danger_class',
+    CAR_VEHICLE_REGISTRATION_PASSPORT: 'car_vehicle_registration_passport',
+    CAR_VEHICLE_TECHNICAL_INSPECTION: 'car_vehicle_technical_inspection',
+    TRAILER_DANGER_CLASS: 'trailer_danger_class',
+    TRAILER_VEHICLE_REGISTRATION_PASSPORT: 'trailer_vehicle_registration_passport',
+    TRAILER_VEHICLE_TECHNICAL_INSPECTION: 'trailer_vehicle_technical_inspection',
 };
 
 module.exports = {

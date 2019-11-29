@@ -16,6 +16,7 @@ const cols = SQL_TABLES.FILES.COLUMNS;
 const colsCompaniesFiles = SQL_TABLES.COMPANIES_TO_FILES.COLUMNS;
 const colsUsersFiles = SQL_TABLES.USERS_TO_FILES.COLUMNS;
 const colsCarsFiles = SQL_TABLES.CARS_TO_FILES.COLUMNS;
+const colsTrailersFiles = SQL_TABLES.TRAILERS_TO_FILES.COLUMNS;
 
 const formatStoringFile = (bucket, path) => `${bucket}/${path}`;
 
@@ -140,6 +141,36 @@ const prepareFilesToStoreForCars = (files, carId) => Object.keys(files).reduce((
     return acc;
 }, [[], [], []]);
 
+const prepareFilesToStoreForTrailers = (files, trailerId) => Object.keys(files).reduce((acc, type) => {
+    const [dbFiles, dbTrailersFiles, storageFiles] = acc;
+    files[type].forEach(file => {
+        const fileId = uuid();
+        const fileHash = uuid();
+        const filePath = `${fileHash}${file.originalname}`;
+        const fileUrl = formatStoringFile(AWS_S3_BUCKET_NAME, filePath);
+
+        const fileLabels = formatLabelsToStore(type);
+
+        dbFiles.push({
+            id: fileId,
+            [cols.NAME]: file.originalname,
+            [cols.LABELS]: fileLabels,
+            [cols.URL]: CryptService.encrypt(fileUrl),
+        });
+        dbTrailersFiles.push({
+            [colsTrailersFiles.TRAILER_ID]: trailerId,
+            [colsCarsFiles.FILE_ID]: fileId,
+        });
+        storageFiles.push({
+            bucket: AWS_S3_BUCKET_NAME,
+            path: filePath,
+            data: file.buffer,
+            contentType: file.mimetype,
+        });
+    });
+    return acc;
+}, [[], [], []]);
+
 const prepareFilesToDelete = files => files.reduce((acc, file) => {
     const [ids, urls] = acc;
     ids.push(file.id);
@@ -147,6 +178,16 @@ const prepareFilesToDelete = files => files.reduce((acc, file) => {
     return acc;
 
 }, [[], []]);
+
+const selectFilesToStore = (files, mapData) => {
+    const result = {};
+    Object.keys(mapData).forEach(prop => {
+        if (files[prop]) {
+            result[mapData[prop]] = files[prop];
+        }
+    });
+    return result;
+};
 
 module.exports = {
     formatStoringFile,
@@ -156,5 +197,7 @@ module.exports = {
     prepareFilesToStoreForCompanies,
     prepareFilesToStoreForUsers,
     prepareFilesToStoreForCars,
+    prepareFilesToStoreForTrailers,
     prepareFilesToDelete,
+    selectFilesToStore,
 };

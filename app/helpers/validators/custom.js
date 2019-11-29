@@ -2,6 +2,7 @@ const moment = require('moment');
 
 // constants
 const { PAGINATION_PARAMS } = require('constants/pagination-sorting');
+const { STRING_BOOLEANS_MAP } = require('constants/index');
 
 const parseStringToJson = (data, dataPath, parentData, parentDataProperty) => {
     try {
@@ -20,6 +21,22 @@ const parseStringToFloat = (data, dataPath, parentData, parentDataProperty) => {
             parentData[parentDataProperty] = parseFloat(value);
         }
         return true;
+    } catch (error) {
+        return false;
+    }
+};
+
+const parseStringBooleanToBoolean = (data, dataPath, parentData, parentDataProperty) => {
+    try {
+        if (data === STRING_BOOLEANS_MAP.TRUE) {
+            parentData[parentDataProperty] = true;
+            return true;
+        } else if (data === STRING_BOOLEANS_MAP.FALSE) {
+            parentData[parentDataProperty] = false;
+            return true;
+        } else {
+            return false;
+        }
     } catch (error) {
         return false;
     }
@@ -52,6 +69,7 @@ const compareYears = (value1, value2) => {
 module.exports = {
     parseStringToJson,
     parseStringToFloat,
+    parseStringBooleanToBoolean,
     parsePaginationOptions,
     compareYears,
 };
