@@ -50,6 +50,8 @@ const selectTrailersByCompanyIdPaginationSorting = (companyId, limit, offset, so
         .select()
         .field('t.*')
         .field(`tsn.${colsTrailersStateNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
+        .field(`vt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
+        .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
         .from(table.NAME, 't')
         .where(`t.${cols.COMPANY_ID} = '${companyId}'`)
         .where(`t.${cols.DELETED} = 'f'`)
@@ -58,6 +60,8 @@ const selectTrailersByCompanyIdPaginationSorting = (companyId, limit, offset, so
     expression = setTrailersFilter(expression, filter);
     return expression
         .left_join(tableTrailersStateNumbers.NAME, 'tsn', `tsn.${colsTrailersStateNumbers.TRAILER_ID} = t.id`)
+        .left_join(tableVehicleTypes.NAME, 'vt', `vt.id = t.${cols.TRAILER_VEHICLE_TYPE_ID}`)
+        .left_join(tableDangerClasses.NAME, 'dc', `dc.id = t.${cols.TRAILER_DANGER_CLASS_ID}`)
         .order(sortColumn, asc)
         .limit(limit)
         .offset(offset)

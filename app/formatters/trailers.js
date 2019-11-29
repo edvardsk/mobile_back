@@ -32,6 +32,8 @@ const formatRecordForList = data => ({
     [cols.TRAILER_LENGTH]: parseFloat(data[cols.TRAILER_LENGTH]),
     [cols.TRAILER_HEIGHT]: parseFloat(data[cols.TRAILER_HEIGHT]),
     [cols.TRAILER_WIDTH]: parseFloat(data[cols.TRAILER_WIDTH]),
+    [HOMELESS_COLUMNS.VEHICLE_TYPE_NAME]: data[HOMELESS_COLUMNS.VEHICLE_TYPE_NAME],
+    [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: data[HOMELESS_COLUMNS.DANGER_CLASS_NAME],
     [cols.TRAILER_DANGER_CLASS_ID]: data[cols.TRAILER_DANGER_CLASS_ID],
 });
 
