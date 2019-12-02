@@ -144,6 +144,7 @@ const selectRecordByIdFull = id => squelPostgres
     .field('c.*')
     .field(`vt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
     .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
+    .field(`csn.${colsCarsStateNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
     .field(`ARRAY(${
         squelPostgres
             .select()
@@ -156,8 +157,10 @@ const selectRecordByIdFull = id => squelPostgres
     .from(table.NAME, 'c')
     .where(`c.id = '${id}'`)
     .where(`c.${cols.DELETED} = 'f'`)
+    .where(`csn.${colsCarsStateNumbers.IS_ACTIVE} = 't'`)
     .left_join(tableVehicleTypes.NAME, 'vt', `vt.id = c.${cols.CAR_VEHICLE_TYPE_ID}`)
     .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.CAR_DANGER_CLASS_ID}`)
+    .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = c.id`)
     .toString();
 
 const selectRecordByIdAndCompanyIdWithoutTrailer = (id, companyId) => squelPostgres
