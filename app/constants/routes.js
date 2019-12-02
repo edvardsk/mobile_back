@@ -52,6 +52,7 @@ const BASES = {
     CURRENCIES: '/currencies',
     TRAILERS: '/trailers',
     LINK: '/link',
+    UNLINK: '/unlink',
 };
 
 const IDS = {
@@ -288,6 +289,10 @@ const ROUTES = {
             PUT: IDS.TRAILER_ID,
             LINK: {
                 BASE: IDS.TRAILER_ID + BASES.LINK,
+                POST: '',
+            },
+            UNLINK: {
+                BASE: IDS.TRAILER_ID + BASES.UNLINK,
                 POST: '',
             },
         },

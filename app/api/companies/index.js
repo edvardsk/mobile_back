@@ -469,4 +469,14 @@ router.post(
     postLinkingTrailers.linkTrailerWithCar,
 );
 
+router.post(
+    ROUTES.COMPANIES.TRAILERS.BASE + ROUTES.COMPANIES.TRAILERS.UNLINK.BASE + ROUTES.COMPANIES.TRAILERS.UNLINK.POST,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredTrailerId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingTrailerInCompanyWithCarAsyncFunc({ companyId: company.id }), 'params'),
+    postLinkingTrailers.unlinkTrailerFromCar,
+);
+
 module.exports = router;

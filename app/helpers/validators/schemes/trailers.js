@@ -25,6 +25,17 @@ const requiredExistingTrailerInCompanyWithoutCarAsyncFunc = ({ companyId }) => (
     },
 });
 
+const requiredExistingTrailerInCompanyWithCarAsyncFunc = ({ companyId }) => ({
+    $async: true,
+    properties: {
+        trailerId: {
+            trailer_in_company_with_car_not_exists: {
+                companyId,
+            },
+        },
+    },
+});
+
 const requiredTrailerId = {
     properties: {
         trailerId: {
@@ -64,6 +75,7 @@ const linkTrailerBodyAsyncFunc = ({ companyId }) => ({
 module.exports = {
     requiredExistingTrailerInCompanyAsyncFunc,
     requiredExistingTrailerInCompanyWithoutCarAsyncFunc,
+    requiredExistingTrailerInCompanyWithCarAsyncFunc,
     requiredTrailerId,
     linkTrailerBody,
     linkTrailerBodyAsyncFunc,

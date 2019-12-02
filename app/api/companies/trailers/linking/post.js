@@ -19,6 +19,19 @@ const linkTrailerWithCar = async (req, res, next) => {
     }
 };
 
+const unlinkTrailerFromCar = async (req, res, next) => {
+    try {
+        const { trailerId } = req.params;
+
+        await TrailersServices.unlinkTrailerFromCar(trailerId);
+
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     linkTrailerWithCar,
+    unlinkTrailerFromCar,
 };

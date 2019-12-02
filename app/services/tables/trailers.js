@@ -57,6 +57,10 @@ const linkTrailerAndCar = (trailerId, carId) => editRecord(trailerId, {
     [colsTrailers.CAR_ID]: carId,
 });
 
+const unlinkTrailerFromCar = id => editRecord(id, {
+    [colsTrailers.CAR_ID]: null,
+});
+
 const checkTrailerStateNumberExistsOpposite = async (meta, stateNumber) => {
     const { trailerId } = meta;
     const trailer = await getRecordByStateNumberAndActive(stateNumber);
@@ -83,6 +87,12 @@ const checkTrailerWithoutCarInCompanyExists = async (meta, id) => {
     const { companyId } = meta;
     const trailer = await getRecordByIdAndCompanyIdLight(id, companyId);
     return !!(trailer && !trailer[colsTrailers.CAR_ID]);
+};
+
+const checkTrailerWithCarInCompanyExists = async (meta, id) => {
+    const { companyId } = meta;
+    const trailer = await getRecordByIdAndCompanyIdLight(id, companyId);
+    return !!(trailer && trailer[colsTrailers.CAR_ID]);
 };
 
 const checkIsPassedFileWithNewDangerClass = async (meta, newDangerClassId, schema, key, data) => {
@@ -117,10 +127,12 @@ module.exports = {
     getRecordFullStrict,
     markAsDeleted,
     linkTrailerAndCar,
+    unlinkTrailerFromCar,
 
     checkTrailerStateNumberExistsOpposite,
     checkIsPassedFileWithDangerClass,
     checkTrailerInCompanyExists,
     checkTrailerWithoutCarInCompanyExists,
+    checkTrailerWithCarInCompanyExists,
     checkIsPassedFileWithNewDangerClass,
 };

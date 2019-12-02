@@ -205,6 +205,12 @@ ajv.addKeyword('trailer_in_company_without_car_not_exists', {
     validate: TrailersService.checkTrailerWithoutCarInCompanyExists,
 });
 
+ajv.addKeyword('trailer_in_company_with_car_not_exists', {
+    async: true,
+    type: 'string',
+    validate: TrailersService.checkTrailerWithCarInCompanyExists,
+});
+
 ajv.addKeyword('car_danger_class_without_file_or_extra_file', {
     async: true,
     type: 'string',
