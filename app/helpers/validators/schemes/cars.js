@@ -64,7 +64,7 @@ const CAR_PROPS = {
         type: 'string',
         pattern: SIZES_VALIDATION_PATTERN,
     },
-    [colsCars.CAR_WEIGHT]: {
+    [colsCars.CAR_CARRYING_CAPACITY]: {
         type: 'string',
         pattern: SIZES_VALIDATION_PATTERN,
     },
@@ -111,7 +111,7 @@ const TRAILER_PROPS = {
         type: 'string',
         format: 'uuid',
     },
-    [colsTrailers.TRAILER_WEIGHT]: {
+    [colsTrailers.TRAILER_CARRYING_CAPACITY]: {
         type: 'string',
         pattern: SIZES_VALIDATION_PATTERN,
     },
@@ -268,7 +268,7 @@ const modifyCreateCarFloats = {
             [colsCars.CAR_LENGTH]: {
                 parse_string_to_float: {},
             },
-            [colsCars.CAR_WEIGHT]: {
+            [colsCars.CAR_CARRYING_CAPACITY]: {
                 parse_string_to_float: {},
             },
         },
@@ -294,7 +294,7 @@ const modifyCreateTrailerFloats = {
             [colsTrailers.TRAILER_LENGTH]: {
                 parse_string_to_float: {},
             },
-            [colsTrailers.TRAILER_WEIGHT]: {
+            [colsTrailers.TRAILER_CARRYING_CAPACITY]: {
                 parse_string_to_float: {},
             },
         },
@@ -320,7 +320,7 @@ const modifyEditCarTruckFloats = {
             [colsCars.CAR_LENGTH]: {
                 parse_string_to_float: {},
             },
-            [colsCars.CAR_WEIGHT]: {
+            [colsCars.CAR_CARRYING_CAPACITY]: {
                 parse_string_to_float: {},
             },
         },
@@ -383,7 +383,7 @@ const createTrailerCommon = {
             HOMELESS_COLUMNS.TRAILER_STATE_NUMBER,
             colsTrailers.TRAILER_LOADING_METHODS,
             colsTrailers.TRAILER_VEHICLE_TYPE_ID,
-            colsTrailers.TRAILER_WEIGHT,
+            colsTrailers.TRAILER_CARRYING_CAPACITY,
             colsTrailers.TRAILER_HEIGHT,
             colsTrailers.TRAILER_LENGTH,
             colsTrailers.TRAILER_WIDTH,
@@ -418,7 +418,7 @@ const editTrailer = {
         HOMELESS_COLUMNS.TRAILER_STATE_NUMBER,
         colsTrailers.TRAILER_LOADING_METHODS,
         colsTrailers.TRAILER_VEHICLE_TYPE_ID,
-        colsTrailers.TRAILER_WEIGHT,
+        colsTrailers.TRAILER_CARRYING_CAPACITY,
         colsTrailers.TRAILER_HEIGHT,
         colsTrailers.TRAILER_LENGTH,
         colsTrailers.TRAILER_WIDTH,
@@ -578,7 +578,7 @@ const createCarTruck = {
             colsCars.CAR_WIDTH,
             colsCars.CAR_HEIGHT,
             colsCars.CAR_LENGTH,
-            colsCars.CAR_WEIGHT,
+            colsCars.CAR_CARRYING_CAPACITY,
         ],
     },
 };
@@ -602,7 +602,7 @@ const editCarTruck = {
             colsCars.CAR_WIDTH,
             colsCars.CAR_HEIGHT,
             colsCars.CAR_LENGTH,
-            colsCars.CAR_WEIGHT,
+            colsCars.CAR_CARRYING_CAPACITY,
         ],
     },
 };

@@ -7,7 +7,7 @@ exports.up = function(knex) {
         knex.raw('ALTER TABLE trailers ALTER COLUMN trailer_width SET NOT NULL;'),
         knex.raw('ALTER TABLE trailers ALTER COLUMN trailer_height SET NOT NULL;'),
         knex.raw('ALTER TABLE trailers ALTER COLUMN trailer_length SET NOT NULL;'),
-        knex.raw('ALTER TABLE trailers ALTER COLUMN trailer_weight SET NOT NULL;'),
+        knex.raw('ALTER TABLE trailers ALTER COLUMN trailer_carrying_capacity SET NOT NULL;'),
 
         knex.raw('ALTER TABLE trailers ALTER COLUMN car_id DROP NOT NULL;'),
     ])
@@ -32,7 +32,7 @@ exports.down = function(knex) {
         knex.raw('ALTER TABLE trailers ALTER COLUMN trailer_width DROP NOT NULL;'),
         knex.raw('ALTER TABLE trailers ALTER COLUMN trailer_height DROP NOT NULL;'),
         knex.raw('ALTER TABLE trailers ALTER COLUMN trailer_length DROP NOT NULL;'),
-        knex.raw('ALTER TABLE trailers ALTER COLUMN trailer_weight DROP NOT NULL;'),
+        knex.raw('ALTER TABLE trailers ALTER COLUMN trailer_carrying_capacity DROP NOT NULL;'),
 
         knex.raw('ALTER TABLE trailers ALTER COLUMN car_id SET NOT NULL;'),
     ])
