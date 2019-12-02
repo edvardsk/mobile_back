@@ -4,6 +4,7 @@ const { one, oneOrNone, manyOrNone } = require('db');
 const {
     insertRecord,
     updateRecord,
+    updateRecordByCarId,
     selectRecordById,
     selectTrailersByCompanyIdPaginationSorting,
     selectCountTrailersByCompanyId,
@@ -29,6 +30,10 @@ const colsDangerClasses = SQL_TABLES.DANGER_CLASSES.COLUMNS;
 const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
 
 const editRecordAsTransaction = (id, data) => [updateRecord(id, data), OPERATIONS.ONE];
+
+const unlinkTrailerFromCarByCarIdAsTransaction = carId => [updateRecordByCarId(carId, {
+    [colsTrailers.CAR_ID]: null,
+}), OPERATIONS.ONE_OR_NONE];
 
 const editRecord = (id, data) => one(updateRecord(id, data));
 
@@ -120,6 +125,7 @@ const checkIsPassedFileWithNewDangerClass = async (meta, newDangerClassId, schem
 module.exports = {
     addRecordAsTransaction,
     editRecordAsTransaction,
+    unlinkTrailerFromCarByCarIdAsTransaction,
 
     getRecordStrict,
     getTrailersPaginationSorting,

@@ -57,6 +57,10 @@ const markAsDeleted = id => editRecord(id, {
     [colsCars.DELETED]: true,
 });
 
+const markAsDeletedAsTransaction = id => [updateRecord(id, {
+    [colsCars.DELETED]: true,
+}), OPERATIONS.ONE];
+
 const checkCarStateNumberExistsOpposite = async (meta, stateNumber) => {
     const { carId } = meta;
     const car = await getRecordByStateNumberAndActive(stateNumber);
@@ -129,6 +133,7 @@ module.exports = {
     getCountCars,
     getRecordFullStrict,
     markAsDeleted,
+    markAsDeletedAsTransaction,
 
     checkCarStateNumberExistsOpposite,
     checkCarInCompanyExist,
