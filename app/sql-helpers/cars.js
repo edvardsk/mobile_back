@@ -12,6 +12,7 @@ const tableCarsFiles = SQL_TABLES.CARS_TO_FILES;
 const tableVehicleTypes = SQL_TABLES.VEHICLE_TYPES;
 const tableDangerClasses = SQL_TABLES.DANGER_CLASSES;
 const tableTrailers = SQL_TABLES.TRAILERS;
+const tableTrailersNumbers = SQL_TABLES.TRAILERS_STATE_NUMBERS;
 
 const cols = table.COLUMNS;
 const colsCarsStateNumbers = tableCarsStateNumbers.COLUMNS;
@@ -20,6 +21,7 @@ const colsCarsFiles = tableCarsFiles.COLUMNS;
 const colsVehicleTypes = tableVehicleTypes.COLUMNS;
 const colsDangerClasses = tableDangerClasses.COLUMNS;
 const colsTrailers = tableTrailers.COLUMNS;
+const colsTrailersNumbers = tableTrailersNumbers.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -51,15 +53,30 @@ const selectCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortCo
     let expression = squelPostgres
         .select()
         .field('c.*')
-        .field(`csn.${colsCarsStateNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
+        .field('t.id', HOMELESS_COLUMNS.TRAILER_ID)
+        .field(`t.${colsTrailers.TRAILER_MARK}`, colsTrailers.TRAILER_MARK)
+        .field(`t.${colsTrailers.TRAILER_MODEL}`, colsTrailers.TRAILER_MODEL)
+        .field(`t.${colsTrailers.TRAILER_WIDTH}`, colsTrailers.TRAILER_WIDTH)
+        .field(`t.${colsTrailers.TRAILER_HEIGHT}`, colsTrailers.TRAILER_HEIGHT)
+        .field(`t.${colsTrailers.TRAILER_LENGTH}`, colsTrailers.TRAILER_LENGTH)
+        .field(`t.${colsTrailers.TRAILER_WEIGHT}`, colsTrailers.TRAILER_WEIGHT)
+        .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME)
+        .field(`vt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME)
+        .field(`tsn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
+        .field(`csn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
         .from(table.NAME, 'c')
         .where(`c.${cols.COMPANY_ID} = '${companyId}'`)
         .where(`c.${cols.DELETED} = 'f'`)
-        .where(`csn.${colsCarsStateNumbers.IS_ACTIVE} = 't'`);
+        .where(`csn.${colsCarsStateNumbers.IS_ACTIVE} = 't'`)
+        .where(`tsn.${colsTrailersNumbers.IS_ACTIVE} = 't' OR tsn.${colsTrailersNumbers.IS_ACTIVE} IS NULL`);
 
     expression = setCarsFilter(expression, filter);
     return expression
         .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = c.id`)
+        .left_join(tableTrailers.NAME, 't', `t.${colsTrailers.CAR_ID} = c.id`)
+        .left_join(tableDangerClasses.NAME, 'dc', `dc.id = t.${colsTrailers.TRAILER_DANGER_CLASS_ID}`)
+        .left_join(tableVehicleTypes.NAME, 'vt', `vt.id = t.${colsTrailers.TRAILER_VEHICLE_TYPE_ID}`)
+        .left_join(tableTrailersNumbers.NAME, 'tsn', `tsn.${colsTrailersNumbers.TRAILER_ID} = t.id`)
         .order(sortColumn, asc)
         .limit(limit)
         .offset(offset)
