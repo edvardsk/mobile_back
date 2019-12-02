@@ -11,6 +11,7 @@ const tableFiles = SQL_TABLES.FILES;
 const tableCarsFiles = SQL_TABLES.CARS_TO_FILES;
 const tableVehicleTypes = SQL_TABLES.VEHICLE_TYPES;
 const tableDangerClasses = SQL_TABLES.DANGER_CLASSES;
+const tableTrailers = SQL_TABLES.TRAILERS;
 
 const cols = table.COLUMNS;
 const colsCarsStateNumbers = tableCarsStateNumbers.COLUMNS;
@@ -18,6 +19,7 @@ const colsFiles = tableFiles.COLUMNS;
 const colsCarsFiles = tableCarsFiles.COLUMNS;
 const colsVehicleTypes = tableVehicleTypes.COLUMNS;
 const colsDangerClasses = tableDangerClasses.COLUMNS;
+const colsTrailers = tableTrailers.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -141,6 +143,17 @@ const selectRecordByIdFull = id => squelPostgres
     .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.CAR_DANGER_CLASS_ID}`)
     .toString();
 
+const selectRecordByIdAndCompanyIdWithoutTrailer = (id, companyId) => squelPostgres
+    .select()
+    .from(table.NAME, 'c')
+    .field('c.*')
+    .where(`c.id = '${id}'`)
+    .where(`c.${cols.COMPANY_ID} = '${companyId}'`)
+    .where(`c.${cols.DELETED} = 'f'`)
+    .where(`t.${colsTrailers.CAR_ID} IS NULL`)
+    .left_join(tableTrailers.NAME, 't', `t.${colsTrailers.CAR_ID} = c.id`)
+    .toString();
+
 module.exports = {
     insertRecord,
     updateRecord,
@@ -150,4 +163,5 @@ module.exports = {
     selectRecordByStateNumberAndActive,
     selectRecordByIdAndCompanyIdLight,
     selectRecordByIdFull,
+    selectRecordByIdAndCompanyIdWithoutTrailer,
 };

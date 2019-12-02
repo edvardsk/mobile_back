@@ -141,6 +141,7 @@ const selectRecordByIdFull = id => squelPostgres
 const selectRecordByIdAndCompanyIdLight = (id, companyId) => squelPostgres
     .select()
     .field('id')
+    .field(cols.CAR_ID)
     .from(table.NAME)
     .where(`id = '${id}'`)
     .where(`${cols.COMPANY_ID} = '${companyId}'`)

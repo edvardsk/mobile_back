@@ -53,6 +53,10 @@ const markAsDeleted = id => editRecord(id, {
     [colsTrailers.DELETED]: true,
 });
 
+const linkTrailerAndCar = (trailerId, carId) => editRecord(trailerId, {
+    [colsTrailers.CAR_ID]: carId,
+});
+
 const checkTrailerStateNumberExistsOpposite = async (meta, stateNumber) => {
     const { trailerId } = meta;
     const trailer = await getRecordByStateNumberAndActive(stateNumber);
@@ -73,6 +77,12 @@ const checkTrailerInCompanyExists = async (meta, id) => {
     const { companyId } = meta;
     const trailer = await getRecordByIdAndCompanyIdLight(id, companyId);
     return !!trailer;
+};
+
+const checkTrailerWithoutCarInCompanyExists = async (meta, id) => {
+    const { companyId } = meta;
+    const trailer = await getRecordByIdAndCompanyIdLight(id, companyId);
+    return !!(trailer && !trailer[colsTrailers.CAR_ID]);
 };
 
 const checkIsPassedFileWithNewDangerClass = async (meta, newDangerClassId, schema, key, data) => {
@@ -106,9 +116,11 @@ module.exports = {
     getCountTrailers,
     getRecordFullStrict,
     markAsDeleted,
+    linkTrailerAndCar,
 
     checkTrailerStateNumberExistsOpposite,
     checkIsPassedFileWithDangerClass,
     checkTrailerInCompanyExists,
+    checkTrailerWithoutCarInCompanyExists,
     checkIsPassedFileWithNewDangerClass,
 };
