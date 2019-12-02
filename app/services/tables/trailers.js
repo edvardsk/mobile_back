@@ -35,6 +35,10 @@ const unlinkTrailerFromCarByCarIdAsTransaction = carId => [updateRecordByCarId(c
     [colsTrailers.CAR_ID]: null,
 }), OPERATIONS.ONE_OR_NONE];
 
+const unlinkTrailerFromCarAsTransaction = trailerId => [updateRecord(trailerId, {
+    [colsTrailers.CAR_ID]: null,
+}), OPERATIONS.ONE_OR_NONE];
+
 const editRecord = (id, data) => one(updateRecord(id, data));
 
 const getRecordStrict = id => one(selectRecordById(id));
@@ -57,6 +61,10 @@ const getRecordByIdAndCompanyIdLight = (id, companyId) => oneOrNone(selectRecord
 const markAsDeleted = id => editRecord(id, {
     [colsTrailers.DELETED]: true,
 });
+
+const markAsDeletedAsTransaction = id => [updateRecord(id, {
+    [colsTrailers.DELETED]: true,
+}), OPERATIONS.ONE];
 
 const linkTrailerAndCar = (trailerId, carId) => editRecord(trailerId, {
     [colsTrailers.CAR_ID]: carId,
@@ -126,6 +134,8 @@ module.exports = {
     addRecordAsTransaction,
     editRecordAsTransaction,
     unlinkTrailerFromCarByCarIdAsTransaction,
+    unlinkTrailerFromCarAsTransaction,
+    markAsDeletedAsTransaction,
 
     getRecordStrict,
     getTrailersPaginationSorting,
