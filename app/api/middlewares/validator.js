@@ -199,6 +199,18 @@ ajv.addKeyword('trailer_in_company_not_exists', {
     validate: TrailersService.checkTrailerInCompanyExists,
 });
 
+ajv.addKeyword('trailer_in_company_without_car_not_exists', {
+    async: true,
+    type: 'string',
+    validate: TrailersService.checkTrailerWithoutCarInCompanyExists,
+});
+
+ajv.addKeyword('trailer_in_company_with_car_not_exists', {
+    async: true,
+    type: 'string',
+    validate: TrailersService.checkTrailerWithCarInCompanyExists,
+});
+
 ajv.addKeyword('car_danger_class_without_file_or_extra_file', {
     async: true,
     type: 'string',
@@ -221,6 +233,12 @@ ajv.addKeyword('new_trailer_danger_class_without_or_extra_file', {
     async: true,
     type: 'string',
     validate: TrailersService.checkIsPassedFileWithNewDangerClass,
+});
+
+ajv.addKeyword('required_existing_car_in_company_without_trailer', {
+    async: true,
+    type: 'string',
+    validate: CarsService.checkIsCarInCompanyWithoutTrailerExists,
 });
 
 ajv.addKeyword('parse_string_to_json', {

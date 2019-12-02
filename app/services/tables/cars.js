@@ -10,6 +10,7 @@ const {
     selectRecordByStateNumberAndActive,
     selectRecordByIdAndCompanyIdLight,
     selectRecordByIdFull,
+    selectRecordByIdAndCompanyIdWithoutTrailer,
 } = require('sql-helpers/cars');
 
 // services
@@ -50,9 +51,15 @@ const getRecordByIdAndCompanyIdLight = (id, companyId) => oneOrNone(selectRecord
 
 const getRecordFullStrict = id => one(selectRecordByIdFull(id));
 
+const getRecordByIdAndCompanyIdWithoutTrailer = (id, companyId) => oneOrNone(selectRecordByIdAndCompanyIdWithoutTrailer(id, companyId));
+
 const markAsDeleted = id => editRecord(id, {
     [colsCars.DELETED]: true,
 });
+
+const markAsDeletedAsTransaction = id => [updateRecord(id, {
+    [colsCars.DELETED]: true,
+}), OPERATIONS.ONE];
 
 const checkCarStateNumberExistsOpposite = async (meta, stateNumber) => {
     const { carId } = meta;
@@ -64,6 +71,12 @@ const checkCarInCompanyExist = async (meta, id) => {
     const { companyId } = meta;
     const car = await getRecordByIdAndCompanyIdLight(id, companyId);
     return !!car;
+};
+
+const checkIsCarInCompanyWithoutTrailerExists = async (meta, id) => {
+    const { companyId } = meta;
+    const carWithoutTrailer = await getRecordByIdAndCompanyIdWithoutTrailer(id, companyId);
+    return !!carWithoutTrailer;
 };
 
 const checkIsPassedFileWithDangerClass = async (meta, dangerClassId, schema, key, data) => {
@@ -120,9 +133,11 @@ module.exports = {
     getCountCars,
     getRecordFullStrict,
     markAsDeleted,
+    markAsDeletedAsTransaction,
 
     checkCarStateNumberExistsOpposite,
     checkCarInCompanyExist,
+    checkIsCarInCompanyWithoutTrailerExists,
     checkIsPassedFileWithDangerClass,
     checkIsPassedFileWithNewDangerClass,
 };

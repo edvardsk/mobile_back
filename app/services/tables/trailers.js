@@ -4,6 +4,7 @@ const { one, oneOrNone, manyOrNone } = require('db');
 const {
     insertRecord,
     updateRecord,
+    updateRecordByCarId,
     selectRecordById,
     selectTrailersByCompanyIdPaginationSorting,
     selectCountTrailersByCompanyId,
@@ -30,6 +31,14 @@ const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
 
 const editRecordAsTransaction = (id, data) => [updateRecord(id, data), OPERATIONS.ONE];
 
+const unlinkTrailerFromCarByCarIdAsTransaction = carId => [updateRecordByCarId(carId, {
+    [colsTrailers.CAR_ID]: null,
+}), OPERATIONS.ONE_OR_NONE];
+
+const unlinkTrailerFromCarAsTransaction = trailerId => [updateRecord(trailerId, {
+    [colsTrailers.CAR_ID]: null,
+}), OPERATIONS.ONE_OR_NONE];
+
 const editRecord = (id, data) => one(updateRecord(id, data));
 
 const getRecordStrict = id => one(selectRecordById(id));
@@ -53,6 +62,18 @@ const markAsDeleted = id => editRecord(id, {
     [colsTrailers.DELETED]: true,
 });
 
+const markAsDeletedAsTransaction = id => [updateRecord(id, {
+    [colsTrailers.DELETED]: true,
+}), OPERATIONS.ONE];
+
+const linkTrailerAndCar = (trailerId, carId) => editRecord(trailerId, {
+    [colsTrailers.CAR_ID]: carId,
+});
+
+const unlinkTrailerFromCar = id => editRecord(id, {
+    [colsTrailers.CAR_ID]: null,
+});
+
 const checkTrailerStateNumberExistsOpposite = async (meta, stateNumber) => {
     const { trailerId } = meta;
     const trailer = await getRecordByStateNumberAndActive(stateNumber);
@@ -73,6 +94,18 @@ const checkTrailerInCompanyExists = async (meta, id) => {
     const { companyId } = meta;
     const trailer = await getRecordByIdAndCompanyIdLight(id, companyId);
     return !!trailer;
+};
+
+const checkTrailerWithoutCarInCompanyExists = async (meta, id) => {
+    const { companyId } = meta;
+    const trailer = await getRecordByIdAndCompanyIdLight(id, companyId);
+    return !!(trailer && !trailer[colsTrailers.CAR_ID]);
+};
+
+const checkTrailerWithCarInCompanyExists = async (meta, id) => {
+    const { companyId } = meta;
+    const trailer = await getRecordByIdAndCompanyIdLight(id, companyId);
+    return !!(trailer && trailer[colsTrailers.CAR_ID]);
 };
 
 const checkIsPassedFileWithNewDangerClass = async (meta, newDangerClassId, schema, key, data) => {
@@ -100,15 +133,22 @@ const checkIsPassedFileWithNewDangerClass = async (meta, newDangerClassId, schem
 module.exports = {
     addRecordAsTransaction,
     editRecordAsTransaction,
+    unlinkTrailerFromCarByCarIdAsTransaction,
+    unlinkTrailerFromCarAsTransaction,
+    markAsDeletedAsTransaction,
 
     getRecordStrict,
     getTrailersPaginationSorting,
     getCountTrailers,
     getRecordFullStrict,
     markAsDeleted,
+    linkTrailerAndCar,
+    unlinkTrailerFromCar,
 
     checkTrailerStateNumberExistsOpposite,
     checkIsPassedFileWithDangerClass,
     checkTrailerInCompanyExists,
+    checkTrailerWithoutCarInCompanyExists,
+    checkTrailerWithCarInCompanyExists,
     checkIsPassedFileWithNewDangerClass,
 };

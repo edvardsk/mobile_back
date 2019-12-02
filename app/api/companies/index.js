@@ -27,6 +27,7 @@ const deleteCars = require('./cars/delete');
 const getTrailers = require('./trailers/get');
 const deleteTrailers = require('./trailers/delete');
 const putTrailers = require('./trailers/put');
+const postLinkingTrailers = require('./trailers/linking/post');
 
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
@@ -453,6 +454,29 @@ router.put(
     validate(({ requestParams }) => ValidatorSchemes.editTrailerFilesCheckDangerClassAsyncFunc({ trailerId: requestParams.trailerId}), ['body', 'files']),
     validate(ValidatorSchemes.modifyEditCarTruckFloats),
     putTrailers.editTrailer,
+);
+
+// trailers link/unlink
+router.post(
+    ROUTES.COMPANIES.TRAILERS.BASE + ROUTES.COMPANIES.TRAILERS.LINK.BASE + ROUTES.COMPANIES.TRAILERS.LINK.POST,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredTrailerId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingTrailerInCompanyWithoutCarAsyncFunc({ companyId: company.id }), 'params'),
+    validate(ValidatorSchemes.linkTrailerBody),
+    validate(({ company }) => ValidatorSchemes.linkTrailerBodyAsyncFunc({ companyId: company.id })),
+    postLinkingTrailers.linkTrailerWithCar,
+);
+
+router.post(
+    ROUTES.COMPANIES.TRAILERS.BASE + ROUTES.COMPANIES.TRAILERS.UNLINK.BASE + ROUTES.COMPANIES.TRAILERS.UNLINK.POST,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredTrailerId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingTrailerInCompanyWithCarAsyncFunc({ companyId: company.id }), 'params'),
+    postLinkingTrailers.unlinkTrailerFromCar,
 );
 
 module.exports = router;
