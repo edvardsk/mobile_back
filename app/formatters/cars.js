@@ -4,6 +4,7 @@ const { CAR_TYPES_MAP } = require('constants/cars');
 const { SqlArray } = require('constants/instances');
 
 const cols = SQL_TABLES.CARS.COLUMNS;
+const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
 const colsFiles = SQL_TABLES.FILES.COLUMNS;
 
 const formatCarToSave = (id, companyId, body) => {
@@ -61,15 +62,33 @@ const formatCarToEdit = (body) => {
     return car;
 };
 
-const formatRecordForList = car => ({
-    id: car.id,
-    [cols.CAR_MARK]: car[cols.CAR_MARK],
-    [cols.CAR_MODEL]: car[cols.CAR_MODEL],
-    [cols.CAR_TYPE]: car[cols.CAR_TYPE],
-    [cols.CAR_MADE_YEAR_AT]: car[cols.CAR_MADE_YEAR_AT],
-    [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
-    [cols.CREATED_AT]: car[cols.CREATED_AT],
-});
+const formatRecordForList = car => {
+    let result = {
+        id: car.id,
+        [cols.CAR_MARK]: car[cols.CAR_MARK],
+        [cols.CAR_MODEL]: car[cols.CAR_MODEL],
+        [cols.CAR_TYPE]: car[cols.CAR_TYPE],
+        [cols.CAR_MADE_YEAR_AT]: car[cols.CAR_MADE_YEAR_AT],
+        [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
+        [cols.CREATED_AT]: car[cols.CREATED_AT],
+    };
+    if (car[HOMELESS_COLUMNS.TRAILER_ID]) {
+        result = {
+            ...result,
+            [HOMELESS_COLUMNS.TRAILER_ID]: car[HOMELESS_COLUMNS.TRAILER_ID],
+            [colsTrailers.TRAILER_MARK]: car[colsTrailers.TRAILER_MARK],
+            [colsTrailers.TRAILER_MODEL]: car[colsTrailers.TRAILER_MODEL],
+            [colsTrailers.TRAILER_WIDTH]: parseFloat(car[colsTrailers.TRAILER_WIDTH]),
+            [colsTrailers.TRAILER_HEIGHT]: parseFloat(car[colsTrailers.TRAILER_HEIGHT]),
+            [colsTrailers.TRAILER_LENGTH]: parseFloat(car[colsTrailers.TRAILER_LENGTH]),
+            [colsTrailers.TRAILER_WEIGHT]: parseFloat(car[colsTrailers.TRAILER_WEIGHT]),
+            [HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME]: car[HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME],
+            [HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME]: car[HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME],
+            [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: car[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
+        };
+    }
+    return result;
+};
 
 const formatRecordForResponse = car => {
     const result = {

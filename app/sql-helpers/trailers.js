@@ -38,6 +38,14 @@ const updateRecord = (id, data) => squelPostgres
     .returning('*')
     .toString();
 
+const updateRecordByCarId = (carId, data) => squelPostgres
+    .update()
+    .table(table.NAME)
+    .setFields(data)
+    .where(`${cols.CAR_ID} = '${carId}'`)
+    .returning('*')
+    .toString();
+
 const selectRecordById = id => squelPostgres
     .select()
     .from(table.NAME)
@@ -141,6 +149,7 @@ const selectRecordByIdFull = id => squelPostgres
 const selectRecordByIdAndCompanyIdLight = (id, companyId) => squelPostgres
     .select()
     .field('id')
+    .field(cols.CAR_ID)
     .from(table.NAME)
     .where(`id = '${id}'`)
     .where(`${cols.COMPANY_ID} = '${companyId}'`)
@@ -150,6 +159,7 @@ const selectRecordByIdAndCompanyIdLight = (id, companyId) => squelPostgres
 module.exports = {
     insertRecord,
     updateRecord,
+    updateRecordByCarId,
     selectRecordById,
     selectTrailersByCompanyIdPaginationSorting,
     selectCountTrailersByCompanyId,

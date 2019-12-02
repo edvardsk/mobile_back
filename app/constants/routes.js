@@ -51,6 +51,8 @@ const BASES = {
     LANGUAGES: '/languages',
     CURRENCIES: '/currencies',
     TRAILERS: '/trailers',
+    LINK: '/link',
+    UNLINK: '/unlink',
 };
 
 const IDS = {
@@ -284,6 +286,15 @@ const ROUTES = {
             GET_ALL: '',
             GET: IDS.TRAILER_ID,
             DELETE: IDS.TRAILER_ID,
+            PUT: IDS.TRAILER_ID,
+            LINK: {
+                BASE: IDS.TRAILER_ID + BASES.LINK,
+                POST: '',
+            },
+            UNLINK: {
+                BASE: IDS.TRAILER_ID + BASES.UNLINK,
+                POST: '',
+            },
         },
 
     },

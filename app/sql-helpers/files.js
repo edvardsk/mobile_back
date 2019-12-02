@@ -8,11 +8,13 @@ const table = SQL_TABLES.FILES;
 const tableCompaniesFiles = SQL_TABLES.COMPANIES_TO_FILES;
 const tableUsersFiles = SQL_TABLES.USERS_TO_FILES;
 const tableCarsFiles = SQL_TABLES.CARS_TO_FILES;
+const tableTrailersFiles = SQL_TABLES.TRAILERS_TO_FILES;
 
 const cols = table.COLUMNS;
 const colsCompaniesFiles = tableCompaniesFiles.COLUMNS;
 const colsUsersFiles = tableUsersFiles.COLUMNS;
 const colsCarsFiles = tableCarsFiles.COLUMNS;
+const colsTrailersFiles = tableTrailersFiles.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -67,6 +69,15 @@ const selectFilesByCarIdAndLabels = (carId, labels) => squelPostgres
     .left_join(tableCarsFiles.NAME, 'cf', `cf.${colsCarsFiles.FILE_ID} = f.id`)
     .toString();
 
+const selectFilesByTrailerIdAndLabels = (trailerId, labels) => squelPostgres
+    .select()
+    .from(table.NAME, 'f')
+    .field('f.*')
+    .where(`tf.${colsTrailersFiles.TRAILER_ID} = '${trailerId}'`)
+    .where(`f.${cols.LABELS} && ARRAY[${labels.map(label => `'${label}'`).toString()}]`)
+    .left_join(tableTrailersFiles.NAME, 'tf', `tf.${colsTrailersFiles.FILE_ID} = f.id`)
+    .toString();
+
 const selectFilesByUserIdAndLabels = (userId, labels) => squelPostgres
     .select()
     .from(table.NAME, 'f')
@@ -90,6 +101,7 @@ module.exports = {
     selectFilesByCompanyIdAndLabel,
     selectFilesByCompanyIdAndLabels,
     selectFilesByCarIdAndLabels,
+    selectFilesByTrailerIdAndLabels,
     selectFilesByUserIdAndLabels,
     selectFilesByUserId,
 };
