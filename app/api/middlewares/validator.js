@@ -20,6 +20,7 @@ const CurrenciesService = require('services/tables/currencies');
 const EconomicSettingsService = require('services/tables/economic-settings');
 const LanguagesService = require('services/tables/languages');
 const CarsService = require('services/tables/cars');
+const TrailersService = require('services/tables/trailers');
 
 // constants
 const { ERRORS } = require('constants/errors');
@@ -29,6 +30,7 @@ const { HOMELESS_COLUMNS, SQL_TABLES } = require('constants/tables');
 const {
     parseStringToJson,
     parseStringToFloat,
+    parseStringBooleanToBoolean,
     parsePaginationOptions,
     compareYears,
 } = require('helpers/validators/custom');
@@ -179,28 +181,76 @@ ajv.addKeyword('car_state_number_exists', {
     validate: CarsService.checkCarStateNumberExistsOpposite,
 });
 
+ajv.addKeyword('trailer_state_number_exists', {
+    async: true,
+    type: 'string',
+    validate: TrailersService.checkTrailerStateNumberExistsOpposite,
+});
+
 ajv.addKeyword('car_in_company_not_exists', {
     async: true,
     type: 'string',
     validate: CarsService.checkCarInCompanyExist,
 });
 
-ajv.addKeyword('danger_class_without_file_or_extra_file', {
+ajv.addKeyword('trailer_in_company_not_exists', {
+    async: true,
+    type: 'string',
+    validate: TrailersService.checkTrailerInCompanyExists,
+});
+
+ajv.addKeyword('trailer_in_company_without_car_not_exists', {
+    async: true,
+    type: 'string',
+    validate: TrailersService.checkTrailerWithoutCarInCompanyExists,
+});
+
+ajv.addKeyword('trailer_in_company_with_car_not_exists', {
+    async: true,
+    type: 'string',
+    validate: TrailersService.checkTrailerWithCarInCompanyExists,
+});
+
+ajv.addKeyword('car_danger_class_without_file_or_extra_file', {
     async: true,
     type: 'string',
     validate: CarsService.checkIsPassedFileWithDangerClass,
 });
 
-ajv.addKeyword('new_danger_class_without_or_extra_file', {
+ajv.addKeyword('trailer_danger_class_without_file_or_extra_file', {
+    async: true,
+    type: 'string',
+    validate: TrailersService.checkIsPassedFileWithDangerClass,
+});
+
+ajv.addKeyword('new_car_danger_class_without_or_extra_file', {
     async: true,
     type: 'string',
     validate: CarsService.checkIsPassedFileWithNewDangerClass,
+});
+
+ajv.addKeyword('new_trailer_danger_class_without_or_extra_file', {
+    async: true,
+    type: 'string',
+    validate: TrailersService.checkIsPassedFileWithNewDangerClass,
+});
+
+ajv.addKeyword('required_existing_car_in_company_without_trailer', {
+    async: true,
+    type: 'string',
+    validate: CarsService.checkIsCarInCompanyWithoutTrailerExists,
 });
 
 ajv.addKeyword('parse_string_to_json', {
     modifying: true,
     schema: false,
     validate: parseStringToJson,
+});
+
+ajv.addKeyword('parse_string_boolean', {
+    modifying: true,
+    schema: false,
+    validate: parseStringBooleanToBoolean,
 });
 
 ajv.addKeyword('parse_string_to_float', {

@@ -50,6 +50,9 @@ const BASES = {
     CARS: '/cars',
     LANGUAGES: '/languages',
     CURRENCIES: '/currencies',
+    TRAILERS: '/trailers',
+    LINK: '/link',
+    UNLINK: '/unlink',
 };
 
 const IDS = {
@@ -61,6 +64,7 @@ const IDS = {
     COMPANY_ID: '/:companyId',
     CARGO_ID: '/:cargoId',
     CAR_ID: '/:carId',
+    TRAILER_ID: '/:trailerId',
 };
 
 const ROUTES = {
@@ -276,6 +280,21 @@ const ROUTES = {
             GET: IDS.CAR_ID,
             PUT: IDS.CAR_ID,
             DELETE: IDS.CAR_ID,
+        },
+        TRAILERS: {
+            BASE: IDS.ME_OR_ID + BASES.TRAILERS,
+            GET_ALL: '',
+            GET: IDS.TRAILER_ID,
+            DELETE: IDS.TRAILER_ID,
+            PUT: IDS.TRAILER_ID,
+            LINK: {
+                BASE: IDS.TRAILER_ID + BASES.LINK,
+                POST: '',
+            },
+            UNLINK: {
+                BASE: IDS.TRAILER_ID + BASES.UNLINK,
+                POST: '',
+            },
         },
 
     },

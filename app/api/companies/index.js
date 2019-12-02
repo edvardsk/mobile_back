@@ -24,6 +24,11 @@ const getCars = require('./cars/get');
 const putCars = require('./cars/put');
 const deleteCars = require('./cars/delete');
 
+const getTrailers = require('./trailers/get');
+const deleteTrailers = require('./trailers/delete');
+const putTrailers = require('./trailers/put');
+const postLinkingTrailers = require('./trailers/linking/post');
+
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
 const { validate } = require('api/middlewares/validator');
@@ -328,15 +333,23 @@ router.post(
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
     formDataHandler(uploadData),
-    validate(ValidatorSchemes.modifyCreateCarTrailerArrays),
-    validate(ValidatorSchemes.createCarTrailerCommon),
-    validate(ValidatorSchemes.createCarTrailerCommonAsync),
-    validate(ValidatorSchemes.createCarTrailerCommonFiles, ['body', 'files']),
+    validate(ValidatorSchemes.createCarTrailerCondition),
+    validate(ValidatorSchemes.modifyCarTrailerIdentityKeys),
+    validate(ValidatorSchemes.modifyCreateCarArrays),
+    validate(ValidatorSchemes.modifyCreateTrailerArrays),
+    validate(ValidatorSchemes.createCarCommon),
+    validate(ValidatorSchemes.createTrailerCommon),
+    validate(ValidatorSchemes.createCarCommonAsync),
+    validate(ValidatorSchemes.createTrailerCommonAsync),
+    validate(ValidatorSchemes.createCarCommonFiles, ['body', 'files']),
+    validate(ValidatorSchemes.createTrailerCommonFiles, ['body', 'files']),
     validate(ValidatorSchemes.createCarTruck),
     validate(ValidatorSchemes.createCarTruckAsync),
     validate(ValidatorSchemes.createCarTruckFiles, ['body', 'files']),
     validate(ValidatorSchemes.createCarTruckFilesCheckDangerClassAsync, ['body', 'files']),
+    validate(ValidatorSchemes.createTrailerFilesCheckDangerClassAsync, ['body', 'files']),
     validate(ValidatorSchemes.modifyCreateCarFloats),
+    validate(ValidatorSchemes.modifyCreateTrailerFloats),
     postCars.createCar,
 );
 
@@ -390,6 +403,80 @@ router.delete(
     validate(ValidatorSchemes.requiredCarId, 'params'),
     validate(({ company }) => ValidatorSchemes.requiredExistingCarInCompanyAsyncFunc({ companyId: company.id }), 'params'),
     deleteCars.removeCar,
+);
+
+
+// trailers
+router.get(
+    ROUTES.COMPANIES.TRAILERS.BASE + ROUTES.COMPANIES.TRAILERS.GET_ALL,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.basePaginationQuery, 'query'),
+    validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
+    validate(ValidatorSchemes.modifyFilterQuery, 'query'),
+    validate(ValidatorSchemes.trailersFilterQuery, 'query'),
+    injectCompanyData,
+    getTrailers.getListTrailers,
+);
+
+router.get(
+    ROUTES.COMPANIES.TRAILERS.BASE + ROUTES.COMPANIES.TRAILERS.GET,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredTrailerId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingTrailerInCompanyAsyncFunc({ companyId: company.id }), 'params'),
+    getTrailers.getTrailer,
+);
+
+router.delete(
+    ROUTES.COMPANIES.TRAILERS.BASE + ROUTES.COMPANIES.TRAILERS.DELETE,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredTrailerId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingTrailerInCompanyAsyncFunc({ companyId: company.id }), 'params'),
+    deleteTrailers.removeTrailer,
+);
+
+router.put(
+    ROUTES.COMPANIES.TRAILERS.BASE + ROUTES.COMPANIES.TRAILERS.PUT,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredTrailerId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingTrailerInCompanyAsyncFunc({ companyId: company.id }), 'params'),
+    formDataHandler(uploadData),
+    validate(ValidatorSchemes.modifyCreateTrailerArrays),
+    validate(ValidatorSchemes.editTrailer),
+    validate(({ requestParams }) => ValidatorSchemes.editTrailerAsyncFunc({ trailerId: requestParams.trailerId })),
+    validate(ValidatorSchemes.editTrailerFiles, 'files'),
+    validate(({ requestParams }) => ValidatorSchemes.editTrailerFilesCheckDangerClassAsyncFunc({ trailerId: requestParams.trailerId}), ['body', 'files']),
+    validate(ValidatorSchemes.modifyEditCarTruckFloats),
+    putTrailers.editTrailer,
+);
+
+// trailers link/unlink
+router.post(
+    ROUTES.COMPANIES.TRAILERS.BASE + ROUTES.COMPANIES.TRAILERS.LINK.BASE + ROUTES.COMPANIES.TRAILERS.LINK.POST,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredTrailerId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingTrailerInCompanyWithoutCarAsyncFunc({ companyId: company.id }), 'params'),
+    validate(ValidatorSchemes.linkTrailerBody),
+    validate(({ company }) => ValidatorSchemes.linkTrailerBodyAsyncFunc({ companyId: company.id })),
+    postLinkingTrailers.linkTrailerWithCar,
+);
+
+router.post(
+    ROUTES.COMPANIES.TRAILERS.BASE + ROUTES.COMPANIES.TRAILERS.UNLINK.BASE + ROUTES.COMPANIES.TRAILERS.UNLINK.POST,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredTrailerId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingTrailerInCompanyWithCarAsyncFunc({ companyId: company.id }), 'params'),
+    postLinkingTrailers.unlinkTrailerFromCar,
 );
 
 module.exports = router;

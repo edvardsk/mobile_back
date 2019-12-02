@@ -10,6 +10,7 @@ const {
     selectRecordByStateNumberAndActive,
     selectRecordByIdAndCompanyIdLight,
     selectRecordByIdFull,
+    selectRecordByIdAndCompanyIdWithoutTrailer,
 } = require('sql-helpers/cars');
 
 // services
@@ -17,7 +18,7 @@ const DangerClassesService = require('./danger-classes');
 
 // constants
 const { OPERATIONS } = require('constants/postgres');
-const { SQL_TABLES } = require('constants/tables');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { DOCUMENTS } = require('constants/files');
 const { CAR_TYPES_MAP } = require('constants/cars');
 
@@ -50,9 +51,15 @@ const getRecordByIdAndCompanyIdLight = (id, companyId) => oneOrNone(selectRecord
 
 const getRecordFullStrict = id => one(selectRecordByIdFull(id));
 
+const getRecordByIdAndCompanyIdWithoutTrailer = (id, companyId) => oneOrNone(selectRecordByIdAndCompanyIdWithoutTrailer(id, companyId));
+
 const markAsDeleted = id => editRecord(id, {
     [colsCars.DELETED]: true,
 });
+
+const markAsDeletedAsTransaction = id => [updateRecord(id, {
+    [colsCars.DELETED]: true,
+}), OPERATIONS.ONE];
 
 const checkCarStateNumberExistsOpposite = async (meta, stateNumber) => {
     const { carId } = meta;
@@ -66,11 +73,17 @@ const checkCarInCompanyExist = async (meta, id) => {
     return !!car;
 };
 
+const checkIsCarInCompanyWithoutTrailerExists = async (meta, id) => {
+    const { companyId } = meta;
+    const carWithoutTrailer = await getRecordByIdAndCompanyIdWithoutTrailer(id, companyId);
+    return !!carWithoutTrailer;
+};
+
 const checkIsPassedFileWithDangerClass = async (meta, dangerClassId, schema, key, data) => {
     const dangerClassFromDb = await DangerClassesService.getRecordStrict(dangerClassId);
     const dangerClassName = dangerClassFromDb[colsDangerClasses.NAME];
 
-    const dangerClassFile = data[DOCUMENTS.DANGER_CLASS];
+    const dangerClassFile = data[HOMELESS_COLUMNS.CAR_DANGER_CLASS];
 
     return (!isDangerous(dangerClassName) && !dangerClassFile) ||
         (isDangerous(dangerClassName) && dangerClassFile);
@@ -120,9 +133,11 @@ module.exports = {
     getCountCars,
     getRecordFullStrict,
     markAsDeleted,
+    markAsDeletedAsTransaction,
 
     checkCarStateNumberExistsOpposite,
     checkCarInCompanyExist,
+    checkIsCarInCompanyWithoutTrailerExists,
     checkIsPassedFileWithDangerClass,
     checkIsPassedFileWithNewDangerClass,
 };
