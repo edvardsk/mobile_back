@@ -18,11 +18,12 @@ const DangerClassesService = require('./danger-classes');
 // constants
 const { OPERATIONS } = require('constants/postgres');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
+const { DOCUMENTS } = require('constants/files');
 
 // helpers
 const { isDangerous } = require('helpers/danger-classes');
 
-const colsCars = SQL_TABLES.CARS.COLUMNS;
+const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
 const colsDangerClasses = SQL_TABLES.DANGER_CLASSES.COLUMNS;
 
 const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
@@ -49,7 +50,7 @@ const getRecordFullStrict = id => one(selectRecordByIdFull(id));
 const getRecordByIdAndCompanyIdLight = (id, companyId) => oneOrNone(selectRecordByIdAndCompanyIdLight(id, companyId));
 
 const markAsDeleted = id => editRecord(id, {
-    [colsCars.DELETED]: true,
+    [colsTrailers.DELETED]: true,
 });
 
 const checkTrailerStateNumberExistsOpposite = async (meta, stateNumber) => {
@@ -74,6 +75,28 @@ const checkTrailerInCompanyExists = async (meta, id) => {
     return !!trailer;
 };
 
+const checkIsPassedFileWithNewDangerClass = async (meta, newDangerClassId, schema, key, data) => {
+    const { trailerId } = meta;
+    const dangerClassFile = data[DOCUMENTS.DANGER_CLASS];
+
+    const trailer = await getRecordStrict(trailerId);
+    const oldDangerClassId = trailer[colsTrailers.TRAILER_DANGER_CLASS_ID];
+
+    const [oldDangerClass, newDangerClass] = await Promise.all([
+        DangerClassesService.getRecordStrict(oldDangerClassId),
+        DangerClassesService.getRecordStrict(newDangerClassId),
+    ]);
+
+    const olsDangerClassName = oldDangerClass[colsDangerClasses.NAME];
+    const newDangerClassName = newDangerClass[colsDangerClasses.NAME];
+
+    return !(
+        (!isDangerous(olsDangerClassName) && isDangerous(newDangerClassName) && !dangerClassFile) ||
+        (!isDangerous(olsDangerClassName) && !isDangerous(newDangerClassName) && dangerClassFile) ||
+        (isDangerous(olsDangerClassName) && !isDangerous(newDangerClassName) && dangerClassFile)
+    );
+};
+
 module.exports = {
     addRecordAsTransaction,
     editRecordAsTransaction,
@@ -87,4 +110,5 @@ module.exports = {
     checkTrailerStateNumberExistsOpposite,
     checkIsPassedFileWithDangerClass,
     checkTrailerInCompanyExists,
+    checkIsPassedFileWithNewDangerClass,
 };

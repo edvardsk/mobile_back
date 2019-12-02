@@ -284,6 +284,7 @@ const ROUTES = {
             GET_ALL: '',
             GET: IDS.TRAILER_ID,
             DELETE: IDS.TRAILER_ID,
+            PUT: IDS.TRAILER_ID,
         },
 
     },

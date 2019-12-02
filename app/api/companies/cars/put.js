@@ -93,7 +93,7 @@ const editCar = async (req, res, next) => {
 
             const carStateNumberData = {
                 [colsCarsNumbers.CAR_ID]: carId,
-                [colsCarsNumbers.NUMBER]: currentStateNumber,
+                [colsCarsNumbers.NUMBER]: stateNumber,
             };
 
             transactionsList.push(

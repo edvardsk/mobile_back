@@ -26,6 +26,7 @@ const deleteCars = require('./cars/delete');
 
 const getTrailers = require('./trailers/get');
 const deleteTrailers = require('./trailers/delete');
+const putTrailers = require('./trailers/put');
 
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
@@ -435,6 +436,23 @@ router.delete(
     validate(ValidatorSchemes.requiredTrailerId, 'params'),
     validate(({ company }) => ValidatorSchemes.requiredExistingTrailerInCompanyAsyncFunc({ companyId: company.id }), 'params'),
     deleteTrailers.removeTrailer,
+);
+
+router.put(
+    ROUTES.COMPANIES.TRAILERS.BASE + ROUTES.COMPANIES.TRAILERS.PUT,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredTrailerId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingTrailerInCompanyAsyncFunc({ companyId: company.id }), 'params'),
+    formDataHandler(uploadData),
+    validate(ValidatorSchemes.modifyCreateTrailerArrays),
+    validate(ValidatorSchemes.editTrailer),
+    validate(({ requestParams }) => ValidatorSchemes.editTrailerAsyncFunc({ trailerId: requestParams.trailerId })),
+    validate(ValidatorSchemes.editTrailerFiles, 'files'),
+    validate(({ requestParams }) => ValidatorSchemes.editTrailerFilesCheckDangerClassAsyncFunc({ trailerId: requestParams.trailerId}), ['body', 'files']),
+    validate(ValidatorSchemes.modifyEditCarTruckFloats),
+    putTrailers.editTrailer,
 );
 
 module.exports = router;

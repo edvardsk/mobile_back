@@ -8,6 +8,7 @@ const {
     selectFilesByCompanyIdAndLabel,
     selectFilesByCompanyIdAndLabels,
     selectFilesByCarIdAndLabels,
+    selectFilesByTrailerIdAndLabels,
     selectFilesByUserIdAndLabels,
     selectFilesByUserId,
 
@@ -38,6 +39,8 @@ const getFilesByCompanyIdAndFileGroup = (companyId, fileGroup) => manyOrNone(sel
 const getFilesByCompanyIdAndLabels = (companyId, labels) => manyOrNone(selectFilesByCompanyIdAndLabels(companyId, labels));
 
 const getFilesByCarIdAndLabels = (carId, labels) => manyOrNone(selectFilesByCarIdAndLabels(carId, labels));
+
+const getFilesByTrailerIdAndLabels = (trailerId, labels) => manyOrNone(selectFilesByTrailerIdAndLabels(trailerId, labels));
 
 const getFilesByUserIdAndLabels = (userId, labels) => manyOrNone(selectFilesByUserIdAndLabels(userId, labels));
 
@@ -72,6 +75,7 @@ module.exports = {
     getFilesByCompanyIdAndFileGroup,
     getFilesByCompanyIdAndLabels,
     getFilesByCarIdAndLabels,
+    getFilesByTrailerIdAndLabels,
     getFilesByUserIdAndLabels,
     getFilesByUserId,
 

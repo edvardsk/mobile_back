@@ -407,6 +407,57 @@ const editCarCommon = {
     additionalProperties: false,
 };
 
+const editTrailer = {
+    properties: {
+        ...TRAILER_PROPS,
+    },
+    required:[
+        colsTrailers.TRAILER_MARK,
+        colsTrailers.TRAILER_MODEL,
+        colsTrailers.TRAILER_MADE_YEAR_AT,
+        HOMELESS_COLUMNS.TRAILER_STATE_NUMBER,
+        colsTrailers.TRAILER_LOADING_METHODS,
+        colsTrailers.TRAILER_VEHICLE_TYPE_ID,
+        colsTrailers.TRAILER_WEIGHT,
+        colsTrailers.TRAILER_HEIGHT,
+        colsTrailers.TRAILER_LENGTH,
+        colsTrailers.TRAILER_WIDTH,
+        colsTrailers.TRAILER_DANGER_CLASS_ID,
+    ],
+    additionalProperties: false,
+};
+
+const editTrailerAsyncFunc = ({ trailerId }) => ({
+    $async: true,
+    properties: {
+        [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: {
+            trailer_state_number_exists: {
+                trailerId,
+            },
+        }
+    },
+});
+
+const editTrailerFiles = {
+    properties: {
+        [DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT]: fileFormat,
+        [DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION]: fileFormat,
+        [DOCUMENTS.DANGER_CLASS]: fileFormat,
+    },
+    additionalProperties: false,
+};
+
+const editTrailerFilesCheckDangerClassAsyncFunc = ({ trailerId }) => ({
+    $async: true,
+    properties: {
+        [colsTrailers.TRAILER_DANGER_CLASS_ID]: {
+            new_trailer_danger_class_without_or_extra_file: {
+                trailerId,
+            },
+        },
+    },
+});
+
 const createCarCommonAsync = {
     $async: true,
     if: {
@@ -725,7 +776,7 @@ const editCarTruckFilesCheckDangerClassAsyncFunc = ({ carId }) => ({
     then: {
         properties: {
             [colsCars.CAR_DANGER_CLASS_ID]: {
-                new_danger_class_without_or_extra_file: {
+                new_car_danger_class_without_or_extra_file: {
                     carId,
                 },
             },
@@ -775,6 +826,12 @@ module.exports = {
     editCarCommon,
     editCarCommonAsyncFunc,
     editCarCommonFiles,
+
+    editTrailer,
+    editTrailerAsyncFunc,
+    editTrailerFiles,
+    editTrailerFilesCheckDangerClassAsyncFunc,
+
     createCarTruck,
     createCarTruckAsync,
     createCarTruckFiles,

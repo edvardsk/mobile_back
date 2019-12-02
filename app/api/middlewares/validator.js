@@ -211,10 +211,16 @@ ajv.addKeyword('trailer_danger_class_without_file_or_extra_file', {
     validate: TrailersService.checkIsPassedFileWithDangerClass,
 });
 
-ajv.addKeyword('new_danger_class_without_or_extra_file', {
+ajv.addKeyword('new_car_danger_class_without_or_extra_file', {
     async: true,
     type: 'string',
     validate: CarsService.checkIsPassedFileWithNewDangerClass,
+});
+
+ajv.addKeyword('new_trailer_danger_class_without_or_extra_file', {
+    async: true,
+    type: 'string',
+    validate: TrailersService.checkIsPassedFileWithNewDangerClass,
 });
 
 ajv.addKeyword('parse_string_to_json', {
