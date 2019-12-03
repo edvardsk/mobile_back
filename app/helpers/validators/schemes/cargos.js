@@ -261,6 +261,7 @@ const searchCargoQuery = {
         HOMELESS_COLUMNS.DOWNLOADING_POINT,
         HOMELESS_COLUMNS.UPLOADING_DATE,
         HOMELESS_COLUMNS.DOWNLOADING_DATE,
+        HOMELESS_COLUMNS.SEARCH_RADIUS,
     ],
     additionalProperties: false,
 };

@@ -30,6 +30,7 @@ const searchCargo = async (req, res, next) => {
         const searchLanguageId = (userLanguage && userLanguage.id) || defaultLanguage.id;
         const uploadingPoint = query[HOMELESS_COLUMNS.UPLOADING_POINT];
         const downloadingPoint = query[HOMELESS_COLUMNS.DOWNLOADING_POINT];
+        const searchRadius = query[HOMELESS_COLUMNS.SEARCH_RADIUS];
 
         const upGeo = new Geo(uploadingPoint[HOMELESS_COLUMNS.LONGITUDE], uploadingPoint[HOMELESS_COLUMNS.LATITUDE]);
         const downGeo = new Geo(downloadingPoint[HOMELESS_COLUMNS.LONGITUDE], downloadingPoint[HOMELESS_COLUMNS.LATITUDE]);
@@ -52,7 +53,7 @@ const searchCargo = async (req, res, next) => {
             downloadingDate: query[HOMELESS_COLUMNS.DOWNLOADING_DATE],
         };
 
-        const cargos = await CargosServices.getRecordsForSearch(coordinates, dates, searchLanguageId);
+        const cargos = await CargosServices.getRecordsForSearch(coordinates, dates, searchRadius, searchLanguageId);
 
         return success(res, { cargos: formatRecordForSearchResponse(cargos, uploadingPoint, downloadingPoint, searchLanguageId) });
     } catch (error) {

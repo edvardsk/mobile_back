@@ -49,8 +49,8 @@ const markAsDeleted = id => editRecord(id, {
     [cols.DELETED]: true,
 });
 
-const getRecordsForSearch = (coordinates, dates,languageId) => {
-    return manyOrNone(selectRecordsForSearch(coordinates, dates, languageId));
+const getRecordsForSearch = (coordinates, dates, searchRadius, languageId) => {
+    return manyOrNone(selectRecordsForSearch(coordinates, dates, searchRadius, languageId));
 };
 
 const checkCargoInCompanyExists = async (meta, cargoId) => {

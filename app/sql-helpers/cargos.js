@@ -6,6 +6,8 @@ const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SqlArray, Geo, GeoLine } = require('constants/instances');
 const { CARGO_STATUSES_MAP } = require('constants/cargo-statuses');
 
+const CARGO_SEARCH_LINE_RADIUS_KM = +process.env.CARGO_SEARCH_LINE_RADIUS_KM || 50;
+
 const squelPostgres = squel.useFlavour('postgres');
 
 const table = SQL_TABLES.CARGOS;
@@ -219,7 +221,7 @@ const setCargosFilter = (expression, filteringObject) => {
     return expression;
 };
 
-const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, downloadingDate }, languageId, filter = {}) => {
+const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, downloadingDate }, searchRadius, languageId, filter = {}) => {
     let expression = squelPostgres
         .select()
         .from(table.NAME, 'c')
@@ -247,9 +249,9 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
                 .where(
                     squel
                         .expr()
-                        .and(`ST_DWithin(ST_Buffer(${upGeo}, 300000, 50), cp.${colsCargoPoints.COORDINATES}, 0)`)
-                        .or(`ST_DWithin(ST_Buffer(${downGeo}, 300000, 50), cp.${colsCargoPoints.COORDINATES}, 0)`)
-                        .or(`ST_DWithin(ST_Buffer(${geoLine}, 50000, 'endcap=square'), cp.${colsCargoPoints.COORDINATES}, 0)`)
+                        .and(`ST_DWithin(ST_Buffer(${upGeo}, ${searchRadius * 1000}, 50), cp.${colsCargoPoints.COORDINATES}, 0)`)
+                        .or(`ST_DWithin(ST_Buffer(${downGeo}, ${searchRadius * 1000}, 50), cp.${colsCargoPoints.COORDINATES}, 0)`)
+                        .or(`ST_DWithin(ST_Buffer(${geoLine}, ${CARGO_SEARCH_LINE_RADIUS_KM * 1000}, 'endcap=square'), cp.${colsCargoPoints.COORDINATES}, 0)`)
                 )
                 .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
                 .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
@@ -276,9 +278,9 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
                 .where(
                     squel
                         .expr()
-                        .and(`ST_DWithin(ST_Buffer(${upGeo}, 300000, 50), cp.${colsCargoPoints.COORDINATES}, 0)`)
-                        .or(`ST_DWithin(ST_Buffer(${downGeo}, 300000, 50), cp.${colsCargoPoints.COORDINATES}, 0)`)
-                        .or(`ST_DWithin(ST_Buffer(${geoLine}, 50000, 'endcap=square'), cp.${colsCargoPoints.COORDINATES}, 0)`)
+                        .and(`ST_DWithin(ST_Buffer(${upGeo}, ${searchRadius * 1000}, 50), cp.${colsCargoPoints.COORDINATES}, 0)`)
+                        .or(`ST_DWithin(ST_Buffer(${downGeo}, ${searchRadius * 1000}, 50), cp.${colsCargoPoints.COORDINATES}, 0)`)
+                        .or(`ST_DWithin(ST_Buffer(${geoLine}, ${CARGO_SEARCH_LINE_RADIUS_KM * 1000}, 'endcap=square'), cp.${colsCargoPoints.COORDINATES}, 0)`)
                 )
                 .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
                 .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
