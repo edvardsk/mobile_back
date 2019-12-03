@@ -59,7 +59,7 @@ const selectCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortCo
         .field(`t.${colsTrailers.TRAILER_WIDTH}`, colsTrailers.TRAILER_WIDTH)
         .field(`t.${colsTrailers.TRAILER_HEIGHT}`, colsTrailers.TRAILER_HEIGHT)
         .field(`t.${colsTrailers.TRAILER_LENGTH}`, colsTrailers.TRAILER_LENGTH)
-        .field(`t.${colsTrailers.TRAILER_WEIGHT}`, colsTrailers.TRAILER_WEIGHT)
+        .field(`t.${colsTrailers.TRAILER_CARRYING_CAPACITY}`, colsTrailers.TRAILER_CARRYING_CAPACITY)
         .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME)
         .field(`vt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME)
         .field(`tsn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
