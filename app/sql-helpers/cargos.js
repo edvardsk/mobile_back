@@ -71,6 +71,7 @@ const selectRecordById = id => squelPostgres
     .from(table.NAME, 'c')
     .where(`c.id = '${id}'`)
     .where(`c.${cols.DELETED} = 'f'`)
+    .where(`c.${cols.FREEZED_AFTER} > now()`)
     .left_join(tableCargoStatuses.NAME, 'cs', `cs.id = c.${cols.STATUS_ID}`)
     .toString();
 
@@ -118,6 +119,7 @@ const selectRecordByWithCoordinatesId = (id, userLanguageId) => squelPostgres
     .from(table.NAME, 'c')
     .where(`c.id = '${id}'`)
     .where(`c.${cols.DELETED} = 'f'`)
+    .where(`c.${cols.FREEZED_AFTER} > now()`)
     .left_join(tableCargoStatuses.NAME, 'cs', `cs.id = c.${cols.STATUS_ID}`)
     .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.DANGER_CLASS_ID}`)
     .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
@@ -128,6 +130,7 @@ const selectRecordByIdLight = id => squelPostgres
     .from(table.NAME)
     .where(`id = '${id}'`)
     .where(`${cols.DELETED} = 'f'`)
+    .where(`${cols.FREEZED_AFTER} > now()`)
     .toString();
 
 const selectRecordsByCompanyId = companyId => squelPostgres
@@ -135,6 +138,7 @@ const selectRecordsByCompanyId = companyId => squelPostgres
     .from(table.NAME)
     .where(`${cols.COMPANY_ID} = '${companyId}'`)
     .where(`${cols.DELETED} = 'f'`)
+    .where(`${cols.FREEZED_AFTER} > now()`)
     .toString();
 
 const selectCargosByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter, userLanguageId) => {
@@ -180,7 +184,8 @@ const selectCargosByCompanyIdPaginationSorting = (companyId, limit, offset, sort
         .field(`vc.${colsVehicleClasses.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
         .from(table.NAME, 'c')
         .where(`c.${cols.COMPANY_ID} = '${companyId}'`)
-        .where(`c.${cols.DELETED} = 'f'`);
+        .where(`c.${cols.DELETED} = 'f'`)
+        .where(`c.${cols.FREEZED_AFTER} > now()`);
 
     expression = setCargosFilter(expression, filter);
     return expression
@@ -198,7 +203,8 @@ const selectCountCargosByCompanyId = (companyId, filter) => {
         .field('COUNT(c.id)')
         .from(table.NAME, 'c')
         .where(`c.${cols.COMPANY_ID} = '${companyId}'`)
-        .where(`c.${cols.DELETED} = 'f'`);
+        .where(`c.${cols.DELETED} = 'f'`)
+        .where(`c.${cols.FREEZED_AFTER} > now()`);
 
     expression = setCargosFilter(expression, filter);
     return expression
@@ -301,6 +307,7 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
         .where(`c.${cols.UPLOADING_DATE_TO} >= '${uploadingDate}'`)
         .where(`c.${cols.DOWNLOADING_DATE_FROM} <= '${downloadingDate}'`)
         .where(`c.${cols.DOWNLOADING_DATE_TO} >= '${downloadingDate}'`)
+        .where(`c.${cols.FREEZED_AFTER} > now()`)
         .where(`c.${cols.DELETED} = 'f'`);
 
     expression = setCargosSearchFilter(expression, filter);
@@ -312,12 +319,19 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
 
 const setCargosSearchFilter = (expression, filteringObject) => {
     const filteringObjectSQLExpressions = [
+        [cols.GROSS_WEIGHT, `c.${cols.GROSS_WEIGHT} <= ${filteringObject[cols.GROSS_WEIGHT]}`],
+        [cols.WIDTH, `c.${cols.WIDTH} <= ${filteringObject[cols.WIDTH]}`],
+        [cols.HEIGHT, `c.${cols.HEIGHT} <= ${filteringObject[cols.HEIGHT]}`],
+        [cols.LENGTH, `c.${cols.LENGTH} <= ${filteringObject[cols.LENGTH]}`],
+        [cols.LOADING_TYPE, `c.${cols.LOADING_TYPE} = ${filteringObject[cols.LOADING_TYPE]}`],
+        [cols.VEHICLE_TYPE_ID, `c.${cols.VEHICLE_TYPE_ID} = '${filteringObject[cols.VEHICLE_TYPE_ID]}'`],
+        [cols.DANGER_CLASS_ID, `c.${cols.DANGER_CLASS_ID} = '${filteringObject[cols.DANGER_CLASS_ID]}'`],
+        [cols.LOADING_METHODS, `c.${cols.LOADING_METHODS} @> '{${filteringObject[cols.LOADING_METHODS]}}'`],
+        [cols.GUARANTEES, `c.${cols.GUARANTEES} @> '{${filteringObject[cols.GUARANTEES]}}'`],
     ];
 
-    for (let [key, exp, values] of filteringObjectSQLExpressions) {
-        if (Array.isArray(get(filteringObject, key))) {
-            expression = expression.where(exp, values);
-        } else if (get(filteringObject, key) !== undefined) {
+    for (let [key, exp] of filteringObjectSQLExpressions) {
+        if (get(filteringObject, key) !== undefined) {
             expression = expression.where(exp);
         }
     }

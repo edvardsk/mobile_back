@@ -53,7 +53,7 @@ const searchCargo = async (req, res, next) => {
             downloadingDate: query[HOMELESS_COLUMNS.DOWNLOADING_DATE],
         };
 
-        const cargos = await CargosServices.getRecordsForSearch(coordinates, dates, searchRadius, searchLanguageId);
+        const cargos = await CargosServices.getRecordsForSearch(coordinates, dates, searchRadius, searchLanguageId, query);
 
         return success(res, { cargos: formatRecordForSearchResponse(cargos, uploadingPoint, downloadingPoint, searchLanguageId) });
     } catch (error) {
