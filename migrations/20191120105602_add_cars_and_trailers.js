@@ -13,7 +13,7 @@ exports.up = function(knex) {
         table.decimal('car_width', 10, 2);
         table.decimal('car_height', 10, 2);
         table.decimal('car_length', 10, 2);
-        table.decimal('car_carrying_capacity', 10, 2);
+        table.decimal('car_weight', 10, 2);
         table.boolean('deleted').notNull().defaultTo(false);
         table.timestamp('created_at').defaultTo(knex.fn.now());
     })
@@ -30,7 +30,7 @@ exports.up = function(knex) {
                 table.decimal('trailer_width', 10, 2);
                 table.decimal('trailer_height', 10, 2);
                 table.decimal('trailer_length', 10, 2);
-                table.decimal('trailer_carrying_capacity', 10, 2);
+                table.decimal('trailer_weight', 10, 2);
                 table.timestamp('created_at').defaultTo(knex.fn.now());
                 table.boolean('deleted').notNull().defaultTo(false);
             });
