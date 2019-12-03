@@ -249,9 +249,9 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
                 .where(
                     squel
                         .expr()
-                        .and(`ST_DWithin(ST_Buffer(${upGeo}, ${searchRadius * 1000}, 50), cp.${colsCargoPoints.COORDINATES}, 0)`)
-                        .or(`ST_DWithin(ST_Buffer(${downGeo}, ${searchRadius * 1000}, 50), cp.${colsCargoPoints.COORDINATES}, 0)`)
-                        .or(`ST_DWithin(ST_Buffer(${geoLine}, ${CARGO_SEARCH_LINE_RADIUS_KM * 1000}, 'endcap=square'), cp.${colsCargoPoints.COORDINATES}, 0)`)
+                        .and(`ST_Distance(${upGeo}, cp.${colsCargoPoints.COORDINATES}) <= ${searchRadius * 1000}`)
+                        .or(`ST_Distance(${downGeo}, cp.${colsCargoPoints.COORDINATES}) <= ${searchRadius * 1000}`)
+                        .or(`ST_DWithin(ST_Buffer(${geoLine}, ${CARGO_SEARCH_LINE_RADIUS_KM * 1000}), cp.${colsCargoPoints.COORDINATES}, 0)`)
                 )
                 .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
                 .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
@@ -278,9 +278,9 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
                 .where(
                     squel
                         .expr()
-                        .and(`ST_DWithin(ST_Buffer(${upGeo}, ${searchRadius * 1000}, 50), cp.${colsCargoPoints.COORDINATES}, 0)`)
-                        .or(`ST_DWithin(ST_Buffer(${downGeo}, ${searchRadius * 1000}, 50), cp.${colsCargoPoints.COORDINATES}, 0)`)
-                        .or(`ST_DWithin(ST_Buffer(${geoLine}, ${CARGO_SEARCH_LINE_RADIUS_KM * 1000}, 'endcap=square'), cp.${colsCargoPoints.COORDINATES}, 0)`)
+                        .and(`ST_Distance(${upGeo}, cp.${colsCargoPoints.COORDINATES}) <= ${searchRadius * 1000}`)
+                        .or(`ST_Distance(${downGeo}, cp.${colsCargoPoints.COORDINATES}) <= ${searchRadius * 1000}`)
+                        .or(`ST_DWithin(ST_Buffer(${geoLine}, ${CARGO_SEARCH_LINE_RADIUS_KM * 1000}), cp.${colsCargoPoints.COORDINATES}, 0)`)
                 )
                 .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
                 .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
