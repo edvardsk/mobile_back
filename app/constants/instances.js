@@ -12,6 +12,17 @@ function Geo(longitude, latitude) {
     };
 }
 
+function GeoLine(longitudeA, latitudeA, longitudeB, latitudeB) {
+    this.longitudeA = parseFloat(parseFloat(longitudeA).toFixed(6));
+    this.latitudeA = parseFloat(parseFloat(latitudeA).toFixed(6));
+
+    this.longitudeB = parseFloat(parseFloat(longitudeB).toFixed(6));
+    this.latitudeB = parseFloat(parseFloat(latitudeB).toFixed(6));
+    this.toString = function () {
+        return `ST_GeographyFromText('LINESTRING(${this.longitudeA} ${this.latitudeA}, ${this.longitudeB} ${this.latitudeB})')`;
+    };
+}
+
 function SqlArray(data) {
     this.data = [...data];
     this.toString = function () {
@@ -21,5 +32,6 @@ function SqlArray(data) {
 
 module.exports = {
     Geo,
+    GeoLine,
     SqlArray,
 };

@@ -30,6 +30,7 @@ const { HOMELESS_COLUMNS, SQL_TABLES } = require('constants/tables');
 const {
     parseStringToJson,
     parseStringToFloat,
+    parseStringToInt,
     parseStringBooleanToBoolean,
     parsePaginationOptions,
     compareYears,
@@ -259,6 +260,12 @@ ajv.addKeyword('parse_string_to_float', {
     validate: parseStringToFloat,
 });
 
+ajv.addKeyword('parse_string_to_int', {
+    modifying: true,
+    schema: false,
+    validate: parseStringToInt,
+});
+
 ajv.addKeyword('parse_pagination_options', {
     modifying: true,
     schema: false,
@@ -292,6 +299,18 @@ ajv.addFormat('price', {
             const fraction = splitArray.shift();
             return int.toString().length < 14 && fraction.toString().length < 3;
         } else {
+            return false;
+        }
+    },
+});
+
+ajv.addFormat('json', {
+    type: 'string',
+    validate: (string) => {
+        try {
+            JSON.parse(string);
+            return true;
+        } catch (error) {
             return false;
         }
     },

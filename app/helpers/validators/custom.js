@@ -26,6 +26,18 @@ const parseStringToFloat = (data, dataPath, parentData, parentDataProperty) => {
     }
 };
 
+const parseStringToInt = (data, dataPath, parentData, parentDataProperty) => {
+    try {
+        const value = parentData[parentDataProperty];
+        if (value) {
+            parentData[parentDataProperty] = parseInt(value);
+        }
+        return true;
+    } catch (error) {
+        return false;
+    }
+};
+
 const parseStringBooleanToBoolean = (data, dataPath, parentData, parentDataProperty) => {
     try {
         if (data === STRING_BOOLEANS_MAP.TRUE) {
@@ -69,6 +81,7 @@ const compareYears = (value1, value2) => {
 module.exports = {
     parseStringToJson,
     parseStringToFloat,
+    parseStringToInt,
     parseStringBooleanToBoolean,
     parsePaginationOptions,
     compareYears,

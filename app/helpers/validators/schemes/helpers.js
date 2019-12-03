@@ -55,6 +55,22 @@ const coordinatesFormat = {
     additionalProperties: false,
 };
 
+const coordinatesFormatWithoutName = {
+    type: 'object',
+    properties: {
+        [HOMELESS_COLUMNS.LATITUDE]: {
+            type: 'string',
+            pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
+        },
+        [HOMELESS_COLUMNS.LONGITUDE]: {
+            type: 'string',
+            pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
+        },
+    },
+    required: [HOMELESS_COLUMNS.LATITUDE, HOMELESS_COLUMNS.LONGITUDE],
+    additionalProperties: false,
+};
+
 const otherOrganizations = {
     type: 'array',
     items: [
@@ -82,4 +98,5 @@ module.exports = {
     fileFormat,
     coordinatesFormat,
     otherOrganizations,
+    coordinatesFormatWithoutName,
 };

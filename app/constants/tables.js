@@ -460,6 +460,13 @@ const HOMELESS_COLUMNS = {
     TRAILER_ID: 'trailer_id',
     TRAILER_DANGER_CLASS_NAME: 'trailer_danger_class_name',
     TRAILER_VEHICLE_TYPE_NAME: 'trailer_vehicle_type_name',
+    UPLOADING_POINT: 'uploading_point',
+    DOWNLOADING_POINT: 'downloading_point',
+    UPLOADING_DATE: 'uploading_date',
+    DOWNLOADING_DATE: 'downloading_date',
+    SEARCH_RADIUS: 'search_radius',
+    ALL_UPLOADING_POINTS: 'all_uploading_points',
+    ALL_DOWNLOADING_POINTS: 'all_downloading_points',
 };
 
 module.exports = {

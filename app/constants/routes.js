@@ -53,6 +53,7 @@ const BASES = {
     TRAILERS: '/trailers',
     LINK: '/link',
     UNLINK: '/unlink',
+    SEARCH: '/search',
 };
 
 const IDS = {
@@ -336,6 +337,13 @@ const ROUTES = {
             },
         },
     },
+    SEARCH: {
+        BASE: BASES.SEARCH,
+        CARGOS: {
+            BASE: BASES.CARGOS,
+            GET: '',
+        },
+    },
 };
 
 const ALLOWED_ROUTES = {
@@ -345,6 +353,8 @@ const ALLOWED_ROUTES = {
         API_PREFIX + ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.LANGUAGES.BASE + ROUTES.AUTH.REGISTRATION.LANGUAGES.GET_ALL,
 
         API_PREFIX + ROUTES.OTHERS.BASE + ROUTES.OTHERS.CURRENCIES.BASE + ROUTES.OTHERS.CURRENCIES.GET_ALL,
+
+        API_PREFIX + ROUTES.SEARCH.BASE + ROUTES.SEARCH.CARGOS.BASE + ROUTES.SEARCH.CARGOS.GET,
     ]),
     POST: new Set([
         API_PREFIX + ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.POST,
