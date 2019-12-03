@@ -233,6 +233,8 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
         .from(table.NAME, 'c')
         .field('c.*')
         .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
+        .field(`vc.${colsVehicleClasses.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
+        .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
         .field(`ARRAY(${
             squelPostgres
                 .select()
@@ -314,6 +316,8 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
     return expression
         .left_join(tableCargoStatuses.NAME, 'cs', `cs.id = c.${cols.STATUS_ID}`)
         .left_join(tableCargoPoints.NAME, 'cp', `cp.${colsCargoPoints.CARGO_ID} = c.${cols.STATUS_ID}`)
+        .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
+        .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.DANGER_CLASS_ID}`)
         .toString();
 };
 

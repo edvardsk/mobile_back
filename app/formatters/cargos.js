@@ -1,5 +1,6 @@
 const moment = require('moment');
 const { groupBy } = require('lodash');
+const geolib = require('geolib');
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
@@ -47,6 +48,7 @@ const formatRecordForList = (cargo, userLanguageId) => {
         [cols.DESCRIPTION]: cargo[cols.DESCRIPTION],
         [HOMELESS_COLUMNS.STATUS]: cargo[HOMELESS_COLUMNS.STATUS],
         [HOMELESS_COLUMNS.VEHICLE_TYPE_NAME]: cargo[HOMELESS_COLUMNS.VEHICLE_TYPE_NAME],
+        [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: cargo[HOMELESS_COLUMNS.DANGER_CLASS_NAME],
     };
 
     const [uploadingPoints, downloadingPoints] = formatGeoPoints(cargo, userLanguageId);
@@ -168,9 +170,9 @@ const formatRecordForSearchResponse = (cargos, uploadingPoint, downloadingPoint,
         .filter(cargo => {
             const upPoints = cargo[HOMELESS_COLUMNS.UPLOADING_POINTS];
             const downPoints = cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS];
-            return upPoints.every(up => downPoints.every(down => {
-                return calculateAngleBetweenVectors(up, down, uploadingPoint, downloadingPoint) <= 90;
-            }));
+            const upPointCenter = geolib.getCenter(upPoints);
+            const downPointCenter = geolib.getCenter(downPoints);
+            return calculateAngleBetweenVectors(upPointCenter, downPointCenter, uploadingPoint, downloadingPoint) <= 90;
         });
 };
 
