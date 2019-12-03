@@ -159,10 +159,49 @@ const uniqueByLanguageId = (list, languageId) => {
     });
 };
 
+const formatRecordForSearchResponse = (cargos, uploadingPoint, downloadingPoint, searchLanguageId) => {
+    return cargos
+        .filter(cargo => cargo[HOMELESS_COLUMNS.UPLOADING_POINTS].length === cargo[HOMELESS_COLUMNS.ALL_UPLOADING_POINTS].length &&
+            cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS].length === cargo[HOMELESS_COLUMNS.ALL_DOWNLOADING_POINTS].length
+        )
+        .map(cargo => formatRecordForList(cargo, searchLanguageId))
+        .filter(cargo => {
+            const upPoints = cargo[HOMELESS_COLUMNS.UPLOADING_POINTS];
+            const downPoints = cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS];
+            return upPoints.every(up => downPoints.every(down => {
+                return calculateAngleBetweenVectors(up, down, uploadingPoint, downloadingPoint) <= 90;
+            }));
+        });
+};
+
+const calculateAngleBetweenVectors = (upPoint, downPoint, initUpPoint, initDownPoint) => {
+    const a1 = parseFloat(upPoint[HOMELESS_COLUMNS.LONGITUDE]);
+    const a2 = parseFloat(upPoint[HOMELESS_COLUMNS.LATITUDE]);
+
+    const b1 = parseFloat(downPoint[HOMELESS_COLUMNS.LONGITUDE]);
+    const b2 = parseFloat(downPoint[HOMELESS_COLUMNS.LATITUDE]);
+
+    const c1 = parseFloat(initUpPoint[HOMELESS_COLUMNS.LONGITUDE]);
+    const c2 = parseFloat(initUpPoint[HOMELESS_COLUMNS.LATITUDE]);
+
+    const d1 = parseFloat(initDownPoint[HOMELESS_COLUMNS.LONGITUDE]);
+    const d2 = parseFloat(initDownPoint[HOMELESS_COLUMNS.LATITUDE]);
+
+    const ab1 = b1 - a1;
+    const ab2 = b2 - a2;
+
+    const cd1 = d1 - c1;
+    const cd2 = d2 - c2;
+
+    const cos = (ab1 * cd1 + ab2 * cd2) / ((Math.sqrt(ab1 ** 2 + ab2 ** 2)) * (Math.sqrt(cd1 ** 2 + cd2 ** 2)));
+    return Math.acos(cos) * (180 / Math.PI);
+};
+
 module.exports = {
     formatRecordToSave,
     formatRecordToEdit,
     formatRecordForList,
     formatRecordForResponse,
     formatCargoData,
+    formatRecordForSearchResponse,
 };

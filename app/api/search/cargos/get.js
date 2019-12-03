@@ -10,7 +10,7 @@ const { LANGUAGE_CODES_MAP } = require('constants/languages');
 const { Geo, GeoLine } = require('constants/instances');
 
 // formatters
-const { formatRecordForList } = require('formatters/cargos');
+const { formatRecordForSearchResponse } = require('formatters/cargos');
 
 const searchCargo = async (req, res, next) => {
     try {
@@ -31,10 +31,15 @@ const searchCargo = async (req, res, next) => {
         const uploadingPoint = query[HOMELESS_COLUMNS.UPLOADING_POINT];
         const downloadingPoint = query[HOMELESS_COLUMNS.DOWNLOADING_POINT];
 
-        const upGeo = new Geo(uploadingPoint.longitude, uploadingPoint.latitude);
-        const downGeo = new Geo(downloadingPoint.longitude, downloadingPoint.latitude);
+        const upGeo = new Geo(uploadingPoint[HOMELESS_COLUMNS.LONGITUDE], uploadingPoint[HOMELESS_COLUMNS.LATITUDE]);
+        const downGeo = new Geo(downloadingPoint[HOMELESS_COLUMNS.LONGITUDE], downloadingPoint[HOMELESS_COLUMNS.LATITUDE]);
 
-        const geoLine = new GeoLine(uploadingPoint.longitude, uploadingPoint.latitude, downloadingPoint.longitude, downloadingPoint.latitude);
+        const geoLine = new GeoLine(
+            uploadingPoint[HOMELESS_COLUMNS.LONGITUDE],
+            uploadingPoint[HOMELESS_COLUMNS.LATITUDE],
+            downloadingPoint[HOMELESS_COLUMNS.LONGITUDE],
+            downloadingPoint[HOMELESS_COLUMNS.LATITUDE]
+        );
 
         const coordinates = {
             upGeo,
@@ -48,13 +53,8 @@ const searchCargo = async (req, res, next) => {
         };
 
         const cargos = await CargosServices.getRecordsForSearch(coordinates, dates, searchLanguageId);
-        const filtered = cargos
-            .filter(cargo => cargo[HOMELESS_COLUMNS.UPLOADING_POINTS].length === cargo[HOMELESS_COLUMNS.ALL_UPLOADING_POINTS].length &&
-                cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS].length === cargo[HOMELESS_COLUMNS.ALL_DOWNLOADING_POINTS].length
-            )
-            .map(cargo => formatRecordForList(cargo, searchLanguageId));
 
-        return success(res, { cargos: filtered });
+        return success(res, { cargos: formatRecordForSearchResponse(cargos, uploadingPoint, downloadingPoint, searchLanguageId) });
     } catch (error) {
         next(error);
     }
