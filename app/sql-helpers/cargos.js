@@ -356,6 +356,10 @@ const selectAllNewRecordsForSearch = languageId => squelPostgres
     .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
     .field(`vc.${colsVehicleClasses.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
     .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
+    .field(`json_build_object(
+        '${colsEconomicSettings.PERCENT_FROM_TRANSPORTER}', ${colsEconomicSettings.PERCENT_FROM_TRANSPORTER},
+        '${colsEconomicSettings.PERCENT_FROM_HOLDER}', ${colsEconomicSettings.PERCENT_FROM_HOLDER}
+    )`, HOMELESS_COLUMNS.ECONOMIC_SETTINGS)
     .field(`ARRAY(${
         squelPostgres
             .select()
@@ -398,6 +402,7 @@ const selectAllNewRecordsForSearch = languageId => squelPostgres
     .left_join(tableCargoPoints.NAME, 'cp', `cp.${colsCargoPoints.CARGO_ID} = c.${cols.STATUS_ID}`)
     .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
     .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.DANGER_CLASS_ID}`)
+    .left_join(tableEconomicSettings.NAME, 'es', `es.${colsEconomicSettings.COMPANY_ID} = c.${cols.COMPANY_ID}`)
     .toString();
 
 module.exports = {
