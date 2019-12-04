@@ -384,6 +384,14 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    CURRENCY_PRIORITIES: {
+        NAME: 'currency_priorities',
+        COLUMNS: {
+            CURRENCY_ID: 'currency_id',
+            NEXT_CURRENCY_ID: 'next_currency_id',
+            CREATED_AT: 'created_at',
+        },
+    },
     EXCHANGE_RATES: {
         NAME: 'exchange_rates',
         COLUMNS: {
