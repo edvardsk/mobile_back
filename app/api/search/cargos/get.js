@@ -1,4 +1,3 @@
-const Supercluster = require('supercluster');
 const { success } = require('api/response');
 
 // services
@@ -12,6 +11,9 @@ const { Geo, GeoLine } = require('constants/instances');
 
 // formatters
 const { formatRecordForSearchResponse, formatRecordForList } = require('formatters/cargos');
+
+// helpers
+const { clusterizeCargos } = require('helpers/cluster');
 
 const searchCargo = async (req, res, next) => {
     try {
@@ -55,48 +57,12 @@ const searchCargo = async (req, res, next) => {
         };
 
         const cargos = await CargosServices.getRecordsForSearch(coordinates, dates, searchRadius, searchLanguageId, query);
-        const formatterCargos = formatRecordForSearchResponse(cargos, uploadingPoint, downloadingPoint, searchLanguageId);
-        const index = new Supercluster({
-            radius: 200,
-            maxZoom: 16,
-            extent: 256,
-        });
-
-        const goeCargo = formatterCargos.map(cargo => ({
-            type: 'Feature',
-            properties: {
-                id: cargo['id'],
-            },
-            geometry: {
-                id: cargo['id'],
-                type: 'Point',
-                coordinates: [cargo['uploading_points'][0][HOMELESS_COLUMNS.LONGITUDE], cargo['uploading_points'][0][HOMELESS_COLUMNS.LATITUDE]],
-            },
-        }));
-
-        index.load(goeCargo);
-
-        const clusterSW = query[HOMELESS_COLUMNS.CLUSTER_SW];
-        const clusterNE = query[HOMELESS_COLUMNS.CLUSTER_NE];
-        const clusterZoom = query[HOMELESS_COLUMNS.ZOOM];
-
-        const clusters = index.getClusters([
-            parseFloat(clusterSW[HOMELESS_COLUMNS.LONGITUDE]),
-            parseFloat(clusterSW[HOMELESS_COLUMNS.LATITUDE]),
-            parseFloat(clusterNE[HOMELESS_COLUMNS.LONGITUDE]),
-            parseFloat(clusterNE[HOMELESS_COLUMNS.LATITUDE])
-        ], clusterZoom);
-
-        clusters.forEach((cluster, i) => {
-            if (cluster.id) {
-                const deepData = index.getLeaves(cluster.id);
-                clusters[i]['properties']['ids'] = deepData.map(data => data['properties']['id']);
-            }
-        });
+        const formattedCargos = formatRecordForSearchResponse(cargos, uploadingPoint, downloadingPoint, searchLanguageId);
+        const clusters = clusterizeCargos(formattedCargos, query);
 
         return success(res, {
             clusters,
-            cargos: formatterCargos,
+            cargos: formattedCargos,
         });
     } catch (error) {
         next(error);
@@ -123,43 +89,7 @@ const getAllNewCargos = async (req, res, next) => {
         const cargos = await CargosServices.getAllNewRecordsForSearch(searchLanguageId);
         const formattedCargos = cargos.map(cargo => formatRecordForList(cargo));
 
-        const index = new Supercluster({
-            radius: 200,
-            maxZoom: 16,
-            extent: 256,
-        });
-
-        const goeCargo = formattedCargos.map(cargo => ({
-            type: 'Feature',
-            properties: {
-                id: cargo['id'],
-            },
-            geometry: {
-                id: cargo['id'],
-                type: 'Point',
-                coordinates: [cargo['uploading_points'][0][HOMELESS_COLUMNS.LONGITUDE], cargo['uploading_points'][0][HOMELESS_COLUMNS.LATITUDE]],
-            },
-        }));
-
-        index.load(goeCargo);
-
-        const clusterSW = query[HOMELESS_COLUMNS.CLUSTER_SW];
-        const clusterNE = query[HOMELESS_COLUMNS.CLUSTER_NE];
-        const clusterZoom = query[HOMELESS_COLUMNS.ZOOM];
-
-        const clusters = index.getClusters([
-            parseFloat(clusterSW[HOMELESS_COLUMNS.LONGITUDE]),
-            parseFloat(clusterSW[HOMELESS_COLUMNS.LATITUDE]),
-            parseFloat(clusterNE[HOMELESS_COLUMNS.LONGITUDE]),
-            parseFloat(clusterNE[HOMELESS_COLUMNS.LATITUDE])
-        ], clusterZoom);
-
-        clusters.forEach((cluster, i) => {
-            if (cluster.id) {
-                const deepData = index.getLeaves(cluster.id);
-                clusters[i]['properties']['ids'] = deepData.map(data => data['properties']['id']);
-            }
-        });
+        const clusters = clusterizeCargos(formattedCargos, query);
 
         return success(res, {
             clusters,
