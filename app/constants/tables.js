@@ -467,6 +467,9 @@ const HOMELESS_COLUMNS = {
     SEARCH_RADIUS: 'search_radius',
     ALL_UPLOADING_POINTS: 'all_uploading_points',
     ALL_DOWNLOADING_POINTS: 'all_downloading_points',
+    ZOOM: 'zoom',
+    CLUSTER_SW: 'cluster_sw',
+    CLUSTER_NE: 'cluster_ne',
 };
 
 module.exports = {

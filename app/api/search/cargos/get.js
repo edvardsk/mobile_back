@@ -1,3 +1,4 @@
+const Supercluster = require('supercluster');
 const { success } = require('api/response');
 
 // services
@@ -30,7 +31,8 @@ const searchCargo = async (req, res, next) => {
         const searchLanguageId = (userLanguage && userLanguage.id) || defaultLanguage.id;
         const uploadingPoint = query[HOMELESS_COLUMNS.UPLOADING_POINT];
         const downloadingPoint = query[HOMELESS_COLUMNS.DOWNLOADING_POINT];
-        const searchRadius = query[HOMELESS_COLUMNS.SEARCH_RADIUS];
+        // const searchRadius = query[HOMELESS_COLUMNS.SEARCH_RADIUS];
+        const searchRadius = 5000; // todo: delete it
 
         const upGeo = new Geo(uploadingPoint[HOMELESS_COLUMNS.LONGITUDE], uploadingPoint[HOMELESS_COLUMNS.LATITUDE]);
         const downGeo = new Geo(downloadingPoint[HOMELESS_COLUMNS.LONGITUDE], downloadingPoint[HOMELESS_COLUMNS.LATITUDE]);
@@ -54,8 +56,49 @@ const searchCargo = async (req, res, next) => {
         };
 
         const cargos = await CargosServices.getRecordsForSearch(coordinates, dates, searchRadius, searchLanguageId, query);
+        const formatterCargos = formatRecordForSearchResponse(cargos, uploadingPoint, downloadingPoint, searchLanguageId);
+        const index = new Supercluster({
+            radius: 200,
+            maxZoom: 16,
+            extent: 256,
+        });
 
-        return success(res, { cargos: formatRecordForSearchResponse(cargos, uploadingPoint, downloadingPoint, searchLanguageId) });
+        const goeCargo = formatterCargos.map(cargo => ({
+            type: 'Feature',
+            properties: {
+                id: cargo['id'],
+            },
+            geometry: {
+                id: cargo['id'],
+                type: 'Point',
+                coordinates: [cargo['uploading_points'][0][HOMELESS_COLUMNS.LONGITUDE], cargo['uploading_points'][0][HOMELESS_COLUMNS.LATITUDE]],
+            },
+        }));
+
+        index.load(goeCargo);
+
+        const clusterSW = query[HOMELESS_COLUMNS.CLUSTER_SW];
+        const clusterNE = query[HOMELESS_COLUMNS.CLUSTER_NE];
+        const clusterZoom = query[HOMELESS_COLUMNS.ZOOM];
+
+        const clusters = index.getClusters([
+            parseFloat(clusterSW[HOMELESS_COLUMNS.LONGITUDE]),
+            parseFloat(clusterSW[HOMELESS_COLUMNS.LATITUDE]),
+            parseFloat(clusterNE[HOMELESS_COLUMNS.LONGITUDE]),
+            parseFloat(clusterNE[HOMELESS_COLUMNS.LATITUDE])
+        ], clusterZoom);
+
+        clusters.forEach((cluster, i) => {
+            if (cluster.id) {
+                const deepData = index.getLeaves(cluster.id);
+                clusters[i]['properties']['ids'] = deepData.map(data => data['properties']['id']);
+            }
+        });
+
+        return success(res, {
+            clusters,
+            cargos: formatterCargos,
+        });
     } catch (error) {
         next(error);
     }

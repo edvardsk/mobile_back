@@ -197,6 +197,18 @@ const requiredExistingCargoInCompanyAsyncFunc = ({ companyId }) => ({
 
 const searchCargoQuery = {
     properties: {
+        [HOMELESS_COLUMNS.ZOOM]: {
+            type: 'string',
+            pattern: DIGITS_VALIDATION_PATTERN,
+        },
+        [HOMELESS_COLUMNS.CLUSTER_SW]: {
+            type: 'string',
+            format: 'json',
+        },
+        [HOMELESS_COLUMNS.CLUSTER_NE]: {
+            type: 'string',
+            format: 'json',
+        },
         [HOMELESS_COLUMNS.LANGUAGE_CODE]: {
             type: 'string',
             minLength: 2,
@@ -257,6 +269,9 @@ const searchCargoQuery = {
         },
     },
     required: [
+        HOMELESS_COLUMNS.ZOOM,
+        HOMELESS_COLUMNS.CLUSTER_SW,
+        HOMELESS_COLUMNS.CLUSTER_NE,
         HOMELESS_COLUMNS.UPLOADING_POINT,
         HOMELESS_COLUMNS.DOWNLOADING_POINT,
         HOMELESS_COLUMNS.UPLOADING_DATE,
@@ -268,6 +283,15 @@ const searchCargoQuery = {
 
 const modifyStringValues = {
     properties: {
+        [HOMELESS_COLUMNS.ZOOM]: {
+            parse_string_to_int: {},
+        },
+        [HOMELESS_COLUMNS.CLUSTER_SW]: {
+            parse_string_to_json: {},
+        },
+        [HOMELESS_COLUMNS.CLUSTER_NE]: {
+            parse_string_to_json: {},
+        },
         [HOMELESS_COLUMNS.UPLOADING_POINT]: {
             parse_string_to_json: {},
         },
@@ -300,6 +324,13 @@ const modifyStringValues = {
 
 const searchCargoAfterModifyingQuery = {
     properties: {
+        [HOMELESS_COLUMNS.ZOOM]: {
+            type: 'number',
+            minimum: 1,
+            maximum: 16,
+        },
+        [HOMELESS_COLUMNS.CLUSTER_SW]: coordinatesFormatWithoutName,
+        [HOMELESS_COLUMNS.CLUSTER_NE]: coordinatesFormatWithoutName,
         [HOMELESS_COLUMNS.UPLOADING_POINT]: coordinatesFormatWithoutName,
         [HOMELESS_COLUMNS.DOWNLOADING_POINT]: coordinatesFormatWithoutName,
         [colsCargos.GROSS_WEIGHT]: {
