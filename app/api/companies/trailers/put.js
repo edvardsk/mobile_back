@@ -46,39 +46,40 @@ const editTrailer = async (req, res, next) => {
 
         if (fileLabelsToDelete.length) {
             const filesToDelete = await FilesService.getFilesByCarIdAndLabels(trailerId, fileLabelsToDelete);
+            if (filesToDelete.length) {
+                const [ids, urls] = FilesFormatters.prepareFilesToDelete(filesToDelete);
 
-            const [ids, urls] = FilesFormatters.prepareFilesToDelete(filesToDelete);
+                transactionsList.push(
+                    TrailersFilesService.removeRecordsByFileIdsAsTransaction(ids)
+                );
+                transactionsList.push(
+                    FilesService.removeFilesByIdsAsTransaction(ids)
+                );
 
-            transactionsList.push(
-                TrailersFilesService.removeRecordsByFileIdsAsTransaction(ids)
-            );
-            transactionsList.push(
-                FilesService.removeFilesByIdsAsTransaction(ids)
-            );
+                await Promise.all(urls.map(url => {
+                    const [bucket, path] = url.split('/');
+                    return S3Service.deleteObject(bucket, path);
+                }));
 
-            await Promise.all(urls.map(url => {
-                const [bucket, path] = url.split('/');
-                return S3Service.deleteObject(bucket, path);
-            }));
+                const filesToStore = {};
+                Object.keys(files).forEach(fileName => {
+                    if (trailerRequiredDocuments.includes(fileName)) {
+                        filesToStore[fileName] = files[fileName];
+                    }
+                });
+                const [dbFiles, dbTrailersFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForTrailers(filesToStore, trailerId);
 
-            const filesToStore = {};
-            Object.keys(files).forEach(fileName => {
-                if (trailerRequiredDocuments.includes(fileName)) {
-                    filesToStore[fileName] = files[fileName];
-                }
-            });
-            const [dbFiles, dbTrailersFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForCars(filesToStore, trailerId);
+                transactionsList.push(
+                    FilesService.addFilesAsTransaction(dbFiles)
+                );
+                transactionsList.push(
+                    TrailersFilesService.addRecordsAsTransaction(dbTrailersFiles)
+                );
 
-            transactionsList.push(
-                FilesService.addFilesAsTransaction(dbFiles)
-            );
-            transactionsList.push(
-                TrailersFilesService.addRecordsAsTransaction(dbTrailersFiles)
-            );
-
-            await Promise.all(storageFiles.map(({ bucket, path, data, contentType }) => {
-                return S3Service.putObject(bucket, path, data, contentType);
-            }));
+                await Promise.all(storageFiles.map(({ bucket, path, data, contentType }) => {
+                    return S3Service.putObject(bucket, path, data, contentType);
+                }));
+            }
         }
 
         if (stateNumber !== currentStateNumber) {
@@ -127,7 +128,7 @@ const editTrailer = async (req, res, next) => {
             }));
         }
         if (files[DOCUMENTS.DANGER_CLASS]) { // add new version of danger class
-            const [dbFiles, dbTrailersFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForCars({
+            const [dbFiles, dbTrailersFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForTrailers({
                 [DOCUMENTS.DANGER_CLASS]: files[DOCUMENTS.DANGER_CLASS],
             }, trailerId);
 
@@ -144,8 +145,6 @@ const editTrailer = async (req, res, next) => {
         }
 
         await TablesService.runTransaction(transactionsList);
-
-        // !!!!!!!! check full edit operation
 
         return success(res, { id: trailerId });
     } catch (error) {
