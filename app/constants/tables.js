@@ -234,7 +234,6 @@ const SQL_TABLES = {
         COLUMNS: {
             COMPANY_ID: 'company_id',
             CURRENCY_ID: 'currency_id',
-            PRICE: 'price',
             STATUS_ID: 'status_id',
             UPLOADING_DATE_FROM: 'uploading_date_from',
             UPLOADING_DATE_TO: 'uploading_date_to',
@@ -470,6 +469,8 @@ const HOMELESS_COLUMNS = {
     ZOOM: 'zoom',
     CLUSTER_SW: 'cluster_sw',
     CLUSTER_NE: 'cluster_ne',
+    FEES: 'fees',
+    ECONOMIC_SETTINGS: 'economic_settings',
 };
 
 module.exports = {

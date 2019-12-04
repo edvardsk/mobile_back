@@ -16,6 +16,8 @@ const {
 } = process.env;
 
 const cols = SQL_TABLES.CARGOS.COLUMNS;
+const colsEconomicSettings = SQL_TABLES.ECONOMIC_SETTINGS.COLUMNS;
+const colsCargoPrices = SQL_TABLES.CARGO_PRICES.COLUMNS;
 
 const formatRecordToSave = (companyId, cargoId, statusId, data) => ({
     ...data,
@@ -161,18 +163,35 @@ const uniqueByLanguageId = (list, languageId) => {
     });
 };
 
-const formatRecordForSearchResponse = (cargos, uploadingPoint, downloadingPoint, searchLanguageId) => {
+const formatRecordForSearchResponse = (cargos, uploadingPoint, downloadingPoint, searchLanguageId, defaultEconomicSettings) => {
     return cargos
         .filter(cargo => cargo[HOMELESS_COLUMNS.UPLOADING_POINTS].length === cargo[HOMELESS_COLUMNS.ALL_UPLOADING_POINTS].length &&
             cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS].length === cargo[HOMELESS_COLUMNS.ALL_DOWNLOADING_POINTS].length
         )
-        .map(cargo => formatRecordForList(cargo, searchLanguageId))
+        .map(cargo => {
+            const formattedCargo = formatRecordForList(cargo);
+            return {
+                ...formattedCargo,
+                [HOMELESS_COLUMNS.PRICES]: formatPricesWithFee(formattedCargo[HOMELESS_COLUMNS.PRICES], defaultEconomicSettings, cargo[HOMELESS_COLUMNS.ECONOMIC_SETTINGS]),
+            };
+        })
         .filter(cargo => {
             const upPoints = cargo[HOMELESS_COLUMNS.UPLOADING_POINTS];
             const downPoints = cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS];
             const upPointCenter = geolib.getCenter(upPoints);
             const downPointCenter = geolib.getCenter(downPoints);
             return calculateAngleBetweenVectors(upPointCenter, downPointCenter, uploadingPoint, downloadingPoint) <= 90;
+        });
+};
+
+const formatRecordForSearchAllResponse = (cargos, defaultEconomicSettings) => {
+    return cargos
+        .map(cargo => {
+            const formattedCargo = formatRecordForList(cargo);
+            return {
+                ...formattedCargo,
+                [HOMELESS_COLUMNS.PRICES]: formatPricesWithFee(formattedCargo[HOMELESS_COLUMNS.PRICES], defaultEconomicSettings, cargo[HOMELESS_COLUMNS.ECONOMIC_SETTINGS]),
+            };
         });
 };
 
@@ -199,6 +218,26 @@ const calculateAngleBetweenVectors = (upPoint, downPoint, initUpPoint, initDownP
     return Math.acos(cos) * (180 / Math.PI);
 };
 
+const formatPricesWithFee = (prices, defaultSettings, companySettings) => {
+    let transporterPercent = parseFloat(defaultSettings[colsEconomicSettings.PERCENT_FROM_TRANSPORTER]);
+    let holderPercent = parseFloat(defaultSettings[colsEconomicSettings.PERCENT_FROM_HOLDER]);
+    if (companySettings && companySettings[colsEconomicSettings.PERCENT_FROM_TRANSPORTER] && companySettings[colsEconomicSettings.PERCENT_FROM_HOLDER]) {
+        transporterPercent = parseFloat(companySettings[colsEconomicSettings.PERCENT_FROM_TRANSPORTER]);
+        holderPercent = parseFloat(companySettings[colsEconomicSettings.PERCENT_FROM_HOLDER]);
+    }
+
+    return prices.map(price => {
+        const priceValue = price[colsCargoPrices.PRICE];
+        const amountFromTransporter = parseFloat((priceValue * (transporterPercent / 100)).toFixed(2));
+        const amountFromHolder = parseFloat((priceValue * (holderPercent / 100)).toFixed(2));
+        const finalPrice = parseFloat((priceValue - amountFromTransporter - amountFromHolder).toFixed(2));
+        return {
+            ...price,
+            [colsCargoPrices.PRICE]: finalPrice,
+        };
+    });
+};
+
 module.exports = {
     formatRecordToSave,
     formatRecordToEdit,
@@ -206,4 +245,5 @@ module.exports = {
     formatRecordForResponse,
     formatCargoData,
     formatRecordForSearchResponse,
+    formatRecordForSearchAllResponse,
 };

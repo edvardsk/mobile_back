@@ -19,6 +19,7 @@ const tableCargoPrices = SQL_TABLES.CARGO_PRICES;
 const tablePoints = SQL_TABLES.POINTS;
 const tableTranslations = SQL_TABLES.POINT_TRANSLATIONS;
 const tableCurrencies = SQL_TABLES.CURRENCIES;
+const tableEconomicSettings = SQL_TABLES.ECONOMIC_SETTINGS;
 
 const cols = table.COLUMNS;
 const colsCargoStatuses = tableCargoStatuses.COLUMNS;
@@ -29,6 +30,7 @@ const colsCargoPrices = tableCargoPrices.COLUMNS;
 const colsPoints = tablePoints.COLUMNS;
 const colsTranslations = tableTranslations.COLUMNS;
 const colsCurrencies = tableCurrencies.COLUMNS;
+const colsEconomicSettings =  tableEconomicSettings.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -235,6 +237,10 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
         .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
         .field(`vc.${colsVehicleClasses.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
         .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
+        .field(`json_build_object(
+            '${colsEconomicSettings.PERCENT_FROM_TRANSPORTER}', ${colsEconomicSettings.PERCENT_FROM_TRANSPORTER},
+            '${colsEconomicSettings.PERCENT_FROM_HOLDER}', ${colsEconomicSettings.PERCENT_FROM_HOLDER}
+        )`, HOMELESS_COLUMNS.ECONOMIC_SETTINGS)
         .field(`ARRAY(${
             squelPostgres
                 .select()
@@ -243,7 +249,7 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
             ))`)
                 .from(tableCargoPrices.NAME, 'cpr')
                 .where(`cpr.${colsCargoPrices.CARGO_ID} = c.id`)
-                .left_join(tableCurrencies.NAME, 'cur', `cur.id= cpr.${colsCargoPrices.CURRENCY_ID}`)
+                .left_join(tableCurrencies.NAME, 'cur', `cur.id = cpr.${colsCargoPrices.CURRENCY_ID}`)
                 .toString()
         })`, HOMELESS_COLUMNS.PRICES)
         .field(`ARRAY(${
@@ -318,6 +324,7 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
         .left_join(tableCargoPoints.NAME, 'cp', `cp.${colsCargoPoints.CARGO_ID} = c.${cols.STATUS_ID}`)
         .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
         .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.DANGER_CLASS_ID}`)
+        .left_join(tableEconomicSettings.NAME, 'es', `es.${colsEconomicSettings.COMPANY_ID} = c.${cols.COMPANY_ID}`)
         .toString();
 };
 
