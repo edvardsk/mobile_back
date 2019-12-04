@@ -98,15 +98,22 @@ const getAllNewCargos = async (req, res, next) => {
         } else if (language) {
             languageCode = language.slice(0, 2).toLowerCase();
         }
-        const [userLanguage, defaultLanguage, defaultEconomicSettings] = await Promise.all([
+        const [userLanguage, defaultLanguage, defaultEconomicSettings, currencyPriorities] = await Promise.all([
             LanguagesServices.getLanguageByCode(languageCode),
             LanguagesServices.getLanguageByCodeStrict(LANGUAGE_CODES_MAP.EN),
-            EconomicSettingsServices.getDefaultRecordStrict()
+            EconomicSettingsServices.getDefaultRecordStrict(),
+            CurrencyPrioritiesServices.getRecords(),
         ]);
+        const formattedCurrencyPriorities = formatQueueByPriority(
+            currencyPriorities,
+            colsCurrencyPriorities.CURRENCY_ID,
+            colsCurrencyPriorities.NEXT_CURRENCY_ID
+        );
+
         const searchLanguageId = (userLanguage && userLanguage.id) || defaultLanguage.id;
 
         const cargos = await CargosServices.getAllNewRecordsForSearch(searchLanguageId);
-        const formattedCargos = formatRecordForSearchAllResponse(cargos, defaultEconomicSettings);
+        const formattedCargos = formatRecordForSearchAllResponse(cargos, defaultEconomicSettings, formattedCurrencyPriorities);
 
         const clusters = clusterizeCargos(formattedCargos, query);
 

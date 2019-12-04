@@ -192,13 +192,18 @@ const formatRecordForSearchResponse = (
         });
 };
 
-const formatRecordForSearchAllResponse = (cargos, defaultEconomicSettings) => {
+const formatRecordForSearchAllResponse = (cargos, defaultEconomicSettings, currencyPriorities) => {
     return cargos
         .map(cargo => {
             const formattedCargo = formatRecordForList(cargo);
             return {
                 ...formattedCargo,
-                [HOMELESS_COLUMNS.PRICES]: formatPricesWithFee(formattedCargo[HOMELESS_COLUMNS.PRICES], defaultEconomicSettings, cargo[HOMELESS_COLUMNS.ECONOMIC_SETTINGS]),
+                [HOMELESS_COLUMNS.PRICES]: formatPricesWithFee(
+                    formattedCargo[HOMELESS_COLUMNS.PRICES],
+                    defaultEconomicSettings,
+                    cargo[HOMELESS_COLUMNS.ECONOMIC_SETTINGS],
+                    currencyPriorities
+                ),
             };
         });
 };
