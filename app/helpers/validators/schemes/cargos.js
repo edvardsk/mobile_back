@@ -394,6 +394,42 @@ const searchCargoAsync = {
     },
 };
 
+const searchAllCargosQuery = {
+    type: 'object',
+    properties: {
+        [HOMELESS_COLUMNS.ZOOM]: {
+            type: 'string',
+            pattern: DIGITS_VALIDATION_PATTERN,
+        },
+        [HOMELESS_COLUMNS.CLUSTER_SW]: {
+            type: 'string',
+            format: 'json',
+        },
+        [HOMELESS_COLUMNS.CLUSTER_NE]: {
+            type: 'string',
+            format: 'json',
+        },
+        [HOMELESS_COLUMNS.LANGUAGE_CODE]: {
+            type: 'string',
+            minLength: 2,
+            maxLength: 10,
+        },
+    },
+    additionalProperties: false,
+};
+
+const searchAllCargosAfterModifyingQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.ZOOM]: {
+            type: 'number',
+            minimum: 1,
+            maximum: 16,
+        },
+        [HOMELESS_COLUMNS.CLUSTER_SW]: coordinatesFormatWithoutName,
+        [HOMELESS_COLUMNS.CLUSTER_NE]: coordinatesFormatWithoutName,
+    },
+};
+
 module.exports = {
     createOrEditCargo,
     createOrEditCargoAsync,
@@ -403,4 +439,6 @@ module.exports = {
     searchCargoQuery,
     searchCargoAfterModifyingQuery,
     searchCargoAsync,
+    searchAllCargosQuery,
+    searchAllCargosAfterModifyingQuery,
 };

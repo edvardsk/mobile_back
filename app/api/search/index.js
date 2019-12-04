@@ -24,4 +24,13 @@ router.get(
     getCargos.searchCargo,
 );
 
+router.get(
+    ROUTES.SEARCH.CARGOS.BASE + ROUTES.SEARCH.CARGOS.GET_ALL,
+    validate(ValidatorSchemes.searchAllCargosQuery, 'query'),
+    validate(ValidatorSchemes.modifyStringValues, 'query'),
+    validate(ValidatorSchemes.searchAllCargosAfterModifyingQuery, 'query'),
+    injectNotRequiredUser,
+    getCargos.getAllNewCargos,
+);
+
 module.exports = router;

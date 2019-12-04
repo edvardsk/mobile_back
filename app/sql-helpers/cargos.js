@@ -342,6 +342,57 @@ const setCargosSearchFilter = (expression, filteringObject) => {
     return expression;
 };
 
+const selectAllNewRecordsForSearch = languageId => squelPostgres
+    .select()
+    .from(table.NAME, 'c')
+    .field('c.*')
+    .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
+    .field(`vc.${colsVehicleClasses.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
+    .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(
+            cpr.${colsCargoPrices.CURRENCY_ID}, cpr.${colsCargoPrices.NEXT_CURRENCY_ID}, cpr.${colsCargoPrices.PRICE}, cur.${colsCurrencies.CODE}
+            ))`)
+            .from(tableCargoPrices.NAME, 'cpr')
+            .where(`cpr.${colsCargoPrices.CARGO_ID} = c.id`)
+            .left_join(tableCurrencies.NAME, 'cur', `cur.id= cpr.${colsCargoPrices.CURRENCY_ID}`)
+            .toString()
+    })`, HOMELESS_COLUMNS.PRICES)
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+            .from(tableCargoPoints.NAME, 'cp')
+            .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
+            .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
+            .where(`t.${colsTranslations.LANGUAGE_ID} = '${languageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
+            .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
+            .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
+            .toString()
+    })`, HOMELESS_COLUMNS.UPLOADING_POINTS)
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+            .from(tableCargoPoints.NAME, 'cp')
+            .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
+            .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
+            .where(`t.${colsTranslations.LANGUAGE_ID} = '${languageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
+            .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
+            .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
+            .toString()
+    })`, HOMELESS_COLUMNS.DOWNLOADING_POINTS)
+    .where(`cs.${colsCargoStatuses.NAME} = '${CARGO_STATUSES_MAP.NEW}'`)
+    .where(`c.${cols.FREEZED_AFTER} > now()`)
+    .where(`c.${cols.DELETED} = 'f'`)
+    .left_join(tableCargoStatuses.NAME, 'cs', `cs.id = c.${cols.STATUS_ID}`)
+    .left_join(tableCargoPoints.NAME, 'cp', `cp.${colsCargoPoints.CARGO_ID} = c.${cols.STATUS_ID}`)
+    .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
+    .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.DANGER_CLASS_ID}`)
+    .toString();
+
 module.exports = {
     insertRecord,
     updateRecordById,
@@ -353,4 +404,5 @@ module.exports = {
     selectCargosByCompanyIdPaginationSorting,
     selectCountCargosByCompanyId,
     selectRecordsForSearch,
+    selectAllNewRecordsForSearch,
 };

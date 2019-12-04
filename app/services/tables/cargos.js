@@ -12,6 +12,7 @@ const {
     selectCargosByCompanyIdPaginationSorting,
     selectCountCargosByCompanyId,
     selectRecordsForSearch,
+    selectAllNewRecordsForSearch,
 } = require('sql-helpers/cargos');
 
 // constants
@@ -53,6 +54,10 @@ const getRecordsForSearch = (coordinates, dates, searchRadius, languageId, filte
     return manyOrNone(selectRecordsForSearch(coordinates, dates, searchRadius, languageId, filter));
 };
 
+const getAllNewRecordsForSearch = (languageId) => {
+    return manyOrNone(selectAllNewRecordsForSearch(languageId));
+};
+
 const checkCargoInCompanyExists = async (meta, cargoId) => {
     const cargo = await getRecordLight(cargoId);
     const { companyId } = meta;
@@ -70,6 +75,7 @@ module.exports = {
     getCountCargos,
     markAsDeleted,
     getRecordsForSearch,
+    getAllNewRecordsForSearch,
 
     checkCargoInCompanyExists,
 };
