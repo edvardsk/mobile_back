@@ -18,6 +18,7 @@ const {
 const cols = SQL_TABLES.CARGOS.COLUMNS;
 const colsEconomicSettings = SQL_TABLES.ECONOMIC_SETTINGS.COLUMNS;
 const colsCargoPrices = SQL_TABLES.CARGO_PRICES.COLUMNS;
+const colsCurrencyPriorities = SQL_TABLES.CURRENCY_PRIORITIES.COLUMNS;
 
 const formatRecordToSave = (companyId, cargoId, statusId, data) => ({
     ...data,
@@ -163,13 +164,17 @@ const uniqueByLanguageId = (list, languageId) => {
     });
 };
 
-const formatRecordForSearchResponse = (cargos, uploadingPoint, downloadingPoint, searchLanguageId, defaultEconomicSettings) => {
+const formatRecordForSearchResponse = (
+    cargos, uploadingPoint, downloadingPoint, searchLanguageId, defaultEconomicSettings, currencyPriorities
+) => {
     return cargos
         .map(cargo => {
             const formattedCargo = formatRecordForList(cargo);
             return {
                 ...formattedCargo,
-                [HOMELESS_COLUMNS.PRICES]: formatPricesWithFee(formattedCargo[HOMELESS_COLUMNS.PRICES], defaultEconomicSettings, cargo[HOMELESS_COLUMNS.ECONOMIC_SETTINGS]),
+                [HOMELESS_COLUMNS.PRICES]: formatPricesWithFee(
+                    formattedCargo[HOMELESS_COLUMNS.PRICES], defaultEconomicSettings, cargo[HOMELESS_COLUMNS.ECONOMIC_SETTINGS], currencyPriorities
+                ),
                 [HOMELESS_COLUMNS.ALL_UPLOADING_POINTS]: cargo[HOMELESS_COLUMNS.ALL_UPLOADING_POINTS],
                 [HOMELESS_COLUMNS.ALL_DOWNLOADING_POINTS]: cargo[HOMELESS_COLUMNS.ALL_DOWNLOADING_POINTS],
             };
@@ -221,7 +226,7 @@ const calculateAngleBetweenVectors = (upPoint, downPoint, initUpPoint, initDownP
     return Math.acos(cos) * (180 / Math.PI);
 };
 
-const formatPricesWithFee = (prices, defaultSettings, companySettings) => {
+const formatPricesWithFee = (prices, defaultSettings, companySettings, currencyPriorities) => {
     let transporterPercent = parseFloat(defaultSettings[colsEconomicSettings.PERCENT_FROM_TRANSPORTER]);
     let holderPercent = parseFloat(defaultSettings[colsEconomicSettings.PERCENT_FROM_HOLDER]);
     if (companySettings && companySettings[colsEconomicSettings.PERCENT_FROM_TRANSPORTER] && companySettings[colsEconomicSettings.PERCENT_FROM_HOLDER]) {
@@ -229,7 +234,7 @@ const formatPricesWithFee = (prices, defaultSettings, companySettings) => {
         holderPercent = parseFloat(companySettings[colsEconomicSettings.PERCENT_FROM_HOLDER]);
     }
 
-    return prices.map(price => {
+    const formattedPrices = prices.map(price => {
         const priceValue = price[colsCargoPrices.PRICE];
         const amountFromTransporter = parseFloat((priceValue * (transporterPercent / 100)).toFixed(2));
         const amountFromHolder = parseFloat((priceValue * (holderPercent / 100)).toFixed(2));
@@ -239,6 +244,14 @@ const formatPricesWithFee = (prices, defaultSettings, companySettings) => {
             [colsCargoPrices.PRICE]: finalPrice,
         };
     });
+    return currencyPriorities.reduce((acc, currency) => {
+        const currencyId = currency[colsCurrencyPriorities.CURRENCY_ID];
+        const price = formattedPrices.find(price => price[colsCargoPrices.CURRENCY_ID] === currencyId);
+        if (price) {
+            acc.unshift(price);
+        }
+        return acc;
+    }, []);
 };
 
 module.exports = {

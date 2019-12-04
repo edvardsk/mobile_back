@@ -1,6 +1,9 @@
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
+// formatters
+const { formatQueueByPriority } = require('./index');
+
 const cols = SQL_TABLES.CARGO_PRICES.COLUMNS;
 
 const formatRecordsToSave = (records, cargoId) => records.map((record, i, arr) => {
@@ -17,19 +20,7 @@ const formatRecordsToSave = (records, cargoId) => records.map((record, i, arr) =
     return result;
 });
 
-const formatPricesQueueByPriority = prices => {
-    const result = [];
-    let nextRecord = null;
-    while (result.length !== prices.length) {
-        const record = prices.find(price => price[cols.NEXT_CURRENCY_ID] === nextRecord);
-        delete record[cols.NEXT_CURRENCY_ID];
-        result.unshift(record);
-        nextRecord = record[cols.CURRENCY_ID];
-    }
-    return result;
-};
-
-const formatPricesFromPostgresJSON = prices => formatPricesQueueByPriority(prices.map(price => formatPriceFromPostgresJSON(price)));
+const formatPricesFromPostgresJSON = prices => formatQueueByPriority(prices.map(price => formatPriceFromPostgresJSON(price)), cols.CURRENCY_ID, cols.NEXT_CURRENCY_ID);
 
 const formatPriceFromPostgresJSON = price => {
     const { f1, f2, f3, f4 } = price;

@@ -4,9 +4,10 @@ const { success } = require('api/response');
 const CargosServices = require('services/tables/cargos');
 const LanguagesServices = require('services/tables/languages');
 const EconomicSettingsServices = require('services/tables/economic-settings');
+const CurrencyPrioritiesServices = require('services/tables/currency-priorities');
 
 // constants
-const { HOMELESS_COLUMNS } = require('constants/tables');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { LANGUAGE_CODES_MAP } = require('constants/languages');
 const { Geo, GeoLine } = require('constants/instances');
 
@@ -15,9 +16,12 @@ const {
     formatRecordForSearchResponse,
     formatRecordForSearchAllResponse,
 } = require('formatters/cargos');
+const { formatQueueByPriority } = require('formatters/index');
 
 // helpers
 const { clusterizeCargos } = require('helpers/cluster');
+
+const colsCurrencyPriorities = SQL_TABLES.CURRENCY_PRIORITIES.COLUMNS;
 
 const searchCargo = async (req, res, next) => {
     try {
@@ -30,11 +34,18 @@ const searchCargo = async (req, res, next) => {
         } else if (language) {
             languageCode = language.slice(0, 2).toLowerCase();
         }
-        const [userLanguage, defaultLanguage, defaultEconomicSettings] = await Promise.all([
+        const [userLanguage, defaultLanguage, defaultEconomicSettings, currencyPriorities] = await Promise.all([
             LanguagesServices.getLanguageByCode(languageCode),
             LanguagesServices.getLanguageByCodeStrict(LANGUAGE_CODES_MAP.EN),
-            EconomicSettingsServices.getDefaultRecordStrict()
+            EconomicSettingsServices.getDefaultRecordStrict(),
+            CurrencyPrioritiesServices.getRecords(),
         ]);
+        const formattedCurrencyPriorities = formatQueueByPriority(
+            currencyPriorities,
+            colsCurrencyPriorities.CURRENCY_ID,
+            colsCurrencyPriorities.NEXT_CURRENCY_ID
+        );
+
         const searchLanguageId = (userLanguage && userLanguage.id) || defaultLanguage.id;
         const uploadingPoint = query[HOMELESS_COLUMNS.UPLOADING_POINT];
         const downloadingPoint = query[HOMELESS_COLUMNS.DOWNLOADING_POINT];
@@ -62,7 +73,9 @@ const searchCargo = async (req, res, next) => {
         };
 
         const cargos = await CargosServices.getRecordsForSearch(coordinates, dates, searchRadius, searchLanguageId, query);
-        const formattedCargos = formatRecordForSearchResponse(cargos, uploadingPoint, downloadingPoint, searchLanguageId, defaultEconomicSettings);
+        const formattedCargos = formatRecordForSearchResponse(
+            cargos, uploadingPoint, downloadingPoint, searchLanguageId, defaultEconomicSettings, formattedCurrencyPriorities
+        );
         const clusters = clusterizeCargos(formattedCargos, query);
 
         return success(res, {
