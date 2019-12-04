@@ -30,8 +30,16 @@ function SqlArray(data) {
     };
 }
 
+function SqlString(data) {
+    this.data = data;
+    this.toString = function () {
+        return `$$${data}$$`;
+    };
+}
+
 module.exports = {
     Geo,
     GeoLine,
     SqlArray,
+    SqlString,
 };
