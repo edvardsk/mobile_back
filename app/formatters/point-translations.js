@@ -1,5 +1,6 @@
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
+const { SqlString } = require('constants/instances');
 
 const cols = SQL_TABLES.POINT_TRANSLATIONS.COLUMNS;
 
@@ -8,7 +9,7 @@ const formatTranslationsToSave = (pointsIds, records, languageId) => records.map
 const formatTranslationToSave = (pointId, value, languageId) => ({
     [cols.POINT_ID]: pointId,
     [cols.LANGUAGE_ID]: languageId,
-    [cols.VALUE]: value,
+    [cols.VALUE]: new SqlString(value),
 });
 
 module.exports = {

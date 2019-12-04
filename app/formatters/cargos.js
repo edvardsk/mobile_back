@@ -1,5 +1,6 @@
 const moment = require('moment');
 const { groupBy } = require('lodash');
+const geolib = require('geolib');
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
@@ -47,6 +48,7 @@ const formatRecordForList = (cargo, userLanguageId) => {
         [cols.DESCRIPTION]: cargo[cols.DESCRIPTION],
         [HOMELESS_COLUMNS.STATUS]: cargo[HOMELESS_COLUMNS.STATUS],
         [HOMELESS_COLUMNS.VEHICLE_TYPE_NAME]: cargo[HOMELESS_COLUMNS.VEHICLE_TYPE_NAME],
+        [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: cargo[HOMELESS_COLUMNS.DANGER_CLASS_NAME],
     };
 
     const [uploadingPoints, downloadingPoints] = formatGeoPoints(cargo, userLanguageId);
@@ -159,10 +161,49 @@ const uniqueByLanguageId = (list, languageId) => {
     });
 };
 
+const formatRecordForSearchResponse = (cargos, uploadingPoint, downloadingPoint, searchLanguageId) => {
+    return cargos
+        .filter(cargo => cargo[HOMELESS_COLUMNS.UPLOADING_POINTS].length === cargo[HOMELESS_COLUMNS.ALL_UPLOADING_POINTS].length &&
+            cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS].length === cargo[HOMELESS_COLUMNS.ALL_DOWNLOADING_POINTS].length
+        )
+        .map(cargo => formatRecordForList(cargo, searchLanguageId))
+        .filter(cargo => {
+            const upPoints = cargo[HOMELESS_COLUMNS.UPLOADING_POINTS];
+            const downPoints = cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS];
+            const upPointCenter = geolib.getCenter(upPoints);
+            const downPointCenter = geolib.getCenter(downPoints);
+            return calculateAngleBetweenVectors(upPointCenter, downPointCenter, uploadingPoint, downloadingPoint) <= 90;
+        });
+};
+
+const calculateAngleBetweenVectors = (upPoint, downPoint, initUpPoint, initDownPoint) => {
+    const a1 = parseFloat(upPoint[HOMELESS_COLUMNS.LONGITUDE]);
+    const a2 = parseFloat(upPoint[HOMELESS_COLUMNS.LATITUDE]);
+
+    const b1 = parseFloat(downPoint[HOMELESS_COLUMNS.LONGITUDE]);
+    const b2 = parseFloat(downPoint[HOMELESS_COLUMNS.LATITUDE]);
+
+    const c1 = parseFloat(initUpPoint[HOMELESS_COLUMNS.LONGITUDE]);
+    const c2 = parseFloat(initUpPoint[HOMELESS_COLUMNS.LATITUDE]);
+
+    const d1 = parseFloat(initDownPoint[HOMELESS_COLUMNS.LONGITUDE]);
+    const d2 = parseFloat(initDownPoint[HOMELESS_COLUMNS.LATITUDE]);
+
+    const ab1 = b1 - a1;
+    const ab2 = b2 - a2;
+
+    const cd1 = d1 - c1;
+    const cd2 = d2 - c2;
+
+    const cos = (ab1 * cd1 + ab2 * cd2) / ((Math.sqrt(ab1 ** 2 + ab2 ** 2)) * (Math.sqrt(cd1 ** 2 + cd2 ** 2)));
+    return Math.acos(cos) * (180 / Math.PI);
+};
+
 module.exports = {
     formatRecordToSave,
     formatRecordToEdit,
     formatRecordForList,
     formatRecordForResponse,
     formatCargoData,
+    formatRecordForSearchResponse,
 };

@@ -14,6 +14,8 @@ const getLanguageStrict = id => one(selectLanguageById(id));
 
 const getLanguageByCodeStrict = code => one(selectLanguageByCode(code));
 
+const getLanguageByCode = code => oneOrNone(selectLanguageByCode(code));
+
 const getLanguages = () => manyOrNone(selectLanguages());
 
 const getLanguagesWithoutEng = () => manyOrNone(selectLanguagesWithoutEng());
@@ -26,6 +28,7 @@ const checkLanguageExists = async (schema, id) => {
 module.exports = {
     getLanguage,
     getLanguageStrict,
+    getLanguageByCode,
     getLanguageByCodeStrict,
     getLanguages,
     getLanguagesWithoutEng,

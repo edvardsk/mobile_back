@@ -128,9 +128,31 @@ const injectCompanyData = async (req, res, next) => {
     }
 };
 
+const injectNotRequiredUser = async (req, res, next) => {
+    try {
+        const token = extractToken(req);
+        if (token) {
+            const decodedData = TokenService.decodeJWToken(token);
+            const userId = get(decodedData, 'id');
+
+            if (isValidUUID(userId)) {
+                const user = await UsersService.getUserForAuthentication(userId);
+                if (user) {
+                    res.locals.user = user;
+                }
+            }
+        }
+
+        return next();
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     isHasPermissions,
     isAuthenticated,
     injectTargetRole,
     injectCompanyData,
+    injectNotRequiredUser,
 };
