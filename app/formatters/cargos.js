@@ -165,15 +165,18 @@ const uniqueByLanguageId = (list, languageId) => {
 
 const formatRecordForSearchResponse = (cargos, uploadingPoint, downloadingPoint, searchLanguageId, defaultEconomicSettings) => {
     return cargos
-        .filter(cargo => cargo[HOMELESS_COLUMNS.UPLOADING_POINTS].length === cargo[HOMELESS_COLUMNS.ALL_UPLOADING_POINTS].length &&
-            cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS].length === cargo[HOMELESS_COLUMNS.ALL_DOWNLOADING_POINTS].length
-        )
         .map(cargo => {
             const formattedCargo = formatRecordForList(cargo);
             return {
                 ...formattedCargo,
                 [HOMELESS_COLUMNS.PRICES]: formatPricesWithFee(formattedCargo[HOMELESS_COLUMNS.PRICES], defaultEconomicSettings, cargo[HOMELESS_COLUMNS.ECONOMIC_SETTINGS]),
+                [HOMELESS_COLUMNS.ALL_UPLOADING_POINTS]: cargo[HOMELESS_COLUMNS.ALL_UPLOADING_POINTS],
+                [HOMELESS_COLUMNS.ALL_DOWNLOADING_POINTS]: cargo[HOMELESS_COLUMNS.ALL_DOWNLOADING_POINTS],
             };
+        })
+        .filter(cargo => {
+            return cargo[HOMELESS_COLUMNS.UPLOADING_POINTS].length === cargo[HOMELESS_COLUMNS.ALL_UPLOADING_POINTS].length &&
+                cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS].length === cargo[HOMELESS_COLUMNS.ALL_DOWNLOADING_POINTS].length;
         })
         .filter(cargo => {
             const upPoints = cargo[HOMELESS_COLUMNS.UPLOADING_POINTS];
