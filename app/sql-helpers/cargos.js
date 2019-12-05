@@ -120,6 +120,59 @@ const selectRecordByWithCoordinatesId = (id, userLanguageId) => squelPostgres
     .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
     .toString();
 
+const selectRecordByIdWithCoordinatesAndEconomicSettings = (id, userLanguageId) => squelPostgres
+    .select()
+    .field('c.*')
+    .field(`json_build_object(
+            '${colsEconomicSettings.PERCENT_FROM_TRANSPORTER}', ${colsEconomicSettings.PERCENT_FROM_TRANSPORTER},
+            '${colsEconomicSettings.PERCENT_FROM_HOLDER}', ${colsEconomicSettings.PERCENT_FROM_HOLDER}
+        )`, HOMELESS_COLUMNS.ECONOMIC_SETTINGS)
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(
+            cpr.${colsCargoPrices.CURRENCY_ID}, cpr.${colsCargoPrices.NEXT_CURRENCY_ID}, cpr.${colsCargoPrices.PRICE}, cur.${colsCurrencies.CODE}
+            ))`)
+            .from(tableCargoPrices.NAME, 'cpr')
+            .where(`cpr.${colsCargoPrices.CARGO_ID} = c.id`)
+            .left_join(tableCurrencies.NAME, 'cur', `cur.id= cpr.${colsCargoPrices.CURRENCY_ID}`)
+            .toString()
+    })`, HOMELESS_COLUMNS.PRICES)
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+            .from(tableCargoPoints.NAME, 'cp')
+            .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
+            .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
+            .where(`t.${colsTranslations.LANGUAGE_ID} = '${userLanguageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
+            .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
+            .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
+            .toString()
+    })`, HOMELESS_COLUMNS.UPLOADING_POINTS)
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+            .from(tableCargoPoints.NAME, 'cp')
+            .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
+            .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
+            .where(`t.${colsTranslations.LANGUAGE_ID} = '${userLanguageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
+            .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
+            .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
+            .toString()
+    })`, HOMELESS_COLUMNS.DOWNLOADING_POINTS)
+    .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
+    .field(`vc.${colsVehicleClasses.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
+    .from(table.NAME, 'c')
+    .where(`c.id = '${id}'`)
+    .where(`c.${cols.DELETED} = 'f'`)
+    .where(`c.${cols.FREEZED_AFTER} > now()`)
+    .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.DANGER_CLASS_ID}`)
+    .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
+    .left_join(tableEconomicSettings.NAME, 'es', `es.${colsEconomicSettings.COMPANY_ID} = c.${cols.COMPANY_ID}`)
+    .toString();
+
 const selectRecordByIdLight = id => squelPostgres
     .select()
     .from(table.NAME)
@@ -462,6 +515,7 @@ module.exports = {
     deleteRecordById,
     selectRecordById,
     selectRecordByWithCoordinatesId,
+    selectRecordByIdWithCoordinatesAndEconomicSettings,
     selectRecordByIdLight,
     selectRecordsByCompanyId,
     selectCargosByCompanyIdPaginationSorting,

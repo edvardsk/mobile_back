@@ -7,6 +7,7 @@ const {
     deleteRecordById,
     selectRecordById,
     selectRecordByWithCoordinatesId,
+    selectRecordByIdWithCoordinatesAndEconomicSettings,
     selectRecordByIdLight,
     selectRecordsByCompanyId,
     selectCargosByCompanyIdPaginationSorting,
@@ -34,6 +35,8 @@ const getRecord = id => oneOrNone(selectRecordById(id));
 const getRecordLight = id => oneOrNone(selectRecordByIdLight(id));
 
 const getRecordStrict = (id, userLanguageId) => one(selectRecordByWithCoordinatesId(id, userLanguageId));
+
+const getRecordStrictWithEconomicSettings = (id, userLanguageId) => one(selectRecordByIdWithCoordinatesAndEconomicSettings(id, userLanguageId));
 
 const getRecordsByCompanyId = companyId => manyOrNone(selectRecordsByCompanyId(companyId));
 
@@ -64,6 +67,11 @@ const checkCargoInCompanyExists = async (meta, cargoId) => {
     return cargo && cargo[cols.COMPANY_ID] === companyId;
 };
 
+const checkCargoExists = async (meta, cargoId) => {
+    const cargo = await getRecordLight(cargoId);
+    return !!cargo;
+};
+
 module.exports = {
     addRecordAsTransaction,
     editRecordAsTransaction,
@@ -76,6 +84,8 @@ module.exports = {
     markAsDeleted,
     getRecordsForSearch,
     getAllNewRecordsForSearch,
+    getRecordStrictWithEconomicSettings,
 
     checkCargoInCompanyExists,
+    checkCargoExists,
 };
