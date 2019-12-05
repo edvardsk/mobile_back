@@ -69,6 +69,7 @@ const ERRORS = {
     CARGOS: {
         UNABLE_TO_CREATE: 'cargos.unable_to_create',
         UNABLE_TO_EDIT: 'cargos.unable_to_edit',
+        UNABLE_TO_DELETE: 'cargos.unable_to_delete',
     },
     ECONOMIC_SETTINGS: {
         SUM_PERCENT_TRANSPORTER_HOLDER_ERROR: 'economic_settings.sum_percent_transporter_holder_error',

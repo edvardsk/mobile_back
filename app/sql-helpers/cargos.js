@@ -4,14 +4,12 @@ const { get } = require('lodash');
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SqlArray, Geo, GeoLine } = require('constants/instances');
-const { CARGO_STATUSES_MAP } = require('constants/cargo-statuses');
 
 const CARGO_SEARCH_LINE_RADIUS_KM = +process.env.CARGO_SEARCH_LINE_RADIUS_KM || 50;
 
 const squelPostgres = squel.useFlavour('postgres');
 
 const table = SQL_TABLES.CARGOS;
-const tableCargoStatuses = SQL_TABLES.CARGO_STATUSES;
 const tableDangerClasses = SQL_TABLES.DANGER_CLASSES;
 const tableVehicleClasses = SQL_TABLES.VEHICLE_TYPES;
 const tableCargoPoints = SQL_TABLES.CARGO_POINTS;
@@ -22,7 +20,6 @@ const tableCurrencies = SQL_TABLES.CURRENCIES;
 const tableEconomicSettings = SQL_TABLES.ECONOMIC_SETTINGS;
 
 const cols = table.COLUMNS;
-const colsCargoStatuses = tableCargoStatuses.COLUMNS;
 const colsDangerClasses = tableDangerClasses.COLUMNS;
 const colsVehicleClasses = tableVehicleClasses.COLUMNS;
 const colsCargoPoints = tableCargoPoints.COLUMNS;
@@ -69,18 +66,15 @@ const deleteRecordById = id => squelPostgres
 const selectRecordById = id => squelPostgres
     .select()
     .field('c.*')
-    .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
     .from(table.NAME, 'c')
     .where(`c.id = '${id}'`)
     .where(`c.${cols.DELETED} = 'f'`)
     .where(`c.${cols.FREEZED_AFTER} > now()`)
-    .left_join(tableCargoStatuses.NAME, 'cs', `cs.id = c.${cols.STATUS_ID}`)
     .toString();
 
 const selectRecordByWithCoordinatesId = (id, userLanguageId) => squelPostgres
     .select()
     .field('c.*')
-    .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
     .field(`ARRAY(${
         squelPostgres
             .select()
@@ -122,7 +116,6 @@ const selectRecordByWithCoordinatesId = (id, userLanguageId) => squelPostgres
     .where(`c.id = '${id}'`)
     .where(`c.${cols.DELETED} = 'f'`)
     .where(`c.${cols.FREEZED_AFTER} > now()`)
-    .left_join(tableCargoStatuses.NAME, 'cs', `cs.id = c.${cols.STATUS_ID}`)
     .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.DANGER_CLASS_ID}`)
     .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
     .toString();
@@ -147,7 +140,6 @@ const selectCargosByCompanyIdPaginationSorting = (companyId, limit, offset, sort
     let expression = squelPostgres
         .select()
         .field('c.*')
-        .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
         .field(`ARRAY(${
             squelPostgres
                 .select()
@@ -191,7 +183,6 @@ const selectCargosByCompanyIdPaginationSorting = (companyId, limit, offset, sort
 
     expression = setCargosFilter(expression, filter);
     return expression
-        .left_join(tableCargoStatuses.NAME, 'cs', `cs.id = c.${cols.STATUS_ID}`)
         .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
         .order(sortColumn, asc)
         .limit(limit)
@@ -210,13 +201,11 @@ const selectCountCargosByCompanyId = (companyId, filter) => {
 
     expression = setCargosFilter(expression, filter);
     return expression
-        .left_join(tableCargoStatuses.NAME, 'cs', `cs.id = c.${cols.STATUS_ID}`)
         .toString();
 };
 
 const setCargosFilter = (expression, filteringObject) => {
     const filteringObjectSQLExpressions = [
-        [HOMELESS_COLUMNS.STATUS, `cs.${colsCargoStatuses.NAME} IN ?`, filteringObject[HOMELESS_COLUMNS.STATUS]],
     ];
 
     for (let [key, exp, values] of filteringObjectSQLExpressions) {
@@ -235,7 +224,6 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
         .from(table.NAME, 'c')
         .field('c.*')
         .field(`c.${cols.FREE_COUNT}`, cols.COUNT)
-        .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
         .field(`vc.${colsVehicleClasses.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
         .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
         .field(`json_build_object(
@@ -371,14 +359,13 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
     }
 
     expression
-        .where(`cs.${colsCargoStatuses.NAME} = '${CARGO_STATUSES_MAP.NEW}'`)
+        .where(`c.${cols.FREE_COUNT} > 0`)
         .where(`c.${cols.FREEZED_AFTER} > now()`)
         .where(`c.${cols.DELETED} = 'f'`);
 
     expression = setCargosSearchFilter(expression, filter);
     return expression
-        .left_join(tableCargoStatuses.NAME, 'cs', `cs.id = c.${cols.STATUS_ID}`)
-        .left_join(tableCargoPoints.NAME, 'cp', `cp.${colsCargoPoints.CARGO_ID} = c.${cols.STATUS_ID}`)
+        .left_join(tableCargoPoints.NAME, 'cp', `cp.${colsCargoPoints.CARGO_ID} = c.id`)
         .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
         .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.DANGER_CLASS_ID}`)
         .left_join(tableEconomicSettings.NAME, 'es', `es.${colsEconomicSettings.COMPANY_ID} = c.${cols.COMPANY_ID}`)
@@ -411,8 +398,6 @@ const selectAllNewRecordsForSearch = (languageId, companyId) => {
         .select()
         .from(table.NAME, 'c')
         .field('c.*')
-        .field(`c.${cols.FREE_COUNT}`, cols.COUNT)
-        .field(`cs.${colsCargoStatuses.NAME}`, HOMELESS_COLUMNS.STATUS)
         .field(`vc.${colsVehicleClasses.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
         .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
         .field(`json_build_object(
@@ -461,11 +446,10 @@ const selectAllNewRecordsForSearch = (languageId, companyId) => {
     }
 
     return expression
-        .where(`cs.${colsCargoStatuses.NAME} = '${CARGO_STATUSES_MAP.NEW}'`)
+        .where(`c.${cols.FREE_COUNT} > 0`)
         .where(`c.${cols.FREEZED_AFTER} > now()`)
         .where(`c.${cols.DELETED} = 'f'`)
-        .left_join(tableCargoStatuses.NAME, 'cs', `cs.id = c.${cols.STATUS_ID}`)
-        .left_join(tableCargoPoints.NAME, 'cp', `cp.${colsCargoPoints.CARGO_ID} = c.${cols.STATUS_ID}`)
+        .left_join(tableCargoPoints.NAME, 'cp', `cp.${colsCargoPoints.CARGO_ID} = c.id`)
         .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
         .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.DANGER_CLASS_ID}`)
         .left_join(tableEconomicSettings.NAME, 'es', `es.${colsEconomicSettings.COMPANY_ID} = c.${cols.COMPANY_ID}`)

@@ -9,7 +9,6 @@ const {
     USERS_SORT_COLUMNS,
 } = require('constants/pagination-sorting');
 const { ARRAY_ROLES_WITHOUT_ADMIN } = require('constants/system');
-const { CARGO_STATUSES } = require('constants/cargo-statuses');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
 // patterns
@@ -180,17 +179,7 @@ const cargosFilterQuery = {
     properties: {
         [HOMELESS_COLUMNS.FILTER]: {
             type: 'object',
-            properties: {
-                [HOMELESS_COLUMNS.STATUS]: {
-                    type: 'array',
-                    minItems: 1,
-                    uniqueItems: true,
-                    items: {
-                        enum: CARGO_STATUSES,
-                    },
-
-                },
-            },
+            properties: {},
             additionalProperties: false,
         },
     },

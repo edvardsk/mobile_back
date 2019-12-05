@@ -41,7 +41,6 @@ const BASES = {
     APPROVE: '/approve',
     CARGOS: '/cargos',
     OTHERS: '/others',
-    CARGO_STATUSES: '/cargo-statuses',
     VEHICLE_TYPES: '/vehicle-types',
     DANGER_CLASSES: '/danger-classes',
     SETTINGS: '/settings',
@@ -301,10 +300,6 @@ const ROUTES = {
     },
     OTHERS: {
         BASE: BASES.OTHERS,
-        CARGO_STATUSES: {
-            BASE: BASES.CARGO_STATUSES,
-            GET_ALL: '',
-        },
         VEHICLE_TYPES: {
             BASE: BASES.VEHICLE_TYPES,
             GET_ALL: '',

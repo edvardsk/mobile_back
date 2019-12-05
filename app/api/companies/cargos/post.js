@@ -5,7 +5,6 @@ const { success, reject } = require('api/response');
 const CargosServices = require('services/tables/cargos');
 const CargoPointsService = require('services/tables/cargo-points');
 const CargoPricesService = require('services/tables/cargo-prices');
-const CargoStatusesService = require('services/tables/cargo-statuses');
 const PointsService = require('services/tables/points');
 const PointTranslationsService = require('services/tables/point-translations');
 const LanguagesService = require('services/tables/languages');
@@ -16,7 +15,6 @@ const BackgroundService = require('services/background/creators');
 const { SUCCESS_CODES } = require('constants/http-codes');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
-const { CARGO_STATUSES_MAP } = require('constants/cargo-statuses');
 const { DEFAULT_LANGUAGE } = require('constants/languages');
 
 // formatters
@@ -47,10 +45,7 @@ const createCargo = async (req, res, next) => {
 
         const cargoId = uuid();
 
-        const cargoStatusRecord = await CargoStatusesService.getRecordByName(CARGO_STATUSES_MAP.NEW);
-        const statusId = cargoStatusRecord.id;
-
-        const cargo = CargosFormatters.formatRecordToSave(companyId, cargoId, statusId, cargosProps);
+        const cargo = CargosFormatters.formatRecordToSave(companyId, cargoId, cargosProps);
         const cargoPointsWithName = CargoPointsFormatters.formatRecordsWithName(cargoId, cargoPointsProps);
         const cargoPoints = CargoPointsFormatters.formatRecordsToSave(cargoPointsWithName);
         const cargoPrices = CargoPricesFormatters.formatRecordsToSave(body[HOMELESS_COLUMNS.PRICES], cargoId);

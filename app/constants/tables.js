@@ -234,7 +234,6 @@ const SQL_TABLES = {
         COLUMNS: {
             COMPANY_ID: 'company_id',
             CURRENCY_ID: 'currency_id',
-            STATUS_ID: 'status_id',
             UPLOADING_DATE_FROM: 'uploading_date_from',
             UPLOADING_DATE_TO: 'uploading_date_to',
             DOWNLOADING_DATE_FROM: 'downloading_date_from',
@@ -263,13 +262,6 @@ const SQL_TABLES = {
             CARGO_ID: 'cargo_id',
             COORDINATES: 'coordinates',
             TYPE: 'type',
-            CREATED_AT: 'created_at',
-        },
-    },
-    CARGO_STATUSES: {
-        NAME: 'cargo_statuses',
-        COLUMNS: {
-            NAME: 'name',
             CREATED_AT: 'created_at',
         },
     },

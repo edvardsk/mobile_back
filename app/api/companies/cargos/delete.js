@@ -4,9 +4,10 @@ const { success, reject } = require('api/response');
 const CargosServices = require('services/tables/cargos');
 
 // constants
-const { CARGO_STATUSES_MAP } = require('constants/cargo-statuses');
-const { HOMELESS_COLUMNS } = require('constants/tables');
+const { SQL_TABLES } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
+
+const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 
 const removeCargo = async (req, res, next) => {
     try {
@@ -14,10 +15,11 @@ const removeCargo = async (req, res, next) => {
 
         const cargoFromDb = await CargosServices.getRecord(cargoId);
 
-        const currentCargoStatus = cargoFromDb[HOMELESS_COLUMNS.STATUS];
+        const countCargos = cargoFromDb[colsCargos.COUNT];
+        const countFreeCargos = cargoFromDb[colsCargos.FREE_COUNT];
 
-        if (currentCargoStatus !== CARGO_STATUSES_MAP.NEW) {
-            return reject(res, ERRORS.CARGOS.UNABLE_TO_EDIT);
+        if (countCargos !== countFreeCargos) {
+            return reject(res, ERRORS.CARGOS.UNABLE_TO_DELETE);
         }
 
         await CargosServices.markAsDeleted(cargoId);
