@@ -1,4 +1,5 @@
 const { get } = require('lodash');
+const { match } = require('path-to-regexp');
 const { reject } = require('api/response');
 
 // services
@@ -19,7 +20,14 @@ const { extractToken, isControlRole } = require('helpers');
 const { isValidUUID } = require('helpers/validators');
 
 const isAllowedRoute = req => {
-    return (req.method === 'GET' && ALLOWED_ROUTES.GET.has(req.baseUrl)) ||
+    const url = req.baseUrl;
+
+    const GET_ARRAY = Array.from(ALLOWED_ROUTES.GET);
+
+    return (req.method === 'GET' && GET_ARRAY.some(route => { // todo: refactor it
+        const regexp = match(route);
+        return !!regexp(url);
+    })) ||
         (req.method === 'POST' && ALLOWED_ROUTES.POST.has(req.baseUrl)) ||
         (req.method === 'PUT' && ALLOWED_ROUTES.PUT.has(req.baseUrl)) ||
         (req.method === 'DELETE' && ALLOWED_ROUTES.DELETE.has(req.baseUrl));
