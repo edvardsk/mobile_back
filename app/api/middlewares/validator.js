@@ -34,6 +34,7 @@ const {
     parseStringBooleanToBoolean,
     parsePaginationOptions,
     compareYears,
+    validateDownloadingDateMinimum,
 } = require('helpers/validators/custom');
 
 const yearRegex = /^[0-9]{1,4}$/;
@@ -270,6 +271,11 @@ ajv.addKeyword('parse_pagination_options', {
     modifying: true,
     schema: false,
     validate: parsePaginationOptions,
+});
+
+ajv.addKeyword('downloading_date_to_minimum', {
+    type: 'string',
+    validate: validateDownloadingDateMinimum,
 });
 
 ajv.addFormat('year', {
