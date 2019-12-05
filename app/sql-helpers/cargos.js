@@ -418,7 +418,6 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
 
     expression = setCargosSearchFilter(expression, filter);
     return expression
-        .left_join(tableCargoPoints.NAME, 'cp', `cp.${colsCargoPoints.CARGO_ID} = c.id`)
         .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
         .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.DANGER_CLASS_ID}`)
         .left_join(tableEconomicSettings.NAME, 'es', `es.${colsEconomicSettings.COMPANY_ID} = c.${cols.COMPANY_ID}`)
@@ -502,7 +501,6 @@ const selectAllNewRecordsForSearch = (languageId, companyId) => {
         .where(`c.${cols.FREE_COUNT} > 0`)
         .where(`c.${cols.FREEZED_AFTER} > now()`)
         .where(`c.${cols.DELETED} = 'f'`)
-        .left_join(tableCargoPoints.NAME, 'cp', `cp.${colsCargoPoints.CARGO_ID} = c.id`)
         .left_join(tableVehicleClasses.NAME, 'vc', `vc.id = c.${cols.VEHICLE_TYPE_ID}`)
         .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.DANGER_CLASS_ID}`)
         .left_join(tableEconomicSettings.NAME, 'es', `es.${colsEconomicSettings.COMPANY_ID} = c.${cols.COMPANY_ID}`)
