@@ -5,7 +5,10 @@ const getCargos = require('./cargos/get');
 
 // middlewares
 const { validate } = require('api/middlewares/validator');
-const { injectNotRequiredUser } = require('api/middlewares');
+const {
+    injectNotRequiredUser,
+    injectNotRequiredCompanyId,
+} = require('api/middlewares');
 
 // helpers
 const ValidatorSchemes = require('helpers/validators/schemes');
@@ -21,6 +24,7 @@ router.get(
     validate(ValidatorSchemes.searchCargoAfterModifyingQuery, 'query'),
     validate(ValidatorSchemes.searchCargoAsync, 'query'),
     injectNotRequiredUser,
+    injectNotRequiredCompanyId,
     getCargos.searchCargo,
 );
 
@@ -30,6 +34,7 @@ router.get(
     validate(ValidatorSchemes.modifyStringValues, 'query'),
     validate(ValidatorSchemes.searchAllCargosAfterModifyingQuery, 'query'),
     injectNotRequiredUser,
+    injectNotRequiredCompanyId,
     getCargos.getAllNewCargos,
 );
 

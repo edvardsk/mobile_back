@@ -149,10 +149,27 @@ const injectNotRequiredUser = async (req, res, next) => {
     }
 };
 
+const injectNotRequiredCompanyId = async (req, res, next) => {
+    try {
+        const { user } = res.locals;
+        if (user) {
+            const company = await CompaniesService.getCompanyByUserId(user.id);
+            if (company) {
+                res.locals.companyId = company.id;
+            }
+        }
+
+        return next();
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     isHasPermissions,
     isAuthenticated,
     injectTargetRole,
     injectCompanyData,
     injectNotRequiredUser,
+    injectNotRequiredCompanyId,
 };
