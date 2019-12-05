@@ -17,11 +17,11 @@ const CargoPricesFormatters = require('formatters/cargo-prices');
 const PointsFormatters = require('formatters/points');
 
 // constants
-const { CARGO_STATUSES_MAP } = require('constants/cargo-statuses');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
 const { DEFAULT_LANGUAGE } = require('constants/languages');
 
+const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 const colsCargoPoints = SQL_TABLES.CARGO_POINTS.COLUMNS;
 const colsPoints = SQL_TABLES.POINTS.COLUMNS;
 const colsTranslations = SQL_TABLES.POINT_TRANSLATIONS.COLUMNS;
@@ -32,9 +32,11 @@ const editCargo = async (req, res, next) => {
         const { cargoId } = req.params;
         const { isControlRole } = res.locals;
         const cargoFromDb = await CargosServices.getRecord(cargoId);
-        const currentCargoStatus = cargoFromDb[HOMELESS_COLUMNS.STATUS];
 
-        if (!isControlRole && currentCargoStatus !== CARGO_STATUSES_MAP.NEW) {
+        const countCargos = cargoFromDb[colsCargos.COUNT];
+        const countFreeCargos = cargoFromDb[colsCargos.FREE_COUNT];
+
+        if (!isControlRole && countCargos !== countFreeCargos) {
             return reject(res, ERRORS.CARGOS.UNABLE_TO_EDIT);
         }
 

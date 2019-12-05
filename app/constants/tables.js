@@ -252,6 +252,7 @@ const SQL_TABLES = {
             DESCRIPTION: 'description',
             FREEZED_AFTER: 'freezed_after',
             COUNT: 'count',
+            FREE_COUNT: 'free_count',
             CREATED_AT: 'created_at',
             DELETED: 'deleted',
         },

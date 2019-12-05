@@ -27,11 +27,13 @@ const formatRecordToSave = (companyId, cargoId, statusId, data) => ({
     [cols.LOADING_METHODS]: new SqlArray(data[cols.LOADING_METHODS]),
     [cols.GUARANTEES]: new SqlArray(data[cols.GUARANTEES]),
     [cols.STATUS_ID]: statusId,
+    [cols.FREE_COUNT]: data[cols.COUNT],
     [cols.FREEZED_AFTER]: moment().add(+FREEZE_CARGO_VALUE, FREEZE_CARGO_UNIT).toISOString(),
 });
 
 const formatRecordToEdit = data => ({
     ...data,
+    [cols.FREE_COUNT]: data[cols.COUNT],
     [cols.LOADING_METHODS]: new SqlArray(data[cols.LOADING_METHODS]),
     [cols.GUARANTEES]: new SqlArray(data[cols.GUARANTEES]),
 });
