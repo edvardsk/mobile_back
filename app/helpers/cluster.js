@@ -42,7 +42,7 @@ const clusterizeCargos = (cargos, query) => {
 
     clusters.forEach((cluster, i) => {
         if (cluster.id) {
-            const deepData = index.getLeaves(cluster.id);
+            const deepData = index.getLeaves(cluster.id, Infinity);
             clusters[i]['properties']['ids'] = deepData.map(data => data['properties']['id']);
         }
         if (!cluster.properties.cluster) {
