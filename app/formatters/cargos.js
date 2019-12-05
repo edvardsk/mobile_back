@@ -27,11 +27,13 @@ const formatRecordToSave = (companyId, cargoId, statusId, data) => ({
     [cols.LOADING_METHODS]: new SqlArray(data[cols.LOADING_METHODS]),
     [cols.GUARANTEES]: new SqlArray(data[cols.GUARANTEES]),
     [cols.STATUS_ID]: statusId,
+    [cols.FREE_COUNT]: data[cols.COUNT],
     [cols.FREEZED_AFTER]: moment().add(+FREEZE_CARGO_VALUE, FREEZE_CARGO_UNIT).toISOString(),
 });
 
 const formatRecordToEdit = data => ({
     ...data,
+    [cols.FREE_COUNT]: data[cols.COUNT],
     [cols.LOADING_METHODS]: new SqlArray(data[cols.LOADING_METHODS]),
     [cols.GUARANTEES]: new SqlArray(data[cols.GUARANTEES]),
 });
@@ -39,6 +41,7 @@ const formatRecordToEdit = data => ({
 const formatRecordForList = (cargo, userLanguageId) => {
     const result = {
         id: cargo.id,
+        [cols.COUNT]: cargo[cols.COUNT],
         [cols.UPLOADING_DATE_FROM]: cargo[cols.UPLOADING_DATE_FROM],
         [cols.UPLOADING_DATE_TO]: cargo[cols.UPLOADING_DATE_TO],
         [cols.DOWNLOADING_DATE_FROM]: cargo[cols.DOWNLOADING_DATE_FROM],
@@ -68,6 +71,7 @@ const formatRecordForList = (cargo, userLanguageId) => {
 const formatRecordForResponse = (cargo, userLanguageId) => {
     const result = {
         id: cargo.id,
+        [cols.COUNT]: cargo[cols.COUNT],
         [cols.UPLOADING_DATE_FROM]: cargo[cols.UPLOADING_DATE_FROM],
         [cols.UPLOADING_DATE_TO]: cargo[cols.UPLOADING_DATE_TO],
         [cols.DOWNLOADING_DATE_FROM]: cargo[cols.DOWNLOADING_DATE_FROM],
@@ -101,6 +105,7 @@ const formatRecordForResponse = (cargo, userLanguageId) => {
 
 const formatCargoData = body => {
     const CARGOS_PROPS = new Set([
+        cols.COUNT,
         cols.UPLOADING_DATE_FROM,
         cols.UPLOADING_DATE_TO,
         cols.DOWNLOADING_DATE_FROM,
