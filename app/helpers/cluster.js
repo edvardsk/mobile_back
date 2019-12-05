@@ -45,6 +45,9 @@ const clusterizeCargos = (cargos, query) => {
             const deepData = index.getLeaves(cluster.id);
             clusters[i]['properties']['ids'] = deepData.map(data => data['properties']['id']);
         }
+        if (!cluster.properties.cluster) {
+            clusters[i]['geometry']['coordinates'] = cluster['geometry']['coordinates'].map(coordinate => parseFloat(coordinate));
+        }
     });
     return clusters;
 };
