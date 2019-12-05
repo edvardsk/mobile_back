@@ -251,70 +251,122 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
                 .where(`cpr.${colsCargoPrices.CARGO_ID} = c.id`)
                 .left_join(tableCurrencies.NAME, 'cur', `cur.id = cpr.${colsCargoPrices.CURRENCY_ID}`)
                 .toString()
-        })`, HOMELESS_COLUMNS.PRICES)
-        .field(`ARRAY(${
-            squelPostgres
-                .select()
-                .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
-                .from(tableCargoPoints.NAME, 'cp')
-                .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
-                .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
-                .where(`t.${colsTranslations.LANGUAGE_ID} = '${languageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
-                .where(
-                    squel
-                        .expr()
-                        .and(`ST_Distance(${upGeo}, cp.${colsCargoPoints.COORDINATES}) <= ${searchRadius * 1000}`)
-                        .or(`ST_Distance(${downGeo}, cp.${colsCargoPoints.COORDINATES}) <= ${searchRadius * 1000}`)
-                        .or(`ST_DWithin(ST_Buffer(${geoLine}, ${CARGO_SEARCH_LINE_RADIUS_KM * 1000}), cp.${colsCargoPoints.COORDINATES}, 0)`)
-                )
-                .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
-                .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
-                .toString()
-        })`, HOMELESS_COLUMNS.UPLOADING_POINTS)
-        .field(`ARRAY(${
-            squelPostgres
-                .select()
-                .field('cp.id')
-                .from(tableCargoPoints.NAME, 'cp')
-                .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
-                .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
-                .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
-                .toString()
-        })`, HOMELESS_COLUMNS.ALL_UPLOADING_POINTS)
-        .field(`ARRAY(${
-            squelPostgres
-                .select()
-                .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
-                .from(tableCargoPoints.NAME, 'cp')
-                .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
-                .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
-                .where(`t.${colsTranslations.LANGUAGE_ID} = '${languageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
-                .where(
-                    squel
-                        .expr()
-                        .and(`ST_Distance(${upGeo}, cp.${colsCargoPoints.COORDINATES}) <= ${searchRadius * 1000}`)
-                        .or(`ST_Distance(${downGeo}, cp.${colsCargoPoints.COORDINATES}) <= ${searchRadius * 1000}`)
-                        .or(`ST_DWithin(ST_Buffer(${geoLine}, ${CARGO_SEARCH_LINE_RADIUS_KM * 1000}), cp.${colsCargoPoints.COORDINATES}, 0)`)
-                )
-                .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
-                .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
-                .toString()
-        })`, HOMELESS_COLUMNS.DOWNLOADING_POINTS)
-        .field(`ARRAY(${
-            squelPostgres
-                .select()
-                .field('cp.id')
-                .from(tableCargoPoints.NAME, 'cp')
-                .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
-                .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
-                .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
-                .toString()
-        })`, HOMELESS_COLUMNS.ALL_DOWNLOADING_POINTS)
+        })`, HOMELESS_COLUMNS.PRICES);
+
+    if (downGeo) {
+        expression
+            .field(`ARRAY(${
+                squelPostgres
+                    .select()
+                    .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                    .from(tableCargoPoints.NAME, 'cp')
+                    .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
+                    .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
+                    .where(`t.${colsTranslations.LANGUAGE_ID} = '${languageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
+                    .where(
+                        squel
+                            .expr()
+                            .and(`ST_Distance(${upGeo}, cp.${colsCargoPoints.COORDINATES}) <= ${searchRadius * 1000}`)
+                            .or(`ST_Distance(${downGeo}, cp.${colsCargoPoints.COORDINATES}) <= ${searchRadius * 1000}`)
+                            .or(`ST_DWithin(ST_Buffer(${geoLine}, ${CARGO_SEARCH_LINE_RADIUS_KM * 1000}), cp.${colsCargoPoints.COORDINATES}, 0)`)
+                    )
+                    .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
+                    .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
+                    .toString()
+            })`, HOMELESS_COLUMNS.UPLOADING_POINTS)
+            .field(`ARRAY(${
+                squelPostgres
+                    .select()
+                    .field('cp.id')
+                    .from(tableCargoPoints.NAME, 'cp')
+                    .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
+                    .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
+                    .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
+                    .toString()
+            })`, HOMELESS_COLUMNS.ALL_UPLOADING_POINTS) // todo: find out better algorithm for it
+            .field(`ARRAY(${
+                squelPostgres
+                    .select()
+                    .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                    .from(tableCargoPoints.NAME, 'cp')
+                    .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
+                    .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
+                    .where(`t.${colsTranslations.LANGUAGE_ID} = '${languageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
+                    .where(
+                        squel
+                            .expr()
+                            .and(`ST_Distance(${upGeo}, cp.${colsCargoPoints.COORDINATES}) <= ${searchRadius * 1000}`)
+                            .or(`ST_Distance(${downGeo}, cp.${colsCargoPoints.COORDINATES}) <= ${searchRadius * 1000}`)
+                            .or(`ST_DWithin(ST_Buffer(${geoLine}, ${CARGO_SEARCH_LINE_RADIUS_KM * 1000}), cp.${colsCargoPoints.COORDINATES}, 0)`)
+                    )
+                    .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
+                    .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
+                    .toString()
+            })`, HOMELESS_COLUMNS.DOWNLOADING_POINTS)
+            .field(`ARRAY(${
+                squelPostgres
+                    .select()
+                    .field('cp.id')
+                    .from(tableCargoPoints.NAME, 'cp')
+                    .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
+                    .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
+                    .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
+                    .toString()
+            })`, HOMELESS_COLUMNS.ALL_DOWNLOADING_POINTS);
+    } else {
+        expression
+            .field(`ARRAY(${
+                squelPostgres
+                    .select()
+                    .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                    .from(tableCargoPoints.NAME, 'cp')
+                    .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
+                    .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
+                    .where(`t.${colsTranslations.LANGUAGE_ID} = '${languageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
+                    .where(`ST_Distance(${upGeo}, cp.${colsCargoPoints.COORDINATES}) <= ${searchRadius * 1000}`)
+                    .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
+                    .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
+                    .toString()
+            })`, HOMELESS_COLUMNS.UPLOADING_POINTS)
+            .field(`ARRAY(${
+                squelPostgres
+                    .select()
+                    .field('cp.id')
+                    .from(tableCargoPoints.NAME, 'cp')
+                    .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
+                    .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
+                    .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
+                    .toString()
+            })`, HOMELESS_COLUMNS.ALL_UPLOADING_POINTS)
+            .field(`ARRAY(${
+                squelPostgres
+                    .select()
+                    .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                    .from(tableCargoPoints.NAME, 'cp')
+                    .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
+                    .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
+                    .where(`t.${colsTranslations.LANGUAGE_ID} = '${languageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
+                    .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
+                    .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
+                    .toString()
+            })`, HOMELESS_COLUMNS.DOWNLOADING_POINTS);
+    }
+
+    if (uploadingDate) {
+        expression
+            .where(`(c.${cols.UPLOADING_DATE_TO} IS NOT NULL AND '${uploadingDate}' <= c.${cols.UPLOADING_DATE_TO}) OR
+                c.${cols.UPLOADING_DATE_TO} IS NULL
+            `);
+    }
+    if (downloadingDate) {
+        expression
+            .where(`(c.${cols.DOWNLOADING_DATE_FROM} IS NOT NULL AND '${downloadingDate}' >= c.${cols.DOWNLOADING_DATE_FROM}) OR
+                c.${cols.DOWNLOADING_DATE_FROM} IS NULL
+            `);
+    }
+
+    expression
         .where(`cs.${colsCargoStatuses.NAME} = '${CARGO_STATUSES_MAP.NEW}'`)
-        .where(`c.${cols.UPLOADING_DATE_FROM} <= '${uploadingDate}'`)
-        .where(`c.${cols.UPLOADING_DATE_TO} >= '${uploadingDate}'`)
-        .where(`c.${cols.DOWNLOADING_DATE_FROM} <= '${downloadingDate}'`)
-        .where(`c.${cols.DOWNLOADING_DATE_TO} >= '${downloadingDate}'`)
         .where(`c.${cols.FREEZED_AFTER} > now()`)
         .where(`c.${cols.DELETED} = 'f'`);
 

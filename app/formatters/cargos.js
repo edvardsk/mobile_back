@@ -167,7 +167,7 @@ const uniqueByLanguageId = (list, languageId) => {
 const formatRecordForSearchResponse = (
     cargos, uploadingPoint, downloadingPoint, searchLanguageId, defaultEconomicSettings, currencyPriorities
 ) => {
-    return cargos
+    const cargosInsideFigure = cargos
         .map(cargo => {
             const formattedCargo = formatRecordForList(cargo);
             return {
@@ -180,16 +180,21 @@ const formatRecordForSearchResponse = (
             };
         })
         .filter(cargo => {
-            return cargo[HOMELESS_COLUMNS.UPLOADING_POINTS].length === cargo[HOMELESS_COLUMNS.ALL_UPLOADING_POINTS].length &&
-                cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS].length === cargo[HOMELESS_COLUMNS.ALL_DOWNLOADING_POINTS].length;
-        })
-        .filter(cargo => {
-            const upPoints = cargo[HOMELESS_COLUMNS.UPLOADING_POINTS];
-            const downPoints = cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS];
-            const upPointCenter = geolib.getCenter(upPoints);
-            const downPointCenter = geolib.getCenter(downPoints);
-            return calculateAngleBetweenVectors(upPointCenter, downPointCenter, uploadingPoint, downloadingPoint) <= 90;
+            return downloadingPoint
+                ? cargo[HOMELESS_COLUMNS.UPLOADING_POINTS].length === cargo[HOMELESS_COLUMNS.ALL_UPLOADING_POINTS].length &&
+                cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS].length === cargo[HOMELESS_COLUMNS.ALL_DOWNLOADING_POINTS].length
+                : cargo[HOMELESS_COLUMNS.UPLOADING_POINTS].length === cargo[HOMELESS_COLUMNS.ALL_UPLOADING_POINTS].length;
         });
+    return downloadingPoint
+        ? cargosInsideFigure
+            .filter(cargo => {
+                const upPoints = cargo[HOMELESS_COLUMNS.UPLOADING_POINTS];
+                const downPoints = cargo[HOMELESS_COLUMNS.DOWNLOADING_POINTS];
+                const upPointCenter = geolib.getCenter(upPoints);
+                const downPointCenter = geolib.getCenter(downPoints);
+                return calculateAngleBetweenVectors(upPointCenter, downPointCenter, uploadingPoint, downloadingPoint) <= 90;
+            })
+        : cargosInsideFigure;
 };
 
 const formatRecordForSearchAllResponse = (cargos, defaultEconomicSettings, currencyPriorities) => {

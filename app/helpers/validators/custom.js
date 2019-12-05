@@ -3,6 +3,9 @@ const moment = require('moment');
 // constants
 const { PAGINATION_PARAMS } = require('constants/pagination-sorting');
 const { STRING_BOOLEANS_MAP } = require('constants/index');
+const { SQL_TABLES } = require('constants/tables');
+
+const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 
 const parseStringToJson = (data, dataPath, parentData, parentDataProperty) => {
     try {
@@ -78,6 +81,16 @@ const compareYears = (value1, value2) => {
     return year1 - year2;
 };
 
+const validateDownloadingDateMinimum = (meta, downloadingDateTo, schema, key, data) => {
+    const downloadingDateFrom = data[colsCargos.DOWNLOADING_DATE_FROM];
+    const uploadingDateFrom = data[colsCargos.UPLOADING_DATE_FROM];
+    if (downloadingDateFrom) {
+        return moment(downloadingDateFrom) < moment(downloadingDateTo);
+    } else {
+        return moment(uploadingDateFrom) < moment(downloadingDateTo);
+    }
+};
+
 module.exports = {
     parseStringToJson,
     parseStringToFloat,
@@ -85,4 +98,5 @@ module.exports = {
     parseStringBooleanToBoolean,
     parsePaginationOptions,
     compareYears,
+    validateDownloadingDateMinimum,
 };
