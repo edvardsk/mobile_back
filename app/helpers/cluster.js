@@ -23,9 +23,15 @@ const clusterizeCargos = (cargos, query) => {
 
     index.load(goeCargo);
 
-    const clusterSW = query[HOMELESS_COLUMNS.CLUSTER_SW];
-    const clusterNE = query[HOMELESS_COLUMNS.CLUSTER_NE];
-    const clusterZoom = query[HOMELESS_COLUMNS.ZOOM];
+    const clusterSW = query[HOMELESS_COLUMNS.CLUSTER_SW] || {
+        [HOMELESS_COLUMNS.LONGITUDE]: -180,
+        [HOMELESS_COLUMNS.LATITUDE]: -85,
+    };
+    const clusterNE = query[HOMELESS_COLUMNS.CLUSTER_NE] || {
+        [HOMELESS_COLUMNS.LONGITUDE]: 180,
+        [HOMELESS_COLUMNS.LATITUDE]: 85,
+    };
+    const clusterZoom = query[HOMELESS_COLUMNS.ZOOM] || 1;
 
     const clusters = index.getClusters([
         parseFloat(clusterSW[HOMELESS_COLUMNS.LONGITUDE]),
