@@ -414,9 +414,9 @@ const selectAllNewRecordsForSearch = (languageId, companyId) => {
         .field(`vc.${colsVehicleClasses.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
         .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
         .field(`json_build_object(
-        '${colsEconomicSettings.PERCENT_FROM_TRANSPORTER}', ${colsEconomicSettings.PERCENT_FROM_TRANSPORTER},
-        '${colsEconomicSettings.PERCENT_FROM_HOLDER}', ${colsEconomicSettings.PERCENT_FROM_HOLDER}
-    )`, HOMELESS_COLUMNS.ECONOMIC_SETTINGS)
+            '${colsEconomicSettings.PERCENT_FROM_TRANSPORTER}', ${colsEconomicSettings.PERCENT_FROM_TRANSPORTER},
+            '${colsEconomicSettings.PERCENT_FROM_HOLDER}', ${colsEconomicSettings.PERCENT_FROM_HOLDER}
+        )`, HOMELESS_COLUMNS.ECONOMIC_SETTINGS)
         .field(`ARRAY(${
             squelPostgres
                 .select()
