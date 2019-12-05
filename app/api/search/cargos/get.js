@@ -25,7 +25,7 @@ const colsCurrencyPriorities = SQL_TABLES.CURRENCY_PRIORITIES.COLUMNS;
 
 const searchCargo = async (req, res, next) => {
     try {
-        const { user } = res.locals;
+        const { user, companyId } = res.locals;
         const { query } = req;
         const language = query[HOMELESS_COLUMNS.LANGUAGE_CODE];
         let languageCode = LANGUAGE_CODES_MAP.EN;
@@ -77,7 +77,7 @@ const searchCargo = async (req, res, next) => {
             downloadingDate: query[HOMELESS_COLUMNS.DOWNLOADING_DATE],
         };
 
-        const cargos = await CargosServices.getRecordsForSearch(coordinates, dates, searchRadius, searchLanguageId, query);
+        const cargos = await CargosServices.getRecordsForSearch(coordinates, dates, searchRadius, searchLanguageId, companyId, query);
         const formattedCargos = formatRecordForSearchResponse(
             cargos, uploadingPoint, downloadingPoint, searchLanguageId, defaultEconomicSettings, formattedCurrencyPriorities
         );
@@ -94,7 +94,7 @@ const searchCargo = async (req, res, next) => {
 
 const getAllNewCargos = async (req, res, next) => {
     try {
-        const { user } = res.locals;
+        const { user, companyId } = res.locals;
         const { query } = req;
         const language = query[HOMELESS_COLUMNS.LANGUAGE_CODE];
         let languageCode = LANGUAGE_CODES_MAP.EN;
@@ -117,7 +117,7 @@ const getAllNewCargos = async (req, res, next) => {
 
         const searchLanguageId = (userLanguage && userLanguage.id) || defaultLanguage.id;
 
-        const cargos = await CargosServices.getAllNewRecordsForSearch(searchLanguageId);
+        const cargos = await CargosServices.getAllNewRecordsForSearch(searchLanguageId, companyId);
         const formattedCargos = formatRecordForSearchAllResponse(cargos, defaultEconomicSettings, formattedCurrencyPriorities);
 
         const clusters = clusterizeCargos(formattedCargos, query);
