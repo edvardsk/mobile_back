@@ -9,7 +9,10 @@ const {
 
 // helpers
 const { coordinatesFormat, coordinatesFormatWithoutName } = require('./helpers');
-const { DIGITS_VALIDATION_PATTERN } = require('./patterns');
+const {
+    DIGITS_VALIDATION_PATTERN,
+    MAX_SAFE_INTEGER_POSTGRES,
+} = require('./patterns');
 
 // exported schemes
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
@@ -39,6 +42,11 @@ const createOrEditCargo = {
                 ],
                 additionalProperties: false,
             },
+        },
+        [colsCargos.COUNT]: {
+            type: 'number',
+            minimum: 1,
+            maximum: MAX_SAFE_INTEGER_POSTGRES,
         },
         [colsCargos.UPLOADING_DATE_FROM]: {
             type: 'string',
@@ -137,6 +145,7 @@ const createOrEditCargo = {
     },
     required:[
         HOMELESS_COLUMNS.PRICES,
+        colsCargos.COUNT,
         colsCargos.UPLOADING_DATE_FROM,
         colsCargos.DOWNLOADING_DATE_TO,
         colsCargos.GROSS_WEIGHT,

@@ -9,6 +9,7 @@ const SIZES_VALIDATION_PATTERN = '^[1-9][0-9]{0,2}(\\.[0-9]{1,2})?$|^0.[0-9]{1,2
 const SUPPORTED_MIMTYPES = ['application/pdf', 'image/jpeg'];
 
 const POSTGRES_MAX_STRING_LENGTH = 255;
+const MAX_SAFE_INTEGER_POSTGRES = 2147483647;
 
 module.exports = {
     DIGITS_VALIDATION_PATTERN,
@@ -19,4 +20,5 @@ module.exports = {
     SUPPORTED_MIMTYPES,
     POSTGRES_MAX_STRING_LENGTH,
     SIZES_VALIDATION_PATTERN,
+    MAX_SAFE_INTEGER_POSTGRES,
 };

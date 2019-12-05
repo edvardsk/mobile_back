@@ -251,6 +251,7 @@ const SQL_TABLES = {
             PACKING_DESCRIPTION: 'packing_description',
             DESCRIPTION: 'description',
             FREEZED_AFTER: 'freezed_after',
+            COUNT: 'count',
             CREATED_AT: 'created_at',
             DELETED: 'deleted',
         },
