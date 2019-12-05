@@ -351,12 +351,22 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
                     .toString()
             })`, HOMELESS_COLUMNS.DOWNLOADING_POINTS);
     }
+
+    if (uploadingDate) {
+        expression
+            .where(`(c.${cols.UPLOADING_DATE_TO} IS NOT NULL AND '${uploadingDate}' <= c.${cols.UPLOADING_DATE_TO}) OR
+                c.${cols.UPLOADING_DATE_TO} IS NULL
+            `);
+    }
+    if (downloadingDate) {
+        expression
+            .where(`(c.${cols.DOWNLOADING_DATE_FROM} IS NOT NULL AND '${downloadingDate}' >= c.${cols.DOWNLOADING_DATE_FROM}) OR
+                c.${cols.DOWNLOADING_DATE_FROM} IS NULL
+            `);
+    }
+
     expression
         .where(`cs.${colsCargoStatuses.NAME} = '${CARGO_STATUSES_MAP.NEW}'`)
-        .where(`c.${cols.UPLOADING_DATE_FROM} <= '${uploadingDate}'`)
-        .where(`c.${cols.UPLOADING_DATE_TO} >= '${uploadingDate}'`)
-        .where(`c.${cols.DOWNLOADING_DATE_FROM} <= '${downloadingDate}'`)
-        .where(`c.${cols.DOWNLOADING_DATE_TO} >= '${downloadingDate}'`)
         .where(`c.${cols.FREEZED_AFTER} > now()`)
         .where(`c.${cols.DELETED} = 'f'`);
 

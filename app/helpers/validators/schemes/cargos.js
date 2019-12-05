@@ -140,7 +140,7 @@ const createOrEditCargo = {
     required:[
         HOMELESS_COLUMNS.PRICES,
         colsCargos.UPLOADING_DATE_FROM,
-        colsCargos.DOWNLOADING_DATE_FROM,
+        colsCargos.DOWNLOADING_DATE_FROM, // todo: fix
         colsCargos.GROSS_WEIGHT,
         colsCargos.WIDTH,
         colsCargos.HEIGHT,
@@ -270,8 +270,6 @@ const searchCargoQuery = {
     },
     required: [
         HOMELESS_COLUMNS.UPLOADING_POINT,
-        HOMELESS_COLUMNS.UPLOADING_DATE,
-        HOMELESS_COLUMNS.DOWNLOADING_DATE,
         HOMELESS_COLUMNS.SEARCH_RADIUS,
     ],
     additionalProperties: false,
