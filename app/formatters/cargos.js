@@ -20,13 +20,12 @@ const colsEconomicSettings = SQL_TABLES.ECONOMIC_SETTINGS.COLUMNS;
 const colsCargoPrices = SQL_TABLES.CARGO_PRICES.COLUMNS;
 const colsCurrencyPriorities = SQL_TABLES.CURRENCY_PRIORITIES.COLUMNS;
 
-const formatRecordToSave = (companyId, cargoId, statusId, data) => ({
+const formatRecordToSave = (companyId, cargoId, data) => ({
     ...data,
     id: cargoId,
     [cols.COMPANY_ID]: companyId,
     [cols.LOADING_METHODS]: new SqlArray(data[cols.LOADING_METHODS]),
     [cols.GUARANTEES]: new SqlArray(data[cols.GUARANTEES]),
-    [cols.STATUS_ID]: statusId,
     [cols.FREE_COUNT]: data[cols.COUNT],
     [cols.FREEZED_AFTER]: moment().add(+FREEZE_CARGO_VALUE, FREEZE_CARGO_UNIT).toISOString(),
 });

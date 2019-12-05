@@ -1,8 +1,6 @@
 const express = require('express');
 const { ROUTES } = require('constants/routes');
 
-const getCargoStatuses = require('./cargo-statuses/get');
-
 const getVehicleTypes = require('./vehicle-types/get');
 
 const getDangerClasses = require('./danger-classes/get');
@@ -16,14 +14,6 @@ const { isHasPermissions } = require('api/middlewares');
 const { PERMISSIONS } = require('constants/system');
 
 const router = express.Router();
-
-
-// cargo statuses
-router.get(
-    ROUTES.OTHERS.CARGO_STATUSES.BASE + ROUTES.OTHERS.CARGO_STATUSES.GET_ALL,
-    isHasPermissions([PERMISSIONS.CRUD_CARGO]),
-    getCargoStatuses.getStatuses,
-);
 
 
 // vehicle types
