@@ -52,14 +52,19 @@ const searchCargo = async (req, res, next) => {
         const searchRadius = query[HOMELESS_COLUMNS.SEARCH_RADIUS];
 
         const upGeo = new Geo(uploadingPoint[HOMELESS_COLUMNS.LONGITUDE], uploadingPoint[HOMELESS_COLUMNS.LATITUDE]);
-        const downGeo = new Geo(downloadingPoint[HOMELESS_COLUMNS.LONGITUDE], downloadingPoint[HOMELESS_COLUMNS.LATITUDE]);
 
-        const geoLine = new GeoLine(
-            uploadingPoint[HOMELESS_COLUMNS.LONGITUDE],
-            uploadingPoint[HOMELESS_COLUMNS.LATITUDE],
-            downloadingPoint[HOMELESS_COLUMNS.LONGITUDE],
-            downloadingPoint[HOMELESS_COLUMNS.LATITUDE]
-        );
+        let downGeo = null;
+        let geoLine = null;
+        if (downloadingPoint) {
+            downGeo = new Geo(downloadingPoint[HOMELESS_COLUMNS.LONGITUDE], downloadingPoint[HOMELESS_COLUMNS.LATITUDE]);
+
+            geoLine = new GeoLine(
+                uploadingPoint[HOMELESS_COLUMNS.LONGITUDE],
+                uploadingPoint[HOMELESS_COLUMNS.LATITUDE],
+                downloadingPoint[HOMELESS_COLUMNS.LONGITUDE],
+                downloadingPoint[HOMELESS_COLUMNS.LATITUDE]
+            );
+        }
 
         const coordinates = {
             upGeo,
