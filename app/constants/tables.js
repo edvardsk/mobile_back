@@ -414,6 +414,28 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    DEALS: {
+        NAME: 'deals',
+        COLUMNS: {
+            CARGO_ID: 'cargo_id',
+            TRANSPORTER_COMPANY_ID: 'transporter_company_id',
+            DRIVER_ID: 'driver_id',
+            CAR_ID: 'car_id',
+            TRAILER_ID: 'trailer_id',
+            PAY_CURRENCY_ID: 'pay_currency_id',
+            PAY_VALUE: 'pay_value',
+            CREATED_AT: 'created_at',
+        },
+    },
+    DEAL_HISTORY_STATUSES: {
+        NAME: 'deal_history_statuses',
+        COLUMNS: {
+            DEAL_ID: 'deal_id',
+            INITIATOR_ID: 'initiator_id',
+            DEAL_STATUS_ID: 'deal_status_id',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
