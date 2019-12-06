@@ -202,6 +202,15 @@ const requiredExistingCargoInCompanyAsyncFunc = ({ companyId }) => ({
     },
 });
 
+const requiredExistingCargoAsync = {
+    $async: true,
+    properties: {
+        cargoId: {
+            cargo_not_exist: {},
+        },
+    },
+};
+
 const searchCargoQuery = {
     properties: {
         [HOMELESS_COLUMNS.ZOOM]: {
@@ -436,6 +445,7 @@ module.exports = {
     createOrEditCargoAsync,
     requiredCargoId,
     requiredExistingCargoInCompanyAsyncFunc,
+    requiredExistingCargoAsync,
     modifyStringValues,
     searchCargoQuery,
     searchCargoAfterModifyingQuery,

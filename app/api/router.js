@@ -9,6 +9,7 @@ const companies = require('./companies');
 const others = require('./others');
 const settings = require('./settings');
 const search = require('./search');
+const cargos = require('./cargos');
 
 const router = express.Router();
 
@@ -20,5 +21,6 @@ router.use(ROUTES.COMPANIES.BASE, companies);
 router.use(ROUTES.OTHERS.BASE, others);
 router.use(ROUTES.SETTINGS.BASE, settings);
 router.use(ROUTES.SEARCH.BASE, search);
+router.use(ROUTES.CARGOS.BASE, cargos);
 
 module.exports = router;
