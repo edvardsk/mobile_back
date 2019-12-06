@@ -304,6 +304,13 @@ const ROUTES = {
                 BASE: IDS.TRAILER_ID + BASES.UNLINK,
                 POST: '',
             },
+            DEALS: {
+                BASE: BASES.DEALS,
+                AVAILABLE: {
+                    BASE: BASES.AVAILABLE,
+                    GET: '',
+                },
+            },
         },
 
     },

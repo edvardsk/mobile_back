@@ -233,6 +233,21 @@ const trailersFilterQuery = {
     },
 };
 
+const trailersDealsAvailableFilterQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.FILTER]: {
+            type: 'object',
+            properties: {
+                [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: {
+                    type: 'string',
+                    minLength: 1,
+                },
+            },
+            additionalProperties: false,
+        },
+    },
+};
+
 module.exports = {
     basePaginationQuery,
     basePaginationModifyQuery,
@@ -251,4 +266,5 @@ module.exports = {
     carsFilterQuery,
     trailersFilterQuery,
     carsDealsAvailableFilterQuery,
+    trailersDealsAvailableFilterQuery,
 };

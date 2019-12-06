@@ -11,6 +11,8 @@ const {
     selectRecordByStateNumberAndActive,
     selectRecordByIdFull,
     selectRecordByIdAndCompanyIdLight,
+    selectAvailableTrailersByCompanyIdPaginationSorting,
+    selectAvailableCountTrailersByCompanyId,
 } = require('sql-helpers/trailers');
 
 // services
@@ -73,6 +75,15 @@ const linkTrailerAndCar = (trailerId, carId) => editRecord(trailerId, {
 const unlinkTrailerFromCar = id => editRecord(id, {
     [colsTrailers.CAR_ID]: null,
 });
+
+const getAvailableTrailersPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
+    manyOrNone(selectAvailableTrailersByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
+);
+
+const getCountAvailableTrailers = (companyId, filter) => (
+    one(selectAvailableCountTrailersByCompanyId(companyId, filter))
+        .then(({ count }) => +count)
+);
 
 const checkTrailerStateNumberExistsOpposite = async (meta, stateNumber) => {
     const { trailerId } = meta;
@@ -144,6 +155,8 @@ module.exports = {
     markAsDeleted,
     linkTrailerAndCar,
     unlinkTrailerFromCar,
+    getAvailableTrailersPaginationSorting,
+    getCountAvailableTrailers,
 
     checkTrailerStateNumberExistsOpposite,
     checkIsPassedFileWithDangerClass,

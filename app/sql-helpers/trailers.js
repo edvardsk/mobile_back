@@ -159,6 +159,59 @@ const selectRecordByIdAndCompanyIdLight = (id, companyId) => squelPostgres
     .where(`${cols.DELETED} = 'f'`)
     .toString();
 
+const selectAvailableTrailersByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => {
+    let expression = squelPostgres
+        .select()
+        .field('t.*')
+        .field(`tsn.${colsTrailersStateNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
+        .field(`vt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
+        .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
+        .from(table.NAME, 't')
+        .where(`t.${cols.COMPANY_ID} = '${companyId}'`)
+        .where(`t.${cols.CAR_ID} IS NULL`)
+        .where(`t.${cols.DELETED} = 'f'`)
+        .where(`tsn.${colsTrailersStateNumbers.IS_ACTIVE} = 't'`);
+
+    expression = setAvailableTrailersFilter(expression, filter);
+    return expression
+        .left_join(tableTrailersStateNumbers.NAME, 'tsn', `tsn.${colsTrailersStateNumbers.TRAILER_ID} = t.id`)
+        .left_join(tableVehicleTypes.NAME, 'vt', `vt.id = t.${cols.TRAILER_VEHICLE_TYPE_ID}`)
+        .left_join(tableDangerClasses.NAME, 'dc', `dc.id = t.${cols.TRAILER_DANGER_CLASS_ID}`)
+        .order(sortColumn, asc)
+        .limit(limit)
+        .offset(offset)
+        .toString();
+};
+
+const selectAvailableCountTrailersByCompanyId = (companyId, filter) => {
+    let expression = squelPostgres
+        .select()
+        .field('COUNT(t.id)')
+        .from(table.NAME, 't')
+        .where(`t.${cols.CAR_ID} IS NULL`)
+        .where(`t.${cols.COMPANY_ID} = '${companyId}'`)
+        .where(`t.${cols.DELETED} = 'f'`)
+        .where(`tsn.${colsTrailersStateNumbers.IS_ACTIVE} = 't'`);
+
+    expression = setAvailableTrailersFilter(expression, filter);
+    return expression
+        .left_join(tableTrailersStateNumbers.NAME, 'tsn', `tsn.${colsTrailersStateNumbers.TRAILER_ID} = t.id`)
+        .toString();
+};
+
+const setAvailableTrailersFilter = (expression, filteringObject) => {
+    const filteringObjectSQLExpressions = [
+        [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER, `tsn.${colsTrailersStateNumbers.NUMBER}::text ILIKE '%${filteringObject[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]}%'`],
+    ];
+
+    for (let [key, exp] of filteringObjectSQLExpressions) {
+        if (get(filteringObject, key) !== undefined) {
+            expression = expression.where(exp);
+        }
+    }
+    return expression;
+};
+
 module.exports = {
     insertRecord,
     updateRecord,
@@ -169,4 +222,6 @@ module.exports = {
     selectRecordByStateNumberAndActive,
     selectRecordByIdFull,
     selectRecordByIdAndCompanyIdLight,
+    selectAvailableTrailersByCompanyIdPaginationSorting,
+    selectAvailableCountTrailersByCompanyId,
 };

@@ -31,6 +31,8 @@ const deleteTrailers = require('./trailers/delete');
 const putTrailers = require('./trailers/put');
 const postLinkingTrailers = require('./trailers/linking/post');
 
+const getTrailersDeals = require('./trailers/deals/get');
+
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
 const { validate } = require('api/middlewares/validator');
@@ -468,6 +470,18 @@ router.put(
     validate(({ requestParams }) => ValidatorSchemes.editTrailerFilesCheckDangerClassAsyncFunc({ trailerId: requestParams.trailerId}), ['body', 'files']),
     validate(ValidatorSchemes.modifyEditCarTruckFloats),
     putTrailers.editTrailer,
+);
+
+router.get(
+    ROUTES.COMPANIES.TRAILERS.BASE + ROUTES.COMPANIES.TRAILERS.DEALS.BASE + ROUTES.COMPANIES.TRAILERS.DEALS.AVAILABLE.BASE + ROUTES.COMPANIES.TRAILERS.DEALS.AVAILABLE.GET,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.basePaginationQuery, 'query'),
+    validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
+    validate(ValidatorSchemes.modifyFilterQuery, 'query'),
+    validate(ValidatorSchemes.trailersDealsAvailableFilterQuery, 'query'),
+    injectCompanyData,
+    getTrailersDeals.getAvailableTrailers,
 );
 
 // trailers link/unlink
