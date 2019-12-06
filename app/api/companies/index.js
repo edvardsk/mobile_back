@@ -24,6 +24,8 @@ const getCars = require('./cars/get');
 const putCars = require('./cars/put');
 const deleteCars = require('./cars/delete');
 
+const getCarsDeals = require('./cars/deals/get');
+
 const getTrailers = require('./trailers/get');
 const deleteTrailers = require('./trailers/delete');
 const putTrailers = require('./trailers/put');
@@ -403,6 +405,18 @@ router.delete(
     validate(ValidatorSchemes.requiredCarId, 'params'),
     validate(({ company }) => ValidatorSchemes.requiredExistingCarInCompanyAsyncFunc({ companyId: company.id }), 'params'),
     deleteCars.removeCar,
+);
+
+router.get(
+    ROUTES.COMPANIES.CARS.BASE + ROUTES.COMPANIES.CARS.DEALS.BASE + ROUTES.COMPANIES.CARS.DEALS.AVAILABLE.BASE + ROUTES.COMPANIES.CARS.DEALS.AVAILABLE.GET,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.basePaginationQuery, 'query'),
+    validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
+    validate(ValidatorSchemes.modifyFilterQuery, 'query'),
+    validate(ValidatorSchemes.carsDealsAvailableFilterQuery, 'query'),
+    injectCompanyData,
+    getCarsDeals.getAvailableCars,
 );
 
 

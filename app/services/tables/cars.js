@@ -11,6 +11,8 @@ const {
     selectRecordByIdAndCompanyIdLight,
     selectRecordByIdFull,
     selectRecordByIdAndCompanyIdWithoutTrailer,
+    selectAvailableCarsByCompanyIdPaginationSorting,
+    selectCountAvailableCarsByCompanyId,
 } = require('sql-helpers/cars');
 
 // services
@@ -60,6 +62,15 @@ const markAsDeleted = id => editRecord(id, {
 const markAsDeletedAsTransaction = id => [updateRecord(id, {
     [colsCars.DELETED]: true,
 }), OPERATIONS.ONE];
+
+const getAvailableCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
+    manyOrNone(selectAvailableCarsByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
+);
+
+const getCountAvailableCars = (companyId, filter) => (
+    one(selectCountAvailableCarsByCompanyId(companyId, filter))
+        .then(({ count }) => +count)
+);
 
 const checkCarStateNumberExistsOpposite = async (meta, stateNumber) => {
     const { carId } = meta;
@@ -134,6 +145,8 @@ module.exports = {
     getRecordFullStrict,
     markAsDeleted,
     markAsDeletedAsTransaction,
+    getAvailableCarsByCompanyIdPaginationSorting,
+    getCountAvailableCars,
 
     checkCarStateNumberExistsOpposite,
     checkCarInCompanyExist,

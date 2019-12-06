@@ -200,6 +200,21 @@ const carsFilterQuery = {
     },
 };
 
+const carsDealsAvailableFilterQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.FILTER]: {
+            type: 'object',
+            properties: {
+                [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: {
+                    type: 'string',
+                    minLength: 1,
+                },
+            },
+            additionalProperties: false,
+        },
+    },
+};
+
 const trailersFilterQuery = {
     properties: {
         [HOMELESS_COLUMNS.FILTER]: {
@@ -235,4 +250,5 @@ module.exports = {
     cargosFilterQuery,
     carsFilterQuery,
     trailersFilterQuery,
+    carsDealsAvailableFilterQuery,
 };

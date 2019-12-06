@@ -53,6 +53,8 @@ const BASES = {
     LINK: '/link',
     UNLINK: '/unlink',
     SEARCH: '/search',
+    AVAILABLE: '/available',
+    DEALS: '/deals',
 };
 
 const IDS = {
@@ -280,6 +282,13 @@ const ROUTES = {
             GET: IDS.CAR_ID,
             PUT: IDS.CAR_ID,
             DELETE: IDS.CAR_ID,
+            DEALS: {
+                BASE: BASES.DEALS,
+                AVAILABLE: {
+                    BASE: BASES.AVAILABLE,
+                    GET: '',
+                },
+            },
         },
         TRAILERS: {
             BASE: IDS.ME_OR_ID + BASES.TRAILERS,

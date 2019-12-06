@@ -481,6 +481,7 @@ const HOMELESS_COLUMNS = {
     PRICES: 'prices',
     ORIGINAL: 'original',
     CAR_DANGER_CLASS: 'car_danger_class',
+    CAR_VEHICLE_TYPE: 'car_vehicle_type',
     CAR_VEHICLE_REGISTRATION_PASSPORT: 'car_vehicle_registration_passport',
     CAR_VEHICLE_TECHNICAL_INSPECTION: 'car_vehicle_technical_inspection',
     TRAILER_DANGER_CLASS: 'trailer_danger_class',
@@ -502,6 +503,8 @@ const HOMELESS_COLUMNS = {
     CLUSTER_NE: 'cluster_ne',
     FEES: 'fees',
     ECONOMIC_SETTINGS: 'economic_settings',
+    CAR_DANGER_CLASS_NAME: 'car_danger_class_name',
+    CAR_VEHICLE_TYPE_NAME: 'car_vehicle_type_name',
 };
 
 module.exports = {
