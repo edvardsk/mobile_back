@@ -505,6 +505,9 @@ const HOMELESS_COLUMNS = {
     ECONOMIC_SETTINGS: 'economic_settings',
     CAR_DANGER_CLASS_NAME: 'car_danger_class_name',
     CAR_VEHICLE_TYPE_NAME: 'car_vehicle_type_name',
+    FULL_NAME: 'full_name',
+    DRIVER_ID: 'driver_id',
+    USER_ID: 'user_id',
 };
 
 module.exports = {

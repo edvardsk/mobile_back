@@ -55,6 +55,7 @@ const BASES = {
     SEARCH: '/search',
     AVAILABLE: '/available',
     DEALS: '/deals',
+    DRIVERS: '/drivers',
 };
 
 const IDS = {
@@ -312,7 +313,16 @@ const ROUTES = {
                 },
             },
         },
-
+        DRIVERS: {
+            BASE: IDS.ME_OR_ID + BASES.DRIVERS,
+            DEALS: {
+                BASE: BASES.DEALS,
+                AVAILABLE: {
+                    BASE: BASES.AVAILABLE,
+                    GET: '',
+                },
+            },
+        },
     },
     OTHERS: {
         BASE: BASES.OTHERS,

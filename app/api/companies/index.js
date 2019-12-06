@@ -33,6 +33,8 @@ const postLinkingTrailers = require('./trailers/linking/post');
 
 const getTrailersDeals = require('./trailers/deals/get');
 
+const getDriversDeals = require('./drivers/deals/get');
+
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
 const { validate } = require('api/middlewares/validator');
@@ -505,6 +507,19 @@ router.post(
     validate(ValidatorSchemes.requiredTrailerId, 'params'),
     validate(({ company }) => ValidatorSchemes.requiredExistingTrailerInCompanyWithCarAsyncFunc({ companyId: company.id }), 'params'),
     postLinkingTrailers.unlinkTrailerFromCar,
+);
+
+// drivers
+router.get(
+    ROUTES.COMPANIES.DRIVERS.BASE + ROUTES.COMPANIES.DRIVERS.DEALS.BASE + ROUTES.COMPANIES.DRIVERS.DEALS.AVAILABLE.BASE + ROUTES.COMPANIES.DRIVERS.DEALS.AVAILABLE.GET,
+    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.basePaginationQuery, 'query'),
+    validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
+    validate(ValidatorSchemes.modifyFilterQuery, 'query'),
+    validate(ValidatorSchemes.driversDealsAvailableFilterQuery, 'query'),
+    injectCompanyData,
+    getDriversDeals.getAvailableDrivers,
 );
 
 module.exports = router;
