@@ -45,6 +45,7 @@ const formatRecordForList = (cargo, userLanguageId) => {
         [cols.UPLOADING_DATE_TO]: cargo[cols.UPLOADING_DATE_TO],
         [cols.DOWNLOADING_DATE_FROM]: cargo[cols.DOWNLOADING_DATE_FROM],
         [cols.DOWNLOADING_DATE_TO]: cargo[cols.DOWNLOADING_DATE_TO],
+        [cols.LOADING_TYPE]: cargo[cols.LOADING_TYPE],
         [cols.CREATED_AT]: cargo[cols.CREATED_AT],
         [cols.WIDTH]: parseFloat(cargo[cols.WIDTH]),
         [cols.GROSS_WEIGHT]: parseFloat(cargo[cols.GROSS_WEIGHT]),
