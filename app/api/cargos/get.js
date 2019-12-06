@@ -45,7 +45,7 @@ const getCargo = async (req, res, next) => {
         const searchLanguageId = (userLanguage && userLanguage.id) || defaultLanguage.id;
 
         const cargo = await CargosServices.getRecordStrictWithEconomicSettings(cargoId, searchLanguageId);
-        const formattedCargos = formatRecordForUnauthorizedResponse(cargo, searchLanguageId, defaultEconomicSettings, formattedCurrencyPriorities);
+        const formattedCargos = formatRecordForUnauthorizedResponse(cargo, defaultEconomicSettings, searchLanguageId, formattedCurrencyPriorities);
 
         return success(res, { cargo: formattedCargos });
 
