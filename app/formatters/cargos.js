@@ -268,6 +268,23 @@ const formatPricesWithFee = (prices, defaultSettings, companySettings, currencyP
     }, []);
 };
 
+const formatRecordForUnauthorizedResponse = (cargo, defaultEconomicSettings, searchLanguageId, currencyPriorities) => {
+    const formattedCargo = {
+        ...formatRecordForResponse(cargo),
+        [cols.COUNT]: cargo[cols.FREE_COUNT],
+    };
+    delete formattedCargo[cols.FREE_COUNT];
+    return {
+        ...formattedCargo,
+        [HOMELESS_COLUMNS.PRICES]: formatPricesWithFee(
+            formattedCargo[HOMELESS_COLUMNS.PRICES],
+            defaultEconomicSettings,
+            cargo[HOMELESS_COLUMNS.ECONOMIC_SETTINGS],
+            currencyPriorities
+        ),
+    };
+};
+
 module.exports = {
     formatRecordToSave,
     formatRecordToEdit,
@@ -276,4 +293,5 @@ module.exports = {
     formatCargoData,
     formatRecordForSearchResponse,
     formatRecordForSearchAllResponse,
+    formatRecordForUnauthorizedResponse,
 };
