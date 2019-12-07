@@ -86,6 +86,8 @@ const PERMISSIONS = {
     EDIT_DEFAULT_ECONOMIC_SETTINGS: 'edit_default_economic_settings',
     READ_DEFAULT_ECONOMIC_SETTINGS: 'read_default_economic_settings',
     CRUD_COMPANIES_ECONOMIC_SETTINGS: 'crud_companies_economic_settings',
+
+    CREATE_CARGO_DEAL: 'create_cargo_deal',
 };
 
 const ARRAY_ROLES_WITHOUT_ADMIN = Object.values(ROLES).filter(role => role !== ROLES.ADMIN);

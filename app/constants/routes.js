@@ -323,6 +323,10 @@ const ROUTES = {
                 },
             },
         },
+        DEALS: {
+            BASE: IDS.ME_OR_ID + BASES.DEALS,
+            POST: '',
+        },
     },
     OTHERS: {
         BASE: BASES.OTHERS,
