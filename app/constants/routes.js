@@ -53,6 +53,9 @@ const BASES = {
     LINK: '/link',
     UNLINK: '/unlink',
     SEARCH: '/search',
+    AVAILABLE: '/available',
+    DEALS: '/deals',
+    DRIVERS: '/drivers',
 };
 
 const IDS = {
@@ -280,6 +283,13 @@ const ROUTES = {
             GET: IDS.CAR_ID,
             PUT: IDS.CAR_ID,
             DELETE: IDS.CAR_ID,
+            DEALS: {
+                BASE: BASES.DEALS,
+                AVAILABLE: {
+                    BASE: BASES.AVAILABLE,
+                    GET: '',
+                },
+            },
         },
         TRAILERS: {
             BASE: IDS.ME_OR_ID + BASES.TRAILERS,
@@ -295,8 +305,24 @@ const ROUTES = {
                 BASE: IDS.TRAILER_ID + BASES.UNLINK,
                 POST: '',
             },
+            DEALS: {
+                BASE: BASES.DEALS,
+                AVAILABLE: {
+                    BASE: BASES.AVAILABLE,
+                    GET: '',
+                },
+            },
         },
-
+        DRIVERS: {
+            BASE: IDS.ME_OR_ID + BASES.DRIVERS,
+            DEALS: {
+                BASE: BASES.DEALS,
+                AVAILABLE: {
+                    BASE: BASES.AVAILABLE,
+                    GET: '',
+                },
+            },
+        },
     },
     OTHERS: {
         BASE: BASES.OTHERS,

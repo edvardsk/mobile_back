@@ -174,6 +174,72 @@ const selectRecordByIdAndCompanyIdWithoutTrailer = (id, companyId) => squelPostg
     .left_join(tableTrailers.NAME, 't', `t.${colsTrailers.CAR_ID} = c.id`)
     .toString();
 
+const selectAvailableCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => {
+    let expression = squelPostgres
+        .select()
+        .field('c.*')
+        .field(`cdc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.CAR_DANGER_CLASS_NAME)
+        .field(`cvt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.CAR_VEHICLE_TYPE_NAME)
+        .field('t.id', HOMELESS_COLUMNS.TRAILER_ID)
+        .field(`t.${colsTrailers.TRAILER_MARK}`, colsTrailers.TRAILER_MARK)
+        .field(`t.${colsTrailers.TRAILER_MODEL}`, colsTrailers.TRAILER_MODEL)
+        .field(`t.${colsTrailers.TRAILER_WIDTH}`, colsTrailers.TRAILER_WIDTH)
+        .field(`t.${colsTrailers.TRAILER_HEIGHT}`, colsTrailers.TRAILER_HEIGHT)
+        .field(`t.${colsTrailers.TRAILER_LENGTH}`, colsTrailers.TRAILER_LENGTH)
+        .field(`t.${colsTrailers.TRAILER_CARRYING_CAPACITY}`, colsTrailers.TRAILER_CARRYING_CAPACITY)
+        .field(`tdc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME)
+        .field(`tvt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME)
+        .field(`tsn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
+        .field(`csn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
+        .from(table.NAME, 'c')
+        .where(`c.${cols.COMPANY_ID} = '${companyId}'`)
+        .where(`c.${cols.DELETED} = 'f'`)
+        .where(`csn.${colsCarsStateNumbers.IS_ACTIVE} = 't'`)
+        .where(`tsn.${colsTrailersNumbers.IS_ACTIVE} = 't' OR tsn.${colsTrailersNumbers.IS_ACTIVE} IS NULL`);
+
+    expression = setDealAvailableCarsFilter(expression, filter);
+    return expression
+        .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = c.id`)
+        .left_join(tableTrailers.NAME, 't', `t.${colsTrailers.CAR_ID} = c.id`)
+        .left_join(tableDangerClasses.NAME, 'cdc', `cdc.id = c.${cols.CAR_DANGER_CLASS_ID}`)
+        .left_join(tableVehicleTypes.NAME, 'cvt', `cvt.id = c.${cols.CAR_VEHICLE_TYPE_ID}`)
+        .left_join(tableTrailersNumbers.NAME, 'tsn', `tsn.${colsTrailersNumbers.TRAILER_ID} = t.id`)
+        .left_join(tableDangerClasses.NAME, 'tdc', `tdc.id = t.${colsTrailers.TRAILER_DANGER_CLASS_ID}`)
+        .left_join(tableVehicleTypes.NAME, 'tvt', `tvt.id = t.${colsTrailers.TRAILER_VEHICLE_TYPE_ID}`)
+        .order(sortColumn, asc)
+        .limit(limit)
+        .offset(offset)
+        .toString();
+};
+
+const selectCountAvailableCarsByCompanyId = (companyId, filter) => {
+    let expression = squelPostgres
+        .select()
+        .field('COUNT(c.id)')
+        .from(table.NAME, 'c')
+        .where(`c.${cols.COMPANY_ID} = '${companyId}'`)
+        .where(`c.${cols.DELETED} = 'f'`)
+        .where(`csn.${colsCarsStateNumbers.IS_ACTIVE} = 't'`);
+
+    expression = setCarsFilter(expression, filter);
+    return expression
+        .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = c.id`)
+        .toString();
+};
+
+const setDealAvailableCarsFilter = (expression, filteringObject) => {
+    const filteringObjectSQLExpressions = [
+        [HOMELESS_COLUMNS.CAR_STATE_NUMBER, `csn.${colsCarsStateNumbers.NUMBER}::text ILIKE '%${filteringObject[HOMELESS_COLUMNS.CAR_STATE_NUMBER]}%'`],
+    ];
+
+    for (let [key, exp] of filteringObjectSQLExpressions) {
+        if (get(filteringObject, key) !== undefined) {
+            expression = expression.where(exp);
+        }
+    }
+    return expression;
+};
+
 module.exports = {
     insertRecord,
     updateRecord,
@@ -184,4 +250,6 @@ module.exports = {
     selectRecordByIdAndCompanyIdLight,
     selectRecordByIdFull,
     selectRecordByIdAndCompanyIdWithoutTrailer,
+    selectAvailableCarsByCompanyIdPaginationSorting,
+    selectCountAvailableCarsByCompanyId,
 };

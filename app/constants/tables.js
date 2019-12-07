@@ -407,6 +407,35 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    DEAL_STATUSES: {
+        NAME: 'deal_statuses',
+        COLUMNS: {
+            NAME: 'name',
+            CREATED_AT: 'created_at',
+        },
+    },
+    DEALS: {
+        NAME: 'deals',
+        COLUMNS: {
+            CARGO_ID: 'cargo_id',
+            TRANSPORTER_COMPANY_ID: 'transporter_company_id',
+            DRIVER_ID: 'driver_id',
+            CAR_ID: 'car_id',
+            TRAILER_ID: 'trailer_id',
+            PAY_CURRENCY_ID: 'pay_currency_id',
+            PAY_VALUE: 'pay_value',
+            CREATED_AT: 'created_at',
+        },
+    },
+    DEAL_HISTORY_STATUSES: {
+        NAME: 'deal_history_statuses',
+        COLUMNS: {
+            DEAL_ID: 'deal_id',
+            INITIATOR_ID: 'initiator_id',
+            DEAL_STATUS_ID: 'deal_status_id',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
@@ -452,6 +481,7 @@ const HOMELESS_COLUMNS = {
     PRICES: 'prices',
     ORIGINAL: 'original',
     CAR_DANGER_CLASS: 'car_danger_class',
+    CAR_VEHICLE_TYPE: 'car_vehicle_type',
     CAR_VEHICLE_REGISTRATION_PASSPORT: 'car_vehicle_registration_passport',
     CAR_VEHICLE_TECHNICAL_INSPECTION: 'car_vehicle_technical_inspection',
     TRAILER_DANGER_CLASS: 'trailer_danger_class',
@@ -473,6 +503,11 @@ const HOMELESS_COLUMNS = {
     CLUSTER_NE: 'cluster_ne',
     FEES: 'fees',
     ECONOMIC_SETTINGS: 'economic_settings',
+    CAR_DANGER_CLASS_NAME: 'car_danger_class_name',
+    CAR_VEHICLE_TYPE_NAME: 'car_vehicle_type_name',
+    FULL_NAME: 'full_name',
+    DRIVER_ID: 'driver_id',
+    USER_ID: 'user_id',
 };
 
 module.exports = {

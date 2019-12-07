@@ -200,6 +200,21 @@ const carsFilterQuery = {
     },
 };
 
+const carsDealsAvailableFilterQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.FILTER]: {
+            type: 'object',
+            properties: {
+                [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: {
+                    type: 'string',
+                    minLength: 1,
+                },
+            },
+            additionalProperties: false,
+        },
+    },
+};
+
 const trailersFilterQuery = {
     properties: {
         [HOMELESS_COLUMNS.FILTER]: {
@@ -211,6 +226,36 @@ const trailersFilterQuery = {
                 },
                 [HOMELESS_COLUMNS.LINKED]: {
                     type: 'boolean',
+                },
+            },
+            additionalProperties: false,
+        },
+    },
+};
+
+const trailersDealsAvailableFilterQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.FILTER]: {
+            type: 'object',
+            properties: {
+                [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: {
+                    type: 'string',
+                    minLength: 1,
+                },
+            },
+            additionalProperties: false,
+        },
+    },
+};
+
+const driversDealsAvailableFilterQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.FILTER]: {
+            type: 'object',
+            properties: {
+                [HOMELESS_COLUMNS.FULL_NAME]: {
+                    type: 'string',
+                    minLength: 1,
                 },
             },
             additionalProperties: false,
@@ -235,4 +280,7 @@ module.exports = {
     cargosFilterQuery,
     carsFilterQuery,
     trailersFilterQuery,
+    carsDealsAvailableFilterQuery,
+    trailersDealsAvailableFilterQuery,
+    driversDealsAvailableFilterQuery,
 };

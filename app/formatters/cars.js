@@ -90,6 +90,51 @@ const formatRecordForList = car => {
     return result;
 };
 
+const formatRecordForListAvailable = car => {
+    const result = {};
+    let formattedCar = {
+        id: car.id,
+        [cols.CAR_MARK]: car[cols.CAR_MARK],
+        [cols.CAR_MODEL]: car[cols.CAR_MODEL],
+        [cols.CAR_TYPE]: car[cols.CAR_TYPE],
+        [cols.CAR_MADE_YEAR_AT]: car[cols.CAR_MADE_YEAR_AT],
+        [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
+        [cols.CREATED_AT]: car[cols.CREATED_AT],
+    };
+    result.car = formattedCar;
+
+    if (car[cols.CAR_TYPE] === CAR_TYPES_MAP.TRUCK) {
+        formattedCar = {
+            ...formattedCar,
+            [cols.CAR_LOADING_METHODS]: car[cols.CAR_LOADING_METHODS],
+            [cols.CAR_CARRYING_CAPACITY]: parseFloat(car[cols.CAR_CARRYING_CAPACITY]),
+            [cols.CAR_LENGTH]: parseFloat(car[cols.CAR_LENGTH]),
+            [cols.CAR_HEIGHT]: parseFloat(car[cols.CAR_HEIGHT]),
+            [cols.CAR_WIDTH]: parseFloat(car[cols.CAR_WIDTH]),
+            [HOMELESS_COLUMNS.CAR_DANGER_CLASS_NAME]: car[HOMELESS_COLUMNS.CAR_DANGER_CLASS_NAME],
+            [HOMELESS_COLUMNS.CAR_VEHICLE_TYPE_NAME]: car[HOMELESS_COLUMNS.CAR_VEHICLE_TYPE_NAME],
+        };
+        result.car = formattedCar;
+    }
+
+    if (car[HOMELESS_COLUMNS.TRAILER_ID]) {
+        const trailer = {
+            id: car[HOMELESS_COLUMNS.TRAILER_ID],
+            [colsTrailers.TRAILER_MARK]: car[colsTrailers.TRAILER_MARK],
+            [colsTrailers.TRAILER_MODEL]: car[colsTrailers.TRAILER_MODEL],
+            [colsTrailers.TRAILER_WIDTH]: parseFloat(car[colsTrailers.TRAILER_WIDTH]),
+            [colsTrailers.TRAILER_HEIGHT]: parseFloat(car[colsTrailers.TRAILER_HEIGHT]),
+            [colsTrailers.TRAILER_LENGTH]: parseFloat(car[colsTrailers.TRAILER_LENGTH]),
+            [colsTrailers.TRAILER_CARRYING_CAPACITY]: parseFloat(car[colsTrailers.TRAILER_CARRYING_CAPACITY]),
+            [HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME]: car[HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME],
+            [HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME]: car[HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME],
+            [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: car[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
+        };
+        result.trailer = trailer;
+    }
+    return result;
+};
+
 const formatRecordForResponse = car => {
     const result = {
         car: {
@@ -142,9 +187,22 @@ const formatCarFiles = data => {
     });
 };
 
+const formatAvailableCars = cars => cars.map(car => formatAvailableCar(car));
+
+const formatAvailableCar = car => ({
+    id: car.id,
+    [cols.CAR_MARK]: car[cols.CAR_MARK],
+    [cols.CAR_MODEL]: car[cols.CAR_MODEL],
+    [cols.CAR_TYPE]: car[cols.CAR_TYPE],
+    [cols.CAR_MADE_YEAR_AT]: car[cols.CAR_MADE_YEAR_AT],
+    [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
+});
+
 module.exports = {
     formatCarToSave,
     formatCarToEdit,
     formatRecordForList,
     formatRecordForResponse,
+    formatAvailableCars,
+    formatRecordForListAvailable,
 };
