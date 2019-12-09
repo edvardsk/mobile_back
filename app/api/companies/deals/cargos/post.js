@@ -1,6 +1,6 @@
 const { success, reject } = require('api/response');
 
-const createDeal = async (req, res, next) => {
+const createCargoDeal = async (req, res, next) => {
     try {
         const { company } = res.locals;
 
@@ -11,5 +11,5 @@ const createDeal = async (req, res, next) => {
 };
 
 module.exports = {
-    createDeal,
+    createCargoDeal,
 };

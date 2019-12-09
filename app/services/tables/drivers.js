@@ -7,10 +7,14 @@ const {
     updateRecordByUserId,
     selectAvailableDriversPaginationSorting,
     selectCountAvailableDrivers,
+    selectRecordByCompanyIdLight,
 } = require('sql-helpers/drivers');
 
 // constants
 const { OPERATIONS } = require('constants/postgres');
+
+// helpers
+const { isValidUUID } = require('helpers/validators');
 
 const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
 
@@ -27,10 +31,22 @@ const getCountAvailableDrivers = (companyId, filter) => (
         .then(({ count }) => +count)
 );
 
+const getRecordByCompanyIdLight = companyId => oneOrNone(selectRecordByCompanyIdLight(companyId));
+
+const checkIsOptionalDriverInCompanyExists = async (meta, id) => {
+    const { companyId } = meta;
+    if (isValidUUID(id)) {
+        const driverInCompany = await getRecordByCompanyIdLight(companyId);
+        return !!driverInCompany;
+    }
+    return true;
+};
+
 module.exports = {
     addRecordAsTransaction,
     editDriverAsTransaction,
     getRecordByUserId,
     getAvailableDriversPaginationSorting,
     getCountAvailableDrivers,
+    checkIsOptionalDriverInCompanyExists,
 };

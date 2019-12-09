@@ -325,7 +325,10 @@ const ROUTES = {
         },
         DEALS: {
             BASE: IDS.ME_OR_ID + BASES.DEALS,
-            POST: '',
+            CARGOS: {
+                BASE: BASES.CARGOS,
+                POST: '',
+            },
         },
     },
     OTHERS: {

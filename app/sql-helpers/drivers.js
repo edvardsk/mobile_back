@@ -87,10 +87,20 @@ const setAvailableDriversFilter = (expression, filteringObject) => {
     return expression;
 };
 
+const selectRecordByCompanyIdLight = companyId => squelPostgres
+    .select()
+    .field('d.id')
+    .from(table.NAME, 'd')
+    .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
+    .left_join(tableUsers.NAME, 'u', `u.id = d.${cols.USER_ID}`)
+    .left_join(tableUsersCompanies.NAME, 'uc', `uc.${colsUsersCompanies.USER_ID} = u.id`)
+    .toString();
+
 module.exports = {
     insertRecord,
     updateRecordByUserId,
     selectRecordByUserId,
     selectAvailableDriversPaginationSorting,
     selectCountAvailableDrivers,
+    selectRecordByCompanyIdLight,
 };

@@ -35,7 +35,7 @@ const getTrailersDeals = require('./trailers/deals/get');
 
 const getDriversDeals = require('./drivers/deals/get');
 
-const postDeals = require('./deals/post');
+const postDealsCargos = require('./deals/cargos/post');
 
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
@@ -527,11 +527,12 @@ router.get(
 
 // deals
 router.post(
-    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.POST,
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.CARGOS.BASE + ROUTES.COMPANIES.DEALS.CARGOS.POST,
     isHasPermissions([PERMISSIONS.CREATE_CARGO_DEAL]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
-    postDeals.createDeal,
+    validate(ValidatorSchemes.createCargoDeal),
+    postDealsCargos.createCargoDeal,
 );
 
 module.exports = router;
