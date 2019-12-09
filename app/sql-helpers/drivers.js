@@ -43,6 +43,8 @@ const selectAvailableDriversPaginationSorting = (companyId, limit, offset, sortC
         .field('d.id', HOMELESS_COLUMNS.DRIVER_ID)
         .field('u.*')
         .field(`CONCAT(php.${colsPhonePrefixes.CODE}, phn.${colsPhoneNumbers.NUMBER})::bigint`, HOMELESS_COLUMNS.FULL_PHONE_NUMBER)
+        .field('php.id', HOMELESS_COLUMNS.PHONE_PREFIX_ID)
+        .field(`phn.${colsPhoneNumbers.NUMBER}`, HOMELESS_COLUMNS.PHONE_NUMBER)
         .from(table.NAME, 'd')
         .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
         .where(`u.${colsUsers.FREEZED} = 'f'`);
