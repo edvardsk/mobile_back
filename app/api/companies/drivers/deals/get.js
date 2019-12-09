@@ -10,7 +10,7 @@ const { SORTING_DIRECTIONS } = require('constants/pagination-sorting');
 
 // formatters
 const { formatPaginationDataForResponse } = require('formatters/pagination-sorting');
-const { formatRecordForList } = require('formatters/drivers');
+const { formatRecordForAvailableList } = require('formatters/drivers');
 
 // helpers
 const { getParams } = require('helpers/pagination-sorting');
@@ -39,7 +39,7 @@ const getAvailableDrivers = async (req, res, next) => {
         ]);
 
         const result = formatPaginationDataForResponse(
-            drivers.map(driver => formatRecordForList(driver)),
+            drivers.map(driver => formatRecordForAvailableList(driver)),
             driversCount,
             limit,
             page,

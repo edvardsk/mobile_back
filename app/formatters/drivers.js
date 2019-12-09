@@ -28,8 +28,19 @@ const formatRecordForList = data => ({
     [colsUsers.FULL_NAME]: data[colsUsers.FULL_NAME],
 });
 
+const formatRecordForAvailableList = data => ({
+    [HOMELESS_COLUMNS.USER_ID]: data.id,
+    [HOMELESS_COLUMNS.DRIVER_ID]: data[HOMELESS_COLUMNS.DRIVER_ID],
+    [HOMELESS_COLUMNS.FULL_PHONE_NUMBER]: data[HOMELESS_COLUMNS.FULL_PHONE_NUMBER],
+    [HOMELESS_COLUMNS.PHONE_NUMBER]: data[HOMELESS_COLUMNS.PHONE_NUMBER],
+    [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: data[HOMELESS_COLUMNS.PHONE_PREFIX_ID],
+    [colsUsers.EMAIL]: data[colsUsers.EMAIL],
+    [colsUsers.FULL_NAME]: data[colsUsers.FULL_NAME],
+});
+
 module.exports = {
     formatRecordToSave,
     formatDriversWithPhoneAndRole,
     formatRecordForList,
+    formatRecordForAvailableList,
 };
