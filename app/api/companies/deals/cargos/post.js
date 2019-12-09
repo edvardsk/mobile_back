@@ -16,6 +16,7 @@ const { formatPricesFromPostgresJSON } = require('formatters/cargo-prices');
 // helpers
 const { isValidUUID } = require('helpers/validators');
 
+const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 const colsCargoPrices = SQL_TABLES.CARGO_PRICES.COLUMNS;
 
 const createCargoDeal = async (req, res, next) => {
@@ -97,6 +98,17 @@ const validateCargos = (body, cargosFromDb) => {
                     type: ERRORS.DEALS.INVALID_CURRENCY,
                 });
             }
+
+            const freeCountDb = cargoFromDb[colsCargos.FREE_COUNT];
+            const freeCountDeal = item[colsCargos.COUNT];
+            if (freeCountDb < freeCountDeal) {
+                notValidCargos.push({
+                    position: i,
+                    type: ERRORS.DEALS.INVALID_CARGO_COUNT,
+                });
+            }
+
+
         }
         return notValidCargos;
     }, []);

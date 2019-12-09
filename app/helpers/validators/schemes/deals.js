@@ -13,6 +13,7 @@ const createCargoDeal = {
                     format: 'uuid',
                 },
                 [HOMELESS_COLUMNS.DRIVER_ID_OR_FULL_NAME]: {
+
                     type: 'string',
                     minLength: 1,
                 },
