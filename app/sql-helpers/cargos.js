@@ -507,6 +507,26 @@ const selectAllNewRecordsForSearch = (languageId, companyId) => {
         .toString();
 };
 
+const selectAvailableCargosByIds = ids => squelPostgres // todo: full check of availability
+    .select()
+    .field('c.*')
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(
+            cpr.${colsCargoPrices.CURRENCY_ID}, cpr.${colsCargoPrices.NEXT_CURRENCY_ID}, cpr.${colsCargoPrices.PRICE}, cur.${colsCurrencies.CODE}
+            ))`)
+            .from(tableCargoPrices.NAME, 'cpr')
+            .where(`cpr.${colsCargoPrices.CARGO_ID} = c.id`)
+            .left_join(tableCurrencies.NAME, 'cur', `cur.id= cpr.${colsCargoPrices.CURRENCY_ID}`)
+            .toString()
+    })`, HOMELESS_COLUMNS.PRICES)
+    .from(table.NAME, 'c')
+    .where('c.id IN ?', ids)
+    .where(`c.${cols.DELETED} = 'f'`)
+    .where(`c.${cols.FREEZED_AFTER} > now()`)
+    .toString();
+
 module.exports = {
     insertRecord,
     updateRecordById,
@@ -520,4 +540,5 @@ module.exports = {
     selectCountCargosByCompanyId,
     selectRecordsForSearch,
     selectAllNewRecordsForSearch,
+    selectAvailableCargosByIds,
 };

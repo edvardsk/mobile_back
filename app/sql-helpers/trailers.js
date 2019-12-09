@@ -212,6 +212,14 @@ const setAvailableTrailersFilter = (expression, filteringObject) => {
     return expression;
 };
 
+const selectAvailableTrailersByIdsAndCompanyId = (ids, companyId) => squelPostgres // todo: check full availability
+    .select()
+    .from(table.NAME)
+    .where('id IN ?', ids)
+    .where(`${cols.COMPANY_ID} = '${companyId}'`)
+    .where(`${cols.DELETED} = 'f'`)
+    .toString();
+
 module.exports = {
     insertRecord,
     updateRecord,
@@ -224,4 +232,5 @@ module.exports = {
     selectRecordByIdAndCompanyIdLight,
     selectAvailableTrailersByCompanyIdPaginationSorting,
     selectAvailableCountTrailersByCompanyId,
+    selectAvailableTrailersByIdsAndCompanyId,
 };

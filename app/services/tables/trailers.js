@@ -13,6 +13,7 @@ const {
     selectRecordByIdAndCompanyIdLight,
     selectAvailableTrailersByCompanyIdPaginationSorting,
     selectAvailableCountTrailersByCompanyId,
+    selectAvailableTrailersByIdsAndCompanyId,
 } = require('sql-helpers/trailers');
 
 // services
@@ -83,6 +84,10 @@ const getAvailableTrailersPaginationSorting = (companyId, limit, offset, sortCol
 const getCountAvailableTrailers = (companyId, filter) => (
     one(selectAvailableCountTrailersByCompanyId(companyId, filter))
         .then(({ count }) => +count)
+);
+
+const getAvailableTrailersByIdsAndCompanyId = (ids, companyId) => (
+    manyOrNone(selectAvailableTrailersByIdsAndCompanyId(ids, companyId))
 );
 
 const checkTrailerStateNumberExistsOpposite = async (meta, stateNumber) => {
@@ -157,6 +162,7 @@ module.exports = {
     unlinkTrailerFromCar,
     getAvailableTrailersPaginationSorting,
     getCountAvailableTrailers,
+    getAvailableTrailersByIdsAndCompanyId,
 
     checkTrailerStateNumberExistsOpposite,
     checkIsPassedFileWithDangerClass,

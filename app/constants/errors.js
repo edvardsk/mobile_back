@@ -74,6 +74,13 @@ const ERRORS = {
     ECONOMIC_SETTINGS: {
         SUM_PERCENT_TRANSPORTER_HOLDER_ERROR: 'economic_settings.sum_percent_transporter_holder_error',
     },
+    DEALS: {
+        CARGO_NOT_EXISTS: 'deals.cargo_not_exists',
+        INVALID_CURRENCY: 'deals.invalid_currency',
+        INVALID_DRIVER_ID: 'deals.invalid_driver_id',
+        INVALID_CAR_ID: 'deals.invalid_car_id',
+        INVALID_TRAILER_ID: 'deals.invalid_trailer_id',
+    },
 };
 
 class PaginationError extends Error {

@@ -240,6 +240,14 @@ const setDealAvailableCarsFilter = (expression, filteringObject) => {
     return expression;
 };
 
+const selectAvailableCarsByIdsAndCompanyId = (ids, companyId) => squelPostgres // todo: check full availability
+    .select()
+    .from(table.NAME, 'c')
+    .where('c.id IN ?', ids)
+    .where(`c.${cols.COMPANY_ID} = '${companyId}'`)
+    .where(`c.${cols.DELETED} = 'f'`)
+    .toString();
+
 module.exports = {
     insertRecord,
     updateRecord,
@@ -252,4 +260,5 @@ module.exports = {
     selectRecordByIdAndCompanyIdWithoutTrailer,
     selectAvailableCarsByCompanyIdPaginationSorting,
     selectCountAvailableCarsByCompanyId,
+    selectAvailableCarsByIdsAndCompanyId,
 };

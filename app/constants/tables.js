@@ -510,8 +510,8 @@ const HOMELESS_COLUMNS = {
     USER_ID: 'user_id',
     CARGO_ID: 'cargo_id',
     DRIVER_ID_OR_FULL_NAME: 'driver_id_or_full_name',
-    CAR_ID_OR_FULL_NAME: 'car_id_or_full_name',
-    TRAILER_ID_OR_FULL_NAME: 'trailer_id_or_full_name',
+    CAR_ID_OR_STATE_NUMBER: 'car_id_or_state_number',
+    TRAILER_ID_OR_STATE_NUMBER: 'trailer_id_or_state_number',
     PAY_CURRENCY_ID: 'pay_currency_id',
     PAY_VALUE: 'pay_value',
 };

@@ -92,6 +92,17 @@ const selectRecordByCompanyIdLight = companyId => squelPostgres
     .field('d.id')
     .from(table.NAME, 'd')
     .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
+    .where(`u.${colsUsers.FREEZED} = 'f'`)
+    .left_join(tableUsers.NAME, 'u', `u.id = d.${cols.USER_ID}`)
+    .left_join(tableUsersCompanies.NAME, 'uc', `uc.${colsUsersCompanies.USER_ID} = u.id`)
+    .toString();
+
+const selectAvailableDriversByIdsAndCompanyId = (ids, companyId) => squelPostgres // todo: check full availability
+    .select()
+    .field('d.*')
+    .from(table.NAME, 'd')
+    .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
+    .where(`u.${colsUsers.FREEZED} = 'f'`)
     .left_join(tableUsers.NAME, 'u', `u.id = d.${cols.USER_ID}`)
     .left_join(tableUsersCompanies.NAME, 'uc', `uc.${colsUsersCompanies.USER_ID} = u.id`)
     .toString();
@@ -103,4 +114,5 @@ module.exports = {
     selectAvailableDriversPaginationSorting,
     selectCountAvailableDrivers,
     selectRecordByCompanyIdLight,
+    selectAvailableDriversByIdsAndCompanyId,
 };

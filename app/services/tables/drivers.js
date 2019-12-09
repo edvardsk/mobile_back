@@ -8,6 +8,7 @@ const {
     selectAvailableDriversPaginationSorting,
     selectCountAvailableDrivers,
     selectRecordByCompanyIdLight,
+    selectAvailableDriversByIdsAndCompanyId,
 } = require('sql-helpers/drivers');
 
 // constants
@@ -33,6 +34,10 @@ const getCountAvailableDrivers = (companyId, filter) => (
 
 const getRecordByCompanyIdLight = companyId => oneOrNone(selectRecordByCompanyIdLight(companyId));
 
+const getAvailableDriversByIdsAndCompanyId = (ids, companyId) => (
+    manyOrNone(selectAvailableDriversByIdsAndCompanyId(ids, companyId))
+);
+
 const checkIsOptionalDriverInCompanyExists = async (meta, id) => {
     const { companyId } = meta;
     if (isValidUUID(id)) {
@@ -48,5 +53,7 @@ module.exports = {
     getRecordByUserId,
     getAvailableDriversPaginationSorting,
     getCountAvailableDrivers,
+    getAvailableDriversByIdsAndCompanyId,
+
     checkIsOptionalDriverInCompanyExists,
 };
