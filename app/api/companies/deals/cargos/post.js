@@ -9,15 +9,21 @@ const TrailersService = require('services/tables/trailers');
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
+const { LOADING_TYPES_MAP } = require('constants/cargos');
 
 // formatters
 const { formatPricesFromPostgresJSON } = require('formatters/cargo-prices');
 
 // helpers
-const { isValidUUID } = require('helpers/validators');
+const {
+    validateCargos,
+    validateCars,
+    validateDrivers,
+    validateTrailers,
+    extractData,
+} = require('helpers/validators/deals');
 
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
-const colsCargoPrices = SQL_TABLES.CARGO_PRICES.COLUMNS;
 
 const createCargoDeal = async (req, res, next) => {
     try {
@@ -25,23 +31,42 @@ const createCargoDeal = async (req, res, next) => {
 
         const { company } = res.locals;
 
-        const [cargosIds, driversIds, carsIds, trailersIds] = body.reduce((acc, item) => {
-            const [cargosIds, driversIds, carsIds, trailersIds] = acc;
-            const cargoId = item[HOMELESS_COLUMNS.CARGO_ID];
-            const driverId = item[HOMELESS_COLUMNS.DRIVER_ID_OR_FULL_NAME];
-            const carId = item[HOMELESS_COLUMNS.CAR_ID_OR_STATE_NUMBER];
-            const trailerId = item[HOMELESS_COLUMNS.TRAILER_ID_OR_STATE_NUMBER];
-
-            cargosIds.push(cargoId);
-            isValidUUID(driverId) && driversIds.push(driverId);
-            isValidUUID(carId) && carsIds.push(carId);
-            isValidUUID(trailerId) && trailersIds.push(trailerId);
-
-            return [cargosIds, driversIds, carsIds, trailersIds];
-        }, [[], [], [], []]);
+        const [cargosIds, driversIds, shadowDrivers, carsIds, shadowCars, trailersIds, shadowTrailers] = extractData(body);
 
         /* validate cargos */
         const availableCargos = await CargosService.getAvailableCargosByIds(cargosIds);
+        if (!availableCargos.length) {
+            return reject(res, ERRORS.DEALS.NO_CARGOS);
+        }
+
+        const cargoLoadingType = availableCargos[0][colsCargos.LOADING_TYPE];
+        if (!availableCargos.every(cargo => cargo[colsCargos.LOADING_TYPE] === cargoLoadingType)) {
+            return reject(res, ERRORS.DEALS.DIFFERENT_CARGO_LOADING_METHOD);
+        }
+
+        const cargosIdsSet = new Set(cargosIds);
+        const drivesIdsSet = new Set(driversIds);
+        const carsIdsSet = new Set(carsIds);
+        const trailersIdsSet = new Set(trailersIds);
+
+        if (
+            (LOADING_TYPES_MAP.FTL && (
+                cargosIdsSet.size !== cargosIds.length ||
+                drivesIdsSet.size + shadowDrivers.length !== driversIds.length ||
+                carsIdsSet.size + shadowCars.length !== carsIds.length ||
+                trailersIdsSet.size + shadowTrailers.length !== trailersIds.length
+            ))
+            ||
+            (LOADING_TYPES_MAP.LTL && (
+                cargosIdsSet.size !== 1 ||
+                drivesIdsSet.size + shadowDrivers.length !== 1 ||
+                carsIdsSet.size + shadowCars.length !== 1 ||
+                trailersIdsSet.size + shadowTrailers.length !== 1
+            ))
+        ) {
+            return reject(res, ERRORS.DEALS.DUPLICATE_DATA);
+        }
+
         const cargosFromDb = availableCargos.map(cargo => ({
             ...cargo,
             [HOMELESS_COLUMNS.PRICES]: formatPricesFromPostgresJSON(cargo[HOMELESS_COLUMNS.PRICES]),
@@ -77,89 +102,6 @@ const createCargoDeal = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-};
-
-const validateCargos = (body, cargosFromDb) => {
-    return body.reduce((notValidCargos, item, i) => {
-        const dealCargoId = item[HOMELESS_COLUMNS.CARGO_ID];
-        const cargoFromDb = cargosFromDb.find(cargo => cargo.id === dealCargoId);
-        if (!cargoFromDb) {
-            notValidCargos.push({
-                position: i,
-                type: ERRORS.DEALS.CARGO_NOT_EXISTS,
-            });
-        } else {
-            const dealCurrencyId = item[HOMELESS_COLUMNS.PAY_CURRENCY_ID];
-            const cargoPricesDb = cargoFromDb[HOMELESS_COLUMNS.PRICES];
-            const priceFromDb = cargoPricesDb.find(price => price[colsCargoPrices.CURRENCY_ID] === dealCurrencyId);
-            if (!priceFromDb) {
-                notValidCargos.push({
-                    position: i,
-                    type: ERRORS.DEALS.INVALID_CURRENCY,
-                });
-            }
-
-            const freeCountDb = cargoFromDb[colsCargos.FREE_COUNT];
-            const freeCountDeal = item[colsCargos.COUNT];
-            if (freeCountDb < freeCountDeal) {
-                notValidCargos.push({
-                    position: i,
-                    type: ERRORS.DEALS.INVALID_CARGO_COUNT,
-                });
-            }
-
-
-        }
-        return notValidCargos;
-    }, []);
-};
-
-const validateDrivers = (body, driversFromDb) => {
-    return body.reduce((notValidDrivers, item, i) => {
-        const dealDriverId = item[HOMELESS_COLUMNS.DRIVER_ID_OR_FULL_NAME];
-        if (isValidUUID(dealDriverId)) {
-            const driverFromDb = driversFromDb.find(driver => driver.id === dealDriverId);
-            if (!driverFromDb) {
-                notValidDrivers.push({
-                    position: i,
-                    type: ERRORS.DEALS.INVALID_DRIVER_ID,
-                });
-            }
-        }
-        return notValidDrivers;
-    }, []);
-};
-
-const validateCars = (body, carsFromDb) => {
-    return body.reduce((notValidCars, item, i) => {
-        const dealCarId = item[HOMELESS_COLUMNS.CAR_ID_OR_STATE_NUMBER];
-        if (isValidUUID(dealCarId)) {
-            const carFromDb = carsFromDb.find(car => car.id === dealCarId);
-            if (!carFromDb) {
-                notValidCars.push({
-                    position: i,
-                    type: ERRORS.DEALS.INVALID_CAR_ID,
-                });
-            }
-        }
-        return notValidCars;
-    }, []);
-};
-
-const validateTrailers = (body, trailersFromDb) => {
-    return body.reduce((notValidTrailers, item, i) => {
-        const dealTrailerId = item[HOMELESS_COLUMNS.TRAILER_ID_OR_STATE_NUMBER];
-        if (isValidUUID(dealTrailerId)) {
-            const trailerFromDb = trailersFromDb.find(trailer => trailer.id === dealTrailerId);
-            if (!trailerFromDb) {
-                notValidTrailers.push({
-                    position: i,
-                    type: ERRORS.DEALS.INVALID_TRAILER_ID,
-                });
-            }
-        }
-        return notValidTrailers;
-    }, []);
 };
 
 module.exports = {

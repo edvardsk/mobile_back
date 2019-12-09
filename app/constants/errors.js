@@ -77,11 +77,13 @@ const ERRORS = {
     DEALS: {
         CARGO_NOT_EXISTS: 'deals.cargo_not_exists',
         INVALID_CARGO_COUNT: 'deals.invalid_cargo_count',
+        NO_CARGOS: 'deals.no_cargos',
         INVALID_CURRENCY: 'deals.invalid_currency',
         INVALID_DRIVER_ID: 'deals.invalid_driver_id',
         INVALID_CAR_ID: 'deals.invalid_car_id',
         INVALID_TRAILER_ID: 'deals.invalid_trailer_id',
         DIFFERENT_CARGO_LOADING_METHOD: 'deals.different_cargo_loading_method',
+        DUPLICATE_DATA: 'deals.duplicate_data',
     },
 };
 
