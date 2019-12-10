@@ -190,7 +190,7 @@ const selectAvailableCarsByCompanyIdPaginationSorting = (companyId, limit, offse
         .field(`tdc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME)
         .field(`tvt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME)
         .field(`tsn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
-        .field(`csn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
+        .field(`csn.${colsCarsStateNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
         .from(table.NAME, 'c')
         .where(`c.${cols.COMPANY_ID} = '${companyId}'`)
         .where(`c.${cols.DELETED} = 'f'`)

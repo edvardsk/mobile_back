@@ -10,7 +10,7 @@ const { SORTING_DIRECTIONS } = require('constants/pagination-sorting');
 
 // formatters
 const { formatPaginationDataForResponse } = require('formatters/pagination-sorting');
-const { formatRecordForList } = require('formatters/trailers');
+const { formatRecordForListAvailable } = require('formatters/trailers');
 
 // helpers
 const { getParams } = require('helpers/pagination-sorting');
@@ -39,7 +39,7 @@ const getAvailableTrailers = async (req, res, next) => {
         ]);
 
         const result = formatPaginationDataForResponse(
-            trailers.map(trailer => formatRecordForList(trailer)),
+            trailers.map(trailer => formatRecordForListAvailable(trailer)),
             trailersCount,
             limit,
             page,

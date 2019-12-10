@@ -6,14 +6,18 @@ const { SqlArray } = require('constants/instances');
 const squelPostgres = squel.useFlavour('postgres');
 
 const table = SQL_TABLES.TRAILERS;
+const tableCars = SQL_TABLES.CARS;
 const tableTrailersStateNumbers = SQL_TABLES.TRAILERS_STATE_NUMBERS;
+const tableCarsStateNumbers = SQL_TABLES.CARS_STATE_NUMBERS;
 const tableFiles = SQL_TABLES.FILES;
 const tableTrailersFiles = SQL_TABLES.TRAILERS_TO_FILES;
 const tableVehicleTypes = SQL_TABLES.VEHICLE_TYPES;
 const tableDangerClasses = SQL_TABLES.DANGER_CLASSES;
 
 const cols = table.COLUMNS;
+const colsCars = tableCars.COLUMNS;
 const colsTrailersStateNumbers = tableTrailersStateNumbers.COLUMNS;
+const colsCarsStateNumbers = tableCarsStateNumbers.COLUMNS;
 const colsFiles = tableFiles.COLUMNS;
 const colsTrailersFiles = tableTrailersFiles.COLUMNS;
 const colsVehicleTypes = tableVehicleTypes.COLUMNS;
@@ -164,19 +168,34 @@ const selectAvailableTrailersByCompanyIdPaginationSorting = (companyId, limit, o
         .select()
         .field('t.*')
         .field(`tsn.${colsTrailersStateNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
-        .field(`vt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
-        .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
+        .field(`csn.${colsCarsStateNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
+        .field(`tvt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME)
+        .field(`tdc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME)
+        .field(`cvt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.CAR_VEHICLE_TYPE_NAME)
+        .field(`cdc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.CAR_DANGER_CLASS_NAME)
+        .field('c.id', HOMELESS_COLUMNS.CAR_ID)
+        .field(`c.${colsCars.CAR_MARK}`, colsCars.CAR_MARK)
+        .field(`c.${colsCars.CAR_MODEL}`, colsCars.CAR_MODEL)
+        .field(`c.${colsCars.CAR_WIDTH}`, colsCars.CAR_WIDTH)
+        .field(`c.${colsCars.CAR_HEIGHT}`, colsCars.CAR_HEIGHT)
+        .field(`c.${colsCars.CAR_LENGTH}`, colsCars.CAR_LENGTH)
+        .field(`c.${colsCars.CAR_CARRYING_CAPACITY}`, colsCars.CAR_CARRYING_CAPACITY)
+        .field(`c.${colsCars.CAR_TYPE}`, colsCars.CAR_TYPE)
         .from(table.NAME, 't')
         .where(`t.${cols.COMPANY_ID} = '${companyId}'`)
-        .where(`t.${cols.CAR_ID} IS NULL`)
         .where(`t.${cols.DELETED} = 'f'`)
-        .where(`tsn.${colsTrailersStateNumbers.IS_ACTIVE} = 't'`);
+        .where(`tsn.${colsTrailersStateNumbers.IS_ACTIVE} = 't'`)
+        .where(`csn.${colsCarsStateNumbers.IS_ACTIVE} = 't' OR csn.${colsCarsStateNumbers.IS_ACTIVE} IS NULL`);
 
     expression = setAvailableTrailersFilter(expression, filter);
     return expression
         .left_join(tableTrailersStateNumbers.NAME, 'tsn', `tsn.${colsTrailersStateNumbers.TRAILER_ID} = t.id`)
-        .left_join(tableVehicleTypes.NAME, 'vt', `vt.id = t.${cols.TRAILER_VEHICLE_TYPE_ID}`)
-        .left_join(tableDangerClasses.NAME, 'dc', `dc.id = t.${cols.TRAILER_DANGER_CLASS_ID}`)
+        .left_join(tableVehicleTypes.NAME, 'tvt', `tvt.id = t.${cols.TRAILER_VEHICLE_TYPE_ID}`)
+        .left_join(tableDangerClasses.NAME, 'tdc', `tdc.id = t.${cols.TRAILER_DANGER_CLASS_ID}`)
+        .left_join(tableCars.NAME, 'c', `c.id = t.${cols.CAR_ID}`)
+        .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = c.id`)
+        .left_join(tableDangerClasses.NAME, 'cdc', `cdc.id = c.${colsCars.CAR_DANGER_CLASS_ID}`)
+        .left_join(tableVehicleTypes.NAME, 'cvt', `cvt.id = c.${colsCars.CAR_VEHICLE_TYPE_ID}`)
         .order(sortColumn, asc)
         .limit(limit)
         .offset(offset)

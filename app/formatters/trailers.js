@@ -1,8 +1,10 @@
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SqlArray } = require('constants/instances');
+const { CAR_TYPES_MAP } = require('constants/cars');
 
 const cols = SQL_TABLES.TRAILERS.COLUMNS;
+const colsCars = SQL_TABLES.CARS.COLUMNS;
 const colsFiles = SQL_TABLES.FILES.COLUMNS;
 
 const formatTrailerToSave = (companyId, trailerId, body, carId) => ({
@@ -38,6 +40,53 @@ const formatRecordForList = data => ({
     [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: data[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
     [cols.TRAILER_DANGER_CLASS_ID]: data[cols.TRAILER_DANGER_CLASS_ID],
 });
+
+const formatRecordForListAvailable = data => {
+    const result = {};
+    const trailer = {
+        id: data.id,
+        [cols.TRAILER_MARK]: data[cols.TRAILER_MARK],
+        [cols.TRAILER_MODEL]: data[cols.TRAILER_MODEL],
+        [cols.TRAILER_MADE_YEAR_AT]: data[cols.TRAILER_MADE_YEAR_AT],
+        [cols.TRAILER_LOADING_METHODS]: data[cols.TRAILER_LOADING_METHODS],
+        [cols.TRAILER_VEHICLE_TYPE_ID]: data[cols.TRAILER_VEHICLE_TYPE_ID],
+        [cols.TRAILER_CARRYING_CAPACITY]: parseFloat(data[cols.TRAILER_CARRYING_CAPACITY]),
+        [cols.TRAILER_LENGTH]: parseFloat(data[cols.TRAILER_LENGTH]),
+        [cols.TRAILER_HEIGHT]: parseFloat(data[cols.TRAILER_HEIGHT]),
+        [cols.TRAILER_WIDTH]: parseFloat(data[cols.TRAILER_WIDTH]),
+        [HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME]: data[HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME],
+        [HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME]: data[HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME],
+        [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: data[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
+        [cols.TRAILER_DANGER_CLASS_ID]: data[cols.TRAILER_DANGER_CLASS_ID],
+    };
+    result.trailer = trailer;
+    if (data[HOMELESS_COLUMNS.CAR_ID]) {
+        let formattedCar = {
+            id: data[HOMELESS_COLUMNS.CAR_ID],
+            [colsCars.CAR_MARK]: data[colsCars.CAR_MARK],
+            [colsCars.CAR_MODEL]: data[colsCars.CAR_MODEL],
+            [colsCars.CAR_TYPE]: data[colsCars.CAR_TYPE],
+            [colsCars.CAR_MADE_YEAR_AT]: data[colsCars.CAR_MADE_YEAR_AT],
+            [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: data[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
+        };
+        result.car = formattedCar;
+
+        if (data[colsCars.CAR_TYPE] === CAR_TYPES_MAP.TRUCK) {
+            formattedCar = {
+                ...formattedCar,
+                [colsCars.CAR_LOADING_METHODS]: data[colsCars.CAR_LOADING_METHODS],
+                [colsCars.CAR_CARRYING_CAPACITY]: parseFloat(data[colsCars.CAR_CARRYING_CAPACITY]),
+                [colsCars.CAR_LENGTH]: parseFloat(data[colsCars.CAR_LENGTH]),
+                [colsCars.CAR_HEIGHT]: parseFloat(data[colsCars.CAR_HEIGHT]),
+                [colsCars.CAR_WIDTH]: parseFloat(data[colsCars.CAR_WIDTH]),
+                [HOMELESS_COLUMNS.CAR_DANGER_CLASS_NAME]: data[HOMELESS_COLUMNS.CAR_DANGER_CLASS_NAME],
+                [HOMELESS_COLUMNS.CAR_VEHICLE_TYPE_NAME]: data[HOMELESS_COLUMNS.CAR_VEHICLE_TYPE_NAME],
+            };
+            result.car = formattedCar;
+        }
+    }
+    return result;
+};
 
 const formatRecordForResponse = trailer => {
     const result = {
@@ -97,6 +146,7 @@ const formatTrailerToEdit = body => ({
 module.exports = {
     formatTrailerToSave,
     formatRecordForList,
+    formatRecordForListAvailable,
     formatRecordForResponse,
     formatTrailerToEdit,
 };
