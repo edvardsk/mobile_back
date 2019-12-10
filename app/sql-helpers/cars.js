@@ -221,7 +221,7 @@ const selectCountAvailableCarsByCompanyId = (companyId, filter) => {
         .where(`c.${cols.DELETED} = 'f'`)
         .where(`csn.${colsCarsStateNumbers.IS_ACTIVE} = 't'`);
 
-    expression = setCarsFilter(expression, filter);
+    expression = setDealAvailableCarsFilter(expression, filter);
     return expression
         .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = c.id`)
         .toString();
