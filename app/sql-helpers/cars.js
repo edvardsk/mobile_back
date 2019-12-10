@@ -243,9 +243,12 @@ const setDealAvailableCarsFilter = (expression, filteringObject) => {
 const selectAvailableCarsByIdsAndCompanyId = (ids, companyId) => squelPostgres // todo: check full availability
     .select()
     .from(table.NAME, 'c')
+    .field('c.*')
+    .field('t.id', HOMELESS_COLUMNS.TRAILER_ID)
     .where('c.id IN ?', ids)
     .where(`c.${cols.COMPANY_ID} = '${companyId}'`)
     .where(`c.${cols.DELETED} = 'f'`)
+    .left_join(tableTrailers.NAME, 't', `t.${colsTrailers.CAR_ID} = c.id`)
     .toString();
 
 const selectRecordsByStateNumbers = numbers => squelPostgres

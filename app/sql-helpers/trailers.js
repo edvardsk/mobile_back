@@ -6,6 +6,7 @@ const { SqlArray } = require('constants/instances');
 const squelPostgres = squel.useFlavour('postgres');
 
 const table = SQL_TABLES.TRAILERS;
+const tableCars = SQL_TABLES.CARS;
 const tableTrailersStateNumbers = SQL_TABLES.TRAILERS_STATE_NUMBERS;
 const tableFiles = SQL_TABLES.FILES;
 const tableTrailersFiles = SQL_TABLES.TRAILERS_TO_FILES;
@@ -214,10 +215,13 @@ const setAvailableTrailersFilter = (expression, filteringObject) => {
 
 const selectAvailableTrailersByIdsAndCompanyId = (ids, companyId) => squelPostgres // todo: check full availability
     .select()
-    .from(table.NAME)
-    .where('id IN ?', ids)
-    .where(`${cols.COMPANY_ID} = '${companyId}'`)
-    .where(`${cols.DELETED} = 'f'`)
+    .from(table.NAME, 't')
+    .field('t.*')
+    .field('c.id', HOMELESS_COLUMNS.CAR_ID)
+    .where('t.id IN ?', ids)
+    .where(`t.${cols.COMPANY_ID} = '${companyId}'`)
+    .where(`t.${cols.DELETED} = 'f'`)
+    .left_join(tableCars.NAME, 'c', `c.id = t.${cols.CAR_ID}`)
     .toString();
 
 const selectRecordsByStateNumbers = numbers => squelPostgres

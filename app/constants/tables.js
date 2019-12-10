@@ -514,6 +514,7 @@ const HOMELESS_COLUMNS = {
     TRAILER_ID_OR_DATA: 'trailer_id_or_data',
     PAY_CURRENCY_ID: 'pay_currency_id',
     PAY_VALUE: 'pay_value',
+    CAR_ID: 'car_id',
 };
 
 module.exports = {

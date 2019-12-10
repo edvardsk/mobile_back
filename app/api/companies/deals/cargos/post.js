@@ -51,19 +51,23 @@ const createCargoDeal = async (req, res, next) => {
         const carsIdsSet = new Set(carsIds);
         const trailersIdsSet = new Set(trailersIds);
 
+        const shadowDriversSet = new Set(shadowDrivers.map(driver => `${driver[HOMELESS_COLUMNS.PHONE_PREFIX_ID]}${driver[HOMELESS_COLUMNS.PHONE_NUMBER]}`));
+        const shadowCarsSet = new Set(shadowCars.map(car => car[HOMELESS_COLUMNS.CAR_STATE_NUMBER]));
+        const shadowTrailersSet = new Set(shadowTrailers.map(trailer => trailer[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]));
+
         if (
-            (LOADING_TYPES_MAP.FTL && (
+            (cargoLoadingType === LOADING_TYPES_MAP.FTL && (
                 cargosIdsSet.size !== cargosIds.length ||
-                drivesIdsSet.size + shadowDrivers.length !== driversIds.length ||
-                carsIdsSet.size + shadowCars.length !== carsIds.length ||
-                trailersIdsSet.size + shadowTrailers.length !== trailersIds.length
+                drivesIdsSet.size + shadowDriversSet.size !== body.length ||
+                carsIdsSet.size + shadowCarsSet.size !== body.length ||
+                trailersIdsSet.size + shadowTrailersSet.size !== body.length
             ))
             ||
-            (LOADING_TYPES_MAP.LTL && (
-                cargosIdsSet.size !== 1 ||
-                drivesIdsSet.size + shadowDrivers.length !== 1 ||
-                carsIdsSet.size + shadowCars.length !== 1 ||
-                trailersIdsSet.size + shadowTrailers.length !== 1
+            (cargoLoadingType === LOADING_TYPES_MAP.LTL && (
+                cargosIdsSet.size !== cargosIds.length ||
+                drivesIdsSet.size + shadowDriversSet.size !== 1 ||
+                carsIdsSet.size + shadowCarsSet.size !== 1 ||
+                trailersIdsSet.size + shadowTrailersSet.size !== 1
             ))
         ) {
             return reject(res, ERRORS.DEALS.DUPLICATE_DATA);
@@ -100,13 +104,6 @@ const createCargoDeal = async (req, res, next) => {
             return reject(res, invalidTrailers);
         }
 
-        /* validate shadow drivers */
-        const driversPhoneNumbersWithPrefix = shadowDrivers.map(driver => `${driver[HOMELESS_COLUMNS.PHONE_PREFIX_ID]}${driver[HOMELESS_COLUMNS.PHONE_NUMBER]}`);
-        const driversPhoneNumbersSet = new Set(driversPhoneNumbersWithPrefix);
-        if (driversPhoneNumbersWithPrefix.length !== driversPhoneNumbersSet.size) {
-            return reject(res, ERRORS.DEALS.DUPLICATE_PHONE_NUMBERS);
-        }
-
         /* validate shadow cars */
         if (shadowCars.length) {
             const carsStateNumbers = shadowCars.map(car => car[HOMELESS_COLUMNS.CAR_STATE_NUMBER]);
@@ -126,6 +123,9 @@ const createCargoDeal = async (req, res, next) => {
                 return reject(res, invalidShadowTrailers);
             }
         }
+
+        /* validate cars and trailers */
+
 
         return success(res, {});
     } catch (error) {
