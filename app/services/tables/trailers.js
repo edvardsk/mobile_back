@@ -97,7 +97,7 @@ const getRecordsByStateNumbers = numbers => (
 
 const checkTrailerStateNumberExistsOpposite = async (meta, stateNumber) => {
     const { trailerId } = meta;
-    const trailer = await getRecordByStateNumberAndActive(stateNumber);
+    const trailer = await getRecordByStateNumberAndActive(stateNumber.toUpperCase());
     return !trailer || trailer.id === trailerId;
 };
 

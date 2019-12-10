@@ -84,7 +84,7 @@ const getRecordsByStateNumbers = numbers => (
 
 const checkCarStateNumberExistsOpposite = async (meta, stateNumber) => {
     const { carId } = meta;
-    const car = await getRecordByStateNumberAndActive(stateNumber);
+    const car = await getRecordByStateNumberAndActive(stateNumber.toUpperCase());
     return !car || car.id === carId;
 };
 

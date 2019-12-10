@@ -31,7 +31,7 @@ const editCar = async (req, res, next) => {
         const { body, files } = req;
         const { carId } = req.params;
         const newCarType = body[colsCars.CAR_TYPE];
-        const stateNumber = body[HOMELESS_COLUMNS.CAR_STATE_NUMBER];
+        const stateNumber = body[HOMELESS_COLUMNS.CAR_STATE_NUMBER].toUpperCase();
         const currentStateNumberRecord = await CarsStateNumbersService.getActiveRecordByCarIdStrict(carId);
         const currentStateNumber = currentStateNumberRecord[colsCarsNumbers.NUMBER];
         const carData = CarsFormatters.formatCarToEdit(body);

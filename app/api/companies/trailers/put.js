@@ -29,7 +29,7 @@ const editTrailer = async (req, res, next) => {
     try {
         const { body, files } = req;
         const { trailerId } = req.params;
-        const stateNumber = body[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER];
+        const stateNumber = body[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER].toUpperCase();
         const currentStateNumberRecord = await TrailersStateNumbersService.getActiveRecordByTrailerIdStrict(trailerId);
         const currentStateNumber = currentStateNumberRecord[colsTrailersNumbers.NUMBER];
         const trailerData = TrailersFormatters.formatTrailerToEdit(body);
