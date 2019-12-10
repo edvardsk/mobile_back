@@ -98,6 +98,13 @@ const createCargoDeal = async (req, res, next) => {
             return reject(res, invalidTrailers);
         }
 
+        /* validate shadow drivers */
+        const driversPhoneNumbersWithPrefix = shadowDrivers.map(driver => `${driver[HOMELESS_COLUMNS.PHONE_PREFIX_ID]}${driver[HOMELESS_COLUMNS.PHONE_NUMBER]}`);
+        const driversPhoneNumbersSet = new Set(driversPhoneNumbersWithPrefix);
+        if (driversPhoneNumbersWithPrefix.length !== driversPhoneNumbersSet.size) {
+            return reject(res, ERRORS.DEALS.DUPLICATE_PHONE_NUMBERS);
+        }
+
         return success(res, {});
     } catch (error) {
         next(error);

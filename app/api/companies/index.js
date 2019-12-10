@@ -532,6 +532,9 @@ router.post(
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
     validate(ValidatorSchemes.createCargoDeal),
+    validate(ValidatorSchemes.createCargoDealAsync),
+    validate(ValidatorSchemes.createCargoDealPhoneNumberAsync),
+    validate(ValidatorSchemes.createCargoDealPhoneNumberWithPrefixAsync),
     postDealsCargos.createCargoDeal,
 );
 

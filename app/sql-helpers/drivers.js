@@ -109,6 +109,15 @@ const selectAvailableDriversByIdsAndCompanyId = (ids, companyId) => squelPostgre
     .left_join(tableUsersCompanies.NAME, 'uc', `uc.${colsUsersCompanies.USER_ID} = u.id`)
     .toString();
 
+const selectDriversByPhoneNumbers = numbers => squelPostgres
+    .select()
+    .from(table.NAME, 'd')
+    .where(`CONCAT(php.${colsPhonePrefixes.CODE}, phn.${colsPhoneNumbers.NUMBER}) IN ?`, numbers)
+    .left_join(tableUsers.NAME, 'u', `u.id = d.${cols.USER_ID}`)
+    .left_join(tablePhoneNumbers.NAME, 'phn', `phn.${colsPhoneNumbers.USER_ID} = u.id`)
+    .left_join(tablePhonePrefixes.NAME, 'php', `php.id = phn.${colsPhoneNumbers.PHONE_PREFIX_ID}`)
+    .toString();
+
 module.exports = {
     insertRecord,
     updateRecordByUserId,
@@ -117,4 +126,5 @@ module.exports = {
     selectCountAvailableDrivers,
     selectRecordByCompanyIdLight,
     selectAvailableDriversByIdsAndCompanyId,
+    selectDriversByPhoneNumbers,
 };

@@ -1,6 +1,9 @@
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
+// patterns
+const { DIGITS_VALIDATION_PATTERN } = require('./patterns');
+
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 
@@ -25,10 +28,20 @@ const createCargoDeal = {
                             [colsUsers.FULL_NAME]: {
                                 type: 'string',
                                 minLength: 3,
-                            }
+                            },
+                            [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
+                                type: 'string',
+                                format: 'uuid',
+                            },
+                            [HOMELESS_COLUMNS.PHONE_NUMBER]: {
+                                type: 'string',
+                                pattern: DIGITS_VALIDATION_PATTERN,
+                            },
                         },
                         required: [
                             colsUsers.FULL_NAME,
+                            HOMELESS_COLUMNS.PHONE_PREFIX_ID,
+                            HOMELESS_COLUMNS.PHONE_NUMBER,
                         ],
                         additionalProperties: false,
                     }
@@ -103,6 +116,91 @@ const createCargoDeal = {
     uniqueItems: true,
 };
 
+const createCargoDealAsync = {
+    $async: true,
+    type: 'array',
+    items: {
+        type: 'object',
+        properties: {
+            [HOMELESS_COLUMNS.DRIVER_ID_OR_DATA]: {
+                oneOf: [
+                    {
+                        type: 'string',
+                        format: 'uuid',
+                    },
+                    {
+                        type: 'object',
+                        properties: {
+                            [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
+                                type: 'string',
+                                format: 'uuid',
+                            },
+                        },
+                    }
+                ],
+            },
+        },
+    },
+};
+
+const createCargoDealPhoneNumberAsync = {
+    $async: true,
+    type: 'array',
+    items: {
+        type: 'object',
+        properties: {
+            [HOMELESS_COLUMNS.DRIVER_ID_OR_DATA]: {
+                oneOf: [
+                    {
+                        type: 'string',
+                        format: 'uuid',
+                    },
+                    {
+                        type: 'object',
+                        properties: {
+                            [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
+                                phone_prefix_not_exist: {},
+                            },
+                            [HOMELESS_COLUMNS.PHONE_NUMBER]: {
+                                phone_number_exists: {},
+                            },
+                        },
+                    }
+                ],
+            },
+        },
+    },
+};
+
+const createCargoDealPhoneNumberWithPrefixAsync = {
+    $async: true,
+    type: 'array',
+    items: {
+        type: 'object',
+        properties: {
+            [HOMELESS_COLUMNS.DRIVER_ID_OR_DATA]: {
+                oneOf: [
+                    {
+                        type: 'string',
+                        format: 'uuid',
+                    },
+                    {
+                        type: 'object',
+                        properties: {
+                            [HOMELESS_COLUMNS.PHONE_NUMBER]: {
+                                phone_number_not_valid: {},
+                            },
+                        },
+                    }
+                ],
+            },
+        },
+    },
+};
+
 module.exports = {
     createCargoDeal,
+    createCargoDealAsync,
+    createCargoDealPhoneNumberAsync,
+    createCargoDealPhoneNumberWithPrefixAsync,
 };

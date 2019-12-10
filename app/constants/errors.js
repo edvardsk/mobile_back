@@ -84,6 +84,7 @@ const ERRORS = {
         INVALID_TRAILER_ID: 'deals.invalid_trailer_id',
         DIFFERENT_CARGO_LOADING_METHOD: 'deals.different_cargo_loading_method',
         DUPLICATE_DATA: 'deals.duplicate_data',
+        DUPLICATE_PHONE_NUMBERS: 'deals.duplicate_phone_numbers',
     },
 };
 
