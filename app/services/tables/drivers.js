@@ -3,6 +3,7 @@ const { one, oneOrNone, manyOrNone } = require('db');
 // sql-helpers
 const {
     insertRecord,
+    insertRecords,
     selectRecordByUserId,
     updateRecordByUserId,
     selectAvailableDriversPaginationSorting,
@@ -19,6 +20,8 @@ const { OPERATIONS } = require('constants/postgres');
 const { isValidUUID } = require('helpers/validators');
 
 const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
+
+const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MANY];
 
 const editDriverAsTransaction = (userId, values) => [updateRecordByUserId(userId, values), OPERATIONS.ONE];
 
@@ -54,6 +57,7 @@ const checkIsOptionalDriverInCompanyExists = async (meta, id) => {
 
 module.exports = {
     addRecordAsTransaction,
+    addRecordsAsTransaction,
     editDriverAsTransaction,
     getRecordByUserId,
     getAvailableDriversPaginationSorting,

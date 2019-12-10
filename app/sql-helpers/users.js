@@ -50,6 +50,13 @@ const insertUser = values => squelPostgres
     .returning('*')
     .toString();
 
+const insertUsers = values => squelPostgres
+    .insert()
+    .into(table.NAME)
+    .setFieldsRows(values)
+    .returning('*')
+    .toString();
+
 const selectUser = id => squelPostgres
     .select()
     .from(table.NAME)
@@ -348,6 +355,7 @@ const setUsersFilter = (expression, filteringObject) => {
 
 module.exports = {
     insertUser,
+    insertUsers,
     selectUser,
     selectUserWithRoleAndPhoneNumber,
     selectUserWithRole,

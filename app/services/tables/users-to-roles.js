@@ -1,6 +1,7 @@
 const { one } = require('db');
 const {
     insertUserRole,
+    insertUserRoles,
     updateUserRoleByUserId,
 } = require('sql-helpers/users-to-roles');
 
@@ -14,9 +15,12 @@ const updateUserRoleAsTransaction = (id, role) => [updateUserRoleByUserId(id, ro
 
 const addUserRoleAsTransaction = (id, role) => [insertUserRole(id, role), OPERATIONS.ONE];
 
+const addUserRolesAsTransaction = values => [insertUserRoles(values), OPERATIONS.MANY];
+
 module.exports = {
     addUserRole,
     updateUserRole,
     updateUserRoleAsTransaction,
     addUserRoleAsTransaction,
+    addUserRolesAsTransaction,
 };

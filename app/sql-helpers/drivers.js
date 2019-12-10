@@ -23,6 +23,13 @@ const insertRecord = values => squelPostgres
     .returning('*')
     .toString();
 
+const insertRecords = values => squelPostgres
+    .insert()
+    .into(table.NAME)
+    .setFieldsRows(values)
+    .returning('*')
+    .toString();
+
 const updateRecordByUserId = (userId, values) => squelPostgres
     .update()
     .table(table.NAME)
@@ -120,6 +127,7 @@ const selectDriversByPhoneNumbers = numbers => squelPostgres
 
 module.exports = {
     insertRecord,
+    insertRecords,
     updateRecordByUserId,
     selectRecordByUserId,
     selectAvailableDriversPaginationSorting,

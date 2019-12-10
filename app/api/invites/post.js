@@ -155,7 +155,6 @@ const inviteMiddleware = async (req, res, next) => {
             PhoneNumbersService.addRecordAsTransaction(phoneNumberData),
         ];
 
-
         await TableService.runTransaction([
             ...transactionsListHead,
             ...transactionList,

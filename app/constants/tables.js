@@ -210,6 +210,7 @@ const SQL_TABLES = {
             USER_ID: 'user_id',
             DRIVER_LICENCE_REGISTERED_AT: 'driver_licence_registered_at',
             DRIVER_LICENCE_EXPIRED_AT: 'driver_licence_expired_at',
+            SHADOW: 'shadow',
             CREATED_AT: 'created_at',
         },
     },

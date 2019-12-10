@@ -5,14 +5,24 @@ const CargosService = require('services/tables/cargos');
 const DriversService = require('services/tables/drivers');
 const CarsService = require('services/tables/cars');
 const TrailersService = require('services/tables/trailers');
+const RolesService = require('services/tables/roles');
+const UsersService = require('services/tables/users');
+const UsersRolesService = require('services/tables/users-to-roles');
+const PhoneNumbersService = require('services/tables/phone-numbers');
+const UsersCompaniesService = require('services/tables/users-to-companies');
+const TablesService = require('services/tables');
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
 const { LOADING_TYPES_MAP } = require('constants/cargos');
+const { SUCCESS_CODES } = require('constants/http-codes');
+const { ROLES } = require('constants/system');
 
 // formatters
 const { formatPricesFromPostgresJSON } = require('formatters/cargo-prices');
+const { formatAllInstancesToSave } = require('formatters/deals');
+const { formatShadowDriversToSave } = require('formatters/drivers');
 
 // helpers
 const {
@@ -27,12 +37,13 @@ const {
 } = require('helpers/validators/deals');
 
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
+const colsUsers = SQL_TABLES.USERS.COLUMNS;
 
 const createCargoDeal = async (req, res, next) => {
     try {
         const { body } = req;
 
-        const { company } = res.locals;
+        const { company, user } = res.locals;
 
         const [cargosIds, driversIds, shadowDrivers, carsIds, shadowCars, trailersIds, shadowTrailers] = extractData(body);
 
@@ -58,7 +69,6 @@ const createCargoDeal = async (req, res, next) => {
 
         if (
             (cargoLoadingType === LOADING_TYPES_MAP.FTL && (
-                cargosIdsSet.size !== cargosIds.length ||
                 drivesIdsSet.size + shadowDriversSet.size !== body.length ||
                 carsIdsSet.size + shadowCarsSet.size !== body.length ||
                 trailersIdsSet.size + shadowTrailersSet.size > body.length
@@ -79,7 +89,7 @@ const createCargoDeal = async (req, res, next) => {
             [HOMELESS_COLUMNS.PRICES]: formatPricesFromPostgresJSON(cargo[HOMELESS_COLUMNS.PRICES]),
         }));
 
-        const invalidCargos = validateCargos(body, cargosFromDb);
+        const invalidCargos = validateCargos(body, cargosFromDb, cargoLoadingType);
         if (invalidCargos.length) {
             return reject(res, invalidCargos);
         }
@@ -131,8 +141,31 @@ const createCargoDeal = async (req, res, next) => {
             return reject(res, invalidCarsTrailers);
         }
 
+        let transactionsList = [];
+        /* create all shadow records */
+        const [
+            deals, newDrivers, newCars, newTrailers, editTrailers
+        ] = formatAllInstancesToSave(body, availableTrailers, cargoLoadingType, company.id);
+        console.log(deals);
 
-        return success(res, {});
+        if (newDrivers.length) {
+            const role = await RolesService.getRoleByName(ROLES.UNCONFIRMED_DRIVER);
+            const [
+                users, drives, usersRoles, usersCompanies, phoneNumbers
+            ] = formatShadowDriversToSave(newDrivers, role.id, user[colsUsers.LANGUAGE_ID], company.id);
+            transactionsList = [
+                ...transactionsList,
+                // UsersService.addUserAsTransaction(users),
+                // UsersRolesService.addUserRoleAsTransaction(usersRoles),
+                // UsersCompaniesService.addRecordAsTransaction(usersCompanies),
+                // PhoneNumbersService.addRecordAsTransaction(phoneNumbers),
+                // DriversService.addRecordsAsTransaction(drives),
+            ];
+        }
+
+        // await TablesService.runTransaction(transactionsList);
+
+        return success(res, {}, SUCCESS_CODES.CREATED);
     } catch (error) {
         next(error);
     }
