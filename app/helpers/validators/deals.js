@@ -91,6 +91,40 @@ const validateTrailers = (body, trailersFromDb) => {
     }, []);
 };
 
+const validateShadowCars = (body, carsFromDb) => {
+    return body.reduce((notValidCars, item, i) => {
+        const dealCarId = item[HOMELESS_COLUMNS.CAR_ID_OR_DATA];
+        if (!isValidUUID(dealCarId)) {
+            const shadowStateNumber = dealCarId[HOMELESS_COLUMNS.CAR_STATE_NUMBER];
+            const carFromDb = carsFromDb.find(car => car[HOMELESS_COLUMNS.CAR_STATE_NUMBER] === shadowStateNumber);
+            if (carFromDb) {
+                notValidCars.push({
+                    position: i,
+                    type: ERRORS.DEALS.CAR_STATE_NUMBER_EXISTS,
+                });
+            }
+        }
+        return notValidCars;
+    }, []);
+};
+
+const validateShadowTrailers = (body, trailersFromDb) => {
+    return body.reduce((notValidCars, item, i) => {
+        const dealTrailerId = item[HOMELESS_COLUMNS.TRAILER_ID_OR_DATA];
+        if (!isValidUUID(dealTrailerId)) {
+            const shadowStateNumber = dealTrailerId[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER];
+            const trailerFromDb = trailersFromDb.find(trailer => trailer[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER] === shadowStateNumber);
+            if (trailerFromDb) {
+                notValidCars.push({
+                    position: i,
+                    type: ERRORS.DEALS.TRAILER_STATE_NUMBER_EXISTS,
+                });
+            }
+        }
+        return notValidCars;
+    }, []);
+};
+
 const extractData = body => body.reduce((acc, item) => {
     const [cargosIds, driversIds, driversData, carsIds, carsData, trailersIds, trailersData] = acc;
     const cargoId = item[HOMELESS_COLUMNS.CARGO_ID];
@@ -112,7 +146,7 @@ const extractData = body => body.reduce((acc, item) => {
     if (isValidUUID(trailerId)) {
         trailersIds.push(trailerId);
     } else {
-        trailersData.push(trailersData);
+        trailersData.push(trailerId);
     }
 
     return [cargosIds, driversIds, driversData, carsIds, carsData, trailersIds, trailersData];
@@ -123,5 +157,7 @@ module.exports = {
     validateDrivers,
     validateCars,
     validateTrailers,
+    validateShadowCars,
+    validateShadowTrailers,
     extractData,
 };

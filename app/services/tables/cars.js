@@ -14,6 +14,7 @@ const {
     selectAvailableCarsByCompanyIdPaginationSorting,
     selectCountAvailableCarsByCompanyId,
     selectAvailableCarsByIdsAndCompanyId,
+    selectRecordsByStateNumbers,
 } = require('sql-helpers/cars');
 
 // services
@@ -75,6 +76,10 @@ const getCountAvailableCars = (companyId, filter) => (
 
 const getAvailableCarsByIdsAndCompanyId = (ids, companyId) => (
     manyOrNone(selectAvailableCarsByIdsAndCompanyId(ids, companyId))
+);
+
+const getRecordsByStateNumbers = numbers => (
+    manyOrNone(selectRecordsByStateNumbers(numbers))
 );
 
 const checkCarStateNumberExistsOpposite = async (meta, stateNumber) => {
@@ -153,6 +158,7 @@ module.exports = {
     getAvailableCarsByCompanyIdPaginationSorting,
     getCountAvailableCars,
     getAvailableCarsByIdsAndCompanyId,
+    getRecordsByStateNumbers,
 
     checkCarStateNumberExistsOpposite,
     checkCarInCompanyExist,

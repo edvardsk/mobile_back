@@ -248,6 +248,16 @@ const selectAvailableCarsByIdsAndCompanyId = (ids, companyId) => squelPostgres /
     .where(`c.${cols.DELETED} = 'f'`)
     .toString();
 
+const selectRecordsByStateNumbers = numbers => squelPostgres
+    .select()
+    .from(table.NAME, 'c')
+    .field('c.*')
+    .field(`csn.${colsCarsStateNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
+    .where(`csn.${colsCarsStateNumbers.IS_ACTIVE} = 't'`)
+    .where(`csn.${colsCarsStateNumbers.NUMBER} IN ?`, numbers)
+    .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = c.id`)
+    .toString();
+
 module.exports = {
     insertRecord,
     updateRecord,
@@ -261,4 +271,5 @@ module.exports = {
     selectAvailableCarsByCompanyIdPaginationSorting,
     selectCountAvailableCarsByCompanyId,
     selectAvailableCarsByIdsAndCompanyId,
+    selectRecordsByStateNumbers,
 };

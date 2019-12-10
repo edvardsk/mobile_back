@@ -20,6 +20,8 @@ const {
     validateCars,
     validateDrivers,
     validateTrailers,
+    validateShadowCars,
+    validateShadowTrailers,
     extractData,
 } = require('helpers/validators/deals');
 
@@ -103,6 +105,26 @@ const createCargoDeal = async (req, res, next) => {
         const driversPhoneNumbersSet = new Set(driversPhoneNumbersWithPrefix);
         if (driversPhoneNumbersWithPrefix.length !== driversPhoneNumbersSet.size) {
             return reject(res, ERRORS.DEALS.DUPLICATE_PHONE_NUMBERS);
+        }
+
+        /* validate shadow cars */
+        if (shadowCars.length) {
+            const carsStateNumbers = shadowCars.map(car => car[HOMELESS_COLUMNS.CAR_STATE_NUMBER]);
+            const carsFromDb = await CarsService.getRecordsByStateNumbers(carsStateNumbers);
+            const invalidShadowCars = validateShadowCars(body, carsFromDb);
+            if (invalidShadowCars.length) {
+                return reject(res, invalidShadowCars);
+            }
+        }
+
+        /* validate shadow trailers */
+        if (shadowTrailers.length) {
+            const trailersStateNumbers = shadowTrailers.map(trailer => trailer[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]);
+            const trailersFromDb = await TrailersService.getRecordsByStateNumbers(trailersStateNumbers);
+            const invalidShadowTrailers = validateShadowTrailers(body, trailersFromDb);
+            if (invalidShadowTrailers.length) {
+                return reject(res, invalidShadowTrailers);
+            }
         }
 
         return success(res, {});

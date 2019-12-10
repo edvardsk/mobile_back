@@ -85,6 +85,8 @@ const ERRORS = {
         DIFFERENT_CARGO_LOADING_METHOD: 'deals.different_cargo_loading_method',
         DUPLICATE_DATA: 'deals.duplicate_data',
         DUPLICATE_PHONE_NUMBERS: 'deals.duplicate_phone_numbers',
+        CAR_STATE_NUMBER_EXISTS: 'deals.car_state_number_exists',
+        TRAILER_STATE_NUMBER_EXISTS: 'deals.trailer_state_number_exists',
     },
 };
 
