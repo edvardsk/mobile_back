@@ -22,6 +22,7 @@ const {
     validateTrailers,
     validateShadowCars,
     validateShadowTrailers,
+    validateCarsTrailers,
     extractData,
 } = require('helpers/validators/deals');
 
@@ -60,14 +61,14 @@ const createCargoDeal = async (req, res, next) => {
                 cargosIdsSet.size !== cargosIds.length ||
                 drivesIdsSet.size + shadowDriversSet.size !== body.length ||
                 carsIdsSet.size + shadowCarsSet.size !== body.length ||
-                trailersIdsSet.size + shadowTrailersSet.size !== body.length
+                trailersIdsSet.size + shadowTrailersSet.size > body.length
             ))
             ||
             (cargoLoadingType === LOADING_TYPES_MAP.LTL && (
                 cargosIdsSet.size !== cargosIds.length ||
                 drivesIdsSet.size + shadowDriversSet.size !== 1 ||
                 carsIdsSet.size + shadowCarsSet.size !== 1 ||
-                trailersIdsSet.size + shadowTrailersSet.size !== 1
+                trailersIdsSet.size + shadowTrailersSet.size > 1
             ))
         ) {
             return reject(res, ERRORS.DEALS.DUPLICATE_DATA);
@@ -125,6 +126,10 @@ const createCargoDeal = async (req, res, next) => {
         }
 
         /* validate cars and trailers */
+        const invalidCarsTrailers = validateCarsTrailers(body, availableCars, availableTrailers, cargoLoadingType);
+        if (invalidCarsTrailers.length) {
+            return reject(res, invalidCarsTrailers);
+        }
 
 
         return success(res, {});

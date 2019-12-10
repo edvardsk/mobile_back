@@ -1,6 +1,7 @@
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
+const { LOADING_TYPES_MAP } = require('constants/cargos');
 
 // helpers
 const { isValidUUID } = require('./index');
@@ -125,6 +126,35 @@ const validateShadowTrailers = (body, trailersFromDb) => {
     }, []);
 };
 
+const validateCarsTrailers = (body, cars, trailers, cargoLoadingType) => {
+    const arr = cargoLoadingType === LOADING_TYPES_MAP.LTL ? [body[0]] : [...body]; // for LTL we're able to check only first record
+    return arr.reduce((errors, item, i) => {
+        const carIdOrData = item[HOMELESS_COLUMNS.CAR_ID_OR_DATA];
+        const trailerIdOrData = item[HOMELESS_COLUMNS.TRAILER_ID_OR_DATA];
+        if (isValidUUID(carIdOrData)) {
+            const carFromDb = cars.find(car => car.id === carIdOrData);
+            const trailerIdWithCar = carFromDb[HOMELESS_COLUMNS.TRAILER_ID];
+            if (trailerIdWithCar && trailerIdWithCar !== trailerIdOrData) {
+                errors.push({
+                    position: i,
+                    type: ERRORS.DEALS.INVALID_CAR_WITH_TRAILER_JOIN,
+                });
+            }
+        }
+        if (isValidUUID(trailerIdOrData)) {
+            const trailerFromDb = trailers.find(trailer => trailer.id === trailerIdOrData);
+            const carIdWithTrailer = trailerFromDb[HOMELESS_COLUMNS.CAR_ID];
+            if (carIdWithTrailer && carIdWithTrailer !== carIdOrData) {
+                errors.push({
+                    position: i,
+                    type: ERRORS.DEALS.INVALID_CAR_WITH_TRAILER_JOIN,
+                });
+            }
+        }
+        return errors;
+    },[]);
+};
+
 const extractData = body => body.reduce((acc, item) => {
     const [cargosIds, driversIds, driversData, carsIds, carsData, trailersIds, trailersData] = acc;
     const cargoId = item[HOMELESS_COLUMNS.CARGO_ID];
@@ -145,7 +175,7 @@ const extractData = body => body.reduce((acc, item) => {
     }
     if (isValidUUID(trailerId)) {
         trailersIds.push(trailerId);
-    } else {
+    } else if (trailerId) {
         trailersData.push(trailerId);
     }
 
@@ -159,5 +189,6 @@ module.exports = {
     validateTrailers,
     validateShadowCars,
     validateShadowTrailers,
+    validateCarsTrailers,
     extractData,
 };

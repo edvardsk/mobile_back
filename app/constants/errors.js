@@ -87,6 +87,7 @@ const ERRORS = {
         DUPLICATE_PHONE_NUMBERS: 'deals.duplicate_phone_numbers',
         CAR_STATE_NUMBER_EXISTS: 'deals.car_state_number_exists',
         TRAILER_STATE_NUMBER_EXISTS: 'deals.trailer_state_number_exists',
+        INVALID_CAR_WITH_TRAILER_JOIN: 'deals.invalid_car_with_trailer_join',
     },
 };
 
