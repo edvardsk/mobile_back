@@ -8,14 +8,15 @@ const { LOADING_TYPES_MAP } = require('constants/cargos');
 const { isValidUUID } = require('helpers/validators');
 
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
+const colsDealStatuses = SQL_TABLES.DEAL_HISTORY_STATUSES.COLUMNS;
 
-const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, companyId) => {
+const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, companyId, initiatorId, dealStatusId) => {
     const generatedDriverId = uuid();
     const generatedCarId = uuid();
     const generatedTrailerId = uuid();
 
     return arr.reduce((acc, item, i) => {
-        const [deals, newDrivers, newCars, newTrailers, editTrailers] = acc;
+        const [deals, dealHistory, newDrivers, newCars, newTrailers, editTrailers] = acc;
         const driverIdOrData = item[HOMELESS_COLUMNS.DRIVER_ID_OR_DATA];
         const carIdOrData = item[HOMELESS_COLUMNS.CAR_ID_OR_DATA];
         const trailerIdOrData = item[HOMELESS_COLUMNS.TRAILER_ID_OR_DATA];
@@ -68,7 +69,9 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
             }
         }
 
+        const dealId = uuid();
         deals.push({
+            id: dealId,
             [colsDeals.CARGO_ID]: item[HOMELESS_COLUMNS.CARGO_ID],
             [colsDeals.TRANSPORTER_COMPANY_ID]: companyId,
             [colsDeals.DRIVER_ID]: driverId,
@@ -78,8 +81,14 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
             [colsDeals.PAY_VALUE]: item[HOMELESS_COLUMNS.PAY_VALUE],
         });
 
-        return [deals, newDrivers, newCars, newTrailers, editTrailers];
-    }, [[], [], [], [], []]);
+        dealHistory.push({
+            [colsDealStatuses.DEAL_ID]: dealId,
+            [colsDealStatuses.INITIATOR_ID]: initiatorId,
+            [colsDealStatuses.DEAL_STATUS_ID]: dealStatusId,
+        });
+
+        return acc;
+    }, [[], [], [], [], [], []]);
 };
 
 module.exports = {

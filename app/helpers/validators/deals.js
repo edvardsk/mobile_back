@@ -114,19 +114,19 @@ const validateShadowCars = (body, carsFromDb) => {
 };
 
 const validateShadowTrailers = (body, trailersFromDb) => {
-    return body.reduce((notValidCars, item, i) => {
+    return body.reduce((notValidTrailers, item, i) => {
         const dealTrailerId = item[HOMELESS_COLUMNS.TRAILER_ID_OR_DATA];
-        if (!isValidUUID(dealTrailerId)) {
+        if (dealTrailerId && !isValidUUID(dealTrailerId)) {
             const shadowStateNumber = dealTrailerId[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER];
             const trailerFromDb = trailersFromDb.find(trailer => trailer[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER] === shadowStateNumber);
             if (trailerFromDb) {
-                notValidCars.push({
+                notValidTrailers.push({
                     position: i,
                     type: ERRORS.DEALS.TRAILER_STATE_NUMBER_EXISTS,
                 });
             }
         }
-        return notValidCars;
+        return notValidTrailers;
     }, []);
 };
 

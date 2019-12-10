@@ -11,6 +11,8 @@ const UsersRolesService = require('services/tables/users-to-roles');
 const PhoneNumbersService = require('services/tables/phone-numbers');
 const UsersCompaniesService = require('services/tables/users-to-companies');
 const DealsService = require('services/tables/deals');
+const DealStatusesService = require('services/tables/deal-statuses');
+const DealStatusesHistoryService = require('services/tables/deal-statuses-history');
 const TablesService = require('services/tables');
 
 // constants
@@ -19,6 +21,7 @@ const { ERRORS } = require('constants/errors');
 const { LOADING_TYPES_MAP } = require('constants/cargos');
 const { SUCCESS_CODES } = require('constants/http-codes');
 const { ROLES } = require('constants/system');
+const { DEAL_STATUSES_MAP } = require('constants/deal-statuses');
 
 // formatters
 const { formatPricesFromPostgresJSON } = require('formatters/cargo-prices');
@@ -125,10 +128,10 @@ const createCargoDeal = async (req, res, next) => {
 
         let transactionsList = [];
         /* create all shadow records */
+        const dealCreatedStatus = await DealStatusesService.getRecordStrict(DEAL_STATUSES_MAP.CREATED);
         const [
-            deals, newDrivers, newCars, newTrailers, editTrailers
-        ] = formatAllInstancesToSave(body, availableTrailers, cargoLoadingType, company.id);
-        console.log(deals);
+            deals, dealStatusesHistory, newDrivers, newCars, newTrailers, editTrailers
+        ] = formatAllInstancesToSave(body, availableTrailers, cargoLoadingType, company.id, user.id, dealCreatedStatus.id);
 
         if (newDrivers.length) {
             const role = await RolesService.getRoleByName(ROLES.UNCONFIRMED_DRIVER);
