@@ -44,15 +44,6 @@ const formatRecordForAvailableList = data => ({
     [colsUsers.FULL_NAME]: data[colsUsers.FULL_NAME],
 });
 
-// const transactionList = [
-//     UsersService.addUserAsTransaction(data),
-//     UsersRolesService.addUserRoleAsTransaction(userId, unconfirmedRole),
-//     EmailConfirmationService.addRecordAsTransaction(emailConfirmationData),
-//     PhoneNumbersService.addRecordAsTransaction(phoneNumberData),
-//     DriversService.addRecordAsTransaction(driverData)
-//
-// ];
-
 const formatShadowDriversToSave = (drivers, driverRoleId, initiatorLanguageId, companyId) => {
     return drivers.reduce((acc, driver) => {
         const [users, drives, usersRoles, usersCompanies, phoneNumbers] = acc;

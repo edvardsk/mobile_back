@@ -10,6 +10,7 @@ const {
     selectCountAvailableDrivers,
     selectRecordByCompanyIdLight,
     selectAvailableDriversByIdsAndCompanyId,
+    selectAvailableDriverByIdAndCompanyId,
     selectDriversByPhoneNumbers,
 } = require('sql-helpers/drivers');
 
@@ -42,6 +43,10 @@ const getAvailableDriversByIdsAndCompanyId = (ids, companyId) => (
     manyOrNone(selectAvailableDriversByIdsAndCompanyId(ids, companyId))
 );
 
+const getAvailableDriverByIdAndCompanyId = (id, companyId) => (
+    oneOrNone(selectAvailableDriverByIdAndCompanyId(id, companyId))
+);
+
 const getDriversByPhoneNumbers = (numbers) => (
     manyOrNone(selectDriversByPhoneNumbers(numbers))
 );
@@ -63,6 +68,7 @@ module.exports = {
     getAvailableDriversPaginationSorting,
     getCountAvailableDrivers,
     getAvailableDriversByIdsAndCompanyId,
+    getAvailableDriverByIdAndCompanyId,
     getDriversByPhoneNumbers,
 
     checkIsOptionalDriverInCompanyExists,

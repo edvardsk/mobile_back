@@ -14,6 +14,7 @@ const {
     selectAvailableTrailersByCompanyIdPaginationSorting,
     selectAvailableCountTrailersByCompanyId,
     selectAvailableTrailersByIdsAndCompanyId,
+    selectAvailableTrailerByIdAndCompanyId,
     selectRecordsByStateNumbers,
 } = require('sql-helpers/trailers');
 
@@ -89,6 +90,10 @@ const getCountAvailableTrailers = (companyId, filter) => (
 
 const getAvailableTrailersByIdsAndCompanyId = (ids, companyId) => (
     manyOrNone(selectAvailableTrailersByIdsAndCompanyId(ids, companyId))
+);
+
+const getAvailableTrailerByIdAndCompanyId = (id, companyId) => (
+    oneOrNone(selectAvailableTrailerByIdAndCompanyId(id, companyId))
 );
 
 const getRecordsByStateNumbers = numbers => (
@@ -168,6 +173,7 @@ module.exports = {
     getAvailableTrailersPaginationSorting,
     getCountAvailableTrailers,
     getAvailableTrailersByIdsAndCompanyId,
+    getAvailableTrailerByIdAndCompanyId,
     getRecordsByStateNumbers,
 
     checkTrailerStateNumberExistsOpposite,

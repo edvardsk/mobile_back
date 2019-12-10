@@ -10,6 +10,7 @@ const UsersService = require('services/tables/users');
 const UsersRolesService = require('services/tables/users-to-roles');
 const PhoneNumbersService = require('services/tables/phone-numbers');
 const UsersCompaniesService = require('services/tables/users-to-companies');
+const DealsService = require('services/tables/deals');
 const TablesService = require('services/tables');
 
 // constants
@@ -27,9 +28,6 @@ const { formatShadowDriversToSave } = require('formatters/drivers');
 // helpers
 const {
     validateCargos,
-    validateCars,
-    validateDrivers,
-    validateTrailers,
     validateShadowCars,
     validateShadowTrailers,
     validateCarsTrailers,
@@ -94,25 +92,9 @@ const createCargoDeal = async (req, res, next) => {
             return reject(res, invalidCargos);
         }
 
-        /* validate drivers */
-        const availableDrivers = (driversIds.length && await DriversService.getAvailableDriversByIdsAndCompanyId(driversIds, company.id)) || [];
-        const invalidDrivers = validateDrivers(body, availableDrivers);
-        if (invalidDrivers.length) {
-            return reject(res, invalidDrivers);
-        }
-
-        /* validate cars */
-        const availableCars = (carsIds.length && await CarsService.getAvailableCarsByIdsAndCompanyId(carsIds, company.id)) || [];
-        const invalidCars = validateCars(body, availableCars);
-        if (invalidCars.length) {
-            return reject(res, invalidCars);
-        }
-
-        /* validate trailers */
-        const availableTrailers = (trailersIds.length && await TrailersService.getAvailableTrailersByIdsAndCompanyId(trailersIds, company.id)) || [];
-        const invalidTrailers = validateTrailers(body, availableTrailers);
-        if (invalidTrailers.length) {
-            return reject(res, invalidTrailers);
+        const [invalidItems, availableCars, availableTrailers] = await DealsService.validateDealItems(body, company.id);
+        if (invalidItems.length) {
+            return reject(res, invalidItems);
         }
 
         /* validate shadow cars */

@@ -14,6 +14,7 @@ const {
     selectAvailableCarsByCompanyIdPaginationSorting,
     selectCountAvailableCarsByCompanyId,
     selectAvailableCarsByIdsAndCompanyId,
+    selectAvailableCarByIdAndCompanyId,
     selectRecordsByStateNumbers,
 } = require('sql-helpers/cars');
 
@@ -76,6 +77,10 @@ const getCountAvailableCars = (companyId, filter) => (
 
 const getAvailableCarsByIdsAndCompanyId = (ids, companyId) => (
     manyOrNone(selectAvailableCarsByIdsAndCompanyId(ids, companyId))
+);
+
+const getAvailableCarByIdAndCompanyId = (id, companyId) => (
+    oneOrNone(selectAvailableCarByIdAndCompanyId(id, companyId))
 );
 
 const getRecordsByStateNumbers = numbers => (
@@ -158,6 +163,7 @@ module.exports = {
     getAvailableCarsByCompanyIdPaginationSorting,
     getCountAvailableCars,
     getAvailableCarsByIdsAndCompanyId,
+    getAvailableCarByIdAndCompanyId,
     getRecordsByStateNumbers,
 
     checkCarStateNumberExistsOpposite,
