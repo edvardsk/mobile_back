@@ -34,6 +34,13 @@ const insertRecord = values => squelPostgres
     .returning('*')
     .toString();
 
+const insertRecords = values => squelPostgres
+    .insert()
+    .into(table.NAME)
+    .setFieldsRows(values)
+    .returning('*')
+    .toString();
+
 const updateRecord = (id, data) => squelPostgres
     .update()
     .table(table.NAME)
@@ -265,6 +272,7 @@ const selectRecordsByStateNumbers = numbers => squelPostgres
 
 module.exports = {
     insertRecord,
+    insertRecords,
     updateRecord,
     updateRecordByCarId,
     selectRecordById,

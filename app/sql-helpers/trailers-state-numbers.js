@@ -14,6 +14,13 @@ const insertRecord = values => squelPostgres
     .returning('*')
     .toString();
 
+const insertRecords = values => squelPostgres
+    .insert()
+    .into(table.NAME)
+    .setFieldsRows(values)
+    .returning('*')
+    .toString();
+
 const updateActiveRecordsByTrailerId = (trailerId, data) => squelPostgres
     .update()
     .table(table.NAME)
@@ -31,6 +38,7 @@ const selectActiveRecordByTrailerId = trailerId => squelPostgres
 
 module.exports = {
     insertRecord,
+    insertRecords,
     updateActiveRecordsByTrailerId,
     selectActiveRecordByTrailerId,
 };

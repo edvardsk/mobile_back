@@ -3,6 +3,7 @@ const { one, oneOrNone, manyOrNone } = require('db');
 // sql-helpers
 const {
     insertRecord,
+    insertRecords,
     updateRecord,
     selectRecordById,
     selectCarsByCompanyIdPaginationSorting,
@@ -34,6 +35,8 @@ const colsCars = SQL_TABLES.CARS.COLUMNS;
 const colsDangerClasses = SQL_TABLES.DANGER_CLASSES.COLUMNS;
 
 const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
+
+const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MANY];
 
 const editRecordAsTransaction = (id, data) => [updateRecord(id, data), OPERATIONS.ONE];
 
@@ -152,6 +155,7 @@ const checkIsPassedFileWithNewDangerClass = async (meta, newDangerClassId, schem
 
 module.exports = {
     addRecordAsTransaction,
+    addRecordsAsTransaction,
     editRecordAsTransaction,
 
     getRecordStrict,

@@ -4,6 +4,7 @@ const { CAR_TYPES_MAP } = require('constants/cars');
 const { SqlArray } = require('constants/instances');
 
 const cols = SQL_TABLES.CARS.COLUMNS;
+const colsCarsNumbers = SQL_TABLES.CARS_STATE_NUMBERS.COLUMNS;
 const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
 const colsFiles = SQL_TABLES.FILES.COLUMNS;
 
@@ -198,6 +199,20 @@ const formatAvailableCar = car => ({
     [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
 });
 
+const formatShadowCarsToSave = (arr, companyId) => arr.reduce((acc, item) => {
+    const [cars, carsNumbers] = acc;
+    const carId = item[HOMELESS_COLUMNS.CAR_ID];
+    cars.push({
+        id: carId,
+        [cols.COMPANY_ID]: companyId,
+    });
+    carsNumbers.push({
+        [colsCarsNumbers.CAR_ID]: carId,
+        [colsCarsNumbers.NUMBER]: item[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
+    });
+    return acc;
+},[[], []]);
+
 module.exports = {
     formatCarToSave,
     formatCarToEdit,
@@ -205,4 +220,5 @@ module.exports = {
     formatRecordForResponse,
     formatAvailableCars,
     formatRecordForListAvailable,
+    formatShadowCarsToSave,
 };

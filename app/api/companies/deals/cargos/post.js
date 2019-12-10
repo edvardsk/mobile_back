@@ -4,7 +4,9 @@ const { success, reject } = require('api/response');
 const CargosService = require('services/tables/cargos');
 const DriversService = require('services/tables/drivers');
 const CarsService = require('services/tables/cars');
+const CarsStateNumbersService = require('services/tables/cars-state-numbers');
 const TrailersService = require('services/tables/trailers');
+const TrailersStateNumbersService = require('services/tables/trailers-state-numbers');
 const RolesService = require('services/tables/roles');
 const UsersService = require('services/tables/users');
 const UsersRolesService = require('services/tables/users-to-roles');
@@ -27,6 +29,8 @@ const { DEAL_STATUSES_MAP } = require('constants/deal-statuses');
 const { formatPricesFromPostgresJSON } = require('formatters/cargo-prices');
 const { formatAllInstancesToSave } = require('formatters/deals');
 const { formatShadowDriversToSave } = require('formatters/drivers');
+const { formatShadowCarsToSave } = require('formatters/cars');
+const { formatShadowTrailersToSave } = require('formatters/trailers');
 
 // helpers
 const {
@@ -39,6 +43,7 @@ const {
 
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
+const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
 
 const createCargoDeal = async (req, res, next) => {
     try {
@@ -145,6 +150,35 @@ const createCargoDeal = async (req, res, next) => {
                 // UsersCompaniesService.addRecordAsTransaction(usersCompanies),
                 // PhoneNumbersService.addRecordAsTransaction(phoneNumbers),
                 // DriversService.addRecordsAsTransaction(drives),
+            ];
+        }
+
+        if (newCars.length) {
+            const [cars, carsNumbers] = formatShadowCarsToSave(newCars, company.id);
+            transactionsList = [
+                ...transactionsList,
+                // CarsService.addRecordsAsTransaction(cars),
+                // CarsStateNumbersService.addRecordsAsTransaction(carsNumbers),
+            ];
+        }
+
+        if (newTrailers.length) {
+            const [trailers, trailersNumbers] = formatShadowTrailersToSave(newTrailers, company.id);
+            transactionsList = [
+                ...transactionsList,
+                // TrailersService.addRecordsAsTransaction(trailers),
+                // TrailersStateNumbersService.addRecordsAsTransaction(trailersNumbers),
+            ];
+        }
+
+        if (editTrailers.length) {
+            transactionsList = [
+                ...transactionsList,
+                // ...editTrailers.map(trailer => (
+                //     TrailersService.editRecordAsTransaction(trailer[HOMELESS_COLUMNS.TRAILER_ID], {
+                //         [colsTrailers.CAR_ID]: trailer[HOMELESS_COLUMNS.CAR_ID],
+                //     })
+                // )),
             ];
         }
 
