@@ -430,7 +430,7 @@ const setCargosSearchFilter = (expression, filteringObject) => {
         [cols.WIDTH, `c.${cols.WIDTH} <= ${filteringObject[cols.WIDTH]}`],
         [cols.HEIGHT, `c.${cols.HEIGHT} <= ${filteringObject[cols.HEIGHT]}`],
         [cols.LENGTH, `c.${cols.LENGTH} <= ${filteringObject[cols.LENGTH]}`],
-        [cols.LOADING_TYPE, `c.${cols.LOADING_TYPE} = ${filteringObject[cols.LOADING_TYPE]}`],
+        [cols.LOADING_TYPE, `c.${cols.LOADING_TYPE} = '${filteringObject[cols.LOADING_TYPE]}'`],
         [cols.VEHICLE_TYPE_ID, `c.${cols.VEHICLE_TYPE_ID} = '${filteringObject[cols.VEHICLE_TYPE_ID]}'`],
         [cols.DANGER_CLASS_ID, `c.${cols.DANGER_CLASS_ID} = '${filteringObject[cols.DANGER_CLASS_ID]}'`],
         [cols.LOADING_METHODS, `c.${cols.LOADING_METHODS} @> '{${filteringObject[cols.LOADING_METHODS]}}'`],
