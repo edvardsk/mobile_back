@@ -31,7 +31,6 @@ const validateCargos = (body, cargosFromDb, cargoLoadingType) => {
 
             const freeCountDb = cargoFromDb[colsCargos.FREE_COUNT];
             const freeCountDeal = item[colsCargos.COUNT];
-
             if (
                 (cargoLoadingType === LOADING_TYPES_MAP.FTL && freeCountDeal !== 1) || // allow only 1 item for FTL cargo
                 (freeCountDb < freeCountDeal)
@@ -41,8 +40,6 @@ const validateCargos = (body, cargosFromDb, cargoLoadingType) => {
                     type: ERRORS.DEALS.INVALID_CARGO_COUNT,
                 });
             }
-
-
         }
         return notValidCargos;
     }, []);

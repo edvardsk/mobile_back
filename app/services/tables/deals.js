@@ -1,3 +1,8 @@
+// sql-helpers
+const {
+    insertRecords,
+} = require('sql-helpers/deals');
+
 // services
 const DriversService = require('./drivers');
 const CarsService = require('./cars');
@@ -6,9 +11,12 @@ const TrailersService = require('./trailers');
 // constants
 const { HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
+const { OPERATIONS } = require('constants/postgres');
 
 // helpers
 const { isValidUUID } = require('helpers/validators');
+
+const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MANY];
 
 const validateDealItems = async (arr, companyId) => {
     const availableDrivers = [];
@@ -56,5 +64,6 @@ const validateDealItems = async (arr, companyId) => {
 };
 
 module.exports = {
+    addRecordsAsTransaction,
     validateDealItems,
 };

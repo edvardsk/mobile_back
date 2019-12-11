@@ -182,6 +182,12 @@ const createCargoDeal = async (req, res, next) => {
             ];
         }
 
+        transactionsList = [
+            ...transactionsList,
+            // DealsService.addRecordsAsTransaction(deals),
+            // DealStatusesHistoryService.addRecordsAsTransaction(dealStatusesHistory),
+        ];
+
         // await TablesService.runTransaction(transactionsList);
 
         return success(res, {}, SUCCESS_CODES.CREATED);
