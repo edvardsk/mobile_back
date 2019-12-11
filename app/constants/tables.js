@@ -425,6 +425,7 @@ const SQL_TABLES = {
             TRAILER_ID: 'trailer_id',
             PAY_CURRENCY_ID: 'pay_currency_id',
             PAY_VALUE: 'pay_value',
+            APPROVED: 'approved',
             CREATED_AT: 'created_at',
         },
     },

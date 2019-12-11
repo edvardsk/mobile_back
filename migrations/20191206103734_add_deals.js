@@ -9,6 +9,7 @@ exports.up = function(knex) {
         table.uuid('trailer_id').references('trailers.id');
         table.uuid('pay_currency_id').references('currencies.id').notNull();
         table.decimal('pay_value', 14, 2).notNull();
+        table.boolean('approved').notNull().defaultTo(false);
         table.timestamp('created_at').defaultTo(knex.fn.now());
     })
         .then(function () {
