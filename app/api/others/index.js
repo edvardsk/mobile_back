@@ -9,27 +9,18 @@ const getCurrencies = require('./currencies/get');
 
 const getExchangeRates = require('./exchange-rates/get');
 
-// middlewares
-const { isHasPermissions } = require('api/middlewares');
-
-// constants
-const { PERMISSIONS } = require('constants/system');
-
 const router = express.Router();
 
 
 // vehicle types
 router.get(
     ROUTES.OTHERS.VEHICLE_TYPES.BASE + ROUTES.OTHERS.VEHICLE_TYPES.GET_ALL,
-    isHasPermissions([PERMISSIONS.CRUD_CARGO]),
     getVehicleTypes.getTypes,
 );
-
 
 // danger classes
 router.get(
     ROUTES.OTHERS.DANGER_CLASSES.BASE + ROUTES.OTHERS.DANGER_CLASSES.GET_ALL,
-    isHasPermissions([PERMISSIONS.CRUD_CARGO]),
     getDangerClasses.getClasses,
 );
 
