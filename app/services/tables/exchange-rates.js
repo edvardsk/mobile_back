@@ -6,6 +6,7 @@ const {
     insertRecords,
     deleteRecordsByCountryId,
     selectRecordsByCountryId,
+    selectRecords,
 } = require('sql-helpers/exchange-rates');
 
 // constants
@@ -21,10 +22,13 @@ const getRecordsByCountriesIds = ids => manyOrNone(selectRecordsByCountriesIds(i
 
 const getRecordsByCountryId = countryId => many(selectRecordsByCountryId(countryId));
 
+const getRecords = () => manyOrNone(selectRecords());
+
 module.exports = {
     addRecordsAsTransaction,
     removeRecordsByCountryIdAsTransaction,
     getRecordsByCountriesIds,
     addRecords,
     getRecordsByCountryId,
+    getRecords,
 };

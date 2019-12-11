@@ -516,6 +516,8 @@ const HOMELESS_COLUMNS = {
     PAY_CURRENCY_ID: 'pay_currency_id',
     PAY_VALUE: 'pay_value',
     CAR_ID: 'car_id',
+    COUNTRY_NAME: 'country_name',
+    COUNTRY_CURRENCY_CODE: 'country_currency_code',
 };
 
 module.exports = {
