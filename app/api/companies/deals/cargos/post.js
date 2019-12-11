@@ -23,7 +23,7 @@ const { ERRORS } = require('constants/errors');
 const { LOADING_TYPES_MAP } = require('constants/cargos');
 const { SUCCESS_CODES } = require('constants/http-codes');
 const { ROLES } = require('constants/system');
-const { DEAL_STATUSES_MAP } = require('constants/deal-statuses');
+const { DEAL_STATUSES_MAP, BUSY_DEAL_STATUSES_LIST } = require('constants/deal-statuses');
 
 // formatters
 const { formatPricesFromPostgresJSON } = require('formatters/cargo-prices');
@@ -63,7 +63,7 @@ const createCargoDeal = async (req, res, next) => {
         const shadowTrailersSet = new Set(shadowTrailers.map(trailer => trailer[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]));
 
         /* validate cargos */
-        const availableCargos = await CargosService.getAvailableCargosByIds(Array.from(cargosIdsSet));
+        const availableCargos = await CargosService.getAvailableCargosByIds(Array.from(cargosIdsSet), BUSY_DEAL_STATUSES_LIST);
         if (availableCargos.length !== cargosIdsSet.size) {
             return reject(res, ERRORS.DEALS.NO_ONE_OR_MANY_CARGOS);
         }
@@ -145,11 +145,11 @@ const createCargoDeal = async (req, res, next) => {
             ] = formatShadowDriversToSave(newDrivers, role.id, user[colsUsers.LANGUAGE_ID], company.id);
             transactionsList = [
                 ...transactionsList,
-                // UsersService.addUserAsTransaction(users),
-                // UsersRolesService.addUserRoleAsTransaction(usersRoles),
-                // UsersCompaniesService.addRecordAsTransaction(usersCompanies),
-                // PhoneNumbersService.addRecordAsTransaction(phoneNumbers),
-                // DriversService.addRecordsAsTransaction(drives),
+                UsersService.addUsersAsTransaction(users),
+                UsersRolesService.addUserRolesAsTransaction(usersRoles),
+                UsersCompaniesService.addRecordsAsTransaction(usersCompanies),
+                PhoneNumbersService.addRecordsAsTransaction(phoneNumbers),
+                DriversService.addRecordsAsTransaction(drives),
             ];
         }
 
@@ -157,8 +157,8 @@ const createCargoDeal = async (req, res, next) => {
             const [cars, carsNumbers] = formatShadowCarsToSave(newCars, company.id);
             transactionsList = [
                 ...transactionsList,
-                // CarsService.addRecordsAsTransaction(cars),
-                // CarsStateNumbersService.addRecordsAsTransaction(carsNumbers),
+                CarsService.addRecordsAsTransaction(cars),
+                CarsStateNumbersService.addRecordsAsTransaction(carsNumbers),
             ];
         }
 
@@ -166,36 +166,34 @@ const createCargoDeal = async (req, res, next) => {
             const [trailers, trailersNumbers] = formatShadowTrailersToSave(newTrailers, company.id);
             transactionsList = [
                 ...transactionsList,
-                // TrailersService.addRecordsAsTransaction(trailers),
-                // TrailersStateNumbersService.addRecordsAsTransaction(trailersNumbers),
+                TrailersService.addRecordsAsTransaction(trailers),
+                TrailersStateNumbersService.addRecordsAsTransaction(trailersNumbers),
             ];
         }
 
         if (editTrailers.length) {
             transactionsList = [
                 ...transactionsList,
-                // ...editTrailers.map(trailer => (
-                //     TrailersService.editRecordAsTransaction(trailer[HOMELESS_COLUMNS.TRAILER_ID], {
-                //         [colsTrailers.CAR_ID]: trailer[HOMELESS_COLUMNS.CAR_ID],
-                //     })
-                // )),
+                ...editTrailers.map(trailer => (
+                    TrailersService.editRecordAsTransaction(trailer[HOMELESS_COLUMNS.TRAILER_ID], {
+                        [colsTrailers.CAR_ID]: trailer[HOMELESS_COLUMNS.CAR_ID],
+                    })
+                )),
             ];
         }
 
         transactionsList = [
             ...transactionsList,
-            // DealsService.addRecordsAsTransaction(deals),
-            // DealStatusesHistoryService.addRecordsAsTransaction(dealStatusesHistory),
+            DealsService.addRecordsAsTransaction(deals),
+            DealStatusesHistoryService.addRecordsAsTransaction(dealStatusesHistory),
         ];
 
         transactionsList = [
             ...transactionsList,
-            ...Object.keys(takenCargos).map(id => CargosService.editRecordAsTransaction(id, {
-                [colsCargos.FREE_COUNT]: takenCargos[id],
-            })),
+            ...Object.keys(takenCargos).map(id => CargosService.editRecordDecreaseFreeCountAsTransaction(id, takenCargos[id])),
         ];
 
-        // await TablesService.runTransaction(transactionsList);
+        await TablesService.runTransaction(transactionsList);
 
         return success(res, {}, SUCCESS_CODES.CREATED);
     } catch (error) {

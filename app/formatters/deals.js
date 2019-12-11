@@ -72,8 +72,8 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
         }
         const cargoCount = item[colsCargos.COUNT];
 
-        const dealId = uuid();
         for (let j = 0; j < cargoCount; j++) {
+            const dealId = uuid();
             deals.push({
                 id: dealId,
                 [colsDeals.CARGO_ID]: cargoId,

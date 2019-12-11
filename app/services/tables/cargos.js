@@ -4,6 +4,7 @@ const { one, oneOrNone, manyOrNone } = require('db');
 const {
     insertRecord,
     updateRecordById,
+    updateRecordDecreaseFreeCountById,
     deleteRecordById,
     selectRecordById,
     selectRecordByWithCoordinatesId,
@@ -26,6 +27,8 @@ const cols = SQL_TABLES.CARGOS.COLUMNS;
 const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
 
 const editRecordAsTransaction = (id, data) => [updateRecordById(id, data), OPERATIONS.ONE];
+
+const editRecordDecreaseFreeCountAsTransaction = (id, value) => [updateRecordDecreaseFreeCountById(id, value), OPERATIONS.ONE];
 
 const editRecord = (id, data) => one(updateRecordById(id, data));
 
@@ -62,7 +65,7 @@ const getAllNewRecordsForSearch = (languageId, companyId) => {
     return manyOrNone(selectAllNewRecordsForSearch(languageId, companyId));
 };
 
-const getAvailableCargosByIds = ids => manyOrNone(selectAvailableCargosByIds(ids));
+const getAvailableCargosByIds = (ids, busyStatusesNames) => manyOrNone(selectAvailableCargosByIds(ids, busyStatusesNames));
 
 const checkCargoInCompanyExists = async (meta, cargoId) => {
     const cargo = await getRecordLight(cargoId);
@@ -78,6 +81,7 @@ const checkCargoExists = async (meta, cargoId) => {
 module.exports = {
     addRecordAsTransaction,
     editRecordAsTransaction,
+    editRecordDecreaseFreeCountAsTransaction,
     removeRecordAsTransaction,
     getRecord,
     getRecordStrict,
