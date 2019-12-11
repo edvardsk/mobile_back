@@ -21,7 +21,7 @@ const TablesService = require('services/tables');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
 const { LOADING_TYPES_MAP } = require('constants/cargos');
-const { SUCCESS_CODES } = require('constants/http-codes');
+const { SUCCESS_CODES, ERROR_CODES } = require('constants/http-codes');
 const { ROLES } = require('constants/system');
 const { DEAL_STATUSES_MAP } = require('constants/deal-statuses');
 
@@ -44,12 +44,15 @@ const {
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
+const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
 
 const createCargoDeal = async (req, res, next) => {
     try {
         const { body } = req;
-
-        const { company, user } = res.locals;
+        const { company, user, isControlRole } = res.locals;
+        if (!isControlRole && !company[colsCompanies.PRIMARY_CONFIRMED]) {
+            return reject(res, ERRORS.SYSTEM.FORBIDDEN, ERROR_CODES.FORBIDDEN);
+        }
 
         const [cargosIds, driversIds, shadowDrivers, carsIds, shadowCars, trailersIds, shadowTrailers] = extractData(body);
 
