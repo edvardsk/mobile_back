@@ -65,7 +65,7 @@ const getAllNewRecordsForSearch = (languageId, companyId) => {
     return manyOrNone(selectAllNewRecordsForSearch(languageId, companyId));
 };
 
-const getAvailableCargosByIds = (ids, busyStatusesNames) => manyOrNone(selectAvailableCargosByIds(ids, busyStatusesNames));
+const getAvailableCargosByIds = (ids) => manyOrNone(selectAvailableCargosByIds(ids));
 
 const checkCargoInCompanyExists = async (meta, cargoId) => {
     const cargo = await getRecordLight(cargoId);

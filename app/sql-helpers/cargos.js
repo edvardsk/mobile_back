@@ -19,8 +19,6 @@ const tableTranslations = SQL_TABLES.POINT_TRANSLATIONS;
 const tableCurrencies = SQL_TABLES.CURRENCIES;
 const tableEconomicSettings = SQL_TABLES.ECONOMIC_SETTINGS;
 const tableDeals = SQL_TABLES.DEALS;
-const tableDealsStatuses = SQL_TABLES.DEAL_STATUSES;
-const tableDealsStatusesHistory = SQL_TABLES.DEAL_HISTORY_STATUSES;
 
 const cols = table.COLUMNS;
 const colsDangerClasses = tableDangerClasses.COLUMNS;
@@ -32,8 +30,6 @@ const colsTranslations = tableTranslations.COLUMNS;
 const colsCurrencies = tableCurrencies.COLUMNS;
 const colsEconomicSettings =  tableEconomicSettings.COLUMNS;
 const colsDeals = tableDeals.COLUMNS;
-const colsDealsStatuses = tableDealsStatuses.COLUMNS;
-const colsDealsStatusesHistory = tableDealsStatusesHistory.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -523,7 +519,7 @@ const selectAllNewRecordsForSearch = (languageId, companyId) => {
         .toString();
 };
 
-const selectAvailableCargosByIds = (ids, busyStatusesNames) => squelPostgres // todo: full check of availability
+const selectAvailableCargosByIds = (ids) => squelPostgres // todo: full check of availability
     .select()
     .field('c.*')
     .field(`ARRAY(${
@@ -541,22 +537,8 @@ const selectAvailableCargosByIds = (ids, busyStatusesNames) => squelPostgres // 
     .where('c.id IN ?', ids)
     .where(`c.${cols.DELETED} = 'f'`)
     .where(`c.${cols.FREEZED_AFTER} > now()`)
-    .where('dsh.id IS NULL OR dsh.id = ?', squelPostgres
-        .select()
-        .field('hdsh.id')
-        .from(tableDealsStatusesHistory.NAME, 'hdsh')
-        .where(`hdsh.${colsDealsStatusesHistory.DEAL_ID} = d.id`)
-        .order(colsDealsStatusesHistory.CREATED_AT, false)
-        .limit(1)
-    )
-    .where(`dsh.${colsDealsStatusesHistory.DEAL_STATUS_ID} IS NULL OR dsh.${colsDealsStatusesHistory.DEAL_STATUS_ID} NOT IN ?`, squelPostgres
-        .select()
-        .field('ds.id')
-        .from(tableDealsStatuses.NAME, 'ds')
-        .where(`ds.${colsDealsStatuses.NAME} IN ?`, busyStatusesNames)
-    )
+    .where(`c.${cols.FREE_COUNT} > 0`)
     .left_join(tableDeals.NAME, 'd', `d.${colsDeals.CARGO_ID} = c.id`)
-    .left_join(tableDealsStatusesHistory.NAME, 'dsh', `dsh.${colsDealsStatusesHistory.DEAL_ID} = d.id`)
     .toString();
 
 module.exports = {

@@ -23,7 +23,7 @@ const { ERRORS } = require('constants/errors');
 const { LOADING_TYPES_MAP } = require('constants/cargos');
 const { SUCCESS_CODES } = require('constants/http-codes');
 const { ROLES } = require('constants/system');
-const { DEAL_STATUSES_MAP, BUSY_DEAL_STATUSES_LIST } = require('constants/deal-statuses');
+const { DEAL_STATUSES_MAP } = require('constants/deal-statuses');
 
 // formatters
 const { formatPricesFromPostgresJSON } = require('formatters/cargo-prices');
@@ -63,7 +63,7 @@ const createCargoDeal = async (req, res, next) => {
         const shadowTrailersSet = new Set(shadowTrailers.map(trailer => trailer[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]));
 
         /* validate cargos */
-        const availableCargos = await CargosService.getAvailableCargosByIds(Array.from(cargosIdsSet), BUSY_DEAL_STATUSES_LIST);
+        const availableCargos = await CargosService.getAvailableCargosByIds(Array.from(cargosIdsSet));
         if (availableCargos.length !== cargosIdsSet.size) {
             return reject(res, ERRORS.DEALS.NO_ONE_OR_MANY_CARGOS);
         }
