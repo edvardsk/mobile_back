@@ -7,6 +7,8 @@ const getDangerClasses = require('./danger-classes/get');
 
 const getCurrencies = require('./currencies/get');
 
+const getExchangeRates = require('./exchange-rates/get');
+
 // middlewares
 const { isHasPermissions } = require('api/middlewares');
 
@@ -35,6 +37,12 @@ router.get(
 router.get(
     ROUTES.OTHERS.CURRENCIES.BASE + ROUTES.OTHERS.CURRENCIES.GET_ALL,
     getCurrencies.getListCurrencies,
+);
+
+// exchange rates
+router.get(
+    ROUTES.OTHERS.EXCHANGE_RATES.BASE + ROUTES.OTHERS.EXCHANGE_RATES.GET_ALL,
+    getExchangeRates.getListRates,
 );
 
 module.exports = router;

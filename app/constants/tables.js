@@ -509,6 +509,8 @@ const HOMELESS_COLUMNS = {
     FULL_NAME: 'full_name',
     DRIVER_ID: 'driver_id',
     USER_ID: 'user_id',
+    COUNTRY_NAME: 'country_name',
+    COUNTRY_CURRENCY_CODE: 'country_currency_code',
 };
 
 module.exports = {

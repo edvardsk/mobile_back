@@ -56,6 +56,7 @@ const BASES = {
     AVAILABLE: '/available',
     DEALS: '/deals',
     DRIVERS: '/drivers',
+    EXCHANGE_RATES: '/exchange-rates',
 };
 
 const IDS = {
@@ -338,6 +339,10 @@ const ROUTES = {
             BASE: BASES.CURRENCIES,
             GET_ALL: '',
         },
+        EXCHANGE_RATES: {
+            BASE: BASES.EXCHANGE_RATES,
+            GET_ALL: '',
+        },
     },
     SETTINGS: {
         BASE: BASES.SETTINGS,
@@ -384,6 +389,8 @@ const ALLOWED_ROUTES = {
         API_PREFIX + ROUTES.SEARCH.BASE + ROUTES.SEARCH.CARGOS.BASE + ROUTES.SEARCH.CARGOS.GET_ALL,
 
         API_PREFIX + ROUTES.CARGOS.BASE + ROUTES.CARGOS.GET,
+
+        API_PREFIX + ROUTES.OTHERS.BASE + ROUTES.OTHERS.EXCHANGE_RATES.BASE + ROUTES.OTHERS.EXCHANGE_RATES.GET_ALL,
     ]),
     POST: new Set([
         API_PREFIX + ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.POST,
