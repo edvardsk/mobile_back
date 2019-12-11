@@ -10,7 +10,8 @@ const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 const colsCargoPrices = SQL_TABLES.CARGO_PRICES.COLUMNS;
 
 const validateCargos = (body, cargosFromDb, cargoLoadingType) => {
-    return body.reduce((notValidCargos, item, i) => {
+    return body.reduce((acc, item, i) => {
+        const [notValidCargos, takenCargos] = acc;
         const dealCargoId = item[HOMELESS_COLUMNS.CARGO_ID];
         const cargoFromDb = cargosFromDb.find(cargo => cargo.id === dealCargoId);
         if (!cargoFromDb) {
@@ -31,9 +32,16 @@ const validateCargos = (body, cargosFromDb, cargoLoadingType) => {
 
             const freeCountDb = cargoFromDb[colsCargos.FREE_COUNT];
             const freeCountDeal = item[colsCargos.COUNT];
+            const cargoCountFromTaken = takenCargos[dealCargoId];
+            if (cargoCountFromTaken === undefined) {
+                takenCargos[dealCargoId] = freeCountDeal;
+            } else {
+                takenCargos[dealCargoId] += freeCountDeal;
+            }
+
             if (
                 (cargoLoadingType === LOADING_TYPES_MAP.FTL && freeCountDeal !== 1) || // allow only 1 item for FTL cargo
-                (freeCountDb < freeCountDeal)
+                (freeCountDb < takenCargos[dealCargoId])
             ) {
                 notValidCargos.push({
                     position: i,
@@ -41,8 +49,8 @@ const validateCargos = (body, cargosFromDb, cargoLoadingType) => {
                 });
             }
         }
-        return notValidCargos;
-    }, []);
+        return acc;
+    }, [[], {}]);
 };
 
 const validateDrivers = (body, driversFromDb) => {

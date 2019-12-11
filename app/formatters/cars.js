@@ -208,7 +208,7 @@ const formatShadowCarsToSave = (arr, companyId) => arr.reduce((acc, item) => {
     });
     carsNumbers.push({
         [colsCarsNumbers.CAR_ID]: carId,
-        [colsCarsNumbers.NUMBER]: item[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
+        [colsCarsNumbers.NUMBER]: item[HOMELESS_COLUMNS.CAR_STATE_NUMBER].toUpperCase(),
     });
     return acc;
 },[[], []]);

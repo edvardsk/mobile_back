@@ -154,7 +154,7 @@ const formatShadowTrailersToSave = (arr, companyId) => arr.reduce((acc, item) =>
     });
     trailersNumbers.push({
         [colsTrailersNumbers.TRAILER_ID]: trailerId,
-        [colsTrailersNumbers.NUMBER]: item[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
+        [colsTrailersNumbers.NUMBER]: item[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER].toUpperCase(),
     });
     return acc;
 },[[], []]);

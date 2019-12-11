@@ -18,6 +18,7 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
 
     return arr.reduce((acc, item, i) => {
         const [deals, dealHistory, newDrivers, newCars, newTrailers, editTrailers] = acc;
+        const cargoId = item[HOMELESS_COLUMNS.CARGO_ID];
         const driverIdOrData = item[HOMELESS_COLUMNS.DRIVER_ID_OR_DATA];
         const carIdOrData = item[HOMELESS_COLUMNS.CAR_ID_OR_DATA];
         const trailerIdOrData = item[HOMELESS_COLUMNS.TRAILER_ID_OR_DATA];
@@ -75,7 +76,7 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
         for (let j = 0; j < cargoCount; j++) {
             deals.push({
                 id: dealId,
-                [colsDeals.CARGO_ID]: item[HOMELESS_COLUMNS.CARGO_ID],
+                [colsDeals.CARGO_ID]: cargoId,
                 [colsDeals.TRANSPORTER_COMPANY_ID]: companyId,
                 [colsDeals.DRIVER_ID]: driverId,
                 [colsDeals.CAR_ID]: carId,

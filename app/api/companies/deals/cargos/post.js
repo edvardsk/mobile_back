@@ -53,17 +53,6 @@ const createCargoDeal = async (req, res, next) => {
 
         const [cargosIds, driversIds, shadowDrivers, carsIds, shadowCars, trailersIds, shadowTrailers] = extractData(body);
 
-        /* validate cargos */
-        const availableCargos = await CargosService.getAvailableCargosByIds(cargosIds);
-        if (!availableCargos.length) {
-            return reject(res, ERRORS.DEALS.NO_CARGOS);
-        }
-
-        const cargoLoadingType = availableCargos[0][colsCargos.LOADING_TYPE];
-        if (!availableCargos.every(cargo => cargo[colsCargos.LOADING_TYPE] === cargoLoadingType)) {
-            return reject(res, ERRORS.DEALS.DIFFERENT_CARGO_LOADING_METHOD);
-        }
-
         const cargosIdsSet = new Set(cargosIds);
         const drivesIdsSet = new Set(driversIds);
         const carsIdsSet = new Set(carsIds);
@@ -72,6 +61,17 @@ const createCargoDeal = async (req, res, next) => {
         const shadowDriversSet = new Set(shadowDrivers.map(driver => `${driver[HOMELESS_COLUMNS.PHONE_PREFIX_ID]}${driver[HOMELESS_COLUMNS.PHONE_NUMBER]}`));
         const shadowCarsSet = new Set(shadowCars.map(car => car[HOMELESS_COLUMNS.CAR_STATE_NUMBER]));
         const shadowTrailersSet = new Set(shadowTrailers.map(trailer => trailer[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]));
+
+        /* validate cargos */
+        const availableCargos = await CargosService.getAvailableCargosByIds(Array.from(cargosIdsSet));
+        if (availableCargos.length !== cargosIdsSet.size) {
+            return reject(res, ERRORS.DEALS.NO_ONE_OR_MANY_CARGOS);
+        }
+
+        const cargoLoadingType = availableCargos[0][colsCargos.LOADING_TYPE];
+        if (!availableCargos.every(cargo => cargo[colsCargos.LOADING_TYPE] === cargoLoadingType)) {
+            return reject(res, ERRORS.DEALS.DIFFERENT_CARGO_LOADING_METHOD);
+        }
 
         if (
             (cargoLoadingType === LOADING_TYPES_MAP.FTL && (
@@ -95,7 +95,7 @@ const createCargoDeal = async (req, res, next) => {
             [HOMELESS_COLUMNS.PRICES]: formatPricesFromPostgresJSON(cargo[HOMELESS_COLUMNS.PRICES]),
         }));
 
-        const invalidCargos = validateCargos(body, cargosFromDb, cargoLoadingType);
+        const [invalidCargos, takenCargos] = validateCargos(body, cargosFromDb, cargoLoadingType);
         if (invalidCargos.length) {
             return reject(res, invalidCargos);
         }
@@ -186,6 +186,13 @@ const createCargoDeal = async (req, res, next) => {
             ...transactionsList,
             // DealsService.addRecordsAsTransaction(deals),
             // DealStatusesHistoryService.addRecordsAsTransaction(dealStatusesHistory),
+        ];
+
+        transactionsList = [
+            ...transactionsList,
+            ...Object.keys(takenCargos).map(id => CargosService.editRecordAsTransaction(id, {
+                [colsCargos.FREE_COUNT]: takenCargos[id],
+            })),
         ];
 
         // await TablesService.runTransaction(transactionsList);
