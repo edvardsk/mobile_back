@@ -22,6 +22,7 @@ const EmployeesSchemes = require('./employees');
 const CarsSchemes = require('./cars');
 const TrailersSchemes = require('./trailers');
 const DealsSchemes = require('./deals');
+const DriversSchemes = require('./drivers');
 
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 const colsPhoneConfirmation = SQL_TABLES.PHONE_CONFIRMATION_CODES.COLUMNS;
@@ -322,4 +323,5 @@ module.exports = {
     ...CarsSchemes,
     ...TrailersSchemes,
     ...DealsSchemes,
+    ...DriversSchemes,
 };

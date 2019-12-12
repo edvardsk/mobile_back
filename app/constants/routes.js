@@ -70,6 +70,7 @@ const IDS = {
     CARGO_ID: '/:cargoId',
     CAR_ID: '/:carId',
     TRAILER_ID: '/:trailerId',
+    DRIVER_ID: '/:driverId',
 };
 
 const ROUTES = {
@@ -394,6 +395,13 @@ const ROUTES = {
         BASE: BASES.TRAILERS,
         VERIFY: {
             BASE: IDS.TRAILER_ID + BASES.VERIFY,
+            POST: '',
+        },
+    },
+    DRIVERS: {
+        BASE: BASES.DRIVERS,
+        VERIFY: {
+            BASE: IDS.DRIVER_ID + BASES.VERIFY,
             POST: '',
         },
     },

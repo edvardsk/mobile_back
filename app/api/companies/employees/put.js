@@ -51,7 +51,7 @@ const editEmployeeAdvanced = async (req, res, next) => {
         if (!isEmpty(driversProps)) {
             const driverData = isControlRole ? driversProps : DriversFormatters.formatRecordAsNotVerified(driversProps);
             transactionsList.push(
-                DriversService.editDriverAsTransaction(targetUserId, driverData)
+                DriversService.editDriverByUserIdAsTransaction(targetUserId, driverData)
             );
         }
 

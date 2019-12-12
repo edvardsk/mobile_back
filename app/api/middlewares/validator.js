@@ -232,6 +232,12 @@ ajv.addKeyword('trailer_not_exists', {
     validate: TrailersService.checkTrailerExists,
 });
 
+ajv.addKeyword('driver_not_exists', {
+    async: true,
+    type: 'string',
+    validate: DriversService.checkDriverExists,
+});
+
 ajv.addKeyword('car_danger_class_without_file_or_extra_file', {
     async: true,
     type: 'string',

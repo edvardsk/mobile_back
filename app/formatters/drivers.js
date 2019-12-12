@@ -80,9 +80,14 @@ const formatShadowDriversToSave = (drivers, driverRoleId, initiatorLanguageId, c
     }, [[], [], [], [], []]);
 };
 
-const formatRecordAsNotVerified = data => ({
+const formatRecordAsNotVerified = (data = {}) => ({
     ...data,
     [colsDrivers.VERIFIED]: false,
+});
+
+const formatRecordAsVerified = (data = {}) => ({
+    ...data,
+    [colsDrivers.VERIFIED]: true,
 });
 
 module.exports = {
@@ -92,4 +97,5 @@ module.exports = {
     formatRecordForAvailableList,
     formatShadowDriversToSave,
     formatRecordAsNotVerified,
+    formatRecordAsVerified,
 };
