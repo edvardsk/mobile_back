@@ -19,11 +19,12 @@ const { ERRORS } = require('constants/errors');
 const UsersFormatters = require('formatters/users');
 const PhoneNumbersFormatters = require('formatters/phone-numbers');
 const FilesFormatters = require('formatters/files');
+const DriversFormatters = require('formatters/drivers');
 
 const editEmployeeAdvanced = async (req, res, next) => {
     const colsDrivers = SQL_TABLES.DRIVERS.COLUMNS;
     try {
-        const { company } = res.locals;
+        const { company, isControlRole } = res.locals;
         const targetUserId = req.params.userId;
         const { files, body } = req;
 
@@ -48,8 +49,9 @@ const editEmployeeAdvanced = async (req, res, next) => {
         });
 
         if (!isEmpty(driversProps)) {
+            const driverData = isControlRole ? driversProps : DriversFormatters.formatRecordAsNotVerified(driversProps);
             transactionsList.push(
-                DriversService.editDriverAsTransaction(targetUserId, driversProps)
+                DriversService.editDriverAsTransaction(targetUserId, driverData)
             );
         }
 

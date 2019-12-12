@@ -213,6 +213,11 @@ const formatShadowCarsToSave = (arr, companyId) => arr.reduce((acc, item) => {
     return acc;
 },[[], []]);
 
+const formatRecordAsNotVerified = data => ({
+   ...data,
+   [cols.VERIFIED]: false,
+});
+
 module.exports = {
     formatCarToSave,
     formatCarToEdit,
@@ -221,4 +226,5 @@ module.exports = {
     formatAvailableCars,
     formatRecordForListAvailable,
     formatShadowCarsToSave,
+    formatRecordAsNotVerified,
 };

@@ -159,6 +159,11 @@ const formatShadowTrailersToSave = (arr, companyId) => arr.reduce((acc, item) =>
     return acc;
 },[[], []]);
 
+const formatRecordAsNotVerified = data => ({
+    ...data,
+    [cols.VERIFIED]: false,
+});
+
 module.exports = {
     formatTrailerToSave,
     formatRecordForList,
@@ -166,4 +171,5 @@ module.exports = {
     formatRecordForResponse,
     formatTrailerToEdit,
     formatShadowTrailersToSave,
+    formatRecordAsNotVerified,
 };
