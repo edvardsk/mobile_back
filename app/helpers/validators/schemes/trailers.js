@@ -48,6 +48,15 @@ const requiredTrailerId = {
     ],
 };
 
+const requiredExistingTrailerAsync = {
+    $async: true,
+    properties: {
+        trailerId: {
+            trailer_not_exists: {},
+        },
+    },
+};
+
 const linkTrailerBody = {
     properties: {
         [colsTrailers.CAR_ID]: {
@@ -77,6 +86,7 @@ module.exports = {
     requiredExistingTrailerInCompanyWithoutCarAsyncFunc,
     requiredExistingTrailerInCompanyWithCarAsyncFunc,
     requiredTrailerId,
+    requiredExistingTrailerAsync,
     linkTrailerBody,
     linkTrailerBodyAsyncFunc,
 };

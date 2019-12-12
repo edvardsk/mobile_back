@@ -10,6 +10,8 @@ const others = require('./others');
 const settings = require('./settings');
 const search = require('./search');
 const cargos = require('./cargos');
+const cars = require('./cars');
+const trailers = require('./trailers');
 
 const router = express.Router();
 
@@ -22,5 +24,7 @@ router.use(ROUTES.OTHERS.BASE, others);
 router.use(ROUTES.SETTINGS.BASE, settings);
 router.use(ROUTES.SEARCH.BASE, search);
 router.use(ROUTES.CARGOS.BASE, cargos);
+router.use(ROUTES.CARS.BASE, cars);
+router.use(ROUTES.TRAILERS.BASE, trailers);
 
 module.exports = router;

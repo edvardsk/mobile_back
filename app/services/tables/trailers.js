@@ -51,6 +51,8 @@ const editRecord = (id, data) => one(updateRecord(id, data));
 
 const getRecordStrict = id => one(selectRecordById(id));
 
+const getRecord = id => oneOrNone(selectRecordById(id));
+
 const getTrailersPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
     manyOrNone(selectTrailersByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
 );
@@ -137,6 +139,11 @@ const checkTrailerWithCarInCompanyExists = async (meta, id) => {
     return !!(trailer && trailer[colsTrailers.CAR_ID]);
 };
 
+const checkTrailerExists = async (meta, id) => {
+    const trailer = await getRecord(id);
+    return !!trailer;
+};
+
 const checkIsPassedFileWithNewDangerClass = async (meta, newDangerClassId, schema, key, data) => {
     const { trailerId } = meta;
     const dangerClassFile = data[DOCUMENTS.DANGER_CLASS];
@@ -185,5 +192,6 @@ module.exports = {
     checkTrailerInCompanyExists,
     checkTrailerWithoutCarInCompanyExists,
     checkTrailerWithCarInCompanyExists,
+    checkTrailerExists,
     checkIsPassedFileWithNewDangerClass,
 };
