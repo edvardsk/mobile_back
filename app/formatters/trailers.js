@@ -40,6 +40,7 @@ const formatRecordForList = data => ({
     [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: data[HOMELESS_COLUMNS.DANGER_CLASS_NAME],
     [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: data[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
     [cols.TRAILER_DANGER_CLASS_ID]: data[cols.TRAILER_DANGER_CLASS_ID],
+    [cols.VERIFIED]: data[cols.VERIFIED],
 });
 
 const formatRecordForListAvailable = data => {
@@ -109,6 +110,7 @@ const formatRecordForResponse = trailer => {
                 [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: trailer[HOMELESS_COLUMNS.DANGER_CLASS_NAME],
                 [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: trailer[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
                 [cols.TRAILER_DANGER_CLASS_ID]: trailer[cols.TRAILER_DANGER_CLASS_ID],
+                [cols.VERIFIED]: trailer[cols.VERIFIED],
             },
         },
     };
@@ -159,6 +161,16 @@ const formatShadowTrailersToSave = (arr, companyId) => arr.reduce((acc, item) =>
     return acc;
 },[[], []]);
 
+const formatRecordAsNotVerified = (data = {}) => ({
+    ...data,
+    [cols.VERIFIED]: false,
+});
+
+const formatRecordAsVerified = (data = {}) => ({
+    ...data,
+    [cols.VERIFIED]: true,
+});
+
 module.exports = {
     formatTrailerToSave,
     formatRecordForList,
@@ -166,4 +178,6 @@ module.exports = {
     formatRecordForResponse,
     formatTrailerToEdit,
     formatShadowTrailersToSave,
+    formatRecordAsNotVerified,
+    formatRecordAsVerified,
 };

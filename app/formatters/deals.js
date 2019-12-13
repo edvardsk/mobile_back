@@ -9,7 +9,6 @@ const { isValidUUID } = require('helpers/validators');
 
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
 const colsDealStatuses = SQL_TABLES.DEAL_HISTORY_STATUSES.COLUMNS;
-const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 
 const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, companyId, initiatorId, dealStatusId) => {
     const generatedDriverId = uuid();
@@ -70,27 +69,25 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
                 }
             }
         }
-        const cargoCount = item[colsCargos.COUNT];
 
-        for (let j = 0; j < cargoCount; j++) {
-            const dealId = uuid();
-            deals.push({
-                id: dealId,
-                [colsDeals.CARGO_ID]: cargoId,
-                [colsDeals.TRANSPORTER_COMPANY_ID]: companyId,
-                [colsDeals.DRIVER_ID]: driverId,
-                [colsDeals.CAR_ID]: carId,
-                [colsDeals.TRAILER_ID]: trailerIdOrData ? trailerId : null,
-                [colsDeals.PAY_CURRENCY_ID]: item[HOMELESS_COLUMNS.PAY_CURRENCY_ID],
-                [colsDeals.PAY_VALUE]: item[HOMELESS_COLUMNS.PAY_VALUE],
-            });
+        const dealId = uuid();
+        deals.push({
+            id: dealId,
+            [colsDeals.CARGO_ID]: cargoId,
+            [colsDeals.TRANSPORTER_COMPANY_ID]: companyId,
+            [colsDeals.DRIVER_ID]: driverId,
+            [colsDeals.CAR_ID]: carId,
+            [colsDeals.TRAILER_ID]: trailerIdOrData ? trailerId : null,
+            [colsDeals.PAY_CURRENCY_ID]: item[HOMELESS_COLUMNS.PAY_CURRENCY_ID],
+            [colsDeals.PAY_VALUE]: item[HOMELESS_COLUMNS.PAY_VALUE],
+            [colsDeals.NAME]: item[colsDeals.NAME] || null,
+        });
 
-            dealHistory.push({
-                [colsDealStatuses.DEAL_ID]: dealId,
-                [colsDealStatuses.INITIATOR_ID]: initiatorId,
-                [colsDealStatuses.DEAL_STATUS_ID]: dealStatusId,
-            });
-        }
+        dealHistory.push({
+            [colsDealStatuses.DEAL_ID]: dealId,
+            [colsDealStatuses.INITIATOR_ID]: initiatorId,
+            [colsDealStatuses.DEAL_STATUS_ID]: dealStatusId,
+        });
         return acc;
     }, [[], [], [], [], [], []]);
 };

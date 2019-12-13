@@ -44,6 +44,8 @@ const editRecord = (id, data) => one(updateRecord(id, data));
 
 const getRecordStrict = id => one(selectRecordById(id));
 
+const getRecord = id => oneOrNone(selectRecordById(id));
+
 const getCarsPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
     manyOrNone(selectCarsByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
 );
@@ -99,6 +101,11 @@ const checkCarStateNumberExistsOpposite = async (meta, stateNumber) => {
 const checkCarInCompanyExist = async (meta, id) => {
     const { companyId } = meta;
     const car = await getRecordByIdAndCompanyIdLight(id, companyId);
+    return !!car;
+};
+
+const checkCarExist = async (meta, id) => {
+    const car = await getRecord(id);
     return !!car;
 };
 
@@ -172,6 +179,7 @@ module.exports = {
 
     checkCarStateNumberExistsOpposite,
     checkCarInCompanyExist,
+    checkCarExist,
     checkIsCarInCompanyWithoutTrailerExists,
     checkIsPassedFileWithDangerClass,
     checkIsPassedFileWithNewDangerClass,

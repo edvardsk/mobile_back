@@ -29,13 +29,17 @@ const editTrailer = async (req, res, next) => {
     try {
         const { body, files } = req;
         const { trailerId } = req.params;
+        const { isControlRole } = res.locals;
+
         const stateNumber = body[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER].toUpperCase();
         const currentStateNumberRecord = await TrailersStateNumbersService.getActiveRecordByTrailerIdStrict(trailerId);
         const currentStateNumber = currentStateNumberRecord[colsTrailersNumbers.NUMBER];
         const trailerData = TrailersFormatters.formatTrailerToEdit(body);
 
+        const trailerDataToEdit = isControlRole ? trailerData : TrailersFormatters.formatRecordAsNotVerified(trailerData);
+
         const transactionsList = [
-            TrailersServices.editRecordAsTransaction(trailerId, trailerData)
+            TrailersServices.editRecordAsTransaction(trailerId, trailerDataToEdit)
         ];
 
         const trailerRequiredDocuments = [DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION, DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT];

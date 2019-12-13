@@ -38,10 +38,24 @@ const updateRecordByUserId = (userId, values) => squelPostgres
     .returning('*')
     .toString();
 
+const updateRecord = (id, values) => squelPostgres
+    .update()
+    .table(table.NAME)
+    .setFields(values)
+    .where(`id = '${id}'`)
+    .returning('*')
+    .toString();
+
 const selectRecordByUserId = userId => squelPostgres
     .select()
     .from(table.NAME)
     .where(`${cols.USER_ID} = '${userId}'`)
+    .toString();
+
+const selectRecordById = id => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where(`id = '${id}'`)
     .toString();
 
 const selectAvailableDriversPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => {
@@ -140,7 +154,9 @@ module.exports = {
     insertRecord,
     insertRecords,
     updateRecordByUserId,
+    updateRecord,
     selectRecordByUserId,
+    selectRecordById,
     selectAvailableDriversPaginationSorting,
     selectCountAvailableDrivers,
     selectRecordByCompanyIdLight,

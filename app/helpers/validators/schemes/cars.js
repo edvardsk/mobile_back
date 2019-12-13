@@ -430,7 +430,7 @@ const editTrailer = {
 const editTrailerAsyncFunc = ({ trailerId }) => ({
     $async: true,
     properties: {
-        [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: {
+        [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: {
             trailer_state_number_exists: {
                 trailerId,
             },
@@ -807,6 +807,15 @@ const requiredCarId = {
     ]
 };
 
+const requiredExistingCarAsync = {
+    $async: true,
+    properties: {
+        carId: {
+            car_not_exists: {},
+        },
+    },
+};
+
 module.exports = {
     modifyCarTrailerIdentityKeys,
     modifyCreateCarArrays,
@@ -844,4 +853,5 @@ module.exports = {
     modifyEditCarTruckFloats,
     requiredExistingCarInCompanyAsyncFunc,
     requiredCarId,
+    requiredExistingCarAsync,
 };

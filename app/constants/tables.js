@@ -211,6 +211,7 @@ const SQL_TABLES = {
             DRIVER_LICENCE_REGISTERED_AT: 'driver_licence_registered_at',
             DRIVER_LICENCE_EXPIRED_AT: 'driver_licence_expired_at',
             SHADOW: 'shadow',
+            VERIFIED: 'verified',
             CREATED_AT: 'created_at',
         },
     },
@@ -292,6 +293,7 @@ const SQL_TABLES = {
             CAR_LENGTH: 'car_length',
             CAR_CARRYING_CAPACITY: 'car_carrying_capacity',
             CREATED_AT: 'created_at',
+            VERIFIED: 'verified',
             DELETED: 'deleted',
         },
     },
@@ -311,6 +313,7 @@ const SQL_TABLES = {
             TRAILER_LENGTH: 'trailer_length',
             TRAILER_CARRYING_CAPACITY: 'trailer_carrying_capacity',
             CREATED_AT: 'created_at',
+            VERIFIED: 'verified',
             DELETED: 'deleted',
         },
     },
@@ -423,6 +426,7 @@ const SQL_TABLES = {
             DRIVER_ID: 'driver_id',
             CAR_ID: 'car_id',
             TRAILER_ID: 'trailer_id',
+            NAME: 'name',
             PAY_CURRENCY_ID: 'pay_currency_id',
             PAY_VALUE: 'pay_value',
             APPROVED: 'approved',
@@ -519,6 +523,8 @@ const HOMELESS_COLUMNS = {
     CAR_ID: 'car_id',
     COUNTRY_NAME: 'country_name',
     COUNTRY_CURRENCY_CODE: 'country_currency_code',
+    CAR_VERIFIED: 'car_verified',
+    TRAILER_VERIFIED: 'trailer_verified',
 };
 
 module.exports = {

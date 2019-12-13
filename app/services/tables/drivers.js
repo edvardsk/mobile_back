@@ -5,7 +5,9 @@ const {
     insertRecord,
     insertRecords,
     selectRecordByUserId,
+    selectRecordById,
     updateRecordByUserId,
+    updateRecord,
     selectAvailableDriversPaginationSorting,
     selectCountAvailableDrivers,
     selectRecordByCompanyIdLight,
@@ -24,9 +26,15 @@ const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
 
 const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MANY];
 
-const editDriverAsTransaction = (userId, values) => [updateRecordByUserId(userId, values), OPERATIONS.ONE];
+const editDriverByUserIdAsTransaction = (userId, values) => [updateRecordByUserId(userId, values), OPERATIONS.ONE];
+
+const editDriverAsTransaction = (id, values) => [updateRecord(id, values), OPERATIONS.ONE];
 
 const getRecordByUserId = userId => oneOrNone(selectRecordByUserId(userId));
+
+const getRecordStrict = id => one(selectRecordById(id));
+
+const getRecord = id => oneOrNone(selectRecordById(id));
 
 const getAvailableDriversPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
     manyOrNone(selectAvailableDriversPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
@@ -60,11 +68,18 @@ const checkIsOptionalDriverInCompanyExists = async (meta, id) => {
     return true;
 };
 
+const checkDriverExists = async (meta, id) => {
+    const driver = await getRecord(id);
+    return !!driver;
+};
+
 module.exports = {
     addRecordAsTransaction,
     addRecordsAsTransaction,
+    editDriverByUserIdAsTransaction,
     editDriverAsTransaction,
     getRecordByUserId,
+    getRecordStrict,
     getAvailableDriversPaginationSorting,
     getCountAvailableDrivers,
     getAvailableDriversByIdsAndCompanyId,
@@ -72,4 +87,5 @@ module.exports = {
     getDriversByPhoneNumbers,
 
     checkIsOptionalDriverInCompanyExists,
+    checkDriverExists,
 };

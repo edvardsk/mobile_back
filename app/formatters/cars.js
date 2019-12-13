@@ -72,6 +72,7 @@ const formatRecordForList = car => {
         [cols.CAR_MADE_YEAR_AT]: car[cols.CAR_MADE_YEAR_AT],
         [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
         [cols.CREATED_AT]: car[cols.CREATED_AT],
+        [HOMELESS_COLUMNS.CAR_VERIFIED]: car[cols.VERIFIED],
     };
     if (car[HOMELESS_COLUMNS.TRAILER_ID]) {
         result = {
@@ -86,6 +87,7 @@ const formatRecordForList = car => {
             [HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME]: car[HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME],
             [HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME]: car[HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME],
             [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: car[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
+            [HOMELESS_COLUMNS.TRAILER_VERIFIED]: car[HOMELESS_COLUMNS.TRAILER_VERIFIED],
         };
     }
     return result;
@@ -147,6 +149,7 @@ const formatRecordForResponse = car => {
                 [cols.CAR_MADE_YEAR_AT]: car[cols.CAR_MADE_YEAR_AT],
                 [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
                 [cols.CREATED_AT]: car[cols.CREATED_AT],
+                [cols.VERIFIED]: car[cols.VERIFIED],
             },
         },
     };
@@ -213,6 +216,16 @@ const formatShadowCarsToSave = (arr, companyId) => arr.reduce((acc, item) => {
     return acc;
 },[[], []]);
 
+const formatRecordAsNotVerified = (data = {}) => ({
+    ...data,
+    [cols.VERIFIED]: false,
+});
+
+const formatRecordAsVerified = (data = {}) => ({
+    ...data,
+    [cols.VERIFIED]: true,
+});
+
 module.exports = {
     formatCarToSave,
     formatCarToEdit,
@@ -221,4 +234,6 @@ module.exports = {
     formatAvailableCars,
     formatRecordForListAvailable,
     formatShadowCarsToSave,
+    formatRecordAsNotVerified,
+    formatRecordAsVerified,
 };

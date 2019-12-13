@@ -89,6 +89,9 @@ const ERRORS = {
         TRAILER_STATE_NUMBER_EXISTS: 'deals.trailer_state_number_exists',
         INVALID_CAR_WITH_TRAILER_JOIN: 'deals.invalid_car_with_trailer_join',
     },
+    VERIFY: {
+        ALREADY_VERIFIED: 'verify.already_verified',
+    },
 };
 
 class PaginationError extends Error {

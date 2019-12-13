@@ -24,6 +24,7 @@ const formatDriversWithPhoneAndRole = data => ({
     [cols.DRIVER_LICENCE_REGISTERED_AT]: data[cols.DRIVER_LICENCE_REGISTERED_AT],
     [cols.DRIVER_LICENCE_EXPIRED_AT]: data[cols.DRIVER_LICENCE_EXPIRED_AT],
     [colsUsers.FREEZED]: data[colsUsers.FREEZED],
+    [colsDrivers.VERIFIED]: data[colsDrivers.VERIFIED],
 });
 
 const formatRecordForList = data => ({
@@ -79,10 +80,22 @@ const formatShadowDriversToSave = (drivers, driverRoleId, initiatorLanguageId, c
     }, [[], [], [], [], []]);
 };
 
+const formatRecordAsNotVerified = (data = {}) => ({
+    ...data,
+    [colsDrivers.VERIFIED]: false,
+});
+
+const formatRecordAsVerified = (data = {}) => ({
+    ...data,
+    [colsDrivers.VERIFIED]: true,
+});
+
 module.exports = {
     formatRecordToSave,
     formatDriversWithPhoneAndRole,
     formatRecordForList,
     formatRecordForAvailableList,
     formatShadowDriversToSave,
+    formatRecordAsNotVerified,
+    formatRecordAsVerified,
 };
