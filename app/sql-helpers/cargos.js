@@ -288,7 +288,6 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
         .select()
         .from(table.NAME, 'c')
         .field('c.*')
-        .field(`c.${cols.FREE_COUNT}`, cols.COUNT)
         .field(`vc.${colsVehicleClasses.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
         .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
         .field(`json_build_object(
