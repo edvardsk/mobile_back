@@ -71,12 +71,12 @@ const markAsDeletedAsTransaction = id => [updateRecord(id, {
     [colsCars.DELETED]: true,
 }), OPERATIONS.ONE];
 
-const getAvailableCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
-    manyOrNone(selectAvailableCarsByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
+const getAvailableCarsByCompanyIdPaginationSorting = (companyId, cargoDates, limit, offset, sortColumn, asc, filter) => (
+    manyOrNone(selectAvailableCarsByCompanyIdPaginationSorting(companyId, cargoDates, limit, offset, sortColumn, asc, filter))
 );
 
-const getCountAvailableCars = (companyId, filter) => (
-    one(selectCountAvailableCarsByCompanyId(companyId, filter))
+const getCountAvailableCars = (companyId, cargoDates, filter) => (
+    one(selectCountAvailableCarsByCompanyId(companyId, cargoDates, filter))
         .then(({ count }) => +count)
 );
 
