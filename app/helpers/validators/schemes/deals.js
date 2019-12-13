@@ -4,7 +4,6 @@ const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 // patterns
 const { DIGITS_VALIDATION_PATTERN } = require('./patterns');
 
-const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 
 const createCargoDeal = {
@@ -97,10 +96,6 @@ const createCargoDeal = {
                 type: 'number',
                 format: 'price',
             },
-            [colsCargos.COUNT]: {
-                type: 'number',
-                minimum: 1,
-            },
         },
         required: [
             HOMELESS_COLUMNS.CARGO_ID,
@@ -108,12 +103,10 @@ const createCargoDeal = {
             HOMELESS_COLUMNS.CAR_ID_OR_DATA,
             HOMELESS_COLUMNS.PAY_CURRENCY_ID,
             HOMELESS_COLUMNS.PAY_VALUE,
-            colsCargos.COUNT,
         ],
         additionalProperties: false,
     },
     minItems: 1,
-    uniqueItems: true,
 };
 
 const createCargoDealAsync = {

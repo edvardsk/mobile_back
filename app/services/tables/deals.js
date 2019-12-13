@@ -12,17 +12,19 @@ const TrailersService = require('./trailers');
 const { HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
 const { OPERATIONS } = require('constants/postgres');
+const { LOADING_TYPES_MAP } = require('constants/cargos');
 
 // helpers
 const { isValidUUID } = require('helpers/validators');
 
 const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MANY];
 
-const validateDealItems = async (arr, companyId) => {
+const validateDealItems = async (arr, companyId, cargoLoadingType) => {
     const availableDrivers = [];
     const availableCars = [];
     const availableTrailers = [];
-    const invalidItems = await Promise.all(arr.map(async (item, i) => {
+    const items = cargoLoadingType === LOADING_TYPES_MAP.FTL ? [...arr] : [arr[0]]; // use only first item for LTL (because drivers/cars/trailers the same for all items)
+    const invalidItems = await Promise.all(items.map(async (item, i) => {
         const driverIdOrData = item[HOMELESS_COLUMNS.DRIVER_ID_OR_DATA];
         const carIdOrData = item[HOMELESS_COLUMNS.CAR_ID_OR_DATA];
         const trailerIdOrData = item[HOMELESS_COLUMNS.TRAILER_ID_OR_DATA];
