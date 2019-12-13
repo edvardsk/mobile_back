@@ -84,10 +84,9 @@ const createCargoDeal = async (req, res, next) => {
             ))
             ||
             (cargoLoadingType === LOADING_TYPES_MAP.LTL && (
-                cargosIdsSet.size !== cargosIds.length ||
                 drivesIdsSet.size + shadowDriversSet.size !== 1 ||
                 carsIdsSet.size + shadowCarsSet.size !== 1 ||
-                trailersIdsSet.size + shadowTrailersSet.size > 1
+                (trailersIdsSet.size + shadowTrailersSet.size !== 0 && trailersIdsSet.size + shadowTrailersSet.size !== 1)
             ))
         ) {
             return reject(res, ERRORS.DEALS.DUPLICATE_DATA);
@@ -98,12 +97,12 @@ const createCargoDeal = async (req, res, next) => {
             [HOMELESS_COLUMNS.PRICES]: formatPricesFromPostgresJSON(cargo[HOMELESS_COLUMNS.PRICES]),
         }));
 
-        const [invalidCargos, takenCargos] = validateCargos(body, cargosFromDb, cargoLoadingType);
+        const [invalidCargos, takenCargos] = validateCargos(body, cargosFromDb);
         if (invalidCargos.length) {
             return reject(res, invalidCargos);
         }
 
-        const [invalidItems, availableCars, availableTrailers] = await DealsService.validateDealItems(body, company.id);
+        const [invalidItems, availableCars, availableTrailers] = await DealsService.validateDealItems(body, company.id, cargoLoadingType);
         if (invalidItems.length) {
             return reject(res, invalidItems);
         }

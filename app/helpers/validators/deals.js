@@ -9,7 +9,7 @@ const { isValidUUID } = require('./index');
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 const colsCargoPrices = SQL_TABLES.CARGO_PRICES.COLUMNS;
 
-const validateCargos = (body, cargosFromDb, cargoLoadingType) => {
+const validateCargos = (body, cargosFromDb) => {
     return body.reduce((acc, item, i) => {
         const [notValidCargos, takenCargos] = acc;
         const dealCargoId = item[HOMELESS_COLUMNS.CARGO_ID];
@@ -31,18 +31,14 @@ const validateCargos = (body, cargosFromDb, cargoLoadingType) => {
             }
 
             const freeCountDb = cargoFromDb[colsCargos.FREE_COUNT];
-            const freeCountDeal = item[colsCargos.COUNT];
             const cargoCountFromTaken = takenCargos[dealCargoId];
             if (cargoCountFromTaken === undefined) {
-                takenCargos[dealCargoId] = freeCountDeal;
+                takenCargos[dealCargoId] = 1;
             } else {
-                takenCargos[dealCargoId] += freeCountDeal;
+                takenCargos[dealCargoId] += 1;
             }
 
-            if (
-                (cargoLoadingType === LOADING_TYPES_MAP.FTL && freeCountDeal !== 1) || // allow only 1 item for FTL cargo
-                (freeCountDb < takenCargos[dealCargoId])
-            ) {
+            if (freeCountDb < takenCargos[dealCargoId]) {
                 notValidCargos.push({
                     position: i,
                     type: ERRORS.DEALS.INVALID_CARGO_COUNT,

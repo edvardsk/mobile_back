@@ -41,6 +41,7 @@ const formatRecordForList = (cargo, userLanguageId) => {
     const result = {
         id: cargo.id,
         [cols.COUNT]: cargo[cols.COUNT],
+        [cols.FREE_COUNT]: cargo[cols.FREE_COUNT],
         [cols.UPLOADING_DATE_FROM]: cargo[cols.UPLOADING_DATE_FROM],
         [cols.UPLOADING_DATE_TO]: cargo[cols.UPLOADING_DATE_TO],
         [cols.DOWNLOADING_DATE_FROM]: cargo[cols.DOWNLOADING_DATE_FROM],
