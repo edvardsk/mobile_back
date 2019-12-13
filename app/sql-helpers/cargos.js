@@ -18,7 +18,6 @@ const tablePoints = SQL_TABLES.POINTS;
 const tableTranslations = SQL_TABLES.POINT_TRANSLATIONS;
 const tableCurrencies = SQL_TABLES.CURRENCIES;
 const tableEconomicSettings = SQL_TABLES.ECONOMIC_SETTINGS;
-const tableDeals = SQL_TABLES.DEALS;
 
 const cols = table.COLUMNS;
 const colsDangerClasses = tableDangerClasses.COLUMNS;
@@ -29,7 +28,6 @@ const colsPoints = tablePoints.COLUMNS;
 const colsTranslations = tableTranslations.COLUMNS;
 const colsCurrencies = tableCurrencies.COLUMNS;
 const colsEconomicSettings =  tableEconomicSettings.COLUMNS;
-const colsDeals = tableDeals.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -537,7 +535,6 @@ const selectAvailableCargosByIds = (ids) => squelPostgres // todo: full check of
     .where(`c.${cols.DELETED} = 'f'`)
     .where(`c.${cols.FREEZED_AFTER} > now()`)
     .where(`c.${cols.FREE_COUNT} > 0`)
-    .left_join(tableDeals.NAME, 'd', `d.${colsDeals.CARGO_ID} = c.id`)
     .toString();
 
 module.exports = {
