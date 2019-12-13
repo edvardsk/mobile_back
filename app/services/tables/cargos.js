@@ -78,6 +78,11 @@ const checkCargoExists = async (meta, cargoId) => {
     return !!cargo;
 };
 
+const checkFreeCargoExists = async (meta, cargoId) => {
+    const cargo = await getRecordLight(cargoId);
+    return !!cargo && cargo[cols.FREE_COUNT] > 0;
+};
+
 module.exports = {
     addRecordAsTransaction,
     editRecordAsTransaction,
@@ -96,4 +101,5 @@ module.exports = {
 
     checkCargoInCompanyExists,
     checkCargoExists,
+    checkFreeCargoExists,
 };

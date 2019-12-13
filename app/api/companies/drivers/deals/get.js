@@ -3,6 +3,7 @@ const { success } = require('api/response');
 
 // services
 const DriversService = require('services/tables/drivers');
+const CargosServices = require('services/tables/cargos');
 
 // constants
 const { SQL_TABLES } = require('constants/tables');
@@ -21,9 +22,13 @@ const availableDriversPaginationOptions = {
     DEFAULT_SORT_DIRECTION: SORTING_DIRECTIONS.ASC,
 };
 
+const colsUsers = SQL_TABLES.USERS.COLUMNS;
+const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
+
 const getAvailableDrivers = async (req, res, next) => {
     try {
-        const { company } = res.locals;
+        const { company, user } = res.locals;
+        const { cargoId } = req.params;
         const {
             page,
             limit,
@@ -33,9 +38,22 @@ const getAvailableDrivers = async (req, res, next) => {
 
         const filter = get(req, 'query.filter', {});
 
+        const selectedCargo = await CargosServices.getRecordStrict(cargoId, user[colsUsers.LANGUAGE_ID]);
+        const upFrom = selectedCargo[colsCargos.UPLOADING_DATE_FROM];
+        const upTo = selectedCargo[colsCargos.UPLOADING_DATE_TO];
+        const downFrom = selectedCargo[colsCargos.DOWNLOADING_DATE_FROM];
+        const downTo = selectedCargo[colsCargos.DOWNLOADING_DATE_TO];
+
+        const cargoDates = {
+            upFrom: upFrom.toISOString(),
+            upTo: upTo && upTo.toISOString(),
+            downFrom: downFrom && downFrom.toISOString(),
+            downTo: downTo.toISOString(),
+        };
+
         const [drivers, driversCount] = await Promise.all([
-            DriversService.getAvailableDriversPaginationSorting(company.id, limit, limit * page, sortColumn, asc, filter),
-            DriversService.getCountAvailableDrivers(company.id, filter)
+            DriversService.getAvailableDriversPaginationSorting(company.id, cargoDates, limit, limit * page, sortColumn, asc, filter),
+            DriversService.getCountAvailableDrivers(company.id, cargoDates, filter)
         ]);
 
         const result = formatPaginationDataForResponse(

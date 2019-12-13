@@ -320,10 +320,14 @@ const ROUTES = {
             BASE: IDS.ME_OR_ID + BASES.DRIVERS,
             DEALS: {
                 BASE: BASES.DEALS,
-                AVAILABLE: {
-                    BASE: BASES.AVAILABLE,
-                    GET: '',
+                CARGOS: {
+                    BASE: BASES.CARGOS,
+                    AVAILABLE: {
+                        BASE: IDS.CARGO_ID + BASES.AVAILABLE,
+                        GET: '',
+                    },
                 },
+
             },
         },
         DEALS: {

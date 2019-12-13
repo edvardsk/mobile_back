@@ -36,12 +36,13 @@ const getRecordStrict = id => one(selectRecordById(id));
 
 const getRecord = id => oneOrNone(selectRecordById(id));
 
-const getAvailableDriversPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
-    manyOrNone(selectAvailableDriversPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
-);
 
-const getCountAvailableDrivers = (companyId, filter) => (
-    one(selectCountAvailableDrivers(companyId, filter))
+const getAvailableDriversPaginationSorting = (companyId, cargoDates, limit, offset, sortColumn, asc, filter) => {
+    return manyOrNone(selectAvailableDriversPaginationSorting(companyId, cargoDates, limit, offset, sortColumn, asc, filter));
+};
+
+const getCountAvailableDrivers = (companyId, cargoId, filter) => (
+    one(selectCountAvailableDrivers(companyId, cargoId, filter))
         .then(({ count }) => +count)
 );
 

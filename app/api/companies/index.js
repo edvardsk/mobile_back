@@ -511,11 +511,15 @@ router.post(
     postLinkingTrailers.unlinkTrailerFromCar,
 );
 
+
 // drivers
 router.get(
-    ROUTES.COMPANIES.DRIVERS.BASE + ROUTES.COMPANIES.DRIVERS.DEALS.BASE + ROUTES.COMPANIES.DRIVERS.DEALS.AVAILABLE.BASE + ROUTES.COMPANIES.DRIVERS.DEALS.AVAILABLE.GET,
-    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    ROUTES.COMPANIES.DRIVERS.BASE + ROUTES.COMPANIES.DRIVERS.DEALS.BASE + ROUTES.COMPANIES.DRIVERS.DEALS.CARGOS.BASE +
+    ROUTES.COMPANIES.DRIVERS.DEALS.CARGOS.AVAILABLE.BASE + ROUTES.COMPANIES.DRIVERS.DEALS.CARGOS.AVAILABLE.GET,
+    isHasPermissions([PERMISSIONS.CREATE_CARGO_DEAL]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.requiredCargoId, 'params'),
+    validate(ValidatorSchemes.requiredExistingFreeCargoAsync, 'params'),
     validate(ValidatorSchemes.basePaginationQuery, 'query'),
     validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
     validate(ValidatorSchemes.modifyFilterQuery, 'query'),

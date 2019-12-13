@@ -191,6 +191,18 @@ const requiredCargoId = {
     ]
 };
 
+const requiredExistingFreeCargoAsync = {
+    $async: true,
+    properties: {
+        cargoId: {
+            free_cargo_not_exist: {},
+        },
+    },
+    required: [
+        'cargoId',
+    ]
+};
+
 const requiredExistingCargoInCompanyAsyncFunc = ({ companyId }) => ({
     $async: true,
     properties: {
@@ -444,6 +456,7 @@ module.exports = {
     createOrEditCargo,
     createOrEditCargoAsync,
     requiredCargoId,
+    requiredExistingFreeCargoAsync,
     requiredExistingCargoInCompanyAsyncFunc,
     requiredExistingCargoAsync,
     modifyStringValues,
