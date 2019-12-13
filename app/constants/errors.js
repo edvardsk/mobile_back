@@ -74,6 +74,24 @@ const ERRORS = {
     ECONOMIC_SETTINGS: {
         SUM_PERCENT_TRANSPORTER_HOLDER_ERROR: 'economic_settings.sum_percent_transporter_holder_error',
     },
+    DEALS: {
+        CARGO_NOT_EXISTS: 'deals.cargo_not_exists',
+        INVALID_CARGO_COUNT: 'deals.invalid_cargo_count',
+        NO_ONE_OR_MANY_CARGOS: 'deals.no_one_or_many_cargos',
+        INVALID_CURRENCY: 'deals.invalid_currency',
+        INVALID_DRIVER_ID: 'deals.invalid_driver_id',
+        INVALID_CAR_ID: 'deals.invalid_car_id',
+        INVALID_TRAILER_ID: 'deals.invalid_trailer_id',
+        DIFFERENT_CARGO_LOADING_METHOD: 'deals.different_cargo_loading_method',
+        DUPLICATE_DATA: 'deals.duplicate_data',
+        DUPLICATE_PHONE_NUMBERS: 'deals.duplicate_phone_numbers',
+        CAR_STATE_NUMBER_EXISTS: 'deals.car_state_number_exists',
+        TRAILER_STATE_NUMBER_EXISTS: 'deals.trailer_state_number_exists',
+        INVALID_CAR_WITH_TRAILER_JOIN: 'deals.invalid_car_with_trailer_join',
+    },
+    VERIFY: {
+        ALREADY_VERIFIED: 'verify.already_verified',
+    },
 };
 
 class PaginationError extends Error {

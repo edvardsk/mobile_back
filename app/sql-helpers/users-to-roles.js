@@ -24,6 +24,13 @@ const insertUserRole = (userId, role) => squelPostgres
     .returning('*')
     .toString();
 
+const insertUserRoles = values => squelPostgres
+    .insert()
+    .into(table.NAME)
+    .setFieldsRows(values)
+    .returning('*')
+    .toString();
+
 const deleteUserRole = (userId, role) => squelPostgres
     .delete()
     .from(table.NAME)
@@ -47,6 +54,7 @@ const updateUserRoleByUserId = (userId, role) => squelPostgres
 
 module.exports = {
     insertUserRole,
+    insertUserRoles,
     deleteUserRole,
     updateUserRoleByUserId,
 };

@@ -22,6 +22,13 @@ const insertRecord = values => {
         .toString();
 };
 
+const insertRecords = values => squelPostgres
+    .insert()
+    .into(table.NAME)
+    .setFieldsRows(values)
+    .returning('*')
+    .toString();
+
 const selectRecordByTwoUsersIds = (user1, user2) => squelPostgres
     .select()
     .from(table.NAME, 'a')
@@ -44,6 +51,7 @@ const selectRecordByCompanyIdAndUserId = (companyId, userId) => squelPostgres
 module.exports = {
     selectRecordByUserId,
     insertRecord,
+    insertRecords,
     selectRecordByTwoUsersIds,
     selectRecordByCompanyIdAndUserId,
 };

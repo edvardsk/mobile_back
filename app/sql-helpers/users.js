@@ -50,6 +50,13 @@ const insertUser = values => squelPostgres
     .returning('*')
     .toString();
 
+const insertUsers = values => squelPostgres
+    .insert()
+    .into(table.NAME)
+    .setFieldsRows(values)
+    .returning('*')
+    .toString();
+
 const selectUser = id => squelPostgres
     .select()
     .from(table.NAME)
@@ -208,6 +215,7 @@ const selectUsersByCompanyIdAndDriverRolePaginationSorting = (companyId, limit, 
         .field(`CONCAT(php.${colsPhonePrefixes.CODE}, phn.${colsPhoneNumbers.NUMBER})::bigint`, HOMELESS_COLUMNS.FULL_PHONE_NUMBER)
         .field(`d.${colsDrivers.DRIVER_LICENCE_REGISTERED_AT}`)
         .field(`d.${colsDrivers.DRIVER_LICENCE_EXPIRED_AT}`)
+        .field(`d.${colsDrivers.VERIFIED}`, colsDrivers.VERIFIED)
         .from(table.NAME, 'u')
         .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
         .where(`r.${colsRoles.NAME} IN ?`, DRIVER_ROLES);
@@ -348,6 +356,7 @@ const setUsersFilter = (expression, filteringObject) => {
 
 module.exports = {
     insertUser,
+    insertUsers,
     selectUser,
     selectUserWithRoleAndPhoneNumber,
     selectUserWithRole,

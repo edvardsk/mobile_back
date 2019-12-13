@@ -21,6 +21,7 @@ const EconomicSettingsService = require('services/tables/economic-settings');
 const LanguagesService = require('services/tables/languages');
 const CarsService = require('services/tables/cars');
 const TrailersService = require('services/tables/trailers');
+const DriversService = require('services/tables/drivers');
 
 // constants
 const { ERRORS } = require('constants/errors');
@@ -201,6 +202,12 @@ ajv.addKeyword('car_in_company_not_exists', {
     validate: CarsService.checkCarInCompanyExist,
 });
 
+ajv.addKeyword('car_not_exists', {
+    async: true,
+    type: 'string',
+    validate: CarsService.checkCarExist,
+});
+
 ajv.addKeyword('trailer_in_company_not_exists', {
     async: true,
     type: 'string',
@@ -217,6 +224,18 @@ ajv.addKeyword('trailer_in_company_with_car_not_exists', {
     async: true,
     type: 'string',
     validate: TrailersService.checkTrailerWithCarInCompanyExists,
+});
+
+ajv.addKeyword('trailer_not_exists', {
+    async: true,
+    type: 'string',
+    validate: TrailersService.checkTrailerExists,
+});
+
+ajv.addKeyword('driver_not_exists', {
+    async: true,
+    type: 'string',
+    validate: DriversService.checkDriverExists,
 });
 
 ajv.addKeyword('car_danger_class_without_file_or_extra_file', {
@@ -247,6 +266,12 @@ ajv.addKeyword('required_existing_car_in_company_without_trailer', {
     async: true,
     type: 'string',
     validate: CarsService.checkIsCarInCompanyWithoutTrailerExists,
+});
+
+ajv.addKeyword('optional_driver_in_company_not_exists', {
+    async: true,
+    type: 'string',
+    validate: DriversService.checkIsOptionalDriverInCompanyExists,
 });
 
 ajv.addKeyword('parse_string_to_json', {

@@ -3,6 +3,7 @@ const { one, oneOrNone, manyOrNone } = require('db');
 // sql-helpers
 const {
     insertRecord,
+    insertRecords,
     updateRecord,
     selectRecordById,
     selectCarsByCompanyIdPaginationSorting,
@@ -13,6 +14,9 @@ const {
     selectRecordByIdAndCompanyIdWithoutTrailer,
     selectAvailableCarsByCompanyIdPaginationSorting,
     selectCountAvailableCarsByCompanyId,
+    selectAvailableCarsByIdsAndCompanyId,
+    selectAvailableCarByIdAndCompanyId,
+    selectRecordsByStateNumbers,
 } = require('sql-helpers/cars');
 
 // services
@@ -32,11 +36,15 @@ const colsDangerClasses = SQL_TABLES.DANGER_CLASSES.COLUMNS;
 
 const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
 
+const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MANY];
+
 const editRecordAsTransaction = (id, data) => [updateRecord(id, data), OPERATIONS.ONE];
 
 const editRecord = (id, data) => one(updateRecord(id, data));
 
 const getRecordStrict = id => one(selectRecordById(id));
+
+const getRecord = id => oneOrNone(selectRecordById(id));
 
 const getCarsPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
     manyOrNone(selectCarsByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
@@ -72,15 +80,32 @@ const getCountAvailableCars = (companyId, filter) => (
         .then(({ count }) => +count)
 );
 
+const getAvailableCarsByIdsAndCompanyId = (ids, companyId) => (
+    manyOrNone(selectAvailableCarsByIdsAndCompanyId(ids, companyId))
+);
+
+const getAvailableCarByIdAndCompanyId = (id, companyId) => (
+    oneOrNone(selectAvailableCarByIdAndCompanyId(id, companyId))
+);
+
+const getRecordsByStateNumbers = numbers => (
+    manyOrNone(selectRecordsByStateNumbers(numbers))
+);
+
 const checkCarStateNumberExistsOpposite = async (meta, stateNumber) => {
     const { carId } = meta;
-    const car = await getRecordByStateNumberAndActive(stateNumber);
+    const car = await getRecordByStateNumberAndActive(stateNumber.toUpperCase());
     return !car || car.id === carId;
 };
 
 const checkCarInCompanyExist = async (meta, id) => {
     const { companyId } = meta;
     const car = await getRecordByIdAndCompanyIdLight(id, companyId);
+    return !!car;
+};
+
+const checkCarExist = async (meta, id) => {
+    const car = await getRecord(id);
     return !!car;
 };
 
@@ -137,6 +162,7 @@ const checkIsPassedFileWithNewDangerClass = async (meta, newDangerClassId, schem
 
 module.exports = {
     addRecordAsTransaction,
+    addRecordsAsTransaction,
     editRecordAsTransaction,
 
     getRecordStrict,
@@ -147,9 +173,13 @@ module.exports = {
     markAsDeletedAsTransaction,
     getAvailableCarsByCompanyIdPaginationSorting,
     getCountAvailableCars,
+    getAvailableCarsByIdsAndCompanyId,
+    getAvailableCarByIdAndCompanyId,
+    getRecordsByStateNumbers,
 
     checkCarStateNumberExistsOpposite,
     checkCarInCompanyExist,
+    checkCarExist,
     checkIsCarInCompanyWithoutTrailerExists,
     checkIsPassedFileWithDangerClass,
     checkIsPassedFileWithNewDangerClass,

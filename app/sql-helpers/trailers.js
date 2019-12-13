@@ -34,6 +34,13 @@ const insertRecord = values => squelPostgres
     .returning('*')
     .toString();
 
+const insertRecords = values => squelPostgres
+    .insert()
+    .into(table.NAME)
+    .setFieldsRows(values)
+    .returning('*')
+    .toString();
+
 const updateRecord = (id, data) => squelPostgres
     .update()
     .table(table.NAME)
@@ -231,8 +238,41 @@ const setAvailableTrailersFilter = (expression, filteringObject) => {
     return expression;
 };
 
+const selectAvailableTrailersByIdsAndCompanyId = (ids, companyId) => squelPostgres // todo: check full availability
+    .select()
+    .from(table.NAME, 't')
+    .field('t.*')
+    .field('c.id', HOMELESS_COLUMNS.CAR_ID)
+    .where('t.id IN ?', ids)
+    .where(`t.${cols.COMPANY_ID} = '${companyId}'`)
+    .where(`t.${cols.DELETED} = 'f'`)
+    .left_join(tableCars.NAME, 'c', `c.id = t.${cols.CAR_ID}`)
+    .toString();
+
+const selectAvailableTrailerByIdAndCompanyId = (id, companyId) => squelPostgres // todo: check full availability
+    .select()
+    .from(table.NAME, 't')
+    .field('t.*')
+    .field('c.id', HOMELESS_COLUMNS.CAR_ID)
+    .where(`t.id = '${id}'`)
+    .where(`t.${cols.COMPANY_ID} = '${companyId}'`)
+    .where(`t.${cols.DELETED} = 'f'`)
+    .left_join(tableCars.NAME, 'c', `c.id = t.${cols.CAR_ID}`)
+    .toString();
+
+const selectRecordsByStateNumbers = numbers => squelPostgres
+    .select()
+    .from(table.NAME, 't')
+    .field('t.*')
+    .field(`tsn.${colsTrailersStateNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
+    .where(`tsn.${colsTrailersStateNumbers.IS_ACTIVE} = 't'`)
+    .where(`tsn.${colsTrailersStateNumbers.NUMBER} IN ?`, numbers)
+    .left_join(tableTrailersStateNumbers.NAME, 'tsn', `tsn.${colsTrailersStateNumbers.TRAILER_ID} = t.id`)
+    .toString();
+
 module.exports = {
     insertRecord,
+    insertRecords,
     updateRecord,
     updateRecordByCarId,
     selectRecordById,
@@ -243,4 +283,7 @@ module.exports = {
     selectRecordByIdAndCompanyIdLight,
     selectAvailableTrailersByCompanyIdPaginationSorting,
     selectAvailableCountTrailersByCompanyId,
+    selectAvailableTrailersByIdsAndCompanyId,
+    selectAvailableTrailerByIdAndCompanyId,
+    selectRecordsByStateNumbers,
 };

@@ -30,14 +30,18 @@ const editCar = async (req, res, next) => {
     try {
         const { body, files } = req;
         const { carId } = req.params;
+        const { isControlRole } = res.locals;
+
         const newCarType = body[colsCars.CAR_TYPE];
-        const stateNumber = body[HOMELESS_COLUMNS.CAR_STATE_NUMBER];
+        const stateNumber = body[HOMELESS_COLUMNS.CAR_STATE_NUMBER].toUpperCase();
         const currentStateNumberRecord = await CarsStateNumbersService.getActiveRecordByCarIdStrict(carId);
         const currentStateNumber = currentStateNumberRecord[colsCarsNumbers.NUMBER];
         const carData = CarsFormatters.formatCarToEdit(body);
 
+        const carDataToEdit = isControlRole ? carData : CarsFormatters.formatRecordAsNotVerified(carData);
+
         const transactionsList = [
-            CarsServices.editRecordAsTransaction(carId, carData)
+            CarsServices.editRecordAsTransaction(carId, carDataToEdit)
         ];
 
         const carRequiredDocuments = [DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION, DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT];

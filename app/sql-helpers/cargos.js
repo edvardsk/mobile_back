@@ -56,6 +56,16 @@ const updateRecordById = (id, data) => squelPostgres
     .returning('*')
     .toString();
 
+const updateRecordDecreaseFreeCountById = (id, value) => squelPostgres
+    .update()
+    .table(table.NAME)
+    .set(cols.FREE_COUNT, `${cols.FREE_COUNT} - ${value}`, {
+        dontQuote: true,
+    })
+    .where(`id = '${id}'`)
+    .returning('*')
+    .toString();
+
 const deleteRecordById = id => squelPostgres
     .delete()
     .from(table.NAME)
@@ -276,7 +286,6 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
         .select()
         .from(table.NAME, 'c')
         .field('c.*')
-        .field(`c.${cols.FREE_COUNT}`, cols.COUNT)
         .field(`vc.${colsVehicleClasses.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
         .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
         .field(`json_build_object(
@@ -507,9 +516,31 @@ const selectAllNewRecordsForSearch = (languageId, companyId) => {
         .toString();
 };
 
+const selectAvailableCargosByIds = (ids) => squelPostgres // todo: full check of availability
+    .select()
+    .field('c.*')
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(
+            cpr.${colsCargoPrices.CURRENCY_ID}, cpr.${colsCargoPrices.NEXT_CURRENCY_ID}, cpr.${colsCargoPrices.PRICE}, cur.${colsCurrencies.CODE}
+            ))`)
+            .from(tableCargoPrices.NAME, 'cpr')
+            .where(`cpr.${colsCargoPrices.CARGO_ID} = c.id`)
+            .left_join(tableCurrencies.NAME, 'cur', `cur.id= cpr.${colsCargoPrices.CURRENCY_ID}`)
+            .toString()
+    })`, HOMELESS_COLUMNS.PRICES)
+    .from(table.NAME, 'c')
+    .where('c.id IN ?', ids)
+    .where(`c.${cols.DELETED} = 'f'`)
+    .where(`c.${cols.FREEZED_AFTER} > now()`)
+    .where(`c.${cols.FREE_COUNT} > 0`)
+    .toString();
+
 module.exports = {
     insertRecord,
     updateRecordById,
+    updateRecordDecreaseFreeCountById,
     deleteRecordById,
     selectRecordById,
     selectRecordByWithCoordinatesId,
@@ -520,4 +551,5 @@ module.exports = {
     selectCountCargosByCompanyId,
     selectRecordsForSearch,
     selectAllNewRecordsForSearch,
+    selectAvailableCargosByIds,
 };

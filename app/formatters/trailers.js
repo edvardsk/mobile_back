@@ -4,6 +4,7 @@ const { SqlArray } = require('constants/instances');
 const { CAR_TYPES_MAP } = require('constants/cars');
 
 const cols = SQL_TABLES.TRAILERS.COLUMNS;
+const colsTrailersNumbers = SQL_TABLES.TRAILERS_STATE_NUMBERS.COLUMNS;
 const colsCars = SQL_TABLES.CARS.COLUMNS;
 const colsFiles = SQL_TABLES.FILES.COLUMNS;
 
@@ -39,6 +40,7 @@ const formatRecordForList = data => ({
     [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: data[HOMELESS_COLUMNS.DANGER_CLASS_NAME],
     [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: data[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
     [cols.TRAILER_DANGER_CLASS_ID]: data[cols.TRAILER_DANGER_CLASS_ID],
+    [cols.VERIFIED]: data[cols.VERIFIED],
 });
 
 const formatRecordForListAvailable = data => {
@@ -108,6 +110,7 @@ const formatRecordForResponse = trailer => {
                 [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: trailer[HOMELESS_COLUMNS.DANGER_CLASS_NAME],
                 [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: trailer[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
                 [cols.TRAILER_DANGER_CLASS_ID]: trailer[cols.TRAILER_DANGER_CLASS_ID],
+                [cols.VERIFIED]: trailer[cols.VERIFIED],
             },
         },
     };
@@ -143,10 +146,38 @@ const formatTrailerToEdit = body => ({
     [cols.TRAILER_DANGER_CLASS_ID]: body[cols.TRAILER_DANGER_CLASS_ID],
 });
 
+const formatShadowTrailersToSave = (arr, companyId) => arr.reduce((acc, item) => {
+    const [trailers, trailersNumbers] = acc;
+    const trailerId = item[HOMELESS_COLUMNS.TRAILER_ID];
+    trailers.push({
+        id: trailerId,
+        [cols.CAR_ID]: item[HOMELESS_COLUMNS.CAR_ID] || null,
+        [cols.COMPANY_ID]: companyId,
+    });
+    trailersNumbers.push({
+        [colsTrailersNumbers.TRAILER_ID]: trailerId,
+        [colsTrailersNumbers.NUMBER]: item[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER].toUpperCase(),
+    });
+    return acc;
+},[[], []]);
+
+const formatRecordAsNotVerified = (data = {}) => ({
+    ...data,
+    [cols.VERIFIED]: false,
+});
+
+const formatRecordAsVerified = (data = {}) => ({
+    ...data,
+    [cols.VERIFIED]: true,
+});
+
 module.exports = {
     formatTrailerToSave,
     formatRecordForList,
     formatRecordForListAvailable,
     formatRecordForResponse,
     formatTrailerToEdit,
+    formatShadowTrailersToSave,
+    formatRecordAsNotVerified,
+    formatRecordAsVerified,
 };

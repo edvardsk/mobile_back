@@ -1,6 +1,7 @@
 const { one, oneOrNone, manyOrNone } = require('db');
 const {
     insertUser,
+    insertUsers,
     selectUser,
     selectUserWithRole,
     selectUserByEmail,
@@ -45,6 +46,8 @@ const getUserRole = id => one(selectUserRole(id))
     .then(({ name }) => name);
 
 const addUserAsTransaction = data => [insertUser(data), OPERATIONS.ONE];
+
+const addUsersAsTransaction = values => [insertUsers(values), OPERATIONS.MANY];
 
 const updateUserAsTransaction = (id, data) => [updateUser(id, data), OPERATIONS.ONE];
 
@@ -117,6 +120,7 @@ const checkUserWithIdExists = async (meta, id) => {
 
 module.exports = {
     addUser,
+    addUsersAsTransaction,
     getUser,
     getUserWithRole,
     getUserWithRoleAndPhoneNumber,

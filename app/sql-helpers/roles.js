@@ -18,7 +18,14 @@ const selectRoleById = id => squelPostgres
     .where(`id = '${id}'`)
     .toString();
 
+const selectRoleByName = name => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where(`${cols.NAME} = '${name}'`)
+    .toString();
+
 module.exports = {
     selectRolesByNames,
     selectRoleById,
+    selectRoleByName,
 };

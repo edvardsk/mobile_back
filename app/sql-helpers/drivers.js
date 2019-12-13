@@ -23,6 +23,13 @@ const insertRecord = values => squelPostgres
     .returning('*')
     .toString();
 
+const insertRecords = values => squelPostgres
+    .insert()
+    .into(table.NAME)
+    .setFieldsRows(values)
+    .returning('*')
+    .toString();
+
 const updateRecordByUserId = (userId, values) => squelPostgres
     .update()
     .table(table.NAME)
@@ -31,10 +38,24 @@ const updateRecordByUserId = (userId, values) => squelPostgres
     .returning('*')
     .toString();
 
+const updateRecord = (id, values) => squelPostgres
+    .update()
+    .table(table.NAME)
+    .setFields(values)
+    .where(`id = '${id}'`)
+    .returning('*')
+    .toString();
+
 const selectRecordByUserId = userId => squelPostgres
     .select()
     .from(table.NAME)
     .where(`${cols.USER_ID} = '${userId}'`)
+    .toString();
+
+const selectRecordById = id => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where(`id = '${id}'`)
     .toString();
 
 const selectAvailableDriversPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => {
@@ -89,10 +110,57 @@ const setAvailableDriversFilter = (expression, filteringObject) => {
     return expression;
 };
 
+const selectRecordByCompanyIdLight = companyId => squelPostgres
+    .select()
+    .field('d.id')
+    .from(table.NAME, 'd')
+    .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
+    .where(`u.${colsUsers.FREEZED} = 'f'`)
+    .left_join(tableUsers.NAME, 'u', `u.id = d.${cols.USER_ID}`)
+    .left_join(tableUsersCompanies.NAME, 'uc', `uc.${colsUsersCompanies.USER_ID} = u.id`)
+    .toString();
+
+const selectAvailableDriversByIdsAndCompanyId = (ids, companyId) => squelPostgres // todo: check full availability
+    .select()
+    .field('d.*')
+    .from(table.NAME, 'd')
+    .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
+    .where(`u.${colsUsers.FREEZED} = 'f'`)
+    .left_join(tableUsers.NAME, 'u', `u.id = d.${cols.USER_ID}`)
+    .left_join(tableUsersCompanies.NAME, 'uc', `uc.${colsUsersCompanies.USER_ID} = u.id`)
+    .toString();
+
+const selectAvailableDriverByIdAndCompanyId = (id, companyId) => squelPostgres // todo: check full availability
+    .select()
+    .field('d.*')
+    .from(table.NAME, 'd')
+    .where(`d.id = '${id}'`)
+    .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
+    .where(`u.${colsUsers.FREEZED} = 'f'`)
+    .left_join(tableUsers.NAME, 'u', `u.id = d.${cols.USER_ID}`)
+    .left_join(tableUsersCompanies.NAME, 'uc', `uc.${colsUsersCompanies.USER_ID} = u.id`)
+    .toString();
+
+const selectDriversByPhoneNumbers = numbers => squelPostgres
+    .select()
+    .from(table.NAME, 'd')
+    .where(`CONCAT(php.${colsPhonePrefixes.CODE}, phn.${colsPhoneNumbers.NUMBER}) IN ?`, numbers)
+    .left_join(tableUsers.NAME, 'u', `u.id = d.${cols.USER_ID}`)
+    .left_join(tablePhoneNumbers.NAME, 'phn', `phn.${colsPhoneNumbers.USER_ID} = u.id`)
+    .left_join(tablePhonePrefixes.NAME, 'php', `php.id = phn.${colsPhoneNumbers.PHONE_PREFIX_ID}`)
+    .toString();
+
 module.exports = {
     insertRecord,
+    insertRecords,
     updateRecordByUserId,
+    updateRecord,
     selectRecordByUserId,
+    selectRecordById,
     selectAvailableDriversPaginationSorting,
     selectCountAvailableDrivers,
+    selectRecordByCompanyIdLight,
+    selectAvailableDriversByIdsAndCompanyId,
+    selectAvailableDriverByIdAndCompanyId,
+    selectDriversByPhoneNumbers,
 };

@@ -57,6 +57,7 @@ const BASES = {
     DEALS: '/deals',
     DRIVERS: '/drivers',
     EXCHANGE_RATES: '/exchange-rates',
+    VERIFY: '/verify',
 };
 
 const IDS = {
@@ -69,6 +70,7 @@ const IDS = {
     CARGO_ID: '/:cargoId',
     CAR_ID: '/:carId',
     TRAILER_ID: '/:trailerId',
+    DRIVER_ID: '/:driverId',
 };
 
 const ROUTES = {
@@ -324,6 +326,13 @@ const ROUTES = {
                 },
             },
         },
+        DEALS: {
+            BASE: IDS.ME_OR_ID + BASES.DEALS,
+            CARGOS: {
+                BASE: BASES.CARGOS,
+                POST: '',
+            },
+        },
     },
     OTHERS: {
         BASE: BASES.OTHERS,
@@ -374,6 +383,27 @@ const ROUTES = {
     CARGOS: {
         BASE: BASES.CARGOS,
         GET: IDS.CARGO_ID,
+    },
+    CARS: {
+        BASE: BASES.CARS,
+        VERIFY: {
+            BASE: IDS.CAR_ID + BASES.VERIFY,
+            POST: '',
+        },
+    },
+    TRAILERS: {
+        BASE: BASES.TRAILERS,
+        VERIFY: {
+            BASE: IDS.TRAILER_ID + BASES.VERIFY,
+            POST: '',
+        },
+    },
+    DRIVERS: {
+        BASE: BASES.DRIVERS,
+        VERIFY: {
+            BASE: IDS.DRIVER_ID + BASES.VERIFY,
+            POST: '',
+        },
     },
 };
 

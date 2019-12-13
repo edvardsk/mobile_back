@@ -35,6 +35,8 @@ const getTrailersDeals = require('./trailers/deals/get');
 
 const getDriversDeals = require('./drivers/deals/get');
 
+const postDealsCargos = require('./deals/cargos/post');
+
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
 const { validate } = require('api/middlewares/validator');
@@ -520,6 +522,20 @@ router.get(
     validate(ValidatorSchemes.driversDealsAvailableFilterQuery, 'query'),
     injectCompanyData,
     getDriversDeals.getAvailableDrivers,
+);
+
+
+// deals
+router.post(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.CARGOS.BASE + ROUTES.COMPANIES.DEALS.CARGOS.POST,
+    isHasPermissions([PERMISSIONS.CREATE_CARGO_DEAL]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.createCargoDeal),
+    validate(ValidatorSchemes.createCargoDealAsync),
+    validate(ValidatorSchemes.createCargoDealPhoneNumberAsync),
+    validate(ValidatorSchemes.createCargoDealPhoneNumberWithPrefixAsync),
+    postDealsCargos.createCargoDeal,
 );
 
 module.exports = router;

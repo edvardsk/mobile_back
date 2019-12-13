@@ -14,6 +14,13 @@ const insertRecord = values => squelPostgres
     .returning('*')
     .toString();
 
+const insertRecords = values => squelPostgres
+    .insert()
+    .into(table.NAME)
+    .setFieldsRows(values)
+    .returning('*')
+    .toString();
+
 const updateActiveRecordsByCarId = (carId, data) => squelPostgres
     .update()
     .table(table.NAME)
@@ -31,6 +38,7 @@ const selectActiveRecordByCarId = carId => squelPostgres
 
 module.exports = {
     insertRecord,
+    insertRecords,
     updateActiveRecordsByCarId,
     selectActiveRecordByCarId,
 };

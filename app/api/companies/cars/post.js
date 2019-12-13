@@ -56,7 +56,7 @@ const createCar = async (req, res, next) => {
             carId = uuid();
             const carStateNumberData = {
                 [colsCarsNumbers.CAR_ID]: carId,
-                [colsCarsNumbers.NUMBER]: body[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
+                [colsCarsNumbers.NUMBER]: body[HOMELESS_COLUMNS.CAR_STATE_NUMBER].toUpperCase(),
             };
 
             const carData = CarsFormatters.formatCarToSave(carId, companyId, body);

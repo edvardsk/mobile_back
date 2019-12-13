@@ -34,6 +34,13 @@ const insertRecord = values => squelPostgres
     .returning('*')
     .toString();
 
+const insertRecords = values => squelPostgres
+    .insert()
+    .into(table.NAME)
+    .setFieldsRows(values)
+    .returning('*')
+    .toString();
+
 const updateRecord = (id, data) => squelPostgres
     .update()
     .table(table.NAME)
@@ -60,6 +67,7 @@ const selectCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortCo
         .field(`t.${colsTrailers.TRAILER_HEIGHT}`, colsTrailers.TRAILER_HEIGHT)
         .field(`t.${colsTrailers.TRAILER_LENGTH}`, colsTrailers.TRAILER_LENGTH)
         .field(`t.${colsTrailers.TRAILER_CARRYING_CAPACITY}`, colsTrailers.TRAILER_CARRYING_CAPACITY)
+        .field(`t.${colsTrailers.VERIFIED}`, HOMELESS_COLUMNS.TRAILER_VERIFIED)
         .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME)
         .field(`vt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME)
         .field(`tsn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
@@ -240,8 +248,41 @@ const setDealAvailableCarsFilter = (expression, filteringObject) => {
     return expression;
 };
 
+const selectAvailableCarsByIdsAndCompanyId = (ids, companyId) => squelPostgres // todo: check full availability
+    .select()
+    .from(table.NAME, 'c')
+    .field('c.*')
+    .field('t.id', HOMELESS_COLUMNS.TRAILER_ID)
+    .where('c.id IN ?', ids)
+    .where(`c.${cols.COMPANY_ID} = '${companyId}'`)
+    .where(`c.${cols.DELETED} = 'f'`)
+    .left_join(tableTrailers.NAME, 't', `t.${colsTrailers.CAR_ID} = c.id`)
+    .toString();
+
+const selectAvailableCarByIdAndCompanyId = (id, companyId) => squelPostgres // todo: check full availability
+    .select()
+    .from(table.NAME, 'c')
+    .field('c.*')
+    .field('t.id', HOMELESS_COLUMNS.TRAILER_ID)
+    .where(`c.id = '${id}'`)
+    .where(`c.${cols.COMPANY_ID} = '${companyId}'`)
+    .where(`c.${cols.DELETED} = 'f'`)
+    .left_join(tableTrailers.NAME, 't', `t.${colsTrailers.CAR_ID} = c.id`)
+    .toString();
+
+const selectRecordsByStateNumbers = numbers => squelPostgres
+    .select()
+    .from(table.NAME, 'c')
+    .field('c.*')
+    .field(`csn.${colsCarsStateNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
+    .where(`csn.${colsCarsStateNumbers.IS_ACTIVE} = 't'`)
+    .where(`csn.${colsCarsStateNumbers.NUMBER} IN ?`, numbers)
+    .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = c.id`)
+    .toString();
+
 module.exports = {
     insertRecord,
+    insertRecords,
     updateRecord,
     selectRecordById,
     selectCarsByCompanyIdPaginationSorting,
@@ -252,4 +293,7 @@ module.exports = {
     selectRecordByIdAndCompanyIdWithoutTrailer,
     selectAvailableCarsByCompanyIdPaginationSorting,
     selectCountAvailableCarsByCompanyId,
+    selectAvailableCarsByIdsAndCompanyId,
+    selectAvailableCarByIdAndCompanyId,
+    selectRecordsByStateNumbers,
 };

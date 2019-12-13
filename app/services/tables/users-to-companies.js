@@ -4,6 +4,7 @@ const { one, many, oneOrNone } = require('db');
 const {
     selectRecordByUserId,
     insertRecord,
+    insertRecords,
     selectRecordByTwoUsersIds,
     selectRecordByCompanyIdAndUserId,
 } = require('sql-helpers/users-to-companies');
@@ -27,6 +28,8 @@ const isUsersFromOneCompany = (user1, user2) => many(selectRecordByTwoUsersIds(u
 
 const addRecordAsTransaction = data => [insertRecord(data), OPERATIONS.ONE];
 
+const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MANY];
+
 const hasCompanyUser = async (companyId, userId) => {
     const record = await oneOrNone(selectRecordByCompanyIdAndUserId(companyId, userId));
     return !!record;
@@ -35,6 +38,7 @@ const hasCompanyUser = async (companyId, userId) => {
 module.exports = {
     getRecordByUserIdStrict,
     addRecordAsTransaction,
+    addRecordsAsTransaction,
     isUsersFromOneCompany,
     hasCompanyUser,
 };
