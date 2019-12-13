@@ -426,6 +426,7 @@ const SQL_TABLES = {
             DRIVER_ID: 'driver_id',
             CAR_ID: 'car_id',
             TRAILER_ID: 'trailer_id',
+            NAME: 'name',
             PAY_CURRENCY_ID: 'pay_currency_id',
             PAY_VALUE: 'pay_value',
             APPROVED: 'approved',

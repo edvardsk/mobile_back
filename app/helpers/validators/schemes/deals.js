@@ -5,6 +5,7 @@ const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { DIGITS_VALIDATION_PATTERN } = require('./patterns');
 
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
+const colsDeals = SQL_TABLES.DEALS.COLUMNS;
 
 const createCargoDeal = {
     type: 'array',
@@ -95,6 +96,10 @@ const createCargoDeal = {
             [HOMELESS_COLUMNS.PAY_VALUE]: {
                 type: 'number',
                 format: 'price',
+            },
+            [colsDeals.NAME]: {
+                type: 'string',
+                minLength: 1,
             },
         },
         required: [

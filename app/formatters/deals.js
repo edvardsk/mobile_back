@@ -80,6 +80,7 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
             [colsDeals.TRAILER_ID]: trailerIdOrData ? trailerId : null,
             [colsDeals.PAY_CURRENCY_ID]: item[HOMELESS_COLUMNS.PAY_CURRENCY_ID],
             [colsDeals.PAY_VALUE]: item[HOMELESS_COLUMNS.PAY_VALUE],
+            [colsDeals.NAME]: item[colsDeals.NAME] || null,
         });
 
         dealHistory.push({
