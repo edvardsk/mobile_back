@@ -445,6 +445,21 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    DEAL_SUB_STATUSES: {
+        NAME: 'deal_sub_statuses',
+        COLUMNS: {
+            NAME: 'name',
+            CREATED_AT: 'created_at',
+        },
+    },
+    DEAL_SUB_STATUSES_HISTORY: {
+        NAME: 'deal_sub_statuses_history',
+        COLUMNS: {
+            DEAL_STATUS_HISTORY_ID: 'deal_status_history_id',
+            DESCRIPTION: 'description',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
