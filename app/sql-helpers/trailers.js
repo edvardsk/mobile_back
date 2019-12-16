@@ -2,6 +2,7 @@ const squel = require('squel');
 const { get } = require('lodash');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SqlArray } = require('constants/instances');
+const { FINISHED_STATUSES_LIST } = require('constants/deal-statuses');
 
 const squelPostgres = squel.useFlavour('postgres');
 
@@ -266,7 +267,7 @@ const setAvailableTrailersForDealFilter = (expression, cargoDates, companyId) =>
                 .select()
                 .field('ds.id')
                 .from(tableDealsStatuses.NAME, 'ds')
-                .where(`ds.${colsDealsStatuses.NAME} IN ?`, ['finished'])
+                .where(`ds.${colsDealsStatuses.NAME} IN ?`, FINISHED_STATUSES_LIST)
             )
             .left_join(tableDeals.NAME, 'd', `d.${colsDeals.TRAILER_ID} = t2.id`)
             .left_join(tableDealsStatusesHistory.NAME, 'dsh', `dsh.${colsDealsStatusesHistory.DEAL_ID} = d.id`)
