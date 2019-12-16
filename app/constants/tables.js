@@ -254,6 +254,7 @@ const SQL_TABLES = {
             FREEZED_AFTER: 'freezed_after',
             COUNT: 'count',
             FREE_COUNT: 'free_count',
+            DISTANCE: 'distance',
             CREATED_AT: 'created_at',
             DELETED: 'deleted',
         },

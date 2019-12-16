@@ -20,19 +20,21 @@ const colsEconomicSettings = SQL_TABLES.ECONOMIC_SETTINGS.COLUMNS;
 const colsCargoPrices = SQL_TABLES.CARGO_PRICES.COLUMNS;
 const colsCurrencyPriorities = SQL_TABLES.CURRENCY_PRIORITIES.COLUMNS;
 
-const formatRecordToSave = (companyId, cargoId, data) => ({
+const formatRecordToSave = (companyId, cargoId, data, distance) => ({
     ...data,
     id: cargoId,
     [cols.COMPANY_ID]: companyId,
     [cols.LOADING_METHODS]: new SqlArray(data[cols.LOADING_METHODS]),
     [cols.GUARANTEES]: new SqlArray(data[cols.GUARANTEES]),
     [cols.FREE_COUNT]: data[cols.COUNT],
+    [cols.DISTANCE]: distance,
     [cols.FREEZED_AFTER]: moment().add(+FREEZE_CARGO_VALUE, FREEZE_CARGO_UNIT).toISOString(),
 });
 
-const formatRecordToEdit = data => ({
+const formatRecordToEdit = (data, distance) => ({
     ...data,
     [cols.FREE_COUNT]: data[cols.COUNT],
+    [cols.DISTANCE]: distance,
     [cols.LOADING_METHODS]: new SqlArray(data[cols.LOADING_METHODS]),
     [cols.GUARANTEES]: new SqlArray(data[cols.GUARANTEES]),
 });
@@ -42,6 +44,7 @@ const formatRecordForList = (cargo, userLanguageId) => {
         id: cargo.id,
         [cols.COUNT]: cargo[cols.COUNT],
         [cols.FREE_COUNT]: cargo[cols.FREE_COUNT],
+        [cols.DISTANCE]: cargo[cols.DISTANCE],
         [cols.UPLOADING_DATE_FROM]: cargo[cols.UPLOADING_DATE_FROM],
         [cols.UPLOADING_DATE_TO]: cargo[cols.UPLOADING_DATE_TO],
         [cols.DOWNLOADING_DATE_FROM]: cargo[cols.DOWNLOADING_DATE_FROM],
