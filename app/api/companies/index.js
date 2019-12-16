@@ -414,9 +414,12 @@ router.delete(
 );
 
 router.get(
-    ROUTES.COMPANIES.CARS.BASE + ROUTES.COMPANIES.CARS.DEALS.BASE + ROUTES.COMPANIES.CARS.DEALS.AVAILABLE.BASE + ROUTES.COMPANIES.CARS.DEALS.AVAILABLE.GET,
-    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    ROUTES.COMPANIES.CARS.BASE + ROUTES.COMPANIES.CARS.DEALS.BASE + ROUTES.COMPANIES.CARS.DEALS.CARGOS.BASE +
+    ROUTES.COMPANIES.CARS.DEALS.CARGOS.AVAILABLE.BASE + ROUTES.COMPANIES.CARS.DEALS.CARGOS.AVAILABLE.GET,
+    isHasPermissions([PERMISSIONS.CREATE_CARGO_DEAL]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.requiredCargoId, 'params'),
+    validate(ValidatorSchemes.requiredExistingFreeCargoAsync, 'params'),
     validate(ValidatorSchemes.basePaginationQuery, 'query'),
     validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
     validate(ValidatorSchemes.modifyFilterQuery, 'query'),
@@ -477,9 +480,12 @@ router.put(
 );
 
 router.get(
-    ROUTES.COMPANIES.TRAILERS.BASE + ROUTES.COMPANIES.TRAILERS.DEALS.BASE + ROUTES.COMPANIES.TRAILERS.DEALS.AVAILABLE.BASE + ROUTES.COMPANIES.TRAILERS.DEALS.AVAILABLE.GET,
-    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    ROUTES.COMPANIES.TRAILERS.BASE + ROUTES.COMPANIES.TRAILERS.DEALS.BASE + ROUTES.COMPANIES.TRAILERS.DEALS.CARGOS.BASE +
+    ROUTES.COMPANIES.TRAILERS.DEALS.CARGOS.AVAILABLE.BASE + ROUTES.COMPANIES.TRAILERS.DEALS.CARGOS.AVAILABLE.GET,
+    isHasPermissions([PERMISSIONS.CREATE_CARGO_DEAL]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.requiredCargoId, 'params'),
+    validate(ValidatorSchemes.requiredExistingFreeCargoAsync, 'params'),
     validate(ValidatorSchemes.basePaginationQuery, 'query'),
     validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
     validate(ValidatorSchemes.modifyFilterQuery, 'query'),
@@ -511,11 +517,15 @@ router.post(
     postLinkingTrailers.unlinkTrailerFromCar,
 );
 
+
 // drivers
 router.get(
-    ROUTES.COMPANIES.DRIVERS.BASE + ROUTES.COMPANIES.DRIVERS.DEALS.BASE + ROUTES.COMPANIES.DRIVERS.DEALS.AVAILABLE.BASE + ROUTES.COMPANIES.DRIVERS.DEALS.AVAILABLE.GET,
-    isHasPermissions([PERMISSIONS.CRUD_CARS]), // permissions middleware
+    ROUTES.COMPANIES.DRIVERS.BASE + ROUTES.COMPANIES.DRIVERS.DEALS.BASE + ROUTES.COMPANIES.DRIVERS.DEALS.CARGOS.BASE +
+    ROUTES.COMPANIES.DRIVERS.DEALS.CARGOS.AVAILABLE.BASE + ROUTES.COMPANIES.DRIVERS.DEALS.CARGOS.AVAILABLE.GET,
+    isHasPermissions([PERMISSIONS.CREATE_CARGO_DEAL]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(ValidatorSchemes.requiredCargoId, 'params'),
+    validate(ValidatorSchemes.requiredExistingFreeCargoAsync, 'params'),
     validate(ValidatorSchemes.basePaginationQuery, 'query'),
     validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
     validate(ValidatorSchemes.modifyFilterQuery, 'query'),

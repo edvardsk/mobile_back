@@ -154,6 +154,12 @@ ajv.addKeyword('cargo_in_company_not_exist', {
     validate: CargosService.checkCargoInCompanyExists,
 });
 
+ajv.addKeyword('free_cargo_not_exist', {
+    async: true,
+    type: 'string',
+    validate: CargosService.checkFreeCargoExists,
+});
+
 ajv.addKeyword('cargo_not_exist', {
     async: true,
     type: 'string',

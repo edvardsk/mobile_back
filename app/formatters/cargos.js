@@ -290,6 +290,20 @@ const formatRecordForUnauthorizedResponse = (cargo, defaultEconomicSettings, sea
     };
 };
 
+const formatCargoDates = cargo => {
+    const upFrom = cargo[cols.UPLOADING_DATE_FROM];
+    const upTo = cargo[cols.UPLOADING_DATE_TO];
+    const downFrom = cargo[cols.DOWNLOADING_DATE_FROM];
+    const downTo = cargo[cols.DOWNLOADING_DATE_TO];
+
+    return {
+        upFrom: upFrom.toISOString(),
+        upTo: upTo && upTo.toISOString(),
+        downFrom: downFrom && downFrom.toISOString(),
+        downTo: downTo.toISOString(),
+    };
+};
+
 module.exports = {
     formatRecordToSave,
     formatRecordToEdit,
@@ -299,4 +313,5 @@ module.exports = {
     formatRecordForSearchResponse,
     formatRecordForSearchAllResponse,
     formatRecordForUnauthorizedResponse,
+    formatCargoDates,
 };
