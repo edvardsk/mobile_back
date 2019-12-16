@@ -102,7 +102,8 @@ const createCargoDeal = async (req, res, next) => {
             return reject(res, invalidCargos);
         }
 
-        const [invalidItems, availableCars, availableTrailers] = await DealsService.validateDealItems(body, company.id, cargoLoadingType);
+        const userLanguageId = user[colsUsers.LANGUAGE_ID];
+        const [invalidItems, availableCars, availableTrailers] = await DealsService.validateDealItems(body, company.id, cargoLoadingType, userLanguageId);
         if (invalidItems.length) {
             return reject(res, invalidItems);
         }

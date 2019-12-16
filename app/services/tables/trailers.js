@@ -97,8 +97,8 @@ const getAvailableTrailersByIdsAndCompanyId = (ids, companyId) => (
     manyOrNone(selectAvailableTrailersByIdsAndCompanyId(ids, companyId))
 );
 
-const getAvailableTrailerByIdAndCompanyId = (id, companyId) => (
-    oneOrNone(selectAvailableTrailerByIdAndCompanyId(id, companyId))
+const getAvailableTrailerByIdAndCompanyId = (id, companyId, cargoDates) => (
+    oneOrNone(selectAvailableTrailerByIdAndCompanyId(id, companyId, cargoDates))
 );
 
 const getRecordsByStateNumbers = numbers => (

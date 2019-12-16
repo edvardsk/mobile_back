@@ -84,8 +84,8 @@ const getAvailableCarsByIdsAndCompanyId = (ids, companyId) => (
     manyOrNone(selectAvailableCarsByIdsAndCompanyId(ids, companyId))
 );
 
-const getAvailableCarByIdAndCompanyId = (id, companyId) => (
-    oneOrNone(selectAvailableCarByIdAndCompanyId(id, companyId))
+const getAvailableCarByIdAndCompanyId = (id, companyId, cargoDates) => (
+    oneOrNone(selectAvailableCarByIdAndCompanyId(id, companyId, cargoDates))
 );
 
 const getRecordsByStateNumbers = numbers => (

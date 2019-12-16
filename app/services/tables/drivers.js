@@ -52,8 +52,8 @@ const getAvailableDriversByIdsAndCompanyId = (ids, companyId) => (
     manyOrNone(selectAvailableDriversByIdsAndCompanyId(ids, companyId))
 );
 
-const getAvailableDriverByIdAndCompanyId = (id, companyId) => (
-    oneOrNone(selectAvailableDriverByIdAndCompanyId(id, companyId))
+const getAvailableDriverByIdAndCompanyId = (id, companyId, cargoDates) => (
+    oneOrNone(selectAvailableDriverByIdAndCompanyId(id, companyId, cargoDates))
 );
 
 const getDriversByPhoneNumbers = (numbers) => (

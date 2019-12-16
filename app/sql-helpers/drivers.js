@@ -181,16 +181,20 @@ const selectAvailableDriversByIdsAndCompanyId = (ids, companyId) => squelPostgre
     .left_join(tableUsersCompanies.NAME, 'uc', `uc.${colsUsersCompanies.USER_ID} = u.id`)
     .toString();
 
-const selectAvailableDriverByIdAndCompanyId = (id, companyId) => squelPostgres // todo: check full availability
-    .select()
-    .field('d.*')
-    .from(table.NAME, 'd')
-    .where(`d.id = '${id}'`)
-    .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
-    .where(`u.${colsUsers.FREEZED} = 'f'`)
-    .left_join(tableUsers.NAME, 'u', `u.id = d.${cols.USER_ID}`)
-    .left_join(tableUsersCompanies.NAME, 'uc', `uc.${colsUsersCompanies.USER_ID} = u.id`)
-    .toString();
+const selectAvailableDriverByIdAndCompanyId = (id, companyId, cargoDates) => {
+    let expression = squelPostgres
+        .select()
+        .field('d.*')
+        .from(table.NAME, 'd');
+
+    setAvailableDriversForDealFilter(expression, cargoDates, companyId);
+
+    return expression
+        .where(`d.id = '${id}'`)
+        .left_join(tableUsers.NAME, 'u', `u.id = d.${cols.USER_ID}`)
+        .left_join(tableUsersCompanies.NAME, 'uc', `uc.${colsUsersCompanies.USER_ID} = u.id`)
+        .toString();
+};
 
 const selectDriversByPhoneNumbers = numbers => squelPostgres
     .select()

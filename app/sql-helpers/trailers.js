@@ -298,16 +298,20 @@ const selectAvailableTrailersByIdsAndCompanyId = (ids, companyId) => squelPostgr
     .left_join(tableCars.NAME, 'c', `c.id = t.${cols.CAR_ID}`)
     .toString();
 
-const selectAvailableTrailerByIdAndCompanyId = (id, companyId) => squelPostgres // todo: check full availability
-    .select()
-    .from(table.NAME, 't')
-    .field('t.*')
-    .field('c.id', HOMELESS_COLUMNS.CAR_ID)
-    .where(`t.id = '${id}'`)
-    .where(`t.${cols.COMPANY_ID} = '${companyId}'`)
-    .where(`t.${cols.DELETED} = 'f'`)
-    .left_join(tableCars.NAME, 'c', `c.id = t.${cols.CAR_ID}`)
-    .toString();
+const selectAvailableTrailerByIdAndCompanyId = (id, companyId, cargoDates) => {
+    let expression = squelPostgres
+        .select()
+        .field('t.*')
+        .field('c.id', HOMELESS_COLUMNS.CAR_ID)
+        .from(table.NAME, 't');
+
+    setAvailableTrailersForDealFilter(expression, cargoDates, companyId);
+
+    return expression
+        .where(`t.id = '${id}'`)
+        .left_join(tableCars.NAME, 'c', `c.id = t.${cols.CAR_ID}`)
+        .toString();
+};
 
 const selectRecordsByStateNumbers = numbers => squelPostgres
     .select()
