@@ -99,6 +99,21 @@ const translateCoordinates = async job => {
     }
 };
 
+const cancelUnconfirmedDeal = async job => {
+    // const { dealId } = job.data;
+
+    logger.info(`received ${job.name} ${job.id}`);
+    try {
+        await job.done();
+        logger.info(`Job completed id: ${job.id}`);
+
+    } catch (err) {
+        logger.error(`Job failed id: ${job.id}`);
+        await job.done(err);
+        onError(err);
+    }
+};
+
 const onError = error => {
     logger.error(error);
 };
@@ -106,4 +121,5 @@ const onError = error => {
 module.exports = {
     translateCoordinates,
     extractExchangeRate,
+    cancelUnconfirmedDeal,
 };
