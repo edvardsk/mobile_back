@@ -9,6 +9,7 @@ const PointsService = require('services/tables/points');
 const BackgroundService = require('services/background/creators');
 const PointTranslationsService = require('services/tables/point-translations');
 const LanguagesService = require('services/tables/languages');
+const DirectionsService = require('services/google/directions');
 
 // formatters
 const CargosFormatters = require('formatters/cargos');
@@ -42,7 +43,9 @@ const editCargo = async (req, res, next) => {
 
         const { cargosProps, cargoPointsProps } = CargosFormatters.formatCargoData(body);
 
-        const cargo = CargosFormatters.formatRecordToEdit(cargosProps);
+        const distance = await DirectionsService.getDirection(cargoPointsProps);
+
+        const cargo = CargosFormatters.formatRecordToEdit(cargosProps, distance);
         const cargoPointsWithName = CargoPointsFormatters.formatRecordsWithName(cargoId, cargoPointsProps);
         const cargoPoints = CargoPointsFormatters.formatRecordsToSave(cargoPointsWithName);
         const cargoPrices = CargoPricesFormatters.formatRecordsToSave(body[HOMELESS_COLUMNS.PRICES], cargoId);

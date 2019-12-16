@@ -10,6 +10,7 @@ const PointTranslationsService = require('services/tables/point-translations');
 const LanguagesService = require('services/tables/languages');
 const TablesService = require('services/tables');
 const BackgroundService = require('services/background/creators');
+const DirectionsService = require('services/google/directions');
 
 // constants
 const { SUCCESS_CODES } = require('constants/http-codes');
@@ -45,7 +46,9 @@ const createCargo = async (req, res, next) => {
 
         const cargoId = uuid();
 
-        const cargo = CargosFormatters.formatRecordToSave(companyId, cargoId, cargosProps);
+        const distance = await DirectionsService.getDirection(cargoPointsProps);
+
+        const cargo = CargosFormatters.formatRecordToSave(companyId, cargoId, cargosProps, distance);
         const cargoPointsWithName = CargoPointsFormatters.formatRecordsWithName(cargoId, cargoPointsProps);
         const cargoPoints = CargoPointsFormatters.formatRecordsToSave(cargoPointsWithName);
         const cargoPrices = CargoPricesFormatters.formatRecordsToSave(body[HOMELESS_COLUMNS.PRICES], cargoId);
