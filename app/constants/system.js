@@ -87,6 +87,8 @@ const PERMISSIONS = {
     READ_DEFAULT_ECONOMIC_SETTINGS: 'read_default_economic_settings',
     CRUD_COMPANIES_ECONOMIC_SETTINGS: 'crud_companies_economic_settings',
 
+    CRUD_TNVED_CODES_KEYWORDS: 'crud_tndev_codes_keywords',
+
     CREATE_CARGO_DEAL: 'create_cargo_deal',
 
     VERIFY_DEAL_INSTANCE: 'verify_deal_instance',

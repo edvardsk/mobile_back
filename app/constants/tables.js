@@ -238,6 +238,15 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    TNVED_CODES_KEYWORDS: {
+        NAME: 'tnved_codes_keywords',
+        COLUMNS: {
+            TNVED_CODE_ID: 'tnved_code_id',
+            LANGUAGE_ID: 'language_id',
+            CREATED_AT: 'created_at',
+            VALUE: 'value',
+        },
+    },
     CARGOS: {
         NAME: 'cargos',
         COLUMNS: {
