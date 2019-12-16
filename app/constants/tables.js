@@ -231,6 +231,13 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    TNVED_CODES: {
+        NAME: 'tnved_codes',
+        COLUMNS: {
+            CODE: 'code',
+            CREATED_AT: 'created_at',
+        },
+    },
     CARGOS: {
         NAME: 'cargos',
         COLUMNS: {

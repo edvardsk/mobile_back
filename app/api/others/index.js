@@ -9,6 +9,8 @@ const getCurrencies = require('./currencies/get');
 
 const getExchangeRates = require('./exchange-rates/get');
 
+const getTNVEDCodes = require('./tnved-codes/get');
+
 const router = express.Router();
 
 
@@ -34,6 +36,12 @@ router.get(
 router.get(
     ROUTES.OTHERS.EXCHANGE_RATES.BASE + ROUTES.OTHERS.EXCHANGE_RATES.GET_ALL,
     getExchangeRates.getListRates,
+);
+
+// tnved codes
+router.get(
+    ROUTES.OTHERS.TNVED_CODES.BASE + ROUTES.OTHERS.TNVED_CODES.GET_ALL,
+    getTNVEDCodes.getCodes,
 );
 
 module.exports = router;
