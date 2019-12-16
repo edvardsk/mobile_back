@@ -1,6 +1,9 @@
+const { one } = require('db');
+
 // sql-helpers
 const {
     insertRecords,
+    selectRecordById,
 } = require('sql-helpers/deals');
 
 // services
@@ -22,6 +25,8 @@ const { isValidUUID } = require('helpers/validators');
 const { formatCargoDates } = require('formatters/cargos');
 
 const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MANY];
+
+const getRecordStrict = id => one(selectRecordById(id));
 
 const validateDealItems = async (arr, companyId, cargoLoadingType, userLanguageId) => {
     const availableDrivers = [];
@@ -75,5 +80,6 @@ const validateDealItems = async (arr, companyId, cargoLoadingType, userLanguageI
 
 module.exports = {
     addRecordsAsTransaction,
+    getRecordStrict,
     validateDealItems,
 };

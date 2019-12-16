@@ -456,6 +456,8 @@ const SQL_TABLES = {
         NAME: 'deal_sub_statuses_history',
         COLUMNS: {
             DEAL_STATUS_HISTORY_ID: 'deal_status_history_id',
+            DEAL_SUB_STATUS_ID: 'deal_sub_status_id',
+            INITIATOR_ID: 'initiator_id',
             DESCRIPTION: 'description',
             CREATED_AT: 'created_at',
         },

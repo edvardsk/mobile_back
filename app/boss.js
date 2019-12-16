@@ -60,7 +60,7 @@ process.on('message', function (msg) {
         break;
 
     case ACTION_TYPES.AUTO_CANCEL_UNCONFIRMED_DEAL:
-        cancelUnconfirmedDeal(msg.payload);
+        autoCancelUnconfirmedDeal(msg.payload);
         break;
     }
 });
@@ -81,7 +81,7 @@ async function subscribe() {
             boss.subscribe(ACTION_TYPES.AUTO_CANCEL_UNCONFIRMED_DEAL, {
                 teamSize: PARALLEL_JOBS_NUMBER,
                 teamConcurrency: PARALLEL_JOBS_NUMBER
-            }, WorkerServices.cancelUnconfirmedDeal),
+            }, WorkerServices.autoCancelUnconfirmedDeal),
         ]);
         startJobs();
     } catch (error) {
@@ -133,7 +133,8 @@ async function extractExchangeRate(data) {
     }
 }
 
-async function cancelUnconfirmedDeal(data) {
+// todo: cancel deal cancellation after successful status change
+async function autoCancelUnconfirmedDeal(data) {
     try {
         const jobId = await boss.publish(
             ACTION_TYPES.AUTO_CANCEL_UNCONFIRMED_DEAL,

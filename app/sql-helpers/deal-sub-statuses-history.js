@@ -3,7 +3,7 @@ const { SQL_TABLES } = require('constants/tables');
 
 const squelPostgres = squel.useFlavour('postgres');
 
-const table = SQL_TABLES.DEAL_HISTORY_STATUSES;
+const table = SQL_TABLES.DEAL_SUB_STATUSES_HISTORY;
 
 const insertRecords = values => squelPostgres
     .insert()
