@@ -268,12 +268,12 @@ const setAvailableCarsForDealFilter = (expression, cargoDates, companyId) => {
             .where(`dsh.id IS NULL OR dsh.${colsDealsStatusesHistory.DEAL_STATUS_ID} IN ? OR
                 (
                     CASE
-                        WHEN c.${colsCargos.UPLOADING_DATE_FROM} > '${upFrom}' THEN (
-                            (c.${colsCargos.UPLOADING_DATE_TO} IS NOT NULL AND '${downTo}' < c.${colsCargos.UPLOADING_DATE_TO}) OR
-                            (c.${colsCargos.UPLOADING_DATE_TO} IS NULL AND '${downTo}' < c.${colsCargos.DOWNLOADING_DATE_TO})
+                        WHEN crg.${colsCargos.UPLOADING_DATE_FROM} > '${upFrom}' THEN (
+                            (crg.${colsCargos.UPLOADING_DATE_TO} IS NOT NULL AND '${downTo}' < crg.${colsCargos.UPLOADING_DATE_TO}) OR
+                            (crg.${colsCargos.UPLOADING_DATE_TO} IS NULL AND '${downTo}' < crg.${colsCargos.DOWNLOADING_DATE_TO})
                         )
                         ELSE (
-                            ${upTo ? `c.${colsCargos.DOWNLOADING_DATE_TO} < '${upTo}'` : `c.${colsCargos.DOWNLOADING_DATE_TO} < '${downTo}'`}
+                            ${upTo ? `crg.${colsCargos.DOWNLOADING_DATE_TO} < '${upTo}'` : `crg.${colsCargos.DOWNLOADING_DATE_TO} < '${downTo}'`}
                         )
                     END
                 )`, squelPostgres
@@ -284,7 +284,7 @@ const setAvailableCarsForDealFilter = (expression, cargoDates, companyId) => {
             )
             .left_join(tableDeals.NAME, 'd', `d.${colsDeals.CAR_ID} = c2.id`)
             .left_join(tableDealsStatusesHistory.NAME, 'dsh', `dsh.${colsDealsStatusesHistory.DEAL_ID} = d.id`)
-            .left_join(tableCargos.NAME, 'c', `c.id = d.${colsDeals.CARGO_ID}`)
+            .left_join(tableCargos.NAME, 'crg', `crg.id = d.${colsDeals.CARGO_ID}`)
         );
 };
 

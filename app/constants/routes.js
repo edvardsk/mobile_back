@@ -313,9 +313,12 @@ const ROUTES = {
             },
             DEALS: {
                 BASE: BASES.DEALS,
-                AVAILABLE: {
-                    BASE: BASES.AVAILABLE,
-                    GET: '',
+                CARGOS: {
+                    BASE: BASES.CARGOS,
+                    AVAILABLE: {
+                        BASE: IDS.CARGO_ID + BASES.AVAILABLE,
+                        GET: '',
+                    },
                 },
             },
         },

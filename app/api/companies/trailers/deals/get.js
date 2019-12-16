@@ -3,6 +3,7 @@ const { success } = require('api/response');
 
 // services
 const TrailersService = require('services/tables/trailers');
+const CargosServices = require('services/tables/cargos');
 
 // constants
 const { SQL_TABLES } = require('constants/tables');
@@ -11,6 +12,7 @@ const { SORTING_DIRECTIONS } = require('constants/pagination-sorting');
 // formatters
 const { formatPaginationDataForResponse } = require('formatters/pagination-sorting');
 const { formatRecordForListAvailable } = require('formatters/trailers');
+const { formatCargoDates } = require('formatters/cargos');
 
 // helpers
 const { getParams } = require('helpers/pagination-sorting');
@@ -21,9 +23,12 @@ const availableTrailersPaginationOptions = {
     DEFAULT_SORT_DIRECTION: SORTING_DIRECTIONS.ASC,
 };
 
+const colsUsers = SQL_TABLES.USERS.COLUMNS;
+
 const getAvailableTrailers = async (req, res, next) => {
     try {
-        const { company } = res.locals;
+        const { company, user } = res.locals;
+        const { cargoId } = req.params;
         const {
             page,
             limit,
@@ -33,9 +38,13 @@ const getAvailableTrailers = async (req, res, next) => {
 
         const filter = get(req, 'query.filter', {});
 
+        const selectedCargo = await CargosServices.getRecordStrict(cargoId, user[colsUsers.LANGUAGE_ID]);
+
+        const cargoDates = formatCargoDates(selectedCargo);
+
         const [trailers, trailersCount] = await Promise.all([
-            TrailersService.getAvailableTrailersPaginationSorting(company.id, limit, limit * page, sortColumn, asc, filter),
-            TrailersService.getCountAvailableTrailers(company.id, filter)
+            TrailersService.getAvailableTrailersPaginationSorting(company.id, cargoDates, limit, limit * page, sortColumn, asc, filter),
+            TrailersService.getCountAvailableTrailers(company.id, cargoDates, filter)
         ]);
 
         const result = formatPaginationDataForResponse(
