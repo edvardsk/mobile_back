@@ -8,6 +8,7 @@ const getExchangeRates = require('./exchange-rates/get');
 const getTNVEDCodes = require('./tnved-codes/get');
 const postTNVEDCodesKeywords = require('./tnved-codes/keywords/post');
 const getTNVEDCodesKeywords = require('./tnved-codes/keywords/get');
+const deleteTNVEDCodesKeywords = require('./tnved-codes/keywords/delete');
 
 const router = express.Router();
 
@@ -66,11 +67,16 @@ router.get(
     getTNVEDCodesKeywords.getAllKeywords,
 );
 
-
 router.get(
     ROUTES.OTHERS.TNVED_CODES.BASE + ROUTES.OTHERS.TNVED_CODES.KEYWORDS.BASE + ROUTES.OTHERS.TNVED_CODES.KEYWORDS.GET,
     isHasPermissions([PERMISSIONS.CRUD_TNVED_CODES_KEYWORDS]),
     getTNVEDCodesKeywords.getKeywordsByTNVEDCodeId,
+);
+
+router.delete(
+    ROUTES.OTHERS.TNVED_CODES.BASE + ROUTES.OTHERS.TNVED_CODES.KEYWORDS.BASE + ROUTES.OTHERS.TNVED_CODES.KEYWORDS.DELETE,
+    isHasPermissions([PERMISSIONS.CRUD_TNVED_CODES_KEYWORDS]),
+    deleteTNVEDCodesKeywords.deleteTNVEDCodesKeywordById,
 );
 
 module.exports = router;

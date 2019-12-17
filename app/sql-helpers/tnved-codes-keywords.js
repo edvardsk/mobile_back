@@ -26,8 +26,16 @@ const selectRecordsByTNVEDId = tnvedId => squelPostgres
     .where(`${cols.TNVED_CODE_ID} = '${tnvedId}'`)
     .toString();
 
+const deleteRecordByKeywordId = keywordId => squelPostgres
+    .delete()
+    .from(table.NAME)
+    .where(`id = '${keywordId}'`)
+    .returning('*')
+    .toString();
+
 module.exports = {
     insertRecord,
     selectRecords,
     selectRecordsByTNVEDId,
+    deleteRecordByKeywordId,
 };

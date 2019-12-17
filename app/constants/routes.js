@@ -73,6 +73,7 @@ const IDS = {
     CAR_ID: '/:carId',
     TRAILER_ID: '/:trailerId',
     DRIVER_ID: '/:driverId',
+    KEYWORD_ID: '/:keywordId',
 };
 
 const ROUTES = {
@@ -373,7 +374,8 @@ const ROUTES = {
                 POST: '',
                 GET_ALL: '/all',
                 GET: '',
-            }
+                DELETE: IDS.KEYWORD_ID,
+            },
         },
     },
     SETTINGS: {
