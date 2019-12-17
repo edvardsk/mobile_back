@@ -208,6 +208,7 @@ const formatShadowCarsToSave = (arr, companyId) => arr.reduce((acc, item) => {
     cars.push({
         id: carId,
         [cols.COMPANY_ID]: companyId,
+        [cols.SHADOW]: true,
     });
     carsNumbers.push({
         [colsCarsNumbers.CAR_ID]: carId,

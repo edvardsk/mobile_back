@@ -174,6 +174,7 @@ module.exports = {
     unlinkTrailerFromCarAsTransaction,
     markAsDeletedAsTransaction,
 
+    getRecord,
     getRecordStrict,
     getTrailersPaginationSorting,
     getCountTrailers,

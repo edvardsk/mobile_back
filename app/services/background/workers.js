@@ -15,6 +15,10 @@ const DealsStatusesService = require('services/tables/deal-statuses');
 const DealsSubStatusesService = require('services/tables/deal-sub-statuses');
 const DealsStatusesHistoryService = require('services/tables/deal-statuses-history');
 const DealsSubStatusesHistoryService = require('services/tables/deal-sub-statuses-history');
+const CarsService = require('services/tables/cars');
+const TrailersService = require('services/tables/trailers');
+const DriversService = require('services/tables/drivers');
+const UsersService = require('services/tables/users');
 const TablesService = require('services/tables');
 
 // constants
@@ -36,6 +40,9 @@ const colsCountries = SQL_TABLES.COUNTRIES.COLUMNS;
 const colsCurrencies = SQL_TABLES.CURRENCIES.COLUMNS;
 const colsRates = SQL_TABLES.EXCHANGE_RATES.COLUMNS;
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
+const colsDrivers = SQL_TABLES.DRIVERS.COLUMNS;
+const colsCars = SQL_TABLES.CARS.COLUMNS;
+const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
 
 const MAP_COUNTRIES_AND_SERVICES = {
     [COUNTRIES_MAP.BELARUS]: ExchangeRatesApiService.extractBelarusRates,
@@ -123,10 +130,39 @@ const autoCancelUnconfirmedDeal = async job => {
             DealsSubStatusesService.getRecordStrict(DEAL_SUB_STATUSES_MAP.CANCELLED),
         ]);
 
+        const driverId = deal[colsDeals.DRIVER_ID];
+        const carId = deal[colsDeals.CAR_ID];
+        const trailerId = deal[colsDeals.TRAILER_ID];
+
+        const [driver, car, trailer] = await Promise.all([
+            DriversService.getRecord(driverId),
+            CarsService.getRecord(carId),
+            TrailersService.getRecord(trailerId),
+        ]);
+
+        let transactionsList = [];
+
+        if (driver && driver[colsDrivers.SHADOW]) {
+            transactionsList.push(
+                UsersService.markAsFreezedAsTransaction(driver[colsDrivers.USER_ID])
+            );
+        }
+        if (car && car[colsCars.SHADOW]) {
+            transactionsList.push(
+                CarsService.markAsDeletedAsTransaction(car.id)
+            );
+        }
+        if (trailer && trailer[colsTrailers.SHADOW]) {
+            transactionsList.push(
+                TrailersService.markAsDeletedAsTransaction(trailer.id)
+            );
+        }
+
         const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, dealStatus.id, null);
         const subStatusHistory = DealSubStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealSubStatus.id, null, null);
 
-        const transactionsList = [
+        transactionsList = [
+            ...transactionsList,
             CargosService.editRecordIncreaseFreeCountAsTransaction(deal[colsDeals.CARGO_ID], 1),
             DealsStatusesHistoryService.addRecordAsTransaction(statusHistory),
             DealsSubStatusesHistoryService.addRecordAsTransaction(subStatusHistory),

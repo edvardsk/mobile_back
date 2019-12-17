@@ -6,6 +6,7 @@ const {
     insertRecords,
     selectRecordByUserId,
     selectRecordById,
+    selectRecordByIdWithDeleted,
     updateRecordByUserId,
     updateRecord,
     selectAvailableDriversPaginationSorting,
@@ -32,10 +33,11 @@ const editDriverAsTransaction = (id, values) => [updateRecord(id, values), OPERA
 
 const getRecordByUserId = userId => oneOrNone(selectRecordByUserId(userId));
 
-const getRecordStrict = id => one(selectRecordById(id));
-
 const getRecord = id => oneOrNone(selectRecordById(id));
 
+const getRecordStrict = id => one(selectRecordById(id));
+
+const getRecordStrictWithDeleted = id => one(selectRecordByIdWithDeleted(id));
 
 const getAvailableDriversPaginationSorting = (companyId, cargoDates, limit, offset, sortColumn, asc, filter) => {
     return manyOrNone(selectAvailableDriversPaginationSorting(companyId, cargoDates, limit, offset, sortColumn, asc, filter));
@@ -79,8 +81,10 @@ module.exports = {
     addRecordsAsTransaction,
     editDriverByUserIdAsTransaction,
     editDriverAsTransaction,
+    getRecord,
     getRecordByUserId,
     getRecordStrict,
+    getRecordStrictWithDeleted,
     getAvailableDriversPaginationSorting,
     getCountAvailableDrivers,
     getAvailableDriversByIdsAndCompanyId,

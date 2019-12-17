@@ -65,6 +65,12 @@ const selectRecordById = id => squelPostgres
     .where(`${cols.DELETED} = 'f'`)
     .toString();
 
+const selectRecordByIdWithDeleted = id => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where(`id = '${id}'`)
+    .toString();
+
 const selectCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => {
     let expression = squelPostgres
         .select()
@@ -343,6 +349,7 @@ module.exports = {
     insertRecords,
     updateRecord,
     selectRecordById,
+    selectRecordByIdWithDeleted,
     selectCarsByCompanyIdPaginationSorting,
     selectCountCarsByCompanyId,
     selectRecordByStateNumberAndActive,

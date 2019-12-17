@@ -57,14 +57,20 @@ const updateRecord = (id, values) => squelPostgres
 
 const selectRecordByUserId = userId => squelPostgres
     .select()
-    .from(table.NAME)
-    .where(`${cols.USER_ID} = '${userId}'`)
+    .field('d.*')
+    .from(table.NAME, 'd')
+    .where(`d.${cols.USER_ID} = '${userId}'`)
+    .where(`u.${colsUsers.FREEZED} = 'f'`)
+    .left_join(tableUsers.NAME, 'u', `u.id = d.${cols.USER_ID}`)
     .toString();
 
 const selectRecordById = id => squelPostgres
     .select()
-    .from(table.NAME)
-    .where(`id = '${id}'`)
+    .field('d.*')
+    .from(table.NAME, 'd')
+    .where(`d.id = '${id}'`)
+    .where(`u.${colsUsers.FREEZED} = 'f'`)
+    .left_join(tableUsers.NAME, 'u', `u.id = d.${cols.USER_ID}`)
     .toString();
 
 const selectAvailableDriversPaginationSorting = (companyId, cargoDates, limit, offset, sortColumn, asc, filter) => {
@@ -206,6 +212,15 @@ const selectDriversByPhoneNumbers = numbers => squelPostgres
     .left_join(tablePhonePrefixes.NAME, 'php', `php.id = phn.${colsPhoneNumbers.PHONE_PREFIX_ID}`)
     .toString();
 
+const selectRecordByIdWithDeleted = id => squelPostgres
+    .select()
+    .field('d.*')
+    .field(`u.${colsUsers.FREEZED}`)
+    .from(table.NAME, 'd')
+    .where(`d.id = '${id}'`)
+    .left_join(tableUsers.NAME, 'u', `u.id = d.${cols.USER_ID}`)
+    .toString();
+
 module.exports = {
     insertRecord,
     insertRecords,
@@ -219,4 +234,5 @@ module.exports = {
     selectAvailableDriversByIdsAndCompanyId,
     selectAvailableDriverByIdAndCompanyId,
     selectDriversByPhoneNumbers,
+    selectRecordByIdWithDeleted,
 };
