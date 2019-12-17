@@ -13,10 +13,14 @@ const deleteTNVEDCodesKeywords = require('./tnved-codes/keywords/delete');
 const router = express.Router();
 
 // middlewares
+const { validate } = require('api/middlewares/validator');
 const { isHasPermissions } = require('api/middlewares');
 
 // constants
 const { PERMISSIONS } = require('constants/system');
+
+// helpers
+const ValidatorSchemes = require('helpers/validators/schemes');
 
 
 // vehicle types
@@ -51,6 +55,8 @@ router.get(
 
 router.get(
     ROUTES.OTHERS.TNVED_CODES.BASE + ROUTES.OTHERS.TNVED_CODES.GET,
+    validate(ValidatorSchemes.modifyFilterQuery, 'query'),
+    validate(ValidatorSchemes.tnvedCodesFilterQuery, 'query'),
     getTNVEDCodes.getCodesByKeyword,
 );
 
@@ -58,6 +64,7 @@ router.get(
 router.post(
     ROUTES.OTHERS.TNVED_CODES.BASE + ROUTES.OTHERS.TNVED_CODES.KEYWORDS.BASE + ROUTES.OTHERS.TNVED_CODES.KEYWORDS.POST,
     isHasPermissions([PERMISSIONS.CRUD_TNVED_CODES_KEYWORDS]),
+    validate(ValidatorSchemes.createTNVEDKeyword),
     postTNVEDCodesKeywords.addKeyword,
 );
 
@@ -70,6 +77,7 @@ router.get(
 router.get(
     ROUTES.OTHERS.TNVED_CODES.BASE + ROUTES.OTHERS.TNVED_CODES.KEYWORDS.BASE + ROUTES.OTHERS.TNVED_CODES.KEYWORDS.GET,
     isHasPermissions([PERMISSIONS.CRUD_TNVED_CODES_KEYWORDS]),
+    validate(ValidatorSchemes.tnvedCodesIdQuery, 'query'),
     getTNVEDCodesKeywords.getKeywordsByTNVEDCodeId,
 );
 

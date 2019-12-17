@@ -4,7 +4,7 @@ const { one, manyOrNone } = require('db');
 const {
     insertRecord,
     selectRecords,
-    selectRecordsByTNVEDId,
+    selectRecordsByTNVEDIdAndLanguage,
     deleteRecordByKeywordId,
 } = require('sql-helpers/tnved-codes-keywords');
 
@@ -14,13 +14,13 @@ const { OPERATIONS } = require('constants/postgres');
 const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
 
 const getRecords = () => manyOrNone(selectRecords());
-const getRecordsByTNVEDId = id => manyOrNone(selectRecordsByTNVEDId(id));
+const getRecordsByTNVEDIdAndLanguage = (id, languageId) => manyOrNone(selectRecordsByTNVEDIdAndLanguage(id, languageId));
 
 const removeRecordByKeywordId = keywordId => one(deleteRecordByKeywordId(keywordId));
 
 module.exports = {
     addRecordAsTransaction,
     getRecords,
-    getRecordsByTNVEDId,
+    getRecordsByTNVEDIdAndLanguage,
     removeRecordByKeywordId,
 };

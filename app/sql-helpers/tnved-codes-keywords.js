@@ -20,10 +20,11 @@ const selectRecords = () => squelPostgres
     .from(table.NAME)
     .toString();
 
-const selectRecordsByTNVEDId = tnvedId => squelPostgres
+const selectRecordsByTNVEDIdAndLanguage = (tnvedId, languageId) => squelPostgres
     .select()
-    .from(table.NAME)
+    .from(table.NAME, 'k')
     .where(`${cols.TNVED_CODE_ID} = '${tnvedId}'`)
+    .where(`${cols.LANGUAGE_ID} = '${languageId}'`)
     .toString();
 
 const deleteRecordByKeywordId = keywordId => squelPostgres
@@ -36,6 +37,6 @@ const deleteRecordByKeywordId = keywordId => squelPostgres
 module.exports = {
     insertRecord,
     selectRecords,
-    selectRecordsByTNVEDId,
+    selectRecordsByTNVEDIdAndLanguage,
     deleteRecordByKeywordId,
 };

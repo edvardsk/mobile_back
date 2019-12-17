@@ -1,33 +1,35 @@
+const { get } = require('lodash');
 const { success } = require('api/response');
 
 // services
 const TNVEDCodesService = require('services/tables/tnved-codes');
-// const LanguagesServices = require('services/tables/languages');
+const LanguagesServices = require('services/tables/languages');
 
-// // constants
-// const { HOMELESS_COLUMNS } = require('constants/tables');
-// const { LANGUAGE_CODES_MAP } = require('constants/languages');
+// constants
+const { HOMELESS_COLUMNS } = require('constants/tables');
+const { LANGUAGE_CODES_MAP } = require('constants/languages');
 
 const getCodesByKeyword = async (req, res, next) => {
     try {
-        // const { query } = req;
-        // const queryLanguage = query[HOMELESS_COLUMNS.LANGUAGE_CODE];
-        // let languageCode = LANGUAGE_CODES_MAP.EN;
+        const { query } = req;
 
-        // if (queryLanguage) {
-        //     languageCode = queryLanguage.slice(0, 2).toLowerCase();
-        // }
+        const filter = get(req, 'query.filter', {});
+        const queryLanguage = query[HOMELESS_COLUMNS.LANGUAGE_CODE];
 
-        // const [language, defaultLanguage] = await Promise.all([
-        //     LanguagesServices.getLanguageByCode(languageCode),
-        //     LanguagesServices.getLanguageByCodeStrict(LANGUAGE_CODES_MAP.EN),
-        // ]);
+        let languageCode = LANGUAGE_CODES_MAP.EN;
 
-        // const tnvedLanguageId = (language && language.id) || defaultLanguage.id;
+        if (queryLanguage) {
+            languageCode = queryLanguage.slice(0, 2).toLowerCase();
+        }
 
-        // console.log(tnvedLanguageId);
+        const [language, defaultLanguage] = await Promise.all([
+            LanguagesServices.getLanguageByCode(languageCode),
+            LanguagesServices.getLanguageByCodeStrict(LANGUAGE_CODES_MAP.EN),
+        ]);
 
-        const codes = await TNVEDCodesService.getRecords();
+        const tnvedLanguageId = (language && language.id) || defaultLanguage.id;
+
+        const codes = await TNVEDCodesService.getRecordsByLanguageAndKeyword(tnvedLanguageId, filter);
         return success(res, { codes });
     } catch (error) {
         next(error);
