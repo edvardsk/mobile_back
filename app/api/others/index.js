@@ -66,6 +66,7 @@ router.post(
     ROUTES.OTHERS.TNVED_CODES.BASE + ROUTES.OTHERS.TNVED_CODES.KEYWORDS.BASE + ROUTES.OTHERS.TNVED_CODES.KEYWORDS.POST,
     isHasPermissions([PERMISSIONS.CRUD_TNVED_CODES_KEYWORDS]),
     validate(ValidatorSchemes.createOrEditTNVEDKeyword),
+    validate(ValidatorSchemes.createOrEditTNVEDKeywordAsync),
     postTNVEDCodesKeywords.addKeyword,
 );
 
@@ -86,6 +87,7 @@ router.put(
     ROUTES.OTHERS.TNVED_CODES.BASE + ROUTES.OTHERS.TNVED_CODES.KEYWORDS.BASE + ROUTES.OTHERS.TNVED_CODES.KEYWORDS.PUT,
     isHasPermissions([PERMISSIONS.CRUD_TNVED_CODES_KEYWORDS]),
     validate(ValidatorSchemes.createOrEditTNVEDKeyword),
+    validate(ValidatorSchemes.createOrEditTNVEDKeywordAsync),
     putTNVEDCodesKeywords.editTNVEDCodesKeywordById,
 );
 

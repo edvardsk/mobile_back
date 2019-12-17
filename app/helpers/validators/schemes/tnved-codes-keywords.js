@@ -31,6 +31,16 @@ const createOrEditTNVEDKeyword = {
     additionalProperties: false,
 };
 
+const createOrEditTNVEDKeywordAsync = {
+    $async: true,
+    properties: {
+        [colsTNVEDCodesKeywords.TNVED_CODE_ID]: {
+            tnved_code_not_exist: {},
+        },
+    },
+    additionalProperties: true,
+};
+
 const tnvedCodesIdQuery = {
     properties: {
         [colsTNVEDCodesKeywords.TNVED_CODE_ID]: {
@@ -51,5 +61,6 @@ const tnvedCodesIdQuery = {
 
 module.exports = {
     createOrEditTNVEDKeyword,
+    createOrEditTNVEDKeywordAsync,
     tnvedCodesIdQuery,
 };

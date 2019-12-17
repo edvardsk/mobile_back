@@ -273,6 +273,7 @@ const SQL_TABLES = {
             DISTANCE: 'distance',
             CREATED_AT: 'created_at',
             DELETED: 'deleted',
+            TNVED_CODE_ID: 'tnved_code_id',
         },
     },
     CARGO_POINTS: {

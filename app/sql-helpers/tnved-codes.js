@@ -10,6 +10,12 @@ const tnvedCodesTable = SQL_TABLES.TNVED_CODES;
 const tnvedCodesKeywordsTable = SQL_TABLES.TNVED_CODES_KEYWORDS;
 const tnvedCodesKeywordsColumns = tnvedCodesKeywordsTable.COLUMNS;
 
+const selectRecordById = id => squelPostgres
+    .select()
+    .from(tnvedCodesTable.NAME)
+    .where(`id = '${id}'`)
+    .toString();
+
 const selectRecords = () => squelPostgres
     .select()
     .from(tnvedCodesTable.NAME)
@@ -45,5 +51,6 @@ const setMatchingCodesFilter = (expression, filteringObject) => {
 
 module.exports = {
     selectRecords,
+    selectRecordById,
     selectRecordsByLanguageAndKeyword,
 };
