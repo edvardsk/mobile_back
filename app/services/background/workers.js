@@ -135,24 +135,24 @@ const autoCancelUnconfirmedDeal = async job => {
         const trailerId = deal[colsDeals.TRAILER_ID];
 
         const [driver, car, trailer] = await Promise.all([
-            DriversService.getRecord(driverId),
-            CarsService.getRecord(carId),
-            TrailersService.getRecord(trailerId),
+            DriversService.getRecordWithActiveDeals(driverId),
+            CarsService.getRecordWithActiveDeals(carId),
+            TrailersService.getRecordWithActiveDeals(trailerId),
         ]);
 
         let transactionsList = [];
 
-        if (driver && driver[colsDrivers.SHADOW]) {
+        if (driver && driver[colsDrivers.SHADOW] && driver[HOMELESS_COLUMNS.DEALS].length < 2) { // there is at least current deal with CREATED status
             transactionsList.push(
                 UsersService.markAsFreezedAsTransaction(driver[colsDrivers.USER_ID])
             );
         }
-        if (car && car[colsCars.SHADOW]) {
+        if (car && car[colsCars.SHADOW] && car[HOMELESS_COLUMNS.DEALS].length < 2) {
             transactionsList.push(
                 CarsService.markAsDeletedAsTransaction(car.id)
             );
         }
-        if (trailer && trailer[colsTrailers.SHADOW]) {
+        if (trailer && trailer[colsTrailers.SHADOW] && !trailer[HOMELESS_COLUMNS.DEALS].length < 2) {
             transactionsList.push(
                 TrailersService.markAsDeletedAsTransaction(trailer.id)
             );

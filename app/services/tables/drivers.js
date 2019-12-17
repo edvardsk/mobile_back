@@ -6,6 +6,7 @@ const {
     insertRecords,
     selectRecordByUserId,
     selectRecordById,
+    selectRecordWithActiveDealsById,
     selectRecordByIdWithDeleted,
     updateRecordByUserId,
     updateRecord,
@@ -34,6 +35,8 @@ const editDriverAsTransaction = (id, values) => [updateRecord(id, values), OPERA
 const getRecordByUserId = userId => oneOrNone(selectRecordByUserId(userId));
 
 const getRecord = id => oneOrNone(selectRecordById(id));
+
+const getRecordWithActiveDeals = id => oneOrNone(selectRecordWithActiveDealsById(id));
 
 const getRecordStrict = id => one(selectRecordById(id));
 
@@ -82,6 +85,7 @@ module.exports = {
     editDriverByUserIdAsTransaction,
     editDriverAsTransaction,
     getRecord,
+    getRecordWithActiveDeals,
     getRecordByUserId,
     getRecordStrict,
     getRecordStrictWithDeleted,
