@@ -374,6 +374,7 @@ const ROUTES = {
                 POST: '',
                 GET_ALL: '/all',
                 GET: '',
+                PUT: IDS.KEYWORD_ID,
                 DELETE: IDS.KEYWORD_ID,
             },
         },

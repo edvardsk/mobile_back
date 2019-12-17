@@ -8,6 +8,7 @@ const getExchangeRates = require('./exchange-rates/get');
 const getTNVEDCodes = require('./tnved-codes/get');
 const postTNVEDCodesKeywords = require('./tnved-codes/keywords/post');
 const getTNVEDCodesKeywords = require('./tnved-codes/keywords/get');
+const putTNVEDCodesKeywords = require('./tnved-codes/keywords/put');
 const deleteTNVEDCodesKeywords = require('./tnved-codes/keywords/delete');
 
 const router = express.Router();
@@ -64,7 +65,7 @@ router.get(
 router.post(
     ROUTES.OTHERS.TNVED_CODES.BASE + ROUTES.OTHERS.TNVED_CODES.KEYWORDS.BASE + ROUTES.OTHERS.TNVED_CODES.KEYWORDS.POST,
     isHasPermissions([PERMISSIONS.CRUD_TNVED_CODES_KEYWORDS]),
-    validate(ValidatorSchemes.createTNVEDKeyword),
+    validate(ValidatorSchemes.createOrEditTNVEDKeyword),
     postTNVEDCodesKeywords.addKeyword,
 );
 
@@ -79,6 +80,13 @@ router.get(
     isHasPermissions([PERMISSIONS.CRUD_TNVED_CODES_KEYWORDS]),
     validate(ValidatorSchemes.tnvedCodesIdQuery, 'query'),
     getTNVEDCodesKeywords.getKeywordsByTNVEDCodeId,
+);
+
+router.put(
+    ROUTES.OTHERS.TNVED_CODES.BASE + ROUTES.OTHERS.TNVED_CODES.KEYWORDS.BASE + ROUTES.OTHERS.TNVED_CODES.KEYWORDS.PUT,
+    isHasPermissions([PERMISSIONS.CRUD_TNVED_CODES_KEYWORDS]),
+    validate(ValidatorSchemes.createOrEditTNVEDKeyword),
+    putTNVEDCodesKeywords.editTNVEDCodesKeywordById,
 );
 
 router.delete(

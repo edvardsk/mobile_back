@@ -27,6 +27,14 @@ const selectRecordsByTNVEDIdAndLanguage = (tnvedId, languageId) => squelPostgres
     .where(`${cols.LANGUAGE_ID} = '${languageId}'`)
     .toString();
 
+const updateRecordByKeywordId = (keywordId, values) => squelPostgres
+    .update()
+    .table(table.NAME)
+    .setFields(values)
+    .where(`id = '${keywordId}'`)
+    .returning('*')
+    .toString();
+
 const deleteRecordByKeywordId = keywordId => squelPostgres
     .delete()
     .from(table.NAME)
@@ -38,5 +46,6 @@ module.exports = {
     insertRecord,
     selectRecords,
     selectRecordsByTNVEDIdAndLanguage,
+    updateRecordByKeywordId,
     deleteRecordByKeywordId,
 };

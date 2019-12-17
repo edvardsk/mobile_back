@@ -8,7 +8,7 @@ const {
 
 const colsTNVEDCodesKeywords = SQL_TABLES.TNVED_CODES_KEYWORDS.COLUMNS;
 
-const createTNVEDKeyword = {
+const createOrEditTNVEDKeyword = {
     properties: {
         [colsTNVEDCodesKeywords.TNVED_CODE_ID]: {
             type: 'string',
@@ -50,6 +50,6 @@ const tnvedCodesIdQuery = {
 };
 
 module.exports = {
-    createTNVEDKeyword,
+    createOrEditTNVEDKeyword,
     tnvedCodesIdQuery,
 };
