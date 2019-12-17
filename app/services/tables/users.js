@@ -3,6 +3,7 @@ const {
     insertUser,
     insertUsers,
     selectUser,
+    selectUserWithDraftDriver,
     selectUserWithRole,
     selectUserByEmail,
     selectUserByEmailWithRole,
@@ -34,6 +35,8 @@ const cols = SQL_TABLES.USERS.COLUMNS;
 const addUser = data => one(insertUser(data));
 
 const getUser = id => oneOrNone(selectUser(id));
+
+const getUserWithDraftDriverStrict = id => one(selectUserWithDraftDriver(id));
 
 const getUserWithRole = id => oneOrNone(selectUserWithRole(id));
 
@@ -129,6 +132,7 @@ module.exports = {
     addUser,
     addUsersAsTransaction,
     getUser,
+    getUserWithDraftDriverStrict,
     getUserWithRole,
     getUserWithRoleAndPhoneNumber,
     getUserByEmailWithRole,

@@ -17,6 +17,8 @@ const colsCompaniesFiles = SQL_TABLES.COMPANIES_TO_FILES.COLUMNS;
 const colsUsersFiles = SQL_TABLES.USERS_TO_FILES.COLUMNS;
 const colsCarsFiles = SQL_TABLES.CARS_TO_FILES.COLUMNS;
 const colsTrailersFiles = SQL_TABLES.TRAILERS_TO_FILES.COLUMNS;
+const colsDraftDriversFiles = SQL_TABLES.DRAFT_DRIVERS_TO_FILES.COLUMNS;
+const colsDraftFiles = SQL_TABLES.DRAFT_FILES.COLUMNS;
 
 const formatStoringFile = (bucket, path) => `${bucket}/${path}`;
 
@@ -171,6 +173,36 @@ const prepareFilesToStoreForTrailers = (files, trailerId) => Object.keys(files).
     return acc;
 }, [[], [], []]);
 
+const prepareFilesToStoreForDraftDrivers = (files, draftDriverId) => Object.keys(files).reduce((acc, type) => {
+    const [dbFiles, dbDraftDriversFiles, storageFiles] = acc;
+    files[type].forEach(file => {
+        const fileId = uuid();
+        const fileHash = uuid();
+        const filePath = `${fileHash}${file.originalname}`;
+        const fileUrl = formatStoringFile(AWS_S3_BUCKET_NAME, filePath);
+
+        const fileLabels = formatLabelsToStore(type);
+
+        dbFiles.push({
+            id: fileId,
+            [colsDraftFiles.NAME]: file.originalname,
+            [colsDraftFiles.LABELS]: fileLabels,
+            [colsDraftFiles.URL]: CryptService.encrypt(fileUrl),
+        });
+        dbDraftDriversFiles.push({
+            [colsDraftDriversFiles.DRAFT_DRIVER_ID]: draftDriverId,
+            [colsDraftDriversFiles.DRAFT_FILE_ID]: fileId,
+        });
+        storageFiles.push({
+            bucket: AWS_S3_BUCKET_NAME,
+            path: filePath,
+            data: file.buffer,
+            contentType: file.mimetype,
+        });
+    });
+    return acc;
+}, [[], [], []]);
+
 const prepareFilesToDelete = files => files.reduce((acc, file) => {
     const [ids, urls] = acc;
     ids.push(file.id);
@@ -198,6 +230,7 @@ module.exports = {
     prepareFilesToStoreForUsers,
     prepareFilesToStoreForCars,
     prepareFilesToStoreForTrailers,
+    prepareFilesToStoreForDraftDrivers,
     prepareFilesToDelete,
     selectFilesToStore,
 };

@@ -26,6 +26,7 @@ const tableEmailConfirmationHashes = SQL_TABLES.EMAIL_CONFIRMATION_HASHES;
 const tableFreezingHistory = SQL_TABLES.FREEZING_HISTORY;
 const tableDrivers = SQL_TABLES.DRIVERS;
 const tableLanguages = SQL_TABLES.LANGUAGES;
+const tableDraftDrivers = SQL_TABLES.DRAFT_DRIVERS;
 
 const cols = table.COLUMNS;
 const colsRoles = tableRoles.COLUMNS;
@@ -42,6 +43,7 @@ const colsEmailConfirmationHashes = tableEmailConfirmationHashes.COLUMNS;
 const colsFreezingHistory = tableFreezingHistory.COLUMNS;
 const colsDrivers = tableDrivers.COLUMNS;
 const colsLanguages = tableLanguages.COLUMNS;
+const colsDraftDrivers = tableDraftDrivers.COLUMNS;
 
 const insertUser = values => squelPostgres
     .insert()
@@ -61,6 +63,17 @@ const selectUser = id => squelPostgres
     .select()
     .from(table.NAME)
     .where(`id = '${id}'`)
+    .toString();
+
+const selectUserWithDraftDriver = id => squelPostgres
+    .select()
+    .field('u.*')
+    .field('d.id', HOMELESS_COLUMNS.DRIVER_ID)
+    .field('dd.id', HOMELESS_COLUMNS.DRAFT_DRIVER_ID)
+    .from(table.NAME, 'u')
+    .where(`u.id = '${id}'`)
+    .left_join(tableDrivers.NAME, 'd', `d.${colsDrivers.USER_ID} = u.id`)
+    .left_join(tableDraftDrivers.NAME, 'dd', `dd.${colsDraftDrivers.DRIVER_ID} = d.id`)
     .toString();
 
 const selectUserWithRole = id => squelPostgres
@@ -358,6 +371,7 @@ module.exports = {
     insertUser,
     insertUsers,
     selectUser,
+    selectUserWithDraftDriver,
     selectUserWithRoleAndPhoneNumber,
     selectUserWithRole,
     selectUserByEmail,

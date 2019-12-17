@@ -1,10 +1,15 @@
-const { success, reject } = require('api/response');
 const { isEmpty } = require('lodash');
+const uuid = require('uuid/v4');
+
+const { success, reject } = require('api/response');
 
 // services
 const UsersService = require('services/tables/users');
 const FilesService = require('services/tables/files');
+const DraftFilesService = require('services/tables/draft-files');
 const DriversService = require('services/tables/drivers');
+const DraftDriversService = require('services/tables/draft-drivers');
+const DraftDriversFilesService = require('services/tables/draft-drivers-to-files');
 const UsersFilesService = require('services/tables/users-to-files');
 const PhoneNumbersService = require('services/tables/phone-numbers');
 const UsersCompaniesService = require('services/tables/users-to-companies');
@@ -12,14 +17,14 @@ const TableService = require('services/tables');
 const S3Service = require('services/aws/s3');
 
 // constants
-const { SQL_TABLES } = require('constants/tables');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
 
 // formatters
 const UsersFormatters = require('formatters/users');
 const PhoneNumbersFormatters = require('formatters/phone-numbers');
 const FilesFormatters = require('formatters/files');
-const DriversFormatters = require('formatters/drivers');
+const DraftDriversFormatters = require('formatters/draft-drivers');
 
 const editEmployeeAdvanced = async (req, res, next) => {
     const colsDrivers = SQL_TABLES.DRIVERS.COLUMNS;
@@ -47,52 +52,106 @@ const editEmployeeAdvanced = async (req, res, next) => {
                 driversProps[key] = body[key];
             }
         });
-
-        if (!isEmpty(driversProps)) {
-            const driverData = isControlRole ? driversProps : DriversFormatters.formatRecordAsNotVerified(driversProps);
-            transactionsList.push(
-                DriversService.editDriverByUserIdAsTransaction(targetUserId, driverData)
-            );
-        }
-
-        const usersData = UsersFormatters.formatUserToUpdate(body);
-        const phoneData = PhoneNumbersFormatters.formatPhoneNumberToUpdate(body);
-
-        transactionsList.push(
-            UsersService.updateUserAsTransaction(targetUserId, usersData)
-        );
-        transactionsList.push(
-            PhoneNumbersService.editRecordAsTransaction(targetUserId, phoneData)
-        );
-
         let filesToStore = [];
-        const filesTypes = Object.keys(files);
-        if (filesTypes.length) {
-            const filesToDelete = await FilesService.getFilesByUserIdAndLabels(targetUserId, filesTypes);
+        if (isControlRole || isEmpty(driversProps)) { // save data directly if executed by admin or not for driver
+            if (!isEmpty(driversProps)) {
+                transactionsList.push(
+                    DriversService.editDriverByUserIdAsTransaction(targetUserId, {
+                        ...driversProps,
+                        [colsDrivers.VERIFIED]: true,
+                        [colsDrivers.SHADOW]: false,
+                    })
+                );
+            }
 
-            const [ids, urls] = FilesFormatters.prepareFilesToDelete(filesToDelete);
-
-            transactionsList.push(
-                UsersFilesService.removeRecordsByFileIdsAsTransaction(ids)
-            );
-            transactionsList.push(
-                FilesService.removeFilesByIdsAsTransaction(ids)
-            );
-
-            await Promise.all(urls.map(url => {
-                const [bucket, path] = url.split('/');
-                return S3Service.deleteObject(bucket, path);
-            }));
-
-            const [dbFiles, dbUsersFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForUsers(files, targetUserId);
-            filesToStore = [...storageFiles];
+            const usersData = UsersFormatters.formatUserToUpdate(body);
+            const phoneData = PhoneNumbersFormatters.formatPhoneNumberToUpdate(body);
 
             transactionsList.push(
-                FilesService.addFilesAsTransaction(dbFiles)
+                UsersService.updateUserAsTransaction(targetUserId, usersData)
             );
             transactionsList.push(
-                UsersFilesService.addRecordsAsTransaction(dbUsersFiles)
+                PhoneNumbersService.editRecordAsTransaction(targetUserId, phoneData)
             );
+
+            const filesTypes = Object.keys(files);
+            if (filesTypes.length) {
+                const filesToDelete = await FilesService.getFilesByUserIdAndLabels(targetUserId, filesTypes);
+
+                const [ids, urls] = FilesFormatters.prepareFilesToDelete(filesToDelete);
+
+                transactionsList.push(
+                    UsersFilesService.removeRecordsByFileIdsAsTransaction(ids)
+                );
+                transactionsList.push(
+                    FilesService.removeFilesByIdsAsTransaction(ids)
+                );
+
+                await Promise.all(urls.map(url => {
+                    const [bucket, path] = url.split('/');
+                    return S3Service.deleteObject(bucket, path);
+                }));
+
+                const [dbFiles, dbUsersFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForUsers(files, targetUserId);
+                filesToStore = [...storageFiles];
+
+                transactionsList.push(
+                    FilesService.addFilesAsTransaction(dbFiles)
+                );
+                transactionsList.push(
+                    UsersFilesService.addRecordsAsTransaction(dbUsersFiles)
+                );
+            }
+        } else {
+            const userFromDb = await UsersService.getUserWithDraftDriverStrict(targetUserId);
+
+            const driverId = userFromDb[HOMELESS_COLUMNS.DRIVER_ID];
+            const draftDriverId = userFromDb[HOMELESS_COLUMNS.DRAFT_DRIVER_ID];
+
+            let newDraftDriverId;
+            if (draftDriverId) {
+                const draftDriver = DraftDriversFormatters.formatRecordToEdit(body);
+                transactionsList.push(
+                    DraftDriversService.editRecordAsTransaction(draftDriverId, draftDriver)
+                );
+            } else {
+                newDraftDriverId = uuid();
+                const draftDriver = DraftDriversFormatters.formatRecordToSave(newDraftDriverId, driverId, body);
+                transactionsList.push(
+                    DraftDriversService.addRecordAsTransaction(draftDriver)
+                );
+            }
+
+            const filesTypes = Object.keys(files);
+            if (filesTypes.length && draftDriverId) {
+                const filesToDelete = await DraftFilesService.getFilesByDraftDriverIdAndLabels(draftDriverId, filesTypes);
+
+                if (filesToDelete.length) {
+                    const [ids, urls] = FilesFormatters.prepareFilesToDelete(filesToDelete);
+
+                    transactionsList.push(
+                        DraftDriversFilesService.removeRecordsByFileIdsAsTransaction(ids)
+                    );
+                    transactionsList.push(
+                        DraftFilesService.removeFilesByIdsAsTransaction(ids)
+                    );
+
+                    await Promise.all(urls.map(url => {
+                        const [bucket, path] = url.split('/');
+                        return S3Service.deleteObject(bucket, path);
+                    }));
+                }
+
+                const [dbFiles, dbDraftDriversFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForDraftDrivers(files, newDraftDriverId || draftDriverId);
+                filesToStore = [...storageFiles];
+
+                transactionsList.push(
+                    DraftFilesService.addFilesAsTransaction(dbFiles)
+                );
+                transactionsList.push(
+                    DraftDriversFilesService.addRecordsAsTransaction(dbDraftDriversFiles)
+                );
+            }
         }
 
         await TableService.runTransaction(transactionsList);

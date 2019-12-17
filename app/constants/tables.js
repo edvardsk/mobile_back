@@ -563,6 +563,7 @@ const HOMELESS_COLUMNS = {
     CAR_VEHICLE_TYPE_NAME: 'car_vehicle_type_name',
     FULL_NAME: 'full_name',
     DRIVER_ID: 'driver_id',
+    DRAFT_DRIVER_ID: 'draft_driver_id',
     USER_ID: 'user_id',
     CARGO_ID: 'cargo_id',
     DRIVER_ID_OR_DATA: 'driver_id_or_data',
