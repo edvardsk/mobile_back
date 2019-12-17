@@ -27,6 +27,9 @@ const {
 } = require('sql-helpers/users');
 
 const { OPERATIONS } = require('constants/postgres');
+const { SQL_TABLES } = require('constants/tables');
+
+const cols = SQL_TABLES.USERS.COLUMNS;
 
 const addUser = data => one(insertUser(data));
 
@@ -50,6 +53,10 @@ const addUserAsTransaction = data => [insertUser(data), OPERATIONS.ONE];
 const addUsersAsTransaction = values => [insertUsers(values), OPERATIONS.MANY];
 
 const updateUserAsTransaction = (id, data) => [updateUser(id, data), OPERATIONS.ONE];
+
+const markAsFreezedAsTransaction = id => updateUserAsTransaction(id, {
+    [cols.FREEZED]: true,
+});
 
 const getUserByPassportNumber = number => oneOrNone(selectUserByPassportNumber(number));
 
@@ -130,6 +137,7 @@ module.exports = {
     getUserRole,
     addUserAsTransaction,
     updateUserAsTransaction,
+    markAsFreezedAsTransaction,
     getUsersWithRoleByPermission,
     getUserWithRoleAndConfirmationHashStrict,
     getUsersByCompanyIdPaginationSorting,

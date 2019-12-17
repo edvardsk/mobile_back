@@ -1,6 +1,7 @@
 const squel = require('squel');
 const { get } = require('lodash');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
+const { FINISHED_STATUSES_LIST, DEAL_STATUSES_MAP } = require('constants/deal-statuses');
 
 const squelPostgres = squel.useFlavour('postgres');
 
@@ -56,14 +57,41 @@ const updateRecord = (id, values) => squelPostgres
 
 const selectRecordByUserId = userId => squelPostgres
     .select()
-    .from(table.NAME)
-    .where(`${cols.USER_ID} = '${userId}'`)
+    .field('d.*')
+    .from(table.NAME, 'd')
+    .where(`d.${cols.USER_ID} = '${userId}'`)
+    .where(`u.${colsUsers.FREEZED} = 'f'`)
+    .left_join(tableUsers.NAME, 'u', `u.id = d.${cols.USER_ID}`)
     .toString();
 
 const selectRecordById = id => squelPostgres
     .select()
-    .from(table.NAME)
-    .where(`id = '${id}'`)
+    .field('d.*')
+    .from(table.NAME, 'd')
+    .where(`d.id = '${id}'`)
+    .where(`u.${colsUsers.FREEZED} = 'f'`)
+    .left_join(tableUsers.NAME, 'u', `u.id = d.${cols.USER_ID}`)
+    .toString();
+
+const selectRecordWithActiveDealsById = id => squelPostgres
+    .select()
+    .field('d.*')
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field('de.id')
+            .from(tableDeals.NAME, 'de')
+            .where(`de.${colsDeals.DRIVER_ID} = d.id`)
+            .where(`ds.${colsDealsStatuses.NAME} NOT IN ?`, [DEAL_STATUSES_MAP.FAILED])
+            .left_join(tableDealsStatusesHistory.NAME, 'dsh', `dsh.${colsDealsStatusesHistory.DEAL_ID} = de.id`)
+            .left_join(tableDealsStatuses.NAME, 'ds', `ds.id = dsh.${colsDealsStatusesHistory.DEAL_STATUS_ID}`)
+            .toString()
+    })`, HOMELESS_COLUMNS.DEALS)
+    .from(table.NAME, 'd')
+    .where(`d.id = '${id}'`)
+    .where(`u.${colsUsers.FREEZED} = 'f'`)
+    .left_join(tableUsers.NAME, 'u', `u.id = d.${cols.USER_ID}`)
+    .limit(1)
     .toString();
 
 const selectAvailableDriversPaginationSorting = (companyId, cargoDates, limit, offset, sortColumn, asc, filter) => {
@@ -125,7 +153,7 @@ const setAvailableDriversForDealFilter = (expression, cargoDates, companyId) => 
                 .select()
                 .field('ds.id')
                 .from(tableDealsStatuses.NAME, 'ds')
-                .where(`ds.${colsDealsStatuses.NAME} IN ?`, ['finished'])
+                .where(`ds.${colsDealsStatuses.NAME} IN ?`, FINISHED_STATUSES_LIST)
             )
             .left_join(tableDeals.NAME, 'de', `de.${colsDeals.DRIVER_ID} = d2.id`)
             .left_join(tableDealsStatusesHistory.NAME, 'dsh', `dsh.${colsDealsStatusesHistory.DEAL_ID} = de.id`)
@@ -205,6 +233,15 @@ const selectDriversByPhoneNumbers = numbers => squelPostgres
     .left_join(tablePhonePrefixes.NAME, 'php', `php.id = phn.${colsPhoneNumbers.PHONE_PREFIX_ID}`)
     .toString();
 
+const selectRecordByIdWithDeleted = id => squelPostgres
+    .select()
+    .field('d.*')
+    .field(`u.${colsUsers.FREEZED}`)
+    .from(table.NAME, 'd')
+    .where(`d.id = '${id}'`)
+    .left_join(tableUsers.NAME, 'u', `u.id = d.${cols.USER_ID}`)
+    .toString();
+
 module.exports = {
     insertRecord,
     insertRecords,
@@ -212,10 +249,12 @@ module.exports = {
     updateRecord,
     selectRecordByUserId,
     selectRecordById,
+    selectRecordWithActiveDealsById,
     selectAvailableDriversPaginationSorting,
     selectCountAvailableDrivers,
     selectRecordByCompanyIdLight,
     selectAvailableDriversByIdsAndCompanyId,
     selectAvailableDriverByIdAndCompanyId,
     selectDriversByPhoneNumbers,
+    selectRecordByIdWithDeleted,
 };

@@ -461,6 +461,23 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    DEAL_SUB_STATUSES: {
+        NAME: 'deal_sub_statuses',
+        COLUMNS: {
+            NAME: 'name',
+            CREATED_AT: 'created_at',
+        },
+    },
+    DEAL_SUB_STATUSES_HISTORY: {
+        NAME: 'deal_sub_statuses_history',
+        COLUMNS: {
+            DEAL_STATUS_HISTORY_ID: 'deal_status_history_id',
+            DEAL_SUB_STATUS_ID: 'deal_sub_status_id',
+            INITIATOR_ID: 'initiator_id',
+            DESCRIPTION: 'description',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
@@ -545,6 +562,7 @@ const HOMELESS_COLUMNS = {
     CAR_VERIFIED: 'car_verified',
     TRAILER_VERIFIED: 'trailer_verified',
     KEYWORD: 'keyword',
+    DEALS: 'deals',
 };
 
 module.exports = {

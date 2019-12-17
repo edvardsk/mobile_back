@@ -5,6 +5,7 @@ const {
     insertRecord,
     updateRecordById,
     updateRecordDecreaseFreeCountById,
+    updateRecordIncreaseFreeCountById,
     deleteRecordById,
     selectRecordById,
     selectRecordByWithCoordinatesId,
@@ -29,6 +30,8 @@ const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
 const editRecordAsTransaction = (id, data) => [updateRecordById(id, data), OPERATIONS.ONE];
 
 const editRecordDecreaseFreeCountAsTransaction = (id, value) => [updateRecordDecreaseFreeCountById(id, value), OPERATIONS.ONE];
+
+const editRecordIncreaseFreeCountAsTransaction = (id, value) => [updateRecordIncreaseFreeCountById(id, value), OPERATIONS.ONE];
 
 const editRecord = (id, data) => one(updateRecordById(id, data));
 
@@ -87,6 +90,7 @@ module.exports = {
     addRecordAsTransaction,
     editRecordAsTransaction,
     editRecordDecreaseFreeCountAsTransaction,
+    editRecordIncreaseFreeCountAsTransaction,
     removeRecordAsTransaction,
     getRecord,
     getRecordStrict,

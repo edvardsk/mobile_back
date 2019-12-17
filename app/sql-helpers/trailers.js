@@ -2,6 +2,7 @@ const squel = require('squel');
 const { get } = require('lodash');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SqlArray } = require('constants/instances');
+const { FINISHED_STATUSES_LIST, DEAL_STATUSES_MAP } = require('constants/deal-statuses');
 
 const squelPostgres = squel.useFlavour('postgres');
 
@@ -70,6 +71,26 @@ const selectRecordById = id => squelPostgres
     .from(table.NAME)
     .where(`id = '${id}'`)
     .where(`${cols.DELETED} = 'f'`)
+    .toString();
+
+const selectRecordWithActiveDealsById = id => squelPostgres
+    .select()
+    .field('t.*')
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field('de.id')
+            .from(tableDeals.NAME, 'de')
+            .where(`de.${colsDeals.TRAILER_ID} = t.id`)
+            .where(`ds.${colsDealsStatuses.NAME} NOT IN ?`, [DEAL_STATUSES_MAP.FAILED])
+            .left_join(tableDealsStatusesHistory.NAME, 'dsh', `dsh.${colsDealsStatusesHistory.DEAL_ID} = de.id`)
+            .left_join(tableDealsStatuses.NAME, 'ds', `ds.id = dsh.${colsDealsStatusesHistory.DEAL_STATUS_ID}`)
+            .toString()
+    })`, HOMELESS_COLUMNS.DEALS)
+    .from(table.NAME, 't')
+    .where(`t.id = '${id}'`)
+    .where(`t.${cols.DELETED} = 'f'`)
+    .limit(1)
     .toString();
 
 const selectTrailersByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => {
@@ -266,7 +287,7 @@ const setAvailableTrailersForDealFilter = (expression, cargoDates, companyId) =>
                 .select()
                 .field('ds.id')
                 .from(tableDealsStatuses.NAME, 'ds')
-                .where(`ds.${colsDealsStatuses.NAME} IN ?`, ['finished'])
+                .where(`ds.${colsDealsStatuses.NAME} IN ?`, FINISHED_STATUSES_LIST)
             )
             .left_join(tableDeals.NAME, 'd', `d.${colsDeals.TRAILER_ID} = t2.id`)
             .left_join(tableDealsStatusesHistory.NAME, 'dsh', `dsh.${colsDealsStatusesHistory.DEAL_ID} = d.id`)
@@ -329,6 +350,7 @@ module.exports = {
     updateRecord,
     updateRecordByCarId,
     selectRecordById,
+    selectRecordWithActiveDealsById,
     selectTrailersByCompanyIdPaginationSorting,
     selectCountTrailersByCompanyId,
     selectRecordByStateNumberAndActive,

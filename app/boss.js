@@ -41,6 +41,8 @@ const EXPIRE_IN_JOB = process.env.EXPIRE_IN_JOB || '3 days';
 const RETRY_DELAY_SECONDS_JOB = +process.env.RETRY_DELAY_SECONDS_JOB || 60; // 1 minute
 const INTEGER_MAX_POSTGRES = 2147483647;
 const EXTRACT_EXCHANGE_RATE_EXPIRE_IN = '1 day';
+const CANCEL_UNCONFIRMED_DEAL_UNIT = process.env.CANCEL_UNCONFIRMED_DEAL_UNIT || 'hours';
+const CANCEL_UNCONFIRMED_DEAL_VALUE = +process.env.CANCEL_UNCONFIRMED_DEAL_VALUE || 2;
 
 boss.on('error', onError);
 boss.start()
@@ -56,6 +58,10 @@ process.on('message', function (msg) {
     case ACTION_TYPES.EXTRACT_CHANGE_RATE:
         extractExchangeRate(msg.payload);
         break;
+
+    case ACTION_TYPES.AUTO_CANCEL_UNCONFIRMED_DEAL:
+        autoCancelUnconfirmedDeal(msg.payload);
+        break;
     }
 });
 
@@ -66,10 +72,16 @@ async function subscribe() {
                 teamSize: PARALLEL_JOBS_NUMBER,
                 teamConcurrency: PARALLEL_JOBS_NUMBER
             }, WorkerServices.translateCoordinates),
+
             boss.subscribe(ACTION_TYPES.EXTRACT_CHANGE_RATE, {
                 teamSize: PARALLEL_JOBS_NUMBER,
                 teamConcurrency: PARALLEL_JOBS_NUMBER
             }, WorkerServices.extractExchangeRate),
+
+            boss.subscribe(ACTION_TYPES.AUTO_CANCEL_UNCONFIRMED_DEAL, {
+                teamSize: PARALLEL_JOBS_NUMBER,
+                teamConcurrency: PARALLEL_JOBS_NUMBER
+            }, WorkerServices.autoCancelUnconfirmedDeal),
         ]);
         startJobs();
     } catch (error) {
@@ -113,6 +125,23 @@ async function extractExchangeRate(data) {
                 retryDelay: RETRY_DELAY_SECONDS_JOB,
                 retryLimit: 1,
             }
+        );
+        logger.info(`Job created id: ${jobId}`);
+
+    } catch(err) {
+        onError(err);
+    }
+}
+
+// todo: cancel deal cancellation after successful status change
+async function autoCancelUnconfirmedDeal(data) {
+    try {
+        const jobId = await boss.publish(
+            ACTION_TYPES.AUTO_CANCEL_UNCONFIRMED_DEAL,
+            data,
+            {
+                startAfter: moment().add(CANCEL_UNCONFIRMED_DEAL_VALUE, CANCEL_UNCONFIRMED_DEAL_UNIT).toISOString(),
+            },
         );
         logger.info(`Job created id: ${jobId}`);
 
