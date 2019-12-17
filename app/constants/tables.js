@@ -462,6 +462,36 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    DRAFT_DRIVERS: {
+        NAME: 'draft_drivers',
+        COLUMNS: {
+            DRIVER_ID: 'driver_id',
+            EMAIL: 'email',
+            FULL_NAME: 'full_name',
+            PHONE_PREFIX_ID: 'phone_prefix_id',
+            NUMBER: 'number',
+            DRIVER_LICENCE_REGISTERED_AT: 'driver_licence_registered_at',
+            DRIVER_LICENCE_EXPIRED_AT: 'driver_licence_expired_at',
+            CREATED_AT: 'created_at',
+        },
+    },
+    DRAFT_FILES: {
+        NAME: 'draft_files',
+        COLUMNS: {
+            NAME: 'name',
+            URL: 'url',
+            LABELS: 'labels',
+            CREATED_AT: 'created_at',
+        },
+    },
+    DRAFT_DRIVERS_TO_FILES: {
+        NAME: 'draft_drivers_to_files',
+        COLUMNS: {
+            DRAFT_DRIVER_ID: 'draft_driver_id',
+            DRAFT_FILE_ID: 'draft_file_id',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
