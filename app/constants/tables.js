@@ -545,6 +545,7 @@ const HOMELESS_COLUMNS = {
     COUNTRY_CURRENCY_CODE: 'country_currency_code',
     CAR_VERIFIED: 'car_verified',
     TRAILER_VERIFIED: 'trailer_verified',
+    DEALS: 'deals',
 };
 
 module.exports = {

@@ -156,6 +156,7 @@ const formatShadowTrailersToSave = (arr, companyId) => arr.reduce((acc, item) =>
         id: trailerId,
         [cols.CAR_ID]: item[HOMELESS_COLUMNS.CAR_ID] || null,
         [cols.COMPANY_ID]: companyId,
+        [cols.SHADOW]: true,
     });
     trailersNumbers.push({
         [colsTrailersNumbers.TRAILER_ID]: trailerId,

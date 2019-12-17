@@ -7,6 +7,7 @@ const {
     updateRecord,
     updateRecordByCarId,
     selectRecordById,
+    selectRecordWithActiveDealsById,
     selectTrailersByCompanyIdPaginationSorting,
     selectCountTrailersByCompanyId,
     selectRecordByStateNumberAndActive,
@@ -52,6 +53,8 @@ const editRecord = (id, data) => one(updateRecord(id, data));
 const getRecordStrict = id => one(selectRecordById(id));
 
 const getRecord = id => oneOrNone(selectRecordById(id));
+
+const getRecordWithActiveDeals = id => oneOrNone(selectRecordWithActiveDealsById(id));
 
 const getTrailersPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
     manyOrNone(selectTrailersByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
@@ -174,6 +177,8 @@ module.exports = {
     unlinkTrailerFromCarAsTransaction,
     markAsDeletedAsTransaction,
 
+    getRecord,
+    getRecordWithActiveDeals,
     getRecordStrict,
     getTrailersPaginationSorting,
     getCountTrailers,

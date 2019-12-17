@@ -2,7 +2,7 @@ const squel = require('squel');
 const { get } = require('lodash');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SqlArray } = require('constants/instances');
-const { FINISHED_STATUSES_LIST } = require('constants/deal-statuses');
+const { FINISHED_STATUSES_LIST, DEAL_STATUSES_MAP } = require('constants/deal-statuses');
 
 const squelPostgres = squel.useFlavour('postgres');
 
@@ -63,6 +63,32 @@ const selectRecordById = id => squelPostgres
     .from(table.NAME)
     .where(`id = '${id}'`)
     .where(`${cols.DELETED} = 'f'`)
+    .toString();
+
+const selectRecordWithActiveDealsById = id => squelPostgres
+    .select()
+    .field('c.*')
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field('de.id')
+            .from(tableDeals.NAME, 'de')
+            .where(`de.${colsDeals.CAR_ID} = c.id`)
+            .where(`ds.${colsDealsStatuses.NAME} NOT IN ?`, [DEAL_STATUSES_MAP.FAILED])
+            .left_join(tableDealsStatusesHistory.NAME, 'dsh', `dsh.${colsDealsStatusesHistory.DEAL_ID} = de.id`)
+            .left_join(tableDealsStatuses.NAME, 'ds', `ds.id = dsh.${colsDealsStatusesHistory.DEAL_STATUS_ID}`)
+            .toString()
+    })`, HOMELESS_COLUMNS.DEALS)
+    .from(table.NAME, 'c')
+    .where(`c.id = '${id}'`)
+    .where(`c.${cols.DELETED} = 'f'`)
+    .limit(1)
+    .toString();
+
+const selectRecordByIdWithDeleted = id => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where(`id = '${id}'`)
     .toString();
 
 const selectCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => {
@@ -343,6 +369,8 @@ module.exports = {
     insertRecords,
     updateRecord,
     selectRecordById,
+    selectRecordWithActiveDealsById,
+    selectRecordByIdWithDeleted,
     selectCarsByCompanyIdPaginationSorting,
     selectCountCarsByCompanyId,
     selectRecordByStateNumberAndActive,

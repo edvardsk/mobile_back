@@ -6,6 +6,8 @@ const {
     insertRecords,
     updateRecord,
     selectRecordById,
+    selectRecordWithActiveDealsById,
+    selectRecordByIdWithDeleted,
     selectCarsByCompanyIdPaginationSorting,
     selectCountCarsByCompanyId,
     selectRecordByStateNumberAndActive,
@@ -46,6 +48,8 @@ const getRecordStrict = id => one(selectRecordById(id));
 
 const getRecord = id => oneOrNone(selectRecordById(id));
 
+const getRecordWithActiveDeals = id => oneOrNone(selectRecordWithActiveDealsById(id));
+
 const getCarsPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
     manyOrNone(selectCarsByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
 );
@@ -60,6 +64,8 @@ const getRecordByStateNumberAndActive = stateNumber => oneOrNone(selectRecordByS
 const getRecordByIdAndCompanyIdLight = (id, companyId) => oneOrNone(selectRecordByIdAndCompanyIdLight(id, companyId));
 
 const getRecordFullStrict = id => one(selectRecordByIdFull(id));
+
+const getRecordStrictWithDeleted = id => one(selectRecordByIdWithDeleted(id));
 
 const getRecordByIdAndCompanyIdWithoutTrailer = (id, companyId) => oneOrNone(selectRecordByIdAndCompanyIdWithoutTrailer(id, companyId));
 
@@ -168,7 +174,10 @@ module.exports = {
     getRecordStrict,
     getCarsPaginationSorting,
     getCountCars,
+    getRecord,
+    getRecordWithActiveDeals,
     getRecordFullStrict,
+    getRecordStrictWithDeleted,
     markAsDeleted,
     markAsDeletedAsTransaction,
     getAvailableCarsByCompanyIdPaginationSorting,
