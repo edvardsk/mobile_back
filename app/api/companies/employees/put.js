@@ -53,6 +53,7 @@ const editEmployeeAdvanced = async (req, res, next) => {
             }
         });
         let filesToStore = [];
+        let urlsToDelete = [];
         if (isControlRole || isEmpty(driversProps)) { // save data directly if executed by admin or not for driver
             if (!isEmpty(driversProps)) {
                 transactionsList.push(
@@ -76,21 +77,23 @@ const editEmployeeAdvanced = async (req, res, next) => {
 
             const filesTypes = Object.keys(files);
             if (filesTypes.length) {
-                const filesToDelete = await FilesService.getFilesByUserIdAndLabels(targetUserId, filesTypes);
+                const fileLabels = FilesFormatters.formatBasicFileLabelsFromTypes(filesTypes);
+                const filesToDelete = await FilesService.getFilesByUserIdAndLabels(targetUserId, fileLabels);
+                if (filesToDelete.length) {
+                    const [ids, urls] = FilesFormatters.prepareFilesToDelete(filesToDelete);
 
-                const [ids, urls] = FilesFormatters.prepareFilesToDelete(filesToDelete);
+                    transactionsList.push(
+                        UsersFilesService.removeRecordsByFileIdsAsTransaction(ids)
+                    );
+                    transactionsList.push(
+                        FilesService.removeFilesByIdsAsTransaction(ids)
+                    );
 
-                transactionsList.push(
-                    UsersFilesService.removeRecordsByFileIdsAsTransaction(ids)
-                );
-                transactionsList.push(
-                    FilesService.removeFilesByIdsAsTransaction(ids)
-                );
-
-                await Promise.all(urls.map(url => {
-                    const [bucket, path] = url.split('/');
-                    return S3Service.deleteObject(bucket, path);
-                }));
+                    urlsToDelete = [
+                        ...urlsToDelete,
+                        ...urls,
+                    ];
+                }
 
                 const [dbFiles, dbUsersFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForUsers(files, targetUserId);
                 filesToStore = [...storageFiles];
@@ -123,23 +126,26 @@ const editEmployeeAdvanced = async (req, res, next) => {
             }
 
             const filesTypes = Object.keys(files);
-            if (filesTypes.length && draftDriverId) {
-                const filesToDelete = await DraftFilesService.getFilesByDraftDriverIdAndLabels(draftDriverId, filesTypes);
+            if (filesTypes.length) {
+                if (draftDriverId) {
+                    const fileLabels = FilesFormatters.formatBasicFileLabelsFromTypes(filesTypes);
+                    const filesToDelete = await DraftFilesService.getFilesByDraftDriverIdAndLabels(draftDriverId, fileLabels);
 
-                if (filesToDelete.length) {
-                    const [ids, urls] = FilesFormatters.prepareFilesToDelete(filesToDelete);
+                    if (filesToDelete.length) {
+                        const [ids, urls] = FilesFormatters.prepareFilesToDelete(filesToDelete);
 
-                    transactionsList.push(
-                        DraftDriversFilesService.removeRecordsByFileIdsAsTransaction(ids)
-                    );
-                    transactionsList.push(
-                        DraftFilesService.removeFilesByIdsAsTransaction(ids)
-                    );
+                        transactionsList.push(
+                            DraftDriversFilesService.removeRecordsByFileIdsAsTransaction(ids)
+                        );
+                        transactionsList.push(
+                            DraftFilesService.removeFilesByIdsAsTransaction(ids)
+                        );
 
-                    await Promise.all(urls.map(url => {
-                        const [bucket, path] = url.split('/');
-                        return S3Service.deleteObject(bucket, path);
-                    }));
+                        urlsToDelete = [
+                            ...urlsToDelete,
+                            urls,
+                        ];
+                    }
                 }
 
                 const [dbFiles, dbDraftDriversFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForDraftDrivers(files, newDraftDriverId || draftDriverId);
@@ -159,6 +165,13 @@ const editEmployeeAdvanced = async (req, res, next) => {
         if (filesToStore.length) {
             await Promise.all(filesToStore.map(({ bucket, path, data, contentType }) => {
                 return S3Service.putObject(bucket, path, data, contentType);
+            }));
+        }
+
+        if (urlsToDelete.length) {
+            await Promise.all(urlsToDelete.map(url => {
+                const [bucket, path] = url.split('/');
+                return S3Service.deleteObject(bucket, path);
             }));
         }
 

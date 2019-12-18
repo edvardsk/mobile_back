@@ -1,6 +1,7 @@
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
 const cols = SQL_TABLES.USERS.COLUMNS;
+const colsDraftDrivers = SQL_TABLES.DRAFT_DRIVERS.COLUMNS;
 
 const formatUserForSaving = (id, body, password, key) => ({
     id,
@@ -66,6 +67,11 @@ const formatUserToUpdate = data => ({
     [cols.FULL_NAME]: data[cols.FULL_NAME],
 });
 
+const formatUserToUpdateFromDraft = draftDriver => ({
+    [cols.EMAIL]: draftDriver[colsDraftDrivers.EMAIL],
+    [cols.FULL_NAME]: draftDriver[colsDraftDrivers.FULL_NAME],
+});
+
 module.exports = {
     formatUserForSaving,
     formatUserForResponse,
@@ -75,4 +81,5 @@ module.exports = {
     formatUserWithPhoneNumberAndRole,
     formatFreezingFieldToEdit,
     formatUserToUpdate,
+    formatUserToUpdateFromDraft,
 };

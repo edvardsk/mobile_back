@@ -8,12 +8,15 @@ const {
     selectRecordByDriverId,
     selectRecordByUserId,
     selectRecordById,
+    deleteRecordById,
 } = require('sql-helpers/draft-drivers');
 
 // constants
 const { OPERATIONS } = require('constants/postgres');
 
 const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
+
+const removeRecordAsTransaction = id => [deleteRecordById(id), OPERATIONS.ONE];
 
 const editRecordByDriverIdAsTransaction = (driverId, values) => [updateRecordByDriverId(driverId, values), OPERATIONS.ONE];
 
@@ -28,6 +31,7 @@ const getRecord = id => oneOrNone(selectRecordById(id));
 module.exports = {
     addRecordAsTransaction,
     editRecordByDriverIdAsTransaction,
+    removeRecordAsTransaction,
     editRecordAsTransaction,
     getRecordByDriverId,
     getRecordByUserId,

@@ -8,6 +8,7 @@ const colsDrivers = SQL_TABLES.DRIVERS.COLUMNS;
 const colsUsersRoles = SQL_TABLES.USERS_TO_ROLES.COLUMNS;
 const colsUsersCompanies = SQL_TABLES.USERS_TO_COMPANIES.COLUMNS;
 const colsPhoneNumbers = SQL_TABLES.PHONE_NUMBERS.COLUMNS;
+const colsDraftDrivers = SQL_TABLES.DRAFT_DRIVERS.COLUMNS;
 
 const formatRecordToSave = (userId, body) => ({
     [cols.USER_ID]: userId,
@@ -90,6 +91,13 @@ const formatRecordAsVerified = (data = {}) => ({
     [colsDrivers.VERIFIED]: true,
 });
 
+const formatRecordToUpdateFromDraft = draftDriver => ({
+    [cols.DRIVER_LICENCE_REGISTERED_AT]: draftDriver[colsDraftDrivers.DRIVER_LICENCE_REGISTERED_AT].toISOString(),
+    [cols.DRIVER_LICENCE_EXPIRED_AT]: draftDriver[colsDraftDrivers.DRIVER_LICENCE_EXPIRED_AT].toISOString(),
+    [cols.SHADOW]: false,
+    [cols.VERIFIED]: true,
+});
+
 module.exports = {
     formatRecordToSave,
     formatDriversWithPhoneAndRole,
@@ -98,4 +106,5 @@ module.exports = {
     formatShadowDriversToSave,
     formatRecordAsNotVerified,
     formatRecordAsVerified,
+    formatRecordToUpdateFromDraft,
 };

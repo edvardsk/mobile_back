@@ -92,6 +92,9 @@ const ERRORS = {
     VERIFY: {
         ALREADY_VERIFIED: 'verify.already_verified',
     },
+    PHONE_NUMBERS: {
+        BUSY: 'phone_numbers.busy',
+    },
 };
 
 class PaginationError extends Error {

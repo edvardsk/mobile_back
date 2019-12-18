@@ -4,6 +4,7 @@ const { manyOrNone } = require('db');
 const {
     insertFiles,
     selectFilesByDraftDriverIdAndLabels,
+    selectFilesByDraftDriverId,
     deleteFilesByIds,
 } = require('sql-helpers/draft-files');
 
@@ -26,8 +27,12 @@ const addFilesAsTransaction = data => [insertFiles(data), OPERATIONS.MANY_OR_NON
 
 const removeFilesByIdsAsTransaction = ids => [deleteFilesByIds(ids), OPERATIONS.MANY_OR_NONE];
 
-const getFilesByDraftDriverIdAndLabels = (draftDriverId, labels) => (
-    manyOrNone(selectFilesByDraftDriverIdAndLabels(draftDriverId, labels))
+const getFilesByDraftDriverIdAndLabels = (draftDriverId, labelsArr) => (
+    manyOrNone(selectFilesByDraftDriverIdAndLabels(draftDriverId, labelsArr))
+);
+
+const getFilesByDraftDriverId = (draftDriverId) => (
+    manyOrNone(selectFilesByDraftDriverId(draftDriverId))
 );
 
 const formatTemporaryLinks = async files => {
@@ -53,6 +58,7 @@ const formatTemporaryLinks = async files => {
 module.exports = {
     addFilesAsTransaction,
     getFilesByDraftDriverIdAndLabels,
+    getFilesByDraftDriverId,
     removeFilesByIdsAsTransaction,
 
     formatTemporaryLinks,

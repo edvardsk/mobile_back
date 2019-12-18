@@ -24,6 +24,34 @@ const formatStoringFile = (bucket, path) => `${bucket}/${path}`;
 
 const unformatStoringFile = string => string.split('/');
 
+const formatBasicFileLabelsFromTypes = types => (
+    types.reduce((acc, type) => {
+        const labels = [];
+        const splitTypes = type.split('.');
+        const possibleBasicLabel = splitTypes.shift();
+        if (DOCUMENTS_SET.has(possibleBasicLabel) && splitTypes.length) {
+            labels.push(possibleBasicLabel);
+            labels.push(FILES_GROUPS.BASIC);
+            labels.push(splitTypes.shift().toString());
+        } else if (DOCUMENTS_SET.has(possibleBasicLabel)) {
+            labels.push(possibleBasicLabel);
+            labels.push(FILES_GROUPS.BASIC);
+        }
+        acc.push(labels);
+        return acc;
+    }, [])
+);
+
+const formatBasicFileLabels = files => (
+    files.reduce((acc, file) => {
+        const labels = file[cols.LABELS];
+        if (labels.some(label => label === FILES_GROUPS.BASIC)) {
+            acc.push(labels);
+        }
+        return acc;
+    }, [])
+);
+
 const formatLabelsToStore = string => {
     const labels = [];
     const splitLabels = string.split('.');
@@ -112,6 +140,26 @@ const prepareFilesToStoreForUsers = (files, userId) => Object.keys(files).reduce
     });
     return acc;
 }, [[], [], []]);
+
+const prepareFilesToStoreForUsersFromDraft = (files, userId) => files.reduce((acc, file) => {
+    const [dbFiles, dbUsersFiles] = acc;
+    const fileId = file.id;
+
+    const fileLabels = new SqlArray(file[colsDraftFiles.LABELS]);
+
+    dbFiles.push({
+        id: fileId,
+        [cols.NAME]: file[colsDraftFiles.NAME],
+        [cols.LABELS]: fileLabels,
+        [cols.URL]: file[colsDraftFiles.URL],
+        [cols.CREATED_AT]: file[colsDraftFiles.CREATED_AT].toISOString(),
+    });
+    dbUsersFiles.push({
+        [colsUsersFiles.USER_ID]: userId,
+        [colsUsersFiles.FILE_ID]: fileId,
+    });
+    return acc;
+}, [[], []]);
 
 const prepareFilesToStoreForCars = (files, carId) => Object.keys(files).reduce((acc, type) => {
     const [dbFiles, dbUsersFiles, storageFiles] = acc;
@@ -222,12 +270,15 @@ const selectFilesToStore = (files, mapData) => {
 };
 
 module.exports = {
+    formatBasicFileLabelsFromTypes,
     formatStoringFile,
     unformatStoringFile,
+    formatBasicFileLabels,
     formatLabelsToStore,
     formatFilesForResponse,
     prepareFilesToStoreForCompanies,
     prepareFilesToStoreForUsers,
+    prepareFilesToStoreForUsersFromDraft,
     prepareFilesToStoreForCars,
     prepareFilesToStoreForTrailers,
     prepareFilesToStoreForDraftDrivers,

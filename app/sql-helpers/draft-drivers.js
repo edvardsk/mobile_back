@@ -33,6 +33,13 @@ const updateRecord = (id, values) => squelPostgres
     .returning('*')
     .toString();
 
+const deleteRecordById = id => squelPostgres
+    .delete()
+    .from(table.NAME)
+    .where(`id = '${id}'`)
+    .returning('*')
+    .toString();
+
 const selectRecordByDriverId = driverId => squelPostgres
     .select()
     .from(table.NAME)
@@ -57,6 +64,7 @@ module.exports = {
     insertRecord,
     updateRecordByDriverId,
     updateRecord,
+    deleteRecordById,
     selectRecordByDriverId,
     selectRecordById,
     selectRecordByUserId,

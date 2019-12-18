@@ -28,17 +28,44 @@ const deleteFilesByIds = ids => squelPostgres
     .returning('*')
     .toString();
 
-const selectFilesByDraftDriverIdAndLabels = (draftDriverId, labels) => squelPostgres
+const selectFilesByDraftDriverIdAndLabels = (draftDriverId, labelsArr) => {
+    const exp = squelPostgres
+        .select()
+        .from(table.NAME, 'f')
+        .field('f.*')
+        .where(`ddf.${colsDraftDriversFiles.DRAFT_DRIVER_ID} = '${draftDriverId}'`);
+    setLabelsArrFilter(exp, labelsArr);
+    return exp
+        .left_join(tableDraftDriversFiles.NAME, 'ddf', `ddf.${colsDraftDriversFiles.DRAFT_FILE_ID} = f.id`)
+        .toString();
+};
+
+const selectFilesByDraftDriverId = (draftDriverId) => squelPostgres
     .select()
     .from(table.NAME, 'f')
     .field('f.*')
     .where(`ddf.${colsDraftDriversFiles.DRAFT_DRIVER_ID} = '${draftDriverId}'`)
-    .where(`f.${cols.LABELS} && ARRAY[${labels.map(label => `'${label}'`).toString()}]`)
     .left_join(tableDraftDriversFiles.NAME, 'ddf', `ddf.${colsDraftDriversFiles.DRAFT_FILE_ID} = f.id`)
     .toString();
+
+const setLabelsArrFilter = (exp, labelsArr) => {
+    const innerExp = squel
+        .expr()
+        .and(`f.${cols.LABELS} = ARRAY[${labelsArr[0].map(label => `'${label}'`).toString()}]`);
+
+    labelsArr.forEach((labels, i) => {
+        if (i) {
+            innerExp
+                .or(`f.${cols.LABELS} = ARRAY[${labels.map(label => `'${label}'`).toString()}]`);
+        }
+    });
+
+    exp.where(innerExp);
+};
 
 module.exports = {
     insertFiles,
     deleteFilesByIds,
     selectFilesByDraftDriverIdAndLabels,
+    selectFilesByDraftDriverId,
 };
