@@ -26,6 +26,9 @@ const PhoneNumbersFormatters = require('formatters/phone-numbers');
 const FilesFormatters = require('formatters/files');
 const DraftDriversFormatters = require('formatters/draft-drivers');
 
+// helpers
+const { validateVisasDates } = require('helpers/validators/files');
+
 const editEmployeeAdvanced = async (req, res, next) => {
     const colsDrivers = SQL_TABLES.DRIVERS.COLUMNS;
     try {
@@ -54,6 +57,15 @@ const editEmployeeAdvanced = async (req, res, next) => {
         });
         let filesToStore = [];
         let urlsToDelete = [];
+        const labels = Object.keys(files);
+
+        const labelsArr = FilesFormatters.formatBasicFileLabelsFromTypes(labels);
+
+        const errors = validateVisasDates(labelsArr, body);
+        if (errors.length) {
+            return reject(res, ERRORS.INVITES.SKIPPED_DATES);
+        }
+
         if (isControlRole || isEmpty(driversProps)) { // save data directly if executed by admin or not for driver
             if (!isEmpty(driversProps)) {
                 transactionsList.push(
@@ -95,7 +107,7 @@ const editEmployeeAdvanced = async (req, res, next) => {
                     ];
                 }
 
-                const [dbFiles, dbUsersFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForUsers(files, targetUserId);
+                const [dbFiles, dbUsersFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForUsers(files, targetUserId, body);
                 filesToStore = [...storageFiles];
 
                 transactionsList.push(
@@ -143,12 +155,14 @@ const editEmployeeAdvanced = async (req, res, next) => {
 
                         urlsToDelete = [
                             ...urlsToDelete,
-                            urls,
+                            ...urls,
                         ];
                     }
                 }
 
-                const [dbFiles, dbDraftDriversFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForDraftDrivers(files, newDraftDriverId || draftDriverId);
+                const [
+                    dbFiles, dbDraftDriversFiles, storageFiles
+                ] = FilesFormatters.prepareFilesToStoreForDraftDrivers(files, newDraftDriverId || draftDriverId, body);
                 filesToStore = [...storageFiles];
 
                 transactionsList.push(

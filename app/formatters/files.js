@@ -1,3 +1,4 @@
+const moment = require('moment');
 const uuid = require('uuid/v4');
 
 // constants
@@ -80,6 +81,8 @@ const formatFileForResponse = file => ({
     [cols.NAME]: file[cols.NAME],
     [cols.URL]: file[cols.URL],
     [cols.LABELS]: file[cols.LABELS],
+    [cols.VALID_DATE_FROM]: file[cols.VALID_DATE_FROM],
+    [cols.VALID_DATE_TO]: file[cols.VALID_DATE_TO],
     [cols.CREATED_AT]: file[cols.CREATED_AT],
 });
 
@@ -111,7 +114,7 @@ const prepareFilesToStoreForCompanies = (files, companyId) => Object.keys(files)
     return acc;
 }, [[], [], []]);
 
-const prepareFilesToStoreForUsers = (files, userId) => Object.keys(files).reduce((acc, type) => {
+const prepareFilesToStoreForUsers = (files, userId, body) => Object.keys(files).reduce((acc, type) => {
     const [dbFiles, dbUsersFiles, storageFiles] = acc;
     files[type].forEach(file => {
         const fileId = uuid();
@@ -121,12 +124,18 @@ const prepareFilesToStoreForUsers = (files, userId) => Object.keys(files).reduce
 
         const fileLabels = formatLabelsToStore(type);
 
+        const fileDateFrom = body[`${type}.${cols.VALID_DATE_FROM}`];
+        const fileDateTo = body[`${type}.${cols.VALID_DATE_TO}`];
+
         dbFiles.push({
             id: fileId,
             [cols.NAME]: file.originalname,
             [cols.LABELS]: fileLabels,
             [cols.URL]: CryptService.encrypt(fileUrl),
+            [cols.VALID_DATE_FROM]: fileDateFrom || null,
+            [cols.VALID_DATE_TO]: fileDateTo || null,
         });
+
         dbUsersFiles.push({
             [colsUsersFiles.USER_ID]: userId,
             [colsUsersFiles.FILE_ID]: fileId,
@@ -147,12 +156,18 @@ const prepareFilesToStoreForUsersFromDraft = (files, userId) => files.reduce((ac
 
     const fileLabels = new SqlArray(file[colsDraftFiles.LABELS]);
 
+    const dateFrom = file[colsDraftFiles.VALID_DATE_FROM];
+    const dateTo = file[colsDraftFiles.VALID_DATE_TO];
+    const DATE_FORMAT = 'YYYY-MM-DD';
+
     dbFiles.push({
         id: fileId,
         [cols.NAME]: file[colsDraftFiles.NAME],
         [cols.LABELS]: fileLabels,
         [cols.URL]: file[colsDraftFiles.URL],
         [cols.CREATED_AT]: file[colsDraftFiles.CREATED_AT].toISOString(),
+        [cols.VALID_DATE_FROM]: (dateFrom && moment(dateFrom).format(DATE_FORMAT)) || null,
+        [cols.VALID_DATE_TO]: (dateTo && moment(dateTo).format(DATE_FORMAT)) || null,
     });
     dbUsersFiles.push({
         [colsUsersFiles.USER_ID]: userId,
@@ -221,7 +236,7 @@ const prepareFilesToStoreForTrailers = (files, trailerId) => Object.keys(files).
     return acc;
 }, [[], [], []]);
 
-const prepareFilesToStoreForDraftDrivers = (files, draftDriverId) => Object.keys(files).reduce((acc, type) => {
+const prepareFilesToStoreForDraftDrivers = (files, draftDriverId, body) => Object.keys(files).reduce((acc, type) => {
     const [dbFiles, dbDraftDriversFiles, storageFiles] = acc;
     files[type].forEach(file => {
         const fileId = uuid();
@@ -231,11 +246,16 @@ const prepareFilesToStoreForDraftDrivers = (files, draftDriverId) => Object.keys
 
         const fileLabels = formatLabelsToStore(type);
 
+        const fileDateFrom = body[`${type}.${cols.VALID_DATE_FROM}`];
+        const fileDateTo = body[`${type}.${cols.VALID_DATE_TO}`];
+
         dbFiles.push({
             id: fileId,
             [colsDraftFiles.NAME]: file.originalname,
             [colsDraftFiles.LABELS]: fileLabels,
             [colsDraftFiles.URL]: CryptService.encrypt(fileUrl),
+            [colsDraftFiles.VALID_DATE_FROM]: fileDateFrom || null,
+            [colsDraftFiles.VALID_DATE_TO]: fileDateTo || null,
         });
         dbDraftDriversFiles.push({
             [colsDraftDriversFiles.DRAFT_DRIVER_ID]: draftDriverId,

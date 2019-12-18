@@ -46,6 +46,14 @@ const createOrModifyDriver = {
         colsDrivers.DRIVER_LICENCE_REGISTERED_AT,
         colsDrivers.DRIVER_LICENCE_EXPIRED_AT,
     ],
+    patternProperties: {
+        '^visa.*.valid_date_from$': {
+            type: 'string',
+        },
+        '^visa.*.valid_date_to$': {
+            type: 'string',
+        },
+    },
     additionalProperties: false,
 };
 

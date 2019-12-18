@@ -30,6 +30,9 @@ const PhoneNumbersFormatters = require('formatters/phone-numbers');
 const FilesFormatters = require('formatters/files');
 const DriversFormatters = require('formatters/drivers');
 
+// helpers
+const { validateVisasDates } = require('helpers/validators/files');
+
 const MAP_ROLES_TO_INVITE_TO_COMPANY_ROLES = {
     [ROLES.DISPATCHER]: ROLES.TRANSPORTER,
     [ROLES.DRIVER]: ROLES.TRANSPORTER,
@@ -82,7 +85,16 @@ const inviteUserAdvanced = async (req, res, next) => {
         const { files, body } = req;
         const { transactionsListTail, invitedUserId, invitedUserRole } = inviteData;
 
-        const [dbFiles, dbUsersFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForUsers(files, invitedUserId);
+        const labels = Object.keys(files);
+
+        const labelsArr = FilesFormatters.formatBasicFileLabelsFromTypes(labels);
+
+        const errors = validateVisasDates(labelsArr, body);
+        if (errors.length) {
+            return reject(res, ERRORS.INVITES.SKIPPED_DATES);
+        }
+
+        const [dbFiles, dbUsersFiles, storageFiles] = FilesFormatters.prepareFilesToStoreForUsers(files, invitedUserId, body);
 
         res.locals.inviteData.storageFiles = storageFiles;
 
