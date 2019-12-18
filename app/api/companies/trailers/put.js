@@ -42,7 +42,7 @@ const editTrailer = async (req, res, next) => {
             TrailersServices.editRecordAsTransaction(trailerId, trailerDataToEdit)
         ];
 
-        const trailerRequiredDocuments = [DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION, DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT];
+        const trailerRequiredDocuments = [DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION, DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT, DOCUMENTS.VEHICLE_PHOTO];
         const passedFiles = Object.keys(files);
         const fileLabelsToDelete = intersection(trailerRequiredDocuments, passedFiles);
 
