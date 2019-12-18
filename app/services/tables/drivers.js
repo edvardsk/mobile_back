@@ -6,6 +6,8 @@ const {
     insertRecords,
     selectRecordByUserId,
     selectRecordById,
+    selectRecordWithActiveDealsById,
+    selectRecordByIdWithDeleted,
     updateRecordByUserId,
     updateRecord,
     selectAvailableDriversPaginationSorting,
@@ -32,16 +34,20 @@ const editDriverAsTransaction = (id, values) => [updateRecord(id, values), OPERA
 
 const getRecordByUserId = userId => oneOrNone(selectRecordByUserId(userId));
 
-const getRecordStrict = id => one(selectRecordById(id));
-
 const getRecord = id => oneOrNone(selectRecordById(id));
 
-const getAvailableDriversPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
-    manyOrNone(selectAvailableDriversPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
-);
+const getRecordWithActiveDeals = id => oneOrNone(selectRecordWithActiveDealsById(id));
 
-const getCountAvailableDrivers = (companyId, filter) => (
-    one(selectCountAvailableDrivers(companyId, filter))
+const getRecordStrict = id => one(selectRecordById(id));
+
+const getRecordStrictWithDeleted = id => one(selectRecordByIdWithDeleted(id));
+
+const getAvailableDriversPaginationSorting = (companyId, cargoDates, limit, offset, sortColumn, asc, filter) => {
+    return manyOrNone(selectAvailableDriversPaginationSorting(companyId, cargoDates, limit, offset, sortColumn, asc, filter));
+};
+
+const getCountAvailableDrivers = (companyId, cargoId, filter) => (
+    one(selectCountAvailableDrivers(companyId, cargoId, filter))
         .then(({ count }) => +count)
 );
 
@@ -51,8 +57,8 @@ const getAvailableDriversByIdsAndCompanyId = (ids, companyId) => (
     manyOrNone(selectAvailableDriversByIdsAndCompanyId(ids, companyId))
 );
 
-const getAvailableDriverByIdAndCompanyId = (id, companyId) => (
-    oneOrNone(selectAvailableDriverByIdAndCompanyId(id, companyId))
+const getAvailableDriverByIdAndCompanyId = (id, companyId, cargoDates) => (
+    oneOrNone(selectAvailableDriverByIdAndCompanyId(id, companyId, cargoDates))
 );
 
 const getDriversByPhoneNumbers = (numbers) => (
@@ -78,8 +84,11 @@ module.exports = {
     addRecordsAsTransaction,
     editDriverByUserIdAsTransaction,
     editDriverAsTransaction,
+    getRecord,
+    getRecordWithActiveDeals,
     getRecordByUserId,
     getRecordStrict,
+    getRecordStrictWithDeleted,
     getAvailableDriversPaginationSorting,
     getCountAvailableDrivers,
     getAvailableDriversByIdsAndCompanyId,

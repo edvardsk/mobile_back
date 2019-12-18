@@ -44,6 +44,8 @@ const BASES = {
     VEHICLE_TYPES: '/vehicle-types',
     DANGER_CLASSES: '/danger-classes',
     DEAL_STATUSES: '/deal-statuses',
+    TNVED_CODES: '/tnved-codes',
+    KEYWORDS: '/keywords',
     SETTINGS: '/settings',
     ECONOMICS: '/economics',
     DEFAULT: '/default',
@@ -72,6 +74,7 @@ const IDS = {
     CAR_ID: '/:carId',
     TRAILER_ID: '/:trailerId',
     DRIVER_ID: '/:driverId',
+    KEYWORD_ID: '/:keywordId',
 };
 
 const ROUTES = {
@@ -289,9 +292,12 @@ const ROUTES = {
             DELETE: IDS.CAR_ID,
             DEALS: {
                 BASE: BASES.DEALS,
-                AVAILABLE: {
-                    BASE: BASES.AVAILABLE,
-                    GET: '',
+                CARGOS: {
+                    BASE: BASES.CARGOS,
+                    AVAILABLE: {
+                        BASE: IDS.CARGO_ID + BASES.AVAILABLE,
+                        GET: '',
+                    },
                 },
             },
         },
@@ -311,9 +317,12 @@ const ROUTES = {
             },
             DEALS: {
                 BASE: BASES.DEALS,
-                AVAILABLE: {
-                    BASE: BASES.AVAILABLE,
-                    GET: '',
+                CARGOS: {
+                    BASE: BASES.CARGOS,
+                    AVAILABLE: {
+                        BASE: IDS.CARGO_ID + BASES.AVAILABLE,
+                        GET: '',
+                    },
                 },
             },
         },
@@ -321,10 +330,14 @@ const ROUTES = {
             BASE: IDS.ME_OR_ID + BASES.DRIVERS,
             DEALS: {
                 BASE: BASES.DEALS,
-                AVAILABLE: {
-                    BASE: BASES.AVAILABLE,
-                    GET: '',
+                CARGOS: {
+                    BASE: BASES.CARGOS,
+                    AVAILABLE: {
+                        BASE: IDS.CARGO_ID + BASES.AVAILABLE,
+                        GET: '',
+                    },
                 },
+
             },
         },
         DEALS: {
@@ -356,6 +369,19 @@ const ROUTES = {
         DEAL_STATUSES: {
             BASE: BASES.DEAL_STATUSES,
             GET_ALL: '',
+        },
+        TNVED_CODES: {
+            BASE: BASES.TNVED_CODES,
+            GET: '',
+            GET_ALL: '/all',
+            KEYWORDS: {
+                BASE: BASES.KEYWORDS,
+                POST: '',
+                GET_ALL: '/all',
+                GET: '',
+                PUT: IDS.KEYWORD_ID,
+                DELETE: IDS.KEYWORD_ID,
+            },
         },
     },
     SETTINGS: {
@@ -427,6 +453,8 @@ const ALLOWED_ROUTES = {
         API_PREFIX + ROUTES.OTHERS.BASE + ROUTES.OTHERS.DANGER_CLASSES.BASE + ROUTES.OTHERS.DANGER_CLASSES.GET_ALL,
         API_PREFIX + ROUTES.OTHERS.BASE + ROUTES.OTHERS.CURRENCIES.BASE + ROUTES.OTHERS.CURRENCIES.GET_ALL,
         API_PREFIX + ROUTES.OTHERS.BASE + ROUTES.OTHERS.EXCHANGE_RATES.BASE + ROUTES.OTHERS.EXCHANGE_RATES.GET_ALL,
+        API_PREFIX + ROUTES.OTHERS.BASE + ROUTES.OTHERS.TNVED_CODES.BASE + ROUTES.OTHERS.TNVED_CODES.GET,
+        API_PREFIX + ROUTES.OTHERS.BASE + ROUTES.OTHERS.TNVED_CODES.BASE + ROUTES.OTHERS.TNVED_CODES.GET_ALL,
     ]),
     POST: new Set([
         API_PREFIX + ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.POST,

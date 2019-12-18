@@ -41,6 +41,7 @@ const formatRecordForList = data => ({
     [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: data[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
     [cols.TRAILER_DANGER_CLASS_ID]: data[cols.TRAILER_DANGER_CLASS_ID],
     [cols.VERIFIED]: data[cols.VERIFIED],
+    [cols.SHADOW]: data[cols.SHADOW],
 });
 
 const formatRecordForListAvailable = data => {
@@ -60,6 +61,7 @@ const formatRecordForListAvailable = data => {
         [HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME]: data[HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME],
         [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: data[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
         [cols.TRAILER_DANGER_CLASS_ID]: data[cols.TRAILER_DANGER_CLASS_ID],
+        [cols.VERIFIED]: data[cols.VERIFIED],
     };
     result.trailer = trailer;
     if (data[HOMELESS_COLUMNS.CAR_ID]) {
@@ -111,6 +113,7 @@ const formatRecordForResponse = trailer => {
                 [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: trailer[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
                 [cols.TRAILER_DANGER_CLASS_ID]: trailer[cols.TRAILER_DANGER_CLASS_ID],
                 [cols.VERIFIED]: trailer[cols.VERIFIED],
+                [cols.SHADOW]: trailer[cols.SHADOW],
             },
         },
     };
@@ -153,6 +156,7 @@ const formatShadowTrailersToSave = (arr, companyId) => arr.reduce((acc, item) =>
         id: trailerId,
         [cols.CAR_ID]: item[HOMELESS_COLUMNS.CAR_ID] || null,
         [cols.COMPANY_ID]: companyId,
+        [cols.SHADOW]: true,
     });
     trailersNumbers.push({
         [colsTrailersNumbers.TRAILER_ID]: trailerId,

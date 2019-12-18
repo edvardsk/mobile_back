@@ -5,6 +5,7 @@ const {
     insertRecord,
     updateRecordById,
     updateRecordDecreaseFreeCountById,
+    updateRecordIncreaseFreeCountById,
     deleteRecordById,
     selectRecordById,
     selectRecordByWithCoordinatesId,
@@ -29,6 +30,8 @@ const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
 const editRecordAsTransaction = (id, data) => [updateRecordById(id, data), OPERATIONS.ONE];
 
 const editRecordDecreaseFreeCountAsTransaction = (id, value) => [updateRecordDecreaseFreeCountById(id, value), OPERATIONS.ONE];
+
+const editRecordIncreaseFreeCountAsTransaction = (id, value) => [updateRecordIncreaseFreeCountById(id, value), OPERATIONS.ONE];
 
 const editRecord = (id, data) => one(updateRecordById(id, data));
 
@@ -78,10 +81,16 @@ const checkCargoExists = async (meta, cargoId) => {
     return !!cargo;
 };
 
+const checkFreeCargoExists = async (meta, cargoId) => {
+    const cargo = await getRecordLight(cargoId);
+    return !!cargo && cargo[cols.FREE_COUNT] > 0;
+};
+
 module.exports = {
     addRecordAsTransaction,
     editRecordAsTransaction,
     editRecordDecreaseFreeCountAsTransaction,
+    editRecordIncreaseFreeCountAsTransaction,
     removeRecordAsTransaction,
     getRecord,
     getRecordStrict,
@@ -96,4 +105,5 @@ module.exports = {
 
     checkCargoInCompanyExists,
     checkCargoExists,
+    checkFreeCargoExists,
 };

@@ -6,6 +6,8 @@ const {
     insertRecords,
     updateRecord,
     selectRecordById,
+    selectRecordWithActiveDealsById,
+    selectRecordByIdWithDeleted,
     selectCarsByCompanyIdPaginationSorting,
     selectCountCarsByCompanyId,
     selectRecordByStateNumberAndActive,
@@ -46,6 +48,8 @@ const getRecordStrict = id => one(selectRecordById(id));
 
 const getRecord = id => oneOrNone(selectRecordById(id));
 
+const getRecordWithActiveDeals = id => oneOrNone(selectRecordWithActiveDealsById(id));
+
 const getCarsPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
     manyOrNone(selectCarsByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
 );
@@ -61,6 +65,8 @@ const getRecordByIdAndCompanyIdLight = (id, companyId) => oneOrNone(selectRecord
 
 const getRecordFullStrict = id => one(selectRecordByIdFull(id));
 
+const getRecordStrictWithDeleted = id => one(selectRecordByIdWithDeleted(id));
+
 const getRecordByIdAndCompanyIdWithoutTrailer = (id, companyId) => oneOrNone(selectRecordByIdAndCompanyIdWithoutTrailer(id, companyId));
 
 const markAsDeleted = id => editRecord(id, {
@@ -71,12 +77,12 @@ const markAsDeletedAsTransaction = id => [updateRecord(id, {
     [colsCars.DELETED]: true,
 }), OPERATIONS.ONE];
 
-const getAvailableCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
-    manyOrNone(selectAvailableCarsByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
+const getAvailableCarsByCompanyIdPaginationSorting = (companyId, cargoDates, limit, offset, sortColumn, asc, filter) => (
+    manyOrNone(selectAvailableCarsByCompanyIdPaginationSorting(companyId, cargoDates, limit, offset, sortColumn, asc, filter))
 );
 
-const getCountAvailableCars = (companyId, filter) => (
-    one(selectCountAvailableCarsByCompanyId(companyId, filter))
+const getCountAvailableCars = (companyId, cargoDates, filter) => (
+    one(selectCountAvailableCarsByCompanyId(companyId, cargoDates, filter))
         .then(({ count }) => +count)
 );
 
@@ -84,8 +90,8 @@ const getAvailableCarsByIdsAndCompanyId = (ids, companyId) => (
     manyOrNone(selectAvailableCarsByIdsAndCompanyId(ids, companyId))
 );
 
-const getAvailableCarByIdAndCompanyId = (id, companyId) => (
-    oneOrNone(selectAvailableCarByIdAndCompanyId(id, companyId))
+const getAvailableCarByIdAndCompanyId = (id, companyId, cargoDates) => (
+    oneOrNone(selectAvailableCarByIdAndCompanyId(id, companyId, cargoDates))
 );
 
 const getRecordsByStateNumbers = numbers => (
@@ -168,7 +174,10 @@ module.exports = {
     getRecordStrict,
     getCarsPaginationSorting,
     getCountCars,
+    getRecord,
+    getRecordWithActiveDeals,
     getRecordFullStrict,
+    getRecordStrictWithDeleted,
     markAsDeleted,
     markAsDeletedAsTransaction,
     getAvailableCarsByCompanyIdPaginationSorting,

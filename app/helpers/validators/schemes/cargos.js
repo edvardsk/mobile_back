@@ -130,6 +130,10 @@ const createOrEditCargo = {
         [colsCargos.DESCRIPTION]: {
             type: 'string',
         },
+        [colsCargos.TNVED_CODE_ID]: {
+            type: 'string',
+            format: 'uuid',
+        },
         [HOMELESS_COLUMNS.UPLOADING_POINTS]: {
             type: 'array',
             minItems: 1,
@@ -157,6 +161,7 @@ const createOrEditCargo = {
         colsCargos.GUARANTEES,
         colsCargos.VEHICLE_TYPE_ID,
         colsCargos.DANGER_CLASS_ID,
+        colsCargos.TNVED_CODE_ID,
         HOMELESS_COLUMNS.UPLOADING_POINTS,
         HOMELESS_COLUMNS.DOWNLOADING_POINTS,
     ],
@@ -172,6 +177,9 @@ const createOrEditCargoAsync = {
         [colsCargos.VEHICLE_TYPE_ID]: {
             vehicle_type_not_exist: {},
         },
+        [colsCargos.TNVED_CODE_ID]: {
+            tnved_code_not_exist: {},
+        },
         [HOMELESS_COLUMNS.PRICES]: {
             currency_in_prices_not_exist: {},
         },
@@ -184,6 +192,18 @@ const requiredCargoId = {
         cargoId: {
             type: 'string',
             format: 'uuid',
+        },
+    },
+    required: [
+        'cargoId',
+    ]
+};
+
+const requiredExistingFreeCargoAsync = {
+    $async: true,
+    properties: {
+        cargoId: {
+            free_cargo_not_exist: {},
         },
     },
     required: [
@@ -444,6 +464,7 @@ module.exports = {
     createOrEditCargo,
     createOrEditCargoAsync,
     requiredCargoId,
+    requiredExistingFreeCargoAsync,
     requiredExistingCargoInCompanyAsyncFunc,
     requiredExistingCargoAsync,
     modifyStringValues,

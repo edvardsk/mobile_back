@@ -66,6 +66,16 @@ const updateRecordDecreaseFreeCountById = (id, value) => squelPostgres
     .returning('*')
     .toString();
 
+const updateRecordIncreaseFreeCountById = (id, value) => squelPostgres
+    .update()
+    .table(table.NAME)
+    .set(cols.FREE_COUNT, `${cols.FREE_COUNT} + ${value}`, {
+        dontQuote: true,
+    })
+    .where(`id = '${id}'`)
+    .returning('*')
+    .toString();
+
 const deleteRecordById = id => squelPostgres
     .delete()
     .from(table.NAME)
@@ -541,6 +551,7 @@ module.exports = {
     insertRecord,
     updateRecordById,
     updateRecordDecreaseFreeCountById,
+    updateRecordIncreaseFreeCountById,
     deleteRecordById,
     selectRecordById,
     selectRecordByWithCoordinatesId,

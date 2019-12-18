@@ -16,6 +16,7 @@ const DealsService = require('services/tables/deals');
 const DealStatusesService = require('services/tables/deal-statuses');
 const DealStatusesHistoryService = require('services/tables/deal-statuses-history');
 const TablesService = require('services/tables');
+const BackgroundService = require('services/background/creators');
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
@@ -102,7 +103,8 @@ const createCargoDeal = async (req, res, next) => {
             return reject(res, invalidCargos);
         }
 
-        const [invalidItems, availableCars, availableTrailers] = await DealsService.validateDealItems(body, company.id, cargoLoadingType);
+        const userLanguageId = user[colsUsers.LANGUAGE_ID];
+        const [invalidItems, availableCars, availableTrailers] = await DealsService.validateDealItems(body, company.id, cargoLoadingType, userLanguageId);
         if (invalidItems.length) {
             return reject(res, invalidItems);
         }
@@ -196,6 +198,9 @@ const createCargoDeal = async (req, res, next) => {
         ];
 
         await TablesService.runTransaction(transactionsList);
+        await Promise.all(deals.map(({ id }) => (
+            BackgroundService.autoCancelUnconfirmedDealCreator(id)
+        )));
 
         return success(res, {}, SUCCESS_CODES.CREATED);
     } catch (error) {

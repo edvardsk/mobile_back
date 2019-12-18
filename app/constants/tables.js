@@ -231,6 +231,22 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    TNVED_CODES: {
+        NAME: 'tnved_codes',
+        COLUMNS: {
+            CODE: 'code',
+            CREATED_AT: 'created_at',
+        },
+    },
+    TNVED_CODES_KEYWORDS: {
+        NAME: 'tnved_codes_keywords',
+        COLUMNS: {
+            TNVED_CODE_ID: 'tnved_code_id',
+            LANGUAGE_ID: 'language_id',
+            CREATED_AT: 'created_at',
+            VALUE: 'value',
+        },
+    },
     CARGOS: {
         NAME: 'cargos',
         COLUMNS: {
@@ -257,6 +273,7 @@ const SQL_TABLES = {
             DISTANCE: 'distance',
             CREATED_AT: 'created_at',
             DELETED: 'deleted',
+            TNVED_CODE_ID: 'tnved_code_id',
         },
     },
     CARGO_POINTS: {
@@ -294,6 +311,7 @@ const SQL_TABLES = {
             CAR_LENGTH: 'car_length',
             CAR_CARRYING_CAPACITY: 'car_carrying_capacity',
             CREATED_AT: 'created_at',
+            SHADOW: 'shadow',
             VERIFIED: 'verified',
             DELETED: 'deleted',
         },
@@ -315,6 +333,7 @@ const SQL_TABLES = {
             TRAILER_CARRYING_CAPACITY: 'trailer_carrying_capacity',
             CREATED_AT: 'created_at',
             VERIFIED: 'verified',
+            SHADOW: 'shadow',
             DELETED: 'deleted',
         },
     },
@@ -443,6 +462,23 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    DEAL_SUB_STATUSES: {
+        NAME: 'deal_sub_statuses',
+        COLUMNS: {
+            NAME: 'name',
+            CREATED_AT: 'created_at',
+        },
+    },
+    DEAL_SUB_STATUSES_HISTORY: {
+        NAME: 'deal_sub_statuses_history',
+        COLUMNS: {
+            DEAL_STATUS_HISTORY_ID: 'deal_status_history_id',
+            DEAL_SUB_STATUS_ID: 'deal_sub_status_id',
+            INITIATOR_ID: 'initiator_id',
+            DESCRIPTION: 'description',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
@@ -526,6 +562,8 @@ const HOMELESS_COLUMNS = {
     COUNTRY_CURRENCY_CODE: 'country_currency_code',
     CAR_VERIFIED: 'car_verified',
     TRAILER_VERIFIED: 'trailer_verified',
+    KEYWORD: 'keyword',
+    DEALS: 'deals',
 };
 
 module.exports = {

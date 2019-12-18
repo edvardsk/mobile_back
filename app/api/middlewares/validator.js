@@ -22,6 +22,7 @@ const LanguagesService = require('services/tables/languages');
 const CarsService = require('services/tables/cars');
 const TrailersService = require('services/tables/trailers');
 const DriversService = require('services/tables/drivers');
+const TNVEDCodesService = require('services/tables/tnved-codes');
 
 // constants
 const { ERRORS } = require('constants/errors');
@@ -142,6 +143,12 @@ ajv.addKeyword('danger_class_not_exist', {
     validate: DangerClassesService.checkRecordExists,
 });
 
+ajv.addKeyword('tnved_code_not_exist', {
+    async: true,
+    type: 'string',
+    validate: TNVEDCodesService.checkRecordExists,
+});
+
 ajv.addKeyword('vehicle_type_not_exist', {
     async: true,
     type: 'string',
@@ -152,6 +159,12 @@ ajv.addKeyword('cargo_in_company_not_exist', {
     async: true,
     type: 'string',
     validate: CargosService.checkCargoInCompanyExists,
+});
+
+ajv.addKeyword('free_cargo_not_exist', {
+    async: true,
+    type: 'string',
+    validate: CargosService.checkFreeCargoExists,
 });
 
 ajv.addKeyword('cargo_not_exist', {

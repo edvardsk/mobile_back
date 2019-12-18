@@ -24,7 +24,6 @@ const insertRecords = values => squelPostgres
     .returning('*')
     .toString();
 
-
 const setAvailableDealsFilter = (expression, filteringObject) => {
     const filteringObjectSQLExpressions = [
         [HOMELESS_COLUMNS.NAME, `d.${cols.NAME}::text ILIKE '%${filteringObject[HOMELESS_COLUMNS.NAME]}%'`],
@@ -124,9 +123,16 @@ const selectDealsByCompanyIdPaginationSorting = (companyId, limit, offset, sortC
         .toString();
 };
 
+const selectRecordById = id => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where(`id = '${id}'`)
+    .toString();
+
 module.exports = {
     insertRecords,
     selectDealsByCompanyIdPaginationSorting,
     selectCountDealsByCompanyId,
     setAvailableDealsFilter,
+    selectRecordById,
 };

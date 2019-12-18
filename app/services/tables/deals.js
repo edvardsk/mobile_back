@@ -5,12 +5,14 @@ const {
     insertRecords,
     selectDealsByCompanyIdPaginationSorting,
     selectCountDealsByCompanyId,
+    selectRecordById,
 } = require('sql-helpers/deals');
 
 // services
 const DriversService = require('./drivers');
 const CarsService = require('./cars');
 const TrailersService = require('./trailers');
+const CargosService = require('./cargos');
 
 // constants
 const { HOMELESS_COLUMNS } = require('constants/tables');
@@ -21,19 +23,28 @@ const { LOADING_TYPES_MAP } = require('constants/cargos');
 // helpers
 const { isValidUUID } = require('helpers/validators');
 
+// formatters
+const { formatCargoDates } = require('formatters/cargos');
+
 const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MANY];
 
-const validateDealItems = async (arr, companyId, cargoLoadingType) => {
+const getRecordStrict = id => one(selectRecordById(id));
+
+const validateDealItems = async (arr, companyId, cargoLoadingType, userLanguageId) => {
     const availableDrivers = [];
     const availableCars = [];
     const availableTrailers = [];
     const items = cargoLoadingType === LOADING_TYPES_MAP.FTL ? [...arr] : [arr[0]]; // use only first item for LTL (because drivers/cars/trailers the same for all items)
     const invalidItems = await Promise.all(items.map(async (item, i) => {
+        const cargoId = item[HOMELESS_COLUMNS.CARGO_ID];
         const driverIdOrData = item[HOMELESS_COLUMNS.DRIVER_ID_OR_DATA];
         const carIdOrData = item[HOMELESS_COLUMNS.CAR_ID_OR_DATA];
         const trailerIdOrData = item[HOMELESS_COLUMNS.TRAILER_ID_OR_DATA];
+        const cargo = await CargosService.getRecordStrict(cargoId, userLanguageId);
+        const cargoDates = formatCargoDates(cargo);
+
         if (isValidUUID(driverIdOrData)) {
-            const availableDriver = await DriversService.getAvailableDriverByIdAndCompanyId(driverIdOrData, companyId);
+            const availableDriver = await DriversService.getAvailableDriverByIdAndCompanyId(driverIdOrData, companyId, cargoDates);
             if (!availableDriver) {
                 return {
                     position: i,
@@ -44,7 +55,7 @@ const validateDealItems = async (arr, companyId, cargoLoadingType) => {
             }
         }
         if (isValidUUID(carIdOrData)) {
-            const availableCar = await CarsService.getAvailableCarByIdAndCompanyId(carIdOrData, companyId);
+            const availableCar = await CarsService.getAvailableCarByIdAndCompanyId(carIdOrData, companyId, cargoDates);
             if (!availableCar) {
                 return {
                     position: i,
@@ -55,7 +66,7 @@ const validateDealItems = async (arr, companyId, cargoLoadingType) => {
             }
         }
         if (isValidUUID(trailerIdOrData)) {
-            const availableTrailer = await TrailersService.getAvailableTrailerByIdAndCompanyId(trailerIdOrData, companyId);
+            const availableTrailer = await TrailersService.getAvailableTrailerByIdAndCompanyId(trailerIdOrData, companyId, cargoDates);
             if (!availableTrailer) {
                 return {
                     position: i,
@@ -80,6 +91,7 @@ const getCountDeals = (companyId, filter) => (
 
 module.exports = {
     addRecordsAsTransaction,
+    getRecordStrict,
     validateDealItems,
     getDealsPaginationSorting,
     getCountDeals,

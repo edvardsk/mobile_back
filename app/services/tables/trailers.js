@@ -7,6 +7,7 @@ const {
     updateRecord,
     updateRecordByCarId,
     selectRecordById,
+    selectRecordWithActiveDealsById,
     selectTrailersByCompanyIdPaginationSorting,
     selectCountTrailersByCompanyId,
     selectRecordByStateNumberAndActive,
@@ -53,6 +54,8 @@ const getRecordStrict = id => one(selectRecordById(id));
 
 const getRecord = id => oneOrNone(selectRecordById(id));
 
+const getRecordWithActiveDeals = id => oneOrNone(selectRecordWithActiveDealsById(id));
+
 const getTrailersPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
     manyOrNone(selectTrailersByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
 );
@@ -84,12 +87,12 @@ const unlinkTrailerFromCar = id => editRecord(id, {
     [colsTrailers.CAR_ID]: null,
 });
 
-const getAvailableTrailersPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter) => (
-    manyOrNone(selectAvailableTrailersByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter))
+const getAvailableTrailersPaginationSorting = (companyId, cargoDates, limit, offset, sortColumn, asc, filter) => (
+    manyOrNone(selectAvailableTrailersByCompanyIdPaginationSorting(companyId, cargoDates, limit, offset, sortColumn, asc, filter))
 );
 
-const getCountAvailableTrailers = (companyId, filter) => (
-    one(selectAvailableCountTrailersByCompanyId(companyId, filter))
+const getCountAvailableTrailers = (companyId, cargoDates, filter) => (
+    one(selectAvailableCountTrailersByCompanyId(companyId, cargoDates, filter))
         .then(({ count }) => +count)
 );
 
@@ -97,8 +100,8 @@ const getAvailableTrailersByIdsAndCompanyId = (ids, companyId) => (
     manyOrNone(selectAvailableTrailersByIdsAndCompanyId(ids, companyId))
 );
 
-const getAvailableTrailerByIdAndCompanyId = (id, companyId) => (
-    oneOrNone(selectAvailableTrailerByIdAndCompanyId(id, companyId))
+const getAvailableTrailerByIdAndCompanyId = (id, companyId, cargoDates) => (
+    oneOrNone(selectAvailableTrailerByIdAndCompanyId(id, companyId, cargoDates))
 );
 
 const getRecordsByStateNumbers = numbers => (
@@ -174,6 +177,8 @@ module.exports = {
     unlinkTrailerFromCarAsTransaction,
     markAsDeletedAsTransaction,
 
+    getRecord,
+    getRecordWithActiveDeals,
     getRecordStrict,
     getTrailersPaginationSorting,
     getCountTrailers,
