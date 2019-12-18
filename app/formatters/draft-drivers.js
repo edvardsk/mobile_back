@@ -13,6 +13,12 @@ const formatRecordToSave = (id, driverId, body) => ({
     [cols.PHONE_PREFIX_ID]: body[HOMELESS_COLUMNS.PHONE_PREFIX_ID],
     [cols.DRIVER_LICENCE_REGISTERED_AT]: body[colsDrivers.DRIVER_LICENCE_REGISTERED_AT],
     [cols.DRIVER_LICENCE_EXPIRED_AT]: body[colsDrivers.DRIVER_LICENCE_EXPIRED_AT],
+    [cols.PASSPORT_NUMBER]: body[colsUsers.PASSPORT_NUMBER],
+    [cols.PASSPORT_PERSONAL_ID]: body[colsUsers.PASSPORT_PERSONAL_ID],
+    [cols.PASSPORT_ISSUING_AUTHORITY]: body[colsUsers.PASSPORT_ISSUING_AUTHORITY],
+    [cols.PASSPORT_CREATED_AT]: body[colsUsers.PASSPORT_CREATED_AT],
+    [cols.PASSPORT_EXPIRED_AT]: body[colsUsers.PASSPORT_EXPIRED_AT],
+
 });
 
 const formatRecordToEdit = (body) => ({
@@ -22,6 +28,11 @@ const formatRecordToEdit = (body) => ({
     [cols.PHONE_PREFIX_ID]: body[HOMELESS_COLUMNS.PHONE_PREFIX_ID],
     [cols.DRIVER_LICENCE_REGISTERED_AT]: body[colsDrivers.DRIVER_LICENCE_REGISTERED_AT],
     [cols.DRIVER_LICENCE_EXPIRED_AT]: body[colsDrivers.DRIVER_LICENCE_EXPIRED_AT],
+    [cols.PASSPORT_NUMBER]: body[colsUsers.PASSPORT_NUMBER],
+    [cols.PASSPORT_PERSONAL_ID]: body[colsUsers.PASSPORT_PERSONAL_ID],
+    [cols.PASSPORT_ISSUING_AUTHORITY]: body[colsUsers.PASSPORT_ISSUING_AUTHORITY],
+    [cols.PASSPORT_CREATED_AT]: body[colsUsers.PASSPORT_CREATED_AT],
+    [cols.PASSPORT_EXPIRED_AT]: body[colsUsers.PASSPORT_EXPIRED_AT],
 });
 
 module.exports = {

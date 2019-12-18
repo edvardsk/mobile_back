@@ -10,6 +10,11 @@ exports.up = function(knex) {
         table.timestamp('driver_licence_registered_at').notNull();
         table.timestamp('driver_licence_expired_at').notNull();
         table.timestamp('created_at').defaultTo(knex.fn.now());
+        table.string('passport_number').notNull();
+        table.string('passport_personal_id').notNull();
+        table.string('passport_issuing_authority').notNull();
+        table.date('passport_created_at').notNull();
+        table.date('passport_expired_at').notNull();
         table.unique('driver_id');
     })
         .then(function () {
