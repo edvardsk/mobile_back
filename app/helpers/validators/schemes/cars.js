@@ -25,6 +25,11 @@ const CAR_PROPS = {
         minLength: 1,
         maxLength: POSTGRES_MAX_STRING_LENGTH,
     },
+    [colsCars.CAR_VIN]: {
+        type: 'string',
+        minLength: 1,
+        maxLength: POSTGRES_MAX_STRING_LENGTH,
+    },
     [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: {
         type: 'string',
         minLength: 1,
@@ -84,6 +89,11 @@ const TRAILER_PROPS = {
         maxLength: POSTGRES_MAX_STRING_LENGTH,
     },
     [colsTrailers.TRAILER_MODEL]: {
+        type: 'string',
+        minLength: 1,
+        maxLength: POSTGRES_MAX_STRING_LENGTH,
+    },
+    [colsTrailers.TRAILER_VIN]: {
         type: 'string',
         minLength: 1,
         maxLength: POSTGRES_MAX_STRING_LENGTH,
@@ -349,6 +359,7 @@ const createCarCommon = {
         required: [
             colsCars.CAR_MARK,
             colsCars.CAR_MODEL,
+            colsCars.CAR_VIN,
             colsCars.CAR_TYPE,
             HOMELESS_COLUMNS.CAR_STATE_NUMBER,
             colsCars.CAR_MADE_YEAR_AT,
@@ -379,6 +390,7 @@ const createTrailerCommon = {
         required: [
             colsTrailers.TRAILER_MARK,
             colsTrailers.TRAILER_MODEL,
+            colsTrailers.TRAILER_VIN,
             colsTrailers.TRAILER_MADE_YEAR_AT,
             HOMELESS_COLUMNS.TRAILER_STATE_NUMBER,
             colsTrailers.TRAILER_LOADING_METHODS,
@@ -400,6 +412,7 @@ const editCarCommon = {
     required:[
         colsCars.CAR_MARK,
         colsCars.CAR_MODEL,
+        colsCars.CAR_VIN,
         colsCars.CAR_TYPE,
         HOMELESS_COLUMNS.CAR_STATE_NUMBER,
         colsCars.CAR_MADE_YEAR_AT,
@@ -414,6 +427,7 @@ const editTrailer = {
     required:[
         colsTrailers.TRAILER_MARK,
         colsTrailers.TRAILER_MODEL,
+        colsTrailers.TRAILER_VIN,
         colsTrailers.TRAILER_MADE_YEAR_AT,
         HOMELESS_COLUMNS.TRAILER_STATE_NUMBER,
         colsTrailers.TRAILER_LOADING_METHODS,
