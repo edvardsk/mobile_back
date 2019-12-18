@@ -72,6 +72,18 @@ const formatUserWithPhoneNumberAndRole = data => ({
     [cols.PASSPORT_EXPIRED_AT]: data[cols.PASSPORT_EXPIRED_AT] || null,
 });
 
+const formatUserFromDraftDriver = draftDriver => ({
+    [cols.EMAIL]: draftDriver[colsDraftDrivers.EMAIL],
+    [cols.FULL_NAME]: draftDriver[colsDraftDrivers.FULL_NAME],
+    [HOMELESS_COLUMNS.PHONE_NUMBER]: draftDriver[colsDraftDrivers.NUMBER],
+    [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: draftDriver[colsDraftDrivers.PHONE_PREFIX_ID],
+    [cols.PASSPORT_NUMBER]: draftDriver[colsDraftDrivers.PASSPORT_NUMBER],
+    [cols.PASSPORT_PERSONAL_ID]: draftDriver[colsDraftDrivers.PASSPORT_PERSONAL_ID],
+    [cols.PASSPORT_ISSUING_AUTHORITY]: draftDriver[colsDraftDrivers.PASSPORT_ISSUING_AUTHORITY],
+    [cols.PASSPORT_CREATED_AT]: draftDriver[colsDraftDrivers.PASSPORT_CREATED_AT],
+    [cols.PASSPORT_EXPIRED_AT]: draftDriver[colsDraftDrivers.PASSPORT_EXPIRED_AT],
+});
+
 const formatFreezingFieldToEdit = value => ({
     [cols.FREEZED]: value,
 });
@@ -106,4 +118,5 @@ module.exports = {
     formatFreezingFieldToEdit,
     formatUserToUpdate,
     formatUserToUpdateFromDraft,
+    formatUserFromDraftDriver,
 };

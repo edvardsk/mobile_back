@@ -6,9 +6,11 @@ const squelPostgres = squel.useFlavour('postgres');
 const table = SQL_TABLES.DRAFT_DRIVERS;
 const tableDrivers = SQL_TABLES.DRIVERS;
 const tableUsers = SQL_TABLES.USERS;
+const tablePhonePrefixes = SQL_TABLES.PHONE_PREFIXES;
 
 const cols = table.COLUMNS;
 const colsDrivers = tableDrivers.COLUMNS;
+const colsPhonePrefixes = tablePhonePrefixes.COLUMNS;
 
 const insertRecord = values => squelPostgres
     .insert()
@@ -54,10 +56,13 @@ const selectRecordById = id => squelPostgres
 
 const selectRecordByUserId = userId => squelPostgres
     .select()
+    .field('dd.*')
+    .field(`pp.${colsPhonePrefixes.CODE}`, colsPhonePrefixes.CODE)
     .from(table.NAME, 'dd')
     .where(`u.id = '${userId}'`)
     .left_join(tableDrivers.NAME, 'd', `d.id = dd.${cols.DRIVER_ID}`)
     .left_join(tableUsers.NAME, 'u', `u.id = d.${colsDrivers.USER_ID}`)
+    .left_join(tablePhonePrefixes.NAME, 'pp', `pp.id = dd.${cols.PHONE_PREFIX_ID}`)
     .toString();
 
 module.exports = {

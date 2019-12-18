@@ -3,9 +3,10 @@ const { manyOrNone } = require('db');
 // sql-helpers
 const {
     insertFiles,
+    deleteFilesByIds,
     selectFilesByDraftDriverIdAndLabels,
     selectFilesByDraftDriverId,
-    deleteFilesByIds,
+    selectFilesByUserId,
 } = require('sql-helpers/draft-files');
 
 // services
@@ -35,6 +36,10 @@ const getFilesByDraftDriverId = (draftDriverId) => (
     manyOrNone(selectFilesByDraftDriverId(draftDriverId))
 );
 
+const getFilesByUserId = (userId) => (
+    manyOrNone(selectFilesByUserId(userId))
+);
+
 const formatTemporaryLinks = async files => {
     const decryptedFiles = files.map(file => {
         const url = CryptoService.decrypt(file[cols.URL]);
@@ -59,6 +64,7 @@ module.exports = {
     addFilesAsTransaction,
     getFilesByDraftDriverIdAndLabels,
     getFilesByDraftDriverId,
+    getFilesByUserId,
     removeFilesByIdsAsTransaction,
 
     formatTemporaryLinks,

@@ -1,5 +1,6 @@
 const moment = require('moment');
 const uuid = require('uuid/v4');
+const { difference } = require('lodash');
 
 // constants
 const { SqlArray } = require('constants/instances');
@@ -289,6 +290,28 @@ const selectFilesToStore = (files, mapData) => {
     return result;
 };
 
+const mergeFilesWithDraft = (files, draftFiles) => {
+    let mergedFiles = files.reduce((acc, file) => {
+        const draftFileIndex = draftFiles.findIndex(draftFile => (
+            !difference(draftFile[colsDraftFiles.LABELS], file[cols.LABELS]).length
+        ));
+
+        if (draftFileIndex !== -1) {
+            acc.push(draftFiles[draftFileIndex]);
+            draftFiles.splice(draftFileIndex, 1);
+        } else {
+            acc.push(file);
+        }
+
+        return acc;
+
+    }, []);
+    return [
+        ...mergedFiles,
+        ...draftFiles,
+    ];
+};
+
 module.exports = {
     formatBasicFileLabelsFromTypes,
     formatStoringFile,
@@ -304,4 +327,5 @@ module.exports = {
     prepareFilesToStoreForDraftDrivers,
     prepareFilesToDelete,
     selectFilesToStore,
+    mergeFilesWithDraft,
 };
