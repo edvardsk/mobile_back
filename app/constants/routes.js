@@ -43,6 +43,7 @@ const BASES = {
     OTHERS: '/others',
     VEHICLE_TYPES: '/vehicle-types',
     DANGER_CLASSES: '/danger-classes',
+    DEAL_STATUSES: '/deal-statuses',
     SETTINGS: '/settings',
     ECONOMICS: '/economics',
     DEFAULT: '/default',
@@ -350,6 +351,10 @@ const ROUTES = {
         },
         EXCHANGE_RATES: {
             BASE: BASES.EXCHANGE_RATES,
+            GET_ALL: '',
+        },
+        DEAL_STATUSES: {
+            BASE: BASES.DEAL_STATUSES,
             GET_ALL: '',
         },
     },

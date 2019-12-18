@@ -9,6 +9,8 @@ const getCurrencies = require('./currencies/get');
 
 const getExchangeRates = require('./exchange-rates/get');
 
+const getDealStatuses = require('./deal-statuses/get');
+
 const router = express.Router();
 
 
@@ -34,6 +36,12 @@ router.get(
 router.get(
     ROUTES.OTHERS.EXCHANGE_RATES.BASE + ROUTES.OTHERS.EXCHANGE_RATES.GET_ALL,
     getExchangeRates.getListRates,
+);
+
+// deal-statuses
+router.get(
+    ROUTES.OTHERS.DEAL_STATUSES.BASE + ROUTES.OTHERS.DEAL_STATUSES.GET_ALL,
+    getDealStatuses.getStatuses,
 );
 
 module.exports = router;

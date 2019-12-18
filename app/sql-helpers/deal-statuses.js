@@ -13,6 +13,13 @@ const selectRecordByName = name => squelPostgres
     .where(`${cols.NAME} = '${name}'`)
     .toString();
 
+
+const selectStatuses = () => squelPostgres
+    .select()
+    .from(table.NAME)
+    .toString();
+
 module.exports = {
     selectRecordByName,
+    selectStatuses,
 };

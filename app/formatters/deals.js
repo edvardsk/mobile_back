@@ -7,8 +7,12 @@ const { LOADING_TYPES_MAP } = require('constants/cargos');
 // helpers
 const { isValidUUID } = require('helpers/validators');
 
+// formatters
+const { formatGeoPoints } = require('./cargos');
+
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
 const colsDealStatuses = SQL_TABLES.DEAL_HISTORY_STATUSES.COLUMNS;
+const colsCargo = SQL_TABLES.CARGOS.COLUMNS;
 
 const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, companyId, initiatorId, dealStatusId) => {
     const generatedDriverId = uuid();
@@ -92,6 +96,34 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
     }, [[], [], [], [], [], []]);
 };
 
+const formatRecordForList = (deal, userLanguageId) => {
+    const result = {
+        id: deal.id,
+        [colsDeals.NAME]: deal[colsDeals.NAME],
+        [colsDeals.TRAILER_ID]: deal[colsDeals.TRAILER_ID],
+        [colsDeals.TRANSPORTER_COMPANY_ID]: deal[colsDeals.TRANSPORTER_COMPANY_ID],
+        [colsDeals.DRIVER_ID]: deal[colsDeals.DRIVER_ID],
+        [colsDeals.CAR_ID]: deal[colsDeals.CAR_ID],
+        [colsDeals.TRAILER_ID]: deal[colsDeals.TRAILER_ID],
+        [colsDeals.CREATED_AT]: deal[colsDeals.CREATED_AT],
+        [colsDeals.PAY_CURRENCY_ID]: deal[colsDeals.PAY_CURRENCY_ID],
+        [colsDeals.PAY_VALUE]: parseFloat(deal[colsDeals.PAY_VALUE]),
+        [colsCargo.UPLOADING_DATE_FROM]: deal[colsCargo.UPLOADING_DATE_FROM],
+        [colsCargo.UPLOADING_DATE_TO]: deal[colsCargo.UPLOADING_DATE_TO],
+        [colsCargo.DOWNLOADING_DATE_FROM]: deal[colsCargo.DOWNLOADING_DATE_FROM],
+        [colsCargo.DOWNLOADING_DATE_TO]: deal[colsCargo.DOWNLOADING_DATE_TO],
+    };
+
+    const [uploadingPoints, downloadingPoints] = formatGeoPoints(deal, userLanguageId);
+
+    return {
+        ...result,
+        [HOMELESS_COLUMNS.UPLOADING_POINTS]: uploadingPoints,
+        [HOMELESS_COLUMNS.DOWNLOADING_POINTS]: downloadingPoints,
+    };
+};
+
 module.exports = {
     formatAllInstancesToSave,
+    formatRecordForList,
 };
