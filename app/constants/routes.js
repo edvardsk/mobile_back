@@ -43,6 +43,8 @@ const BASES = {
     OTHERS: '/others',
     VEHICLE_TYPES: '/vehicle-types',
     DANGER_CLASSES: '/danger-classes',
+    TNVED_CODES: '/tnved-codes',
+    KEYWORDS: '/keywords',
     SETTINGS: '/settings',
     ECONOMICS: '/economics',
     DEFAULT: '/default',
@@ -71,6 +73,7 @@ const IDS = {
     CAR_ID: '/:carId',
     TRAILER_ID: '/:trailerId',
     DRIVER_ID: '/:driverId',
+    KEYWORD_ID: '/:keywordId',
 };
 
 const ROUTES = {
@@ -362,6 +365,19 @@ const ROUTES = {
             BASE: BASES.EXCHANGE_RATES,
             GET_ALL: '',
         },
+        TNVED_CODES: {
+            BASE: BASES.TNVED_CODES,
+            GET: '',
+            GET_ALL: '/all',
+            KEYWORDS: {
+                BASE: BASES.KEYWORDS,
+                POST: '',
+                GET_ALL: '/all',
+                GET: '',
+                PUT: IDS.KEYWORD_ID,
+                DELETE: IDS.KEYWORD_ID,
+            },
+        },
     },
     SETTINGS: {
         BASE: BASES.SETTINGS,
@@ -432,6 +448,8 @@ const ALLOWED_ROUTES = {
         API_PREFIX + ROUTES.OTHERS.BASE + ROUTES.OTHERS.DANGER_CLASSES.BASE + ROUTES.OTHERS.DANGER_CLASSES.GET_ALL,
         API_PREFIX + ROUTES.OTHERS.BASE + ROUTES.OTHERS.CURRENCIES.BASE + ROUTES.OTHERS.CURRENCIES.GET_ALL,
         API_PREFIX + ROUTES.OTHERS.BASE + ROUTES.OTHERS.EXCHANGE_RATES.BASE + ROUTES.OTHERS.EXCHANGE_RATES.GET_ALL,
+        API_PREFIX + ROUTES.OTHERS.BASE + ROUTES.OTHERS.TNVED_CODES.BASE + ROUTES.OTHERS.TNVED_CODES.GET,
+        API_PREFIX + ROUTES.OTHERS.BASE + ROUTES.OTHERS.TNVED_CODES.BASE + ROUTES.OTHERS.TNVED_CODES.GET_ALL,
     ]),
     POST: new Set([
         API_PREFIX + ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.POST,

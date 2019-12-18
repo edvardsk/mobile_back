@@ -94,6 +94,7 @@ const formatRecordForResponse = (cargo, userLanguageId) => {
         [cols.PACKING_DESCRIPTION]: cargo[cols.PACKING_DESCRIPTION],
         [cols.DESCRIPTION]: cargo[cols.DESCRIPTION],
         [cols.CREATED_AT]: cargo[cols.CREATED_AT],
+        [cols.TNVED_CODE_ID]: cargo[cols.TNVED_CODE_ID],
         [HOMELESS_COLUMNS.STATUS]: cargo[HOMELESS_COLUMNS.STATUS],
     };
     const [uploadingPoints, downloadingPoints] = formatGeoPoints(cargo, userLanguageId);
@@ -125,6 +126,7 @@ const formatCargoData = body => {
         cols.VEHICLE_TYPE_ID,
         cols.PACKING_DESCRIPTION,
         cols.DESCRIPTION,
+        cols.TNVED_CODE_ID,
     ]);
 
     const CARGO_POINTS_PROPS = new Set([

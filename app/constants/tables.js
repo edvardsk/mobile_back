@@ -231,6 +231,22 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    TNVED_CODES: {
+        NAME: 'tnved_codes',
+        COLUMNS: {
+            CODE: 'code',
+            CREATED_AT: 'created_at',
+        },
+    },
+    TNVED_CODES_KEYWORDS: {
+        NAME: 'tnved_codes_keywords',
+        COLUMNS: {
+            TNVED_CODE_ID: 'tnved_code_id',
+            LANGUAGE_ID: 'language_id',
+            CREATED_AT: 'created_at',
+            VALUE: 'value',
+        },
+    },
     CARGOS: {
         NAME: 'cargos',
         COLUMNS: {
@@ -257,6 +273,7 @@ const SQL_TABLES = {
             DISTANCE: 'distance',
             CREATED_AT: 'created_at',
             DELETED: 'deleted',
+            TNVED_CODE_ID: 'tnved_code_id',
         },
     },
     CARGO_POINTS: {
@@ -576,6 +593,7 @@ const HOMELESS_COLUMNS = {
     COUNTRY_CURRENCY_CODE: 'country_currency_code',
     CAR_VERIFIED: 'car_verified',
     TRAILER_VERIFIED: 'trailer_verified',
+    KEYWORD: 'keyword',
     DEALS: 'deals',
 };
 

@@ -133,6 +133,26 @@ const usersFilterQuery = {
     },
 };
 
+const tnvedCodesFilterQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.FILTER]: {
+            type: 'object',
+            properties: {
+                [HOMELESS_COLUMNS.KEYWORD]: {
+                    type: 'string',
+                },
+            },
+            additionalProperties: false,
+        },
+        [HOMELESS_COLUMNS.LANGUAGE_CODE]: {
+            type: 'string',
+            minLength: 2,
+            maxLength: 10,
+        },
+    },
+    additionalProperties: false,
+};
+
 const companyDriversFilterQuery = {
     properties: {
         [HOMELESS_COLUMNS.FILTER]: {
@@ -283,4 +303,5 @@ module.exports = {
     carsDealsAvailableFilterQuery,
     trailersDealsAvailableFilterQuery,
     driversDealsAvailableFilterQuery,
+    tnvedCodesFilterQuery,
 };
