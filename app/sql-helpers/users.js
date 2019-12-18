@@ -229,11 +229,16 @@ const selectUsersByCompanyIdAndDriverRolePaginationSorting = (companyId, limit, 
         .field(`d.${colsDrivers.DRIVER_LICENCE_REGISTERED_AT}`)
         .field(`d.${colsDrivers.DRIVER_LICENCE_EXPIRED_AT}`)
         .field(`d.${colsDrivers.VERIFIED}`, colsDrivers.VERIFIED)
+        .field(`dd.${colsDraftDrivers.EMAIL}`, HOMELESS_COLUMNS.DRAFT_EMAIL)
+        .field(`dd.${colsDraftDrivers.FULL_NAME}`, HOMELESS_COLUMNS.DRAFT_FULL_NAME)
+        .field(`dd.${colsDraftDrivers.DRIVER_LICENCE_REGISTERED_AT}`, HOMELESS_COLUMNS.DRAFT_DRIVER_LICENCE_REGISTERED_AT)
+        .field(`dd.${colsDraftDrivers.DRIVER_LICENCE_EXPIRED_AT}`, HOMELESS_COLUMNS.DRAFT_DRIVER_LICENCE_EXPIRED_AT)
+        .field(`CONCAT(dphp.${colsPhonePrefixes.CODE}, dd.${colsDraftDrivers.NUMBER})`, HOMELESS_COLUMNS.DRAFT_FULL_PHONE_NUMBER)
         .from(table.NAME, 'u')
         .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
         .where(`r.${colsRoles.NAME} IN ?`, DRIVER_ROLES);
 
-    expression = setFilter(expression, filter);
+    expression = setDriversFilter(expression, filter);
     return expression
         .left_join(tableUsersCompanies.NAME, 'uc', `u.id = uc.${colsUsersCompanies.USER_ID}`)
         .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
@@ -241,6 +246,8 @@ const selectUsersByCompanyIdAndDriverRolePaginationSorting = (companyId, limit, 
         .left_join(tablePhoneNumbers.NAME, 'phn', `phn.${colsPhoneNumbers.USER_ID} = u.id`)
         .left_join(tablePhonePrefixes.NAME, 'php', `php.id = phn.${colsPhoneNumbers.PHONE_PREFIX_ID}`)
         .left_join(tableDrivers.NAME, 'd', `d.${colsDrivers.USER_ID} = u.id`)
+        .left_join(tableDraftDrivers.NAME, 'dd', `dd.${colsDraftDrivers.DRIVER_ID} = d.id`)
+        .left_join(tablePhonePrefixes.NAME, 'dphp', `dphp.id = dd.${colsDraftDrivers.PHONE_PREFIX_ID}`)
         .order(sortColumn, asc)
         .limit(limit)
         .offset(offset)
@@ -255,17 +262,35 @@ const selectCountUsersByCompanyIdAndDriverRole = (companyId, filter) => {
         .where(`uc.${colsUsersCompanies.COMPANY_ID} = '${companyId}'`)
         .where(`r.${colsRoles.NAME} IN ?`, DRIVER_ROLES);
 
-    expression = setFilter(expression, filter);
+    expression = setDriversFilter(expression, filter);
     return expression
         .left_join(tableUsersCompanies.NAME, 'uc', `u.id = uc.${colsUsersCompanies.USER_ID}`)
         .left_join(tableUsersRoles.NAME, 'ur', `ur.${colsUsersRoles.USER_ID} = u.id`)
         .left_join(tableRoles.NAME, 'r', `r.id = ur.${colsUsersRoles.ROLE_ID}`)
+        .left_join(tableDrivers.NAME, 'd', `d.${colsDrivers.USER_ID} = u.id`)
+        .left_join(tableDraftDrivers.NAME, 'dd', `dd.${colsDraftDrivers.DRIVER_ID} = d.id`)
         .toString();
 };
 
 const setFilter = (expression, filteringObject) => {
     const filteringObjectSQLExpressions = [
-        [cols.FULL_NAME, `${cols.FULL_NAME}::text ILIKE '%${filteringObject[cols.FULL_NAME]}%'`],
+        [cols.FULL_NAME, `u.${cols.FULL_NAME}::text ILIKE '%${filteringObject[cols.FULL_NAME]}%'`],
+    ];
+
+    for (let [key, exp] of filteringObjectSQLExpressions) {
+        if (get(filteringObject, key) !== undefined) {
+            expression = expression.where(exp);
+        }
+    }
+    return expression;
+};
+
+const setDriversFilter = (expression, filteringObject) => {
+    const filteringObjectSQLExpressions = [
+        [cols.FULL_NAME,
+            `(dd.${colsDraftDrivers.FULL_NAME} IS NULL AND u.${cols.FULL_NAME}::text ILIKE '%${filteringObject[cols.FULL_NAME]}%') OR 
+            (dd.${colsDraftDrivers.FULL_NAME} IS NOT NULL AND dd.${colsDraftDrivers.FULL_NAME}::text ILIKE '%${filteringObject[cols.FULL_NAME]}%')
+        `],
     ];
 
     for (let [key, exp] of filteringObjectSQLExpressions) {

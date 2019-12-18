@@ -604,6 +604,12 @@ const HOMELESS_COLUMNS = {
     TRAILER_VERIFIED: 'trailer_verified',
     KEYWORD: 'keyword',
     DEALS: 'deals',
+    DRAFT_EMAIL: 'draft_email',
+    DRAFT_FULL_NAME: 'draft_full_name',
+    DRAFT_DRIVER_LICENCE_REGISTERED_AT: 'draft_driver_licence_registered_at',
+    DRAFT_DRIVER_LICENCE_EXPIRED_AT: 'draft_driver_licence_expired_at',
+    DRAFT_FULL_PHONE_NUMBER: 'draft_full_phone_number',
+    IS_DRAFT: 'is_draft',
 };
 
 module.exports = {

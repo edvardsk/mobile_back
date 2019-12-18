@@ -18,14 +18,15 @@ const formatRecordToSave = (userId, body) => ({
 
 const formatDriversWithPhoneAndRole = data => ({
     id: data.id,
-    [colsUsers.FULL_NAME]: data[colsUsers.FULL_NAME],
-    [colsUsers.EMAIL]: data[colsUsers.EMAIL],
+    [colsUsers.FULL_NAME]: data[HOMELESS_COLUMNS.DRAFT_FULL_NAME] || data[colsUsers.FULL_NAME],
+    [colsUsers.EMAIL]: data[HOMELESS_COLUMNS.DRAFT_EMAIL] || data[colsUsers.EMAIL],
     [HOMELESS_COLUMNS.ROLE]: data[HOMELESS_COLUMNS.ROLE],
-    [HOMELESS_COLUMNS.FULL_PHONE_NUMBER]: data[HOMELESS_COLUMNS.FULL_PHONE_NUMBER],
-    [cols.DRIVER_LICENCE_REGISTERED_AT]: data[cols.DRIVER_LICENCE_REGISTERED_AT],
-    [cols.DRIVER_LICENCE_EXPIRED_AT]: data[cols.DRIVER_LICENCE_EXPIRED_AT],
+    [HOMELESS_COLUMNS.FULL_PHONE_NUMBER]: data[HOMELESS_COLUMNS.DRAFT_FULL_PHONE_NUMBER] || data[HOMELESS_COLUMNS.FULL_PHONE_NUMBER],
+    [cols.DRIVER_LICENCE_REGISTERED_AT]: data[HOMELESS_COLUMNS.DRAFT_DRIVER_LICENCE_REGISTERED_AT] || data[cols.DRIVER_LICENCE_REGISTERED_AT],
+    [cols.DRIVER_LICENCE_EXPIRED_AT]: data[HOMELESS_COLUMNS.DRAFT_DRIVER_LICENCE_EXPIRED_AT] || data[cols.DRIVER_LICENCE_EXPIRED_AT],
     [colsUsers.FREEZED]: data[colsUsers.FREEZED],
     [colsDrivers.VERIFIED]: data[colsDrivers.VERIFIED],
+    [HOMELESS_COLUMNS.IS_DRAFT]: !!data[HOMELESS_COLUMNS.DRAFT_EMAIL],
 });
 
 const formatRecordForList = data => ({

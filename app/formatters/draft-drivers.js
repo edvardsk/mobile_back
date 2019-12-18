@@ -8,7 +8,7 @@ const formatRecordToSave = (id, driverId, body) => ({
     id,
     [cols.DRIVER_ID]: driverId,
     [cols.EMAIL]: body[colsUsers.EMAIL],
-    [cols.FULL_NAME]: colsUsers[cols.FULL_NAME],
+    [cols.FULL_NAME]: body[colsUsers.FULL_NAME],
     [cols.NUMBER]: body[HOMELESS_COLUMNS.PHONE_NUMBER],
     [cols.PHONE_PREFIX_ID]: body[HOMELESS_COLUMNS.PHONE_PREFIX_ID],
     [cols.DRIVER_LICENCE_REGISTERED_AT]: body[colsDrivers.DRIVER_LICENCE_REGISTERED_AT],
