@@ -22,11 +22,14 @@ const getDirection = ({ uploading_points, downloading_points }, language = DEFAU
         .asPromise()
         .then((response) => {
             const routes = response.json.routes;
-            const [{ legs }] = routes;
-            const distance = legs.reduce((acc, leg) => acc += leg.distance.value, 0);
-            const distanceKm = Math.round(distance / 1000);
-
-            return distanceKm;
+            if (routes.length) {
+                const [{ legs }] = routes;
+                const distance = legs.reduce((acc, leg) => acc += leg.distance.value, 0);
+                const distanceKm = Math.round(distance / 1000);
+    
+                return distanceKm;
+            }
+            return Number.MAX_VALUE;
         });
 };
 

@@ -1,4 +1,5 @@
 const { success, reject } = require('api/response');
+const uuid = require('uuid/v4');
 
 // services
 const CargosServices = require('services/tables/cargos');
@@ -31,24 +32,38 @@ const editCargo = async (req, res, next) => {
     try {
         const { body } = req;
         const { cargoId } = req.params;
-        const { isControlRole } = res.locals;
-        const cargoFromDb = await CargosServices.getRecord(cargoId);
+        const { isControlRole, company } = res.locals;
+        const companyId = company.id;
+        let cargoFromDb = await CargosServices.getRecord(cargoId);
 
         const countCargos = cargoFromDb[colsCargos.COUNT];
         const countFreeCargos = cargoFromDb[colsCargos.FREE_COUNT];
 
+        let withCopy = false;
+
         if (!isControlRole && countCargos !== countFreeCargos) {
-            return reject(res, ERRORS.CARGOS.UNABLE_TO_EDIT);
+            if (countFreeCargos > 0) {
+                withCopy = true;
+                cargoFromDb[colsCargos.COUNT] = countCargos - countFreeCargos;
+                cargoFromDb[colsCargos.FREE_COUNT] = 0;
+            } else {
+                return reject(res, ERRORS.CARGOS.UNABLE_TO_EDIT);
+            }
         }
 
         const { cargosProps, cargoPointsProps } = CargosFormatters.formatCargoData(body);
 
         const distance = await DirectionsService.getDirection(cargoPointsProps);
 
-        const cargo = CargosFormatters.formatRecordToEdit(cargosProps, distance);
-        const cargoPointsWithName = CargoPointsFormatters.formatRecordsWithName(cargoId, cargoPointsProps);
+        const newCargoId = withCopy ? uuid() : cargoId;
+
+        const cargo = withCopy
+            ? CargosFormatters.formatRecordToSave(companyId, newCargoId, cargosProps, distance)
+            : CargosFormatters.formatRecordToEdit(cargosProps, distance);
+
+        const cargoPointsWithName = CargoPointsFormatters.formatRecordsWithName(newCargoId, cargoPointsProps);
         const cargoPoints = CargoPointsFormatters.formatRecordsToSave(cargoPointsWithName);
-        const cargoPrices = CargoPricesFormatters.formatRecordsToSave(body[HOMELESS_COLUMNS.PRICES], cargoId);
+        const cargoPrices = CargoPricesFormatters.formatRecordsToSave(body[HOMELESS_COLUMNS.PRICES], newCargoId);
 
         const cargoCoordinates = cargoPointsWithName.map(record => ({
             [colsCargoPoints.COORDINATES]: record[colsCargoPoints.COORDINATES].toPointString(),
@@ -59,10 +74,28 @@ const editCargo = async (req, res, next) => {
 
         const pointsToStore = cargoCoordinates.filter(cargoCoordinate => !storedPoints.find(point => point[colsPoints.COORDINATES] === cargoCoordinate[colsCargoPoints.COORDINATES]));
 
-        const transactionsList = [
+        let oldCargo;
+
+        if (withCopy) {
+            const { cargosProps: oldCargosProps } = CargosFormatters.formatCargoData(cargoFromDb);
+            oldCargo = CargosFormatters.formatRecordToEdit(oldCargosProps, cargoFromDb[colsCargos.DISTANCE]);
+            oldCargo[colsCargos.COUNT] = cargoFromDb[colsCargos.COUNT];
+            oldCargo[colsCargos.FREE_COUNT] = cargoFromDb[colsCargos.FREE_COUNT];
+            delete oldCargo.id;
+        }
+
+        const editTransactionsList = [
             CargoPointsService.removeRecordsByCargoIdAsTransaction(cargoId),
             CargoPricesService.removeRecordsByCargoIdAsTransaction(cargoId),
-            CargosServices.editRecordAsTransaction(cargoId, cargo),
+            CargosServices.editRecordAsTransaction(newCargoId, cargo),
+        ];
+
+        const createTransactionsList = [
+            CargosServices.addRecordAsTransaction(cargo),
+            CargosServices.editRecordAsTransaction(cargoId, oldCargo),
+        ];
+
+        const transactionsList = [
             CargoPointsService.addRecordsAsTransaction(cargoPoints),
             CargoPricesService.addRecordsAsTransaction(cargoPrices)
         ];
@@ -83,7 +116,7 @@ const editCargo = async (req, res, next) => {
             );
         }
 
-        await TablesService.runTransaction(transactionsList);
+        await TablesService.runTransaction([...(withCopy ? createTransactionsList : editTransactionsList), ...transactionsList]);
 
         if (translationsList.length) {
             const languages = await LanguagesService.getLanguagesWithoutEng();
