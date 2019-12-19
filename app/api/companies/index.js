@@ -555,6 +555,7 @@ router.get(
     validate(ValidatorSchemes.basePaginationQuery, 'query'),
     validate(ValidatorSchemes.basePaginationModifyQuery, 'query'),
     validate(ValidatorSchemes.modifyFilterQuery, 'query'),
+    validate(ValidatorSchemes.dealsFilterQuery, 'query'),
     injectCompanyData,
     getDeals.getListDeals,
 );
