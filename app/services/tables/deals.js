@@ -1,8 +1,10 @@
-const { one } = require('db');
+const  { one, manyOrNone } = require('db');
 
 // sql-helpers
 const {
     insertRecords,
+    selectDealsByCompanyIdPaginationSorting,
+    selectCountDealsByCompanyId,
     selectRecordById,
 } = require('sql-helpers/deals');
 
@@ -78,8 +80,19 @@ const validateDealItems = async (arr, companyId, cargoLoadingType, userLanguageI
     return [invalidItems.filter(Boolean), availableCars, availableTrailers, availableDrivers];
 };
 
+const getDealsPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter, userLanguageId) => (
+    manyOrNone(selectDealsByCompanyIdPaginationSorting(companyId, limit, offset, sortColumn, asc, filter, userLanguageId))
+);
+
+const getCountDeals = (companyId, filter) => (
+    one(selectCountDealsByCompanyId(companyId, filter))
+        .then(({ count }) => +count)
+);
+
 module.exports = {
     addRecordsAsTransaction,
     getRecordStrict,
     validateDealItems,
+    getDealsPaginationSorting,
+    getCountDeals,
 };

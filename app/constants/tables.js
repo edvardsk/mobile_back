@@ -615,6 +615,8 @@ const HOMELESS_COLUMNS = {
     DRAFT_DRIVER_LICENCE_EXPIRED_AT: 'draft_driver_licence_expired_at',
     DRAFT_FULL_PHONE_NUMBER: 'draft_full_phone_number',
     IS_DRAFT: 'is_draft',
+    DATE_FROM: 'date_from',
+    DATE_TO: 'date_to',
 };
 
 module.exports = {

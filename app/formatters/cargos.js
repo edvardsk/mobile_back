@@ -315,5 +315,6 @@ module.exports = {
     formatRecordForSearchResponse,
     formatRecordForSearchAllResponse,
     formatRecordForUnauthorizedResponse,
+    formatGeoPoints,
     formatCargoDates,
 };

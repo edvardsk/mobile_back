@@ -11,6 +11,8 @@ const getTNVEDCodesKeywords = require('./tnved-codes/keywords/get');
 const putTNVEDCodesKeywords = require('./tnved-codes/keywords/put');
 const deleteTNVEDCodesKeywords = require('./tnved-codes/keywords/delete');
 
+const getDealStatuses = require('./deal-statuses/get');
+
 const router = express.Router();
 
 // middlewares
@@ -46,6 +48,12 @@ router.get(
 router.get(
     ROUTES.OTHERS.EXCHANGE_RATES.BASE + ROUTES.OTHERS.EXCHANGE_RATES.GET_ALL,
     getExchangeRates.getListRates,
+);
+
+// deal-statuses
+router.get(
+    ROUTES.OTHERS.DEAL_STATUSES.BASE + ROUTES.OTHERS.DEAL_STATUSES.GET_ALL,
+    getDealStatuses.getStatuses,
 );
 
 // tnved codes
