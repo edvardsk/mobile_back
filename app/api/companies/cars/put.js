@@ -44,7 +44,7 @@ const editCar = async (req, res, next) => {
             CarsServices.editRecordAsTransaction(carId, carDataToEdit)
         ];
 
-        const carRequiredDocuments = [DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION, DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT];
+        const carRequiredDocuments = [DOCUMENTS.VEHICLE_TECHNICAL_INSPECTION, DOCUMENTS.VEHICLE_REGISTRATION_PASSPORT, DOCUMENTS.VEHICLE_PHOTO];
         const passedFiles = Object.keys(files);
         const fileLabelsToDelete = intersection(carRequiredDocuments, passedFiles);
 

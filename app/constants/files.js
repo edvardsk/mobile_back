@@ -12,6 +12,7 @@ const DOCUMENTS = {
     DANGER_CLASS: 'danger_class',
     VEHICLE_REGISTRATION_PASSPORT: 'vehicle_registration_passport',
     VEHICLE_TECHNICAL_INSPECTION: 'vehicle_technical_inspection',
+    VEHICLE_PHOTO: 'vehicle_photo',
 };
 
 const DOCUMENTS_SET = new Set(Object.values(DOCUMENTS));
