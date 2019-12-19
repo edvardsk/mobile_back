@@ -35,6 +35,14 @@ const formatRecordToEdit = (data, distance) => ({
     ...data,
     [cols.FREE_COUNT]: data[cols.COUNT],
     [cols.DISTANCE]: distance,
+    [cols.WIDTH]: parseFloat(data[cols.WIDTH]),
+    [cols.GROSS_WEIGHT]: parseFloat(data[cols.GROSS_WEIGHT]),
+    [cols.LENGTH]: parseFloat(data[cols.LENGTH]),
+    [cols.HEIGHT]: parseFloat(data[cols.HEIGHT]),
+    [cols.UPLOADING_DATE_FROM]: moment(data[cols.UPLOADING_DATE_FROM]).toISOString(),
+    [cols.UPLOADING_DATE_TO]: moment(data[cols.UPLOADING_DATE_TO]).toISOString(),
+    [cols.DOWNLOADING_DATE_FROM]: moment(data[cols.DOWNLOADING_DATE_FROM]).toISOString(),
+    [cols.DOWNLOADING_DATE_TO]: moment(data[cols.DOWNLOADING_DATE_TO]).toISOString(),
     [cols.LOADING_METHODS]: new SqlArray(data[cols.LOADING_METHODS]),
     [cols.GUARANTEES]: new SqlArray(data[cols.GUARANTEES]),
 });
@@ -75,7 +83,7 @@ const formatRecordForList = (cargo, userLanguageId) => {
 const formatRecordForResponse = (cargo, userLanguageId) => {
     const result = {
         id: cargo.id,
-        [cols.COUNT]: cargo[cols.COUNT],
+        [cols.COUNT]: cargo[cols.FREE_COUNT],
         [cols.UPLOADING_DATE_FROM]: cargo[cols.UPLOADING_DATE_FROM],
         [cols.UPLOADING_DATE_TO]: cargo[cols.UPLOADING_DATE_TO],
         [cols.DOWNLOADING_DATE_FROM]: cargo[cols.DOWNLOADING_DATE_FROM],
