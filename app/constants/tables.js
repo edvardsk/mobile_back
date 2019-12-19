@@ -568,6 +568,8 @@ const HOMELESS_COLUMNS = {
     TRAILER_VERIFIED: 'trailer_verified',
     KEYWORD: 'keyword',
     DEALS: 'deals',
+    DATE_FROM: 'date_from',
+    DATE_TO: 'date_to',
 };
 
 module.exports = {

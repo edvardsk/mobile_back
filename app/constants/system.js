@@ -92,6 +92,7 @@ const PERMISSIONS = {
     CREATE_CARGO_DEAL: 'create_cargo_deal',
 
     VERIFY_DEAL_INSTANCE: 'verify_deal_instance',
+    READ_LIST_DEALS: 'read_list_deals',
 };
 
 const ARRAY_ROLES_WITHOUT_ADMIN = Object.values(ROLES).filter(role => role !== ROLES.ADMIN);
