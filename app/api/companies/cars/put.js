@@ -54,19 +54,21 @@ const editCar = async (req, res, next) => {
         if (fileLabelsToDelete.length) {
             const filesToDelete = await FilesService.getFilesByCarIdAndLabels(carId, fileLabelsToDelete);
 
-            const [ids, urls] = FilesFormatters.prepareFilesToDelete(filesToDelete);
+            if (filesToDelete.length) {
+                const [ids, urls] = FilesFormatters.prepareFilesToDelete(filesToDelete);
 
-            transactionsList.push(
-                CarsFilesService.removeRecordsByFileIdsAsTransaction(ids)
-            );
-            transactionsList.push(
-                FilesService.removeFilesByIdsAsTransaction(ids)
-            );
-
-            await Promise.all(urls.map(url => {
-                const [bucket, path] = url.split('/');
-                return S3Service.deleteObject(bucket, path);
-            }));
+                transactionsList.push(
+                    CarsFilesService.removeRecordsByFileIdsAsTransaction(ids)
+                );
+                transactionsList.push(
+                    FilesService.removeFilesByIdsAsTransaction(ids)
+                );
+    
+                await Promise.all(urls.map(url => {
+                    const [bucket, path] = url.split('/');
+                    return S3Service.deleteObject(bucket, path);
+                }));
+            }
 
             const filesToStore = {};
             Object.keys(files).forEach(fileName => {
