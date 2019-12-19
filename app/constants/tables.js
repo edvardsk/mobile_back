@@ -521,6 +521,35 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    DRAFT_CARS: {
+        NAME: 'draft_cars',
+        COLUMNS: {
+            CAR_ID: 'car_id',
+            CAR_VIN: 'car_vin',
+            CAR_STATE_NUMBER: 'car_state_number',
+            CAR_MARK: 'car_mark',
+            CAR_MODEL: 'car_model',
+            CAR_MADE_YEAR_AT: 'car_made_year_at',
+            CAR_TYPE: 'car_type',
+            CAR_LOADING_METHODS: 'car_loading_methods',
+            CAR_VEHICLE_TYPE_ID: 'car_vehicle_type_id',
+            CAR_DANGER_CLASS_ID: 'car_danger_class_id',
+            CAR_WIDTH: 'car_width',
+            CAR_HEIGHT: 'car_height',
+            CAR_LENGTH: 'car_length',
+            CAR_CARRYING_CAPACITY: 'car_carrying_capacity',
+            COMMENTS: 'comments',
+            CREATED_AT: 'created_at',
+        },
+    },
+    DRAFT_CARS_TO_FILES: {
+        NAME: 'draft_cars_to_files',
+        COLUMNS: {
+            DRAFT_CAR_ID: 'draft_car_id',
+            DRAFT_FILE_ID: 'draft_file_id',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
