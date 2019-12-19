@@ -197,6 +197,14 @@ const formatCarFiles = data => {
     });
 };
 
+const formatRecordForSearchResponse = (cars) => {
+    return cars.map(car => formatRecordForList(car));
+};
+
+const formatRecordForSearchAllResponse = (cars) => {
+    return cars.map(car => formatRecordForList(car));
+};
+
 const formatAvailableCars = cars => cars.map(car => formatAvailableCar(car));
 
 const formatAvailableCar = car => ({
@@ -243,4 +251,6 @@ module.exports = {
     formatShadowCarsToSave,
     formatRecordAsNotVerified,
     formatRecordAsVerified,
+    formatRecordForSearchAllResponse,
+    formatRecordForSearchResponse,
 };

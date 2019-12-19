@@ -291,7 +291,7 @@ const setCargosFilter = (expression, filteringObject) => {
     return expression;
 };
 
-const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, downloadingDate }, searchRadius, languageId, companyId, filter = {}) => {
+const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, downloadingDate }, searchRadius, languageId, companyId, showMyItems, filter = {}) => {
     let expression = squelPostgres
         .select()
         .from(table.NAME, 'c')
@@ -427,7 +427,7 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
     }
     if (companyId) {
         expression
-            .where(`c.${cols.COMPANY_ID} <> '${companyId}'`);
+            .where(`c.${cols.COMPANY_ID} ${showMyItems ? '=' : '<>'} '${companyId}'`);
     }
 
     expression
@@ -464,7 +464,7 @@ const setCargosSearchFilter = (expression, filteringObject) => {
     return expression;
 };
 
-const selectAllNewRecordsForSearch = (languageId, companyId) => {
+const selectAllNewRecordsForSearch = (languageId, companyId, showMyItems) => {
     const expression = squelPostgres
         .select()
         .from(table.NAME, 'c')
@@ -513,7 +513,7 @@ const selectAllNewRecordsForSearch = (languageId, companyId) => {
 
     if (companyId) {
         expression
-            .where(`c.${cols.COMPANY_ID} <> '${companyId}'`);
+            .where(`c.${cols.COMPANY_ID} ${showMyItems ? '=' : '<>'} '${companyId}'`);
     }
 
     return expression

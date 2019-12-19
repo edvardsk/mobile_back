@@ -567,6 +567,7 @@ const HOMELESS_COLUMNS = {
     CAR_VERIFIED: 'car_verified',
     TRAILER_VERIFIED: 'trailer_verified',
     KEYWORD: 'keyword',
+    SEARCH_ITEMS: 'search_items',
     DEALS: 'deals',
     DATE_FROM: 'date_from',
     DATE_TO: 'date_to',

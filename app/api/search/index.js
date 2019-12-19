@@ -2,6 +2,7 @@ const express = require('express');
 const { ROUTES } = require('constants/routes');
 
 const getCargos = require('./cargos/get');
+const getCars = require('./cars/get');
 
 // middlewares
 const { validate } = require('api/middlewares/validator');
@@ -36,6 +37,21 @@ router.get(
     injectNotRequiredUser,
     injectNotRequiredCompanyId,
     getCargos.getAllNewCargos,
+);
+
+// cars
+router.get(
+    ROUTES.SEARCH.CARS.BASE + ROUTES.SEARCH.CARS.GET,
+    injectNotRequiredUser,
+    injectNotRequiredCompanyId,
+    getCars.searchCars,
+);
+
+router.get(
+    ROUTES.SEARCH.CARS.BASE + ROUTES.SEARCH.CARS.GET_ALL,
+    injectNotRequiredUser,
+    injectNotRequiredCompanyId,
+    getCars.getAllCars,
 );
 
 module.exports = router;

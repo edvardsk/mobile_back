@@ -19,6 +19,8 @@ const {
     selectAvailableCarsByIdsAndCompanyId,
     selectAvailableCarByIdAndCompanyId,
     selectRecordsByStateNumbers,
+    selectRecordsForSearch,
+    selectAllNewRecordsForSearch,
 } = require('sql-helpers/cars');
 
 // services
@@ -96,6 +98,14 @@ const getAvailableCarByIdAndCompanyId = (id, companyId, cargoDates) => (
 
 const getRecordsByStateNumbers = numbers => (
     manyOrNone(selectRecordsByStateNumbers(numbers))
+);
+
+const getRecordsForSearch = (companyId, showMyItems) => (
+    manyOrNone(selectRecordsForSearch(companyId, showMyItems))
+);
+
+const getAllNewRecordsForSearch = (companyId, showMyItems) => (
+    manyOrNone(selectAllNewRecordsForSearch(companyId, showMyItems))
 );
 
 const checkCarStateNumberExistsOpposite = async (meta, stateNumber) => {
@@ -185,6 +195,8 @@ module.exports = {
     getAvailableCarsByIdsAndCompanyId,
     getAvailableCarByIdAndCompanyId,
     getRecordsByStateNumbers,
+    getRecordsForSearch,
+    getAllNewRecordsForSearch,
 
     checkCarStateNumberExistsOpposite,
     checkCarInCompanyExist,

@@ -126,6 +126,36 @@ const selectCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortCo
         .toString();
 };
 
+const selectRecordsForSearch = (companyId, showMyItems) => {
+    let expression = squelPostgres
+        .select()
+        .from(table.NAME, 'c')
+        .field('c.*');
+
+    if (companyId) {
+        expression
+            .where(`c.${cols.COMPANY_ID} ${showMyItems ? '=' : '<>'} '${companyId}'`);
+    }
+
+    return expression
+        .toString();
+};
+
+const selectAllNewRecordsForSearch = (companyId, showMyItems) => {
+    const expression = squelPostgres
+        .select()
+        .from(table.NAME, 'c')
+        .field('c.*');
+
+    if (companyId) {
+        expression
+            .where(`c.${cols.COMPANY_ID} ${showMyItems ? '=' : '<>'} '${companyId}'`);
+    }
+
+    return expression
+        .toString();
+};
+
 const selectCountCarsByCompanyId = (companyId, filter) => {
     let expression = squelPostgres
         .select()
@@ -382,4 +412,6 @@ module.exports = {
     selectAvailableCarsByIdsAndCompanyId,
     selectAvailableCarByIdAndCompanyId,
     selectRecordsByStateNumbers,
+    selectRecordsForSearch,
+    selectAllNewRecordsForSearch,
 };

@@ -299,6 +299,9 @@ const searchCargoQuery = {
             type: 'string',
             format: 'uuid',
         },
+        [HOMELESS_COLUMNS.SEARCH_ITEMS]: {
+            type: 'string',
+        },
         [HOMELESS_COLUMNS.SEARCH_RADIUS]: {
             type: 'string',
             pattern: DIGITS_VALIDATION_PATTERN,
@@ -443,6 +446,9 @@ const searchAllCargosQuery = {
             type: 'string',
             minLength: 2,
             maxLength: 10,
+        },
+        [HOMELESS_COLUMNS.SEARCH_ITEMS]: {
+            type: 'string',
         },
     },
     additionalProperties: false,

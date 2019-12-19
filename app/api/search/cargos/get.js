@@ -10,6 +10,7 @@ const CurrencyPrioritiesServices = require('services/tables/currency-priorities'
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { LANGUAGE_CODES_MAP } = require('constants/languages');
 const { Geo, GeoLine } = require('constants/instances');
+const { SEARCH_ITEMS_TYPES } = require('constants/search');
 
 // formatters
 const {
@@ -28,6 +29,7 @@ const searchCargo = async (req, res, next) => {
         const { user, companyId } = res.locals;
         const { query } = req;
         const language = query[HOMELESS_COLUMNS.LANGUAGE_CODE];
+        const showMyItems = query[HOMELESS_COLUMNS.SEARCH_ITEMS] === SEARCH_ITEMS_TYPES.INTERNAL;
         let languageCode = LANGUAGE_CODES_MAP.EN;
         if (user) {
             languageCode = user[HOMELESS_COLUMNS.LANGUAGE_CODE];
@@ -77,7 +79,7 @@ const searchCargo = async (req, res, next) => {
             downloadingDate: query[HOMELESS_COLUMNS.DOWNLOADING_DATE],
         };
 
-        const cargos = await CargosServices.getRecordsForSearch(coordinates, dates, searchRadius, searchLanguageId, companyId, query);
+        const cargos = await CargosServices.getRecordsForSearch(coordinates, dates, searchRadius, searchLanguageId, companyId, showMyItems, query);
         const formattedCargos = formatRecordForSearchResponse(
             cargos, uploadingPoint, downloadingPoint, searchLanguageId, defaultEconomicSettings, formattedCurrencyPriorities
         );
@@ -97,6 +99,7 @@ const getAllNewCargos = async (req, res, next) => {
         const { user, companyId } = res.locals;
         const { query } = req;
         const language = query[HOMELESS_COLUMNS.LANGUAGE_CODE];
+        const showMyItems = query[HOMELESS_COLUMNS.SEARCH_ITEMS] === SEARCH_ITEMS_TYPES.INTERNAL;
         let languageCode = LANGUAGE_CODES_MAP.EN;
         if (user) {
             languageCode = user[HOMELESS_COLUMNS.LANGUAGE_CODE];
@@ -117,7 +120,7 @@ const getAllNewCargos = async (req, res, next) => {
 
         const searchLanguageId = (userLanguage && userLanguage.id) || defaultLanguage.id;
 
-        const cargos = await CargosServices.getAllNewRecordsForSearch(searchLanguageId, companyId);
+        const cargos = await CargosServices.getAllNewRecordsForSearch(searchLanguageId, companyId, showMyItems);
         const formattedCargos = formatRecordForSearchAllResponse(cargos, defaultEconomicSettings, formattedCurrencyPriorities);
 
         const clusters = clusterizeCargos(formattedCargos, query);
