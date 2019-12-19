@@ -35,6 +35,12 @@ const ROLES_WITH_PERMISSIONS = [
     ['dispatcher', [
         'read_list_deals',
     ]],
+    ['holder', [
+        'read_list_deals',
+    ]],
+    ['logistician', [
+        'read_list_deals',
+    ]],
 ];
 
 exports.PERMISSIONS = PERMISSIONS;
