@@ -84,16 +84,16 @@ const editCargo = async (req, res, next) => {
             delete oldCargo.id;
         }
 
-        const editTransactionsList = [
-            CargoPointsService.removeRecordsByCargoIdAsTransaction(cargoId),
-            CargoPricesService.removeRecordsByCargoIdAsTransaction(cargoId),
-            CargosServices.editRecordAsTransaction(newCargoId, cargo),
-        ];
-
-        const createTransactionsList = [
-            CargosServices.addRecordAsTransaction(cargo),
-            CargosServices.editRecordAsTransaction(cargoId, oldCargo),
-        ];
+        const cargoTransactionsList = withCopy 
+            ? [
+                CargosServices.addRecordAsTransaction(cargo),
+                CargosServices.editRecordAsTransaction(cargoId, oldCargo),
+            ]
+            : [
+                CargoPointsService.removeRecordsByCargoIdAsTransaction(cargoId),
+                CargoPricesService.removeRecordsByCargoIdAsTransaction(cargoId),
+                CargosServices.editRecordAsTransaction(cargoId, cargo),
+            ];
 
         const transactionsList = [
             CargoPointsService.addRecordsAsTransaction(cargoPoints),
@@ -116,7 +116,7 @@ const editCargo = async (req, res, next) => {
             );
         }
 
-        await TablesService.runTransaction([...(withCopy ? createTransactionsList : editTransactionsList), ...transactionsList]);
+        await TablesService.runTransaction([...cargoTransactionsList, ...transactionsList]);
 
         if (translationsList.length) {
             const languages = await LanguagesService.getLanguagesWithoutEng();
