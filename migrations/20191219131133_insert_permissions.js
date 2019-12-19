@@ -1,6 +1,7 @@
 const FIRST_ROLES = require('./20191017143230_add_roles').ROLES;
 const CONTROL_ROLES = require('./20191023095323_insert_roles').ROLES;
 const DISPATCHER_ROLES = require('./20191026063335_insert_dispatcher_role.js').ROLES;
+const LOGISTICIAN_ROLES = require('./20191026063335_insert_logistician_role.js').ROLES;
 
 
 const { getRolesToPermissionsForDb } = require('../app/formatters/system');
@@ -20,6 +21,7 @@ const ALL_ROLES = [
     ...FIRST_ROLES,
     ...CONTROL_ROLES,
     ...DISPATCHER_ROLES,
+    ...LOGISTICIAN_ROLES,
 ];
 
 const ROLES_WITH_PERMISSIONS = [
