@@ -58,6 +58,7 @@ const ERRORS = {
         TOO_OFTEN: 'invites.too_often',
         PROHIBITED: 'invites.prohibited',
         SKIPPED_DATES: 'invites.skipped_dates',
+        SKIPPED_REQUIRED_FILES: 'invites.skipped_required_files',
     },
     ACCOUNT_CONFIRMATIONS: {
         PROHIBITED: 'account_confirmations.prohibited',

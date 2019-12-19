@@ -92,6 +92,11 @@ const formatRecordAsVerified = (data = {}) => ({
     [colsDrivers.VERIFIED]: true,
 });
 
+const formatRecordAsNotShadow = (data = {}) => ({
+    ...data,
+    [colsDrivers.SHADOW]: false,
+});
+
 const formatRecordToUpdateFromDraft = draftDriver => ({
     [cols.DRIVER_LICENCE_REGISTERED_AT]: draftDriver[colsDraftDrivers.DRIVER_LICENCE_REGISTERED_AT].toISOString(),
     [cols.DRIVER_LICENCE_EXPIRED_AT]: draftDriver[colsDraftDrivers.DRIVER_LICENCE_EXPIRED_AT].toISOString(),
@@ -107,5 +112,6 @@ module.exports = {
     formatShadowDriversToSave,
     formatRecordAsNotVerified,
     formatRecordAsVerified,
+    formatRecordAsNotShadow,
     formatRecordToUpdateFromDraft,
 };

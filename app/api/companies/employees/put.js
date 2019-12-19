@@ -1,5 +1,6 @@
 const { isEmpty } = require('lodash');
 const uuid = require('uuid/v4');
+const moment = require('moment');
 
 const { success, reject } = require('api/response');
 
@@ -13,26 +14,41 @@ const DraftDriversFilesService = require('services/tables/draft-drivers-to-files
 const UsersFilesService = require('services/tables/users-to-files');
 const PhoneNumbersService = require('services/tables/phone-numbers');
 const UsersCompaniesService = require('services/tables/users-to-companies');
+const EmailConfirmationService = require('services/tables/email-confirmation-hashes');
 const TableService = require('services/tables');
 const S3Service = require('services/aws/s3');
+const MailService = require('services/mail');
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
+const { ROLES } = require('constants/system');
+const { DOCUMENTS } = require('constants/files');
 
 // formatters
 const UsersFormatters = require('formatters/users');
 const PhoneNumbersFormatters = require('formatters/phone-numbers');
 const FilesFormatters = require('formatters/files');
 const DraftDriversFormatters = require('formatters/draft-drivers');
+const EmailConfirmationFormatters = require('formatters/email-confirmation');
 
 // helpers
 const { validateVisasDates } = require('helpers/validators/files');
 
+const {
+    INVITE_EXPIRATION_UNIT,
+    INVITE_EXPIRATION_VALUE,
+} = process.env;
+
+const colsUsers = SQL_TABLES.USERS.COLUMNS;
+
+// use this route only for drivers
+// todo: rename to EDIT DRIVERS
 const editEmployeeAdvanced = async (req, res, next) => {
     const colsDrivers = SQL_TABLES.DRIVERS.COLUMNS;
     try {
         const { company, isControlRole } = res.locals;
+        const currentUserId = res.locals.user.id;
         const targetUserId = req.params.userId;
         const { files, body } = req;
 
@@ -64,6 +80,12 @@ const editEmployeeAdvanced = async (req, res, next) => {
         const errors = validateVisasDates(labelsArr, body);
         if (errors.length) {
             return reject(res, ERRORS.INVITES.SKIPPED_DATES);
+        }
+
+        const driver = await DriversService.getRecordByUserIdStrict(targetUserId);
+        const isShadow = driver[colsDrivers.SHADOW];
+        if (isShadow && (!files[DOCUMENTS.PASSPORT] || !files[DOCUMENTS.DRIVER_LICENSE])) {
+            return reject(res, ERRORS.INVITES.SKIPPED_REQUIRED_FILES);
         }
 
         if (isControlRole || isEmpty(driversProps)) { // save data directly if executed by admin or not for driver
@@ -174,7 +196,22 @@ const editEmployeeAdvanced = async (req, res, next) => {
             }
         }
 
+        let confirmationHash = '';
+        if (isControlRole && isShadow) {
+            confirmationHash = uuid();
+            const inviteExpirationDate = moment().add(+INVITE_EXPIRATION_VALUE, INVITE_EXPIRATION_UNIT).toISOString();
+            const emailConfirmationData = EmailConfirmationFormatters.formatRecordToSave(targetUserId, confirmationHash, currentUserId, inviteExpirationDate);
+            transactionsList.push(
+                EmailConfirmationService.addRecordAsTransaction(emailConfirmationData),
+            );
+        }
+
         await TableService.runTransaction(transactionsList);
+
+        if (isControlRole && isShadow) {
+            const email = body[colsUsers.EMAIL];
+            await MailService.sendConfirmationEmail(email, confirmationHash, ROLES.DRIVER);
+        }
 
         if (filesToStore.length) {
             await Promise.all(filesToStore.map(({ bucket, path, data, contentType }) => {

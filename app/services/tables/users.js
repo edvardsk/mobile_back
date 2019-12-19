@@ -25,6 +25,7 @@ const {
 
     selectUsersPaginationSorting,
     selectCountUsers,
+    selectUserByDriverId,
 } = require('sql-helpers/users');
 
 const { OPERATIONS } = require('constants/postgres');
@@ -50,6 +51,8 @@ const getUserByEmailWithRoleAndFreezingData = email => oneOrNone(selectUserByEma
 
 const getUserRole = id => one(selectUserRole(id))
     .then(({ name }) => name);
+
+const getUserByDriverIdStrict = driverId => one(selectUserByDriverId(driverId));
 
 const addUserAsTransaction = data => [insertUser(data), OPERATIONS.ONE];
 
@@ -139,6 +142,7 @@ module.exports = {
     getUserByEmailWithRoleAndFreezingData,
     getUserByEmail,
     getUserRole,
+    getUserByDriverIdStrict,
     addUserAsTransaction,
     updateUserAsTransaction,
     markAsFreezedAsTransaction,

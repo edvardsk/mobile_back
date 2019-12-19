@@ -158,11 +158,17 @@ const getEmployee = async (req, res, next) => {
                         ...driver,
                         [colsDrivers.DRIVER_LICENCE_REGISTERED_AT]: draftDriver[colsDraftDrivers.DRIVER_LICENCE_REGISTERED_AT],
                         [colsDrivers.DRIVER_LICENCE_EXPIRED_AT]: draftDriver[colsDraftDrivers.DRIVER_LICENCE_EXPIRED_AT],
+                        [HOMELESS_COLUMNS.IS_DRAFT]: true,
                     };
 
                     if (draftFiles.length) {
                         mergedFiles = mergeFilesWithDraft(files, draftFiles);
                     }
+                } else {
+                    result.driver = {
+                        ...driver,
+                        [HOMELESS_COLUMNS.IS_DRAFT]: false,
+                    };
                 }
 
                 const filesLinks = await FilesService.formatTemporaryLinks(mergedFiles);

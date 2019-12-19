@@ -392,6 +392,13 @@ const setUsersFilter = (expression, filteringObject) => {
     return expression;
 };
 
+const selectUserByDriverId = driverId => squelPostgres
+    .select()
+    .from(table.NAME, 'u')
+    .where(`d.id = '${driverId}'`)
+    .left_join(tableDrivers.NAME, 'd', `d.${colsDrivers.USER_ID} = u.id`)
+    .toString();
+
 module.exports = {
     insertUser,
     insertUsers,
@@ -418,4 +425,5 @@ module.exports = {
 
     selectUsersPaginationSorting,
     selectCountUsers,
+    selectUserByDriverId,
 };

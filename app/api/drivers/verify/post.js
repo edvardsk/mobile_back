@@ -1,3 +1,6 @@
+const uuid = require('uuid/v4');
+const moment = require('moment');
+
 const { success, reject } = require('api/response');
 
 // services
@@ -9,26 +12,36 @@ const DraftFilesService = require('services/tables/draft-files');
 const DraftDriversFilesService = require('services/tables/draft-drivers-to-files');
 const UsersFilesService = require('services/tables/users-to-files');
 const PhoneNumbersService = require('services/tables/phone-numbers');
+const EmailConfirmationService = require('services/tables/email-confirmation-hashes');
 const TablesService = require('services/tables');
 const S3Service = require('services/aws/s3');
+const MailService = require('services/mail');
 
 // constants
 const { SQL_TABLES } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
+const { ROLES } = require('constants/system');
 
 // formatters
 const DriversFormatters = require('formatters/drivers');
 const FilesFormatters = require('formatters/files');
 const UsersFormatters = require('formatters/users');
 const PhoneNumbersFormatters = require('formatters/phone-numbers');
+const EmailConfirmationFormatters = require('formatters/email-confirmation');
 
 const colsDrivers = SQL_TABLES.DRIVERS.COLUMNS;
 const colsDraftDrivers = SQL_TABLES.DRAFT_DRIVERS.COLUMNS;
 const colsPhoneNumbers = SQL_TABLES.PHONE_NUMBERS.COLUMNS;
 
+const {
+    INVITE_EXPIRATION_UNIT,
+    INVITE_EXPIRATION_VALUE,
+} = process.env;
+
 const verifyDriver = async (req, res, next) => {
     try {
         const { driverId } = req.params;
+        const currentUserId = res.locals.user.id;
 
         const [driver, draftDriver] = await Promise.all([
             DriversService.getRecordStrict(driverId),
@@ -37,7 +50,7 @@ const verifyDriver = async (req, res, next) => {
 
         const targetUserId = driver[colsDrivers.USER_ID];
 
-        if (driver[colsDrivers.VERIFIED] && !draftDriver) {
+        if (driver[colsDrivers.VERIFIED] && !draftDriver && !driver[colsDrivers.SHADOW]) {
             return reject(res, ERRORS.VERIFY.ALREADY_VERIFIED);
         }
 
@@ -45,7 +58,20 @@ const verifyDriver = async (req, res, next) => {
         let urlsToDelete = [];
         if (!driver[colsDrivers.VERIFIED]) {
             transactionsList.push(
-                DriversService.editDriverAsTransaction(driverId, DriversFormatters.formatRecordAsVerified()),
+                DriversService.editDriverAsTransaction(driverId, DriversFormatters.formatRecordAsVerified())
+            );
+        }
+        let confirmationHash = '';
+        if (driver[colsDrivers.SHADOW]) {
+            transactionsList.push(
+                DriversService.editDriverAsTransaction(driverId, DriversFormatters.formatRecordAsNotShadow())
+            );
+
+            confirmationHash = uuid();
+            const inviteExpirationDate = moment().add(+INVITE_EXPIRATION_VALUE, INVITE_EXPIRATION_UNIT).toISOString();
+            const emailConfirmationData = EmailConfirmationFormatters.formatRecordToSave(targetUserId, confirmationHash, currentUserId, inviteExpirationDate);
+            transactionsList.push(
+                EmailConfirmationService.addRecordAsTransaction(emailConfirmationData)
             );
         }
         if (draftDriver) {
@@ -108,6 +134,12 @@ const verifyDriver = async (req, res, next) => {
         }
 
         await TablesService.runTransaction(transactionsList);
+
+        if (draftDriver && driver[colsDrivers.SHADOW]) {
+            const email = draftDriver[colsDraftDrivers.EMAIL];
+            await MailService.sendConfirmationEmail(email, confirmationHash, ROLES.DRIVER);
+        }
+
         if (urlsToDelete.length) {
             await Promise.all(urlsToDelete.map(url => {
                 const [bucket, path] = url.split('/');
