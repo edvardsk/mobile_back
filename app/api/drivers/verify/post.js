@@ -1,5 +1,6 @@
 const uuid = require('uuid/v4');
 const moment = require('moment');
+const { isEmpty } = require('lodash');
 
 const { success, reject } = require('api/response');
 
@@ -56,22 +57,25 @@ const verifyDriver = async (req, res, next) => {
 
         const transactionsList = [];
         let urlsToDelete = [];
+        let driverData = {};
         if (!driver[colsDrivers.VERIFIED]) {
-            transactionsList.push(
-                DriversService.editDriverAsTransaction(driverId, DriversFormatters.formatRecordAsVerified())
-            );
+            driverData = DriversFormatters.formatRecordAsVerified();
         }
         let confirmationHash = '';
         if (driver[colsDrivers.SHADOW]) {
-            transactionsList.push(
-                DriversService.editDriverAsTransaction(driverId, DriversFormatters.formatRecordAsNotShadow())
-            );
+            driverData = DriversFormatters.formatRecordAsNotShadow(driverData);
 
             confirmationHash = uuid();
             const inviteExpirationDate = moment().add(+INVITE_EXPIRATION_VALUE, INVITE_EXPIRATION_UNIT).toISOString();
             const emailConfirmationData = EmailConfirmationFormatters.formatRecordToSave(targetUserId, confirmationHash, currentUserId, inviteExpirationDate);
+
             transactionsList.push(
                 EmailConfirmationService.addRecordAsTransaction(emailConfirmationData)
+            );
+        }
+        if (!isEmpty(driverData)) {
+            transactionsList.push(
+                DriversService.editDriverAsTransaction(driverId, driverData)
             );
         }
         if (draftDriver) {

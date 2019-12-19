@@ -496,6 +496,7 @@ const SQL_TABLES = {
             PASSPORT_ISSUING_AUTHORITY: 'passport_issuing_authority',
             PASSPORT_CREATED_AT: 'passport_created_at',
             PASSPORT_EXPIRED_AT: 'passport_expired_at',
+            COMMENTS: 'comments',
             CREATED_AT: 'created_at',
         },
     },

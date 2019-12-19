@@ -159,6 +159,7 @@ const getEmployee = async (req, res, next) => {
                         [colsDrivers.DRIVER_LICENCE_REGISTERED_AT]: draftDriver[colsDraftDrivers.DRIVER_LICENCE_REGISTERED_AT],
                         [colsDrivers.DRIVER_LICENCE_EXPIRED_AT]: draftDriver[colsDraftDrivers.DRIVER_LICENCE_EXPIRED_AT],
                         [HOMELESS_COLUMNS.IS_DRAFT]: true,
+                        [colsDraftDrivers.COMMENTS]: draftDriver[colsDraftDrivers.COMMENTS],
                     };
 
                     if (draftFiles.length) {

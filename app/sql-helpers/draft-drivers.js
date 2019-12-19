@@ -65,6 +65,14 @@ const selectRecordByUserId = userId => squelPostgres
     .left_join(tablePhonePrefixes.NAME, 'pp', `pp.id = dd.${cols.PHONE_PREFIX_ID}`)
     .toString();
 
+const updateRecordAppendCommentsById = (id, comments) => squelPostgres
+    .update()
+    .table(table.NAME)
+    .set(`${cols.COMMENTS} = ${cols.COMMENTS} || '{${comments}}'`)
+    .where(`id = '${id}'`)
+    .returning('*')
+    .toString();
+
 module.exports = {
     insertRecord,
     updateRecordByDriverId,
@@ -73,4 +81,5 @@ module.exports = {
     selectRecordByDriverId,
     selectRecordById,
     selectRecordByUserId,
+    updateRecordAppendCommentsById,
 };

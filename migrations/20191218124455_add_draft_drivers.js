@@ -15,6 +15,7 @@ exports.up = function(knex) {
         table.string('passport_issuing_authority').notNull();
         table.date('passport_created_at').notNull();
         table.date('passport_expired_at').notNull();
+        table.specificType('comments', 'text[]').defaultTo('{}');
         table.unique('driver_id');
     })
         .then(function () {

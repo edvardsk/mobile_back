@@ -1,4 +1,4 @@
-const { oneOrNone } = require('db');
+const { one, oneOrNone } = require('db');
 
 // sql-helpers
 const {
@@ -9,6 +9,7 @@ const {
     selectRecordByUserId,
     selectRecordById,
     deleteRecordById,
+    updateRecordAppendCommentsById,
 } = require('sql-helpers/draft-drivers');
 
 // constants
@@ -28,6 +29,8 @@ const getRecordByUserId = userId => oneOrNone(selectRecordByUserId(userId));
 
 const getRecord = id => oneOrNone(selectRecordById(id));
 
+const addComments = (id, comments) => one(updateRecordAppendCommentsById(id, comments));
+
 module.exports = {
     addRecordAsTransaction,
     editRecordByDriverIdAsTransaction,
@@ -36,4 +39,5 @@ module.exports = {
     getRecordByDriverId,
     getRecordByUserId,
     getRecord,
+    addComments,
 };

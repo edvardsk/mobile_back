@@ -94,6 +94,9 @@ const ERRORS = {
     VERIFY: {
         ALREADY_VERIFIED: 'verify.already_verified',
     },
+    REJECT: {
+        NOTHING_TO_REJECT: 'reject.nothing_to_reject',
+    },
     PHONE_NUMBERS: {
         BUSY: 'phone_numbers.busy',
     },

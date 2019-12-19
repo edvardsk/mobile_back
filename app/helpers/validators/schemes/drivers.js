@@ -1,3 +1,6 @@
+const { SQL_TABLES } = require('constants/tables');
+
+const colsDraftDrivers = SQL_TABLES.DRAFT_DRIVERS.COLUMNS;
 
 const requiredDriverId = {
     properties: {
@@ -20,7 +23,22 @@ const requiredExistingDriverAsync = {
     },
 };
 
+const rejectDraft = {
+    properties: {
+        [colsDraftDrivers.COMMENTS]: {
+            type: 'array',
+            minItems: 1,
+            uniqueItems: true,
+        },
+    },
+    required: [
+        colsDraftDrivers.COMMENTS,
+    ],
+    additionalProperties: false,
+};
+
 module.exports = {
     requiredDriverId,
     requiredExistingDriverAsync,
+    rejectDraft,
 };

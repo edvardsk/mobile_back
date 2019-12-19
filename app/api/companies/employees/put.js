@@ -202,7 +202,7 @@ const editEmployeeAdvanced = async (req, res, next) => {
             const inviteExpirationDate = moment().add(+INVITE_EXPIRATION_VALUE, INVITE_EXPIRATION_UNIT).toISOString();
             const emailConfirmationData = EmailConfirmationFormatters.formatRecordToSave(targetUserId, confirmationHash, currentUserId, inviteExpirationDate);
             transactionsList.push(
-                EmailConfirmationService.addRecordAsTransaction(emailConfirmationData),
+                EmailConfirmationService.addRecordAsTransaction(emailConfirmationData)
             );
         }
 
