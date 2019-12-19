@@ -66,7 +66,7 @@ const selectCountDealsByCompanyId = (companyId, filter) => {
 };
 
 const selectDealsByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter, userLanguageId) => {
-    const { dateFrom, dateTo } = filter;
+    const { date_from: dateFrom, date_to: dateTo } = filter;
     let expression = squelPostgres
         .select()
         .field('d.*')
