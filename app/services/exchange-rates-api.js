@@ -9,7 +9,7 @@ const { CURRENCIES_MAP } = require('constants/currencies');
 
 const BELARUS_URL = 'http://www.nbrb.by/api/exrates/rates?periodicity=0';
 const RUSSIA_URL = 'http://www.cbr.ru/scripts/XML_daily.asp';
-const UKRAINE_URL = 'https://old.bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
+const UKRAINE_URL = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
 
 const extractBelarusRates = async (currenciesMap, extractingDate) => {
     const today = moment(extractingDate).format('YYYY-MM-DD');
