@@ -626,6 +626,17 @@ const editCarTruck = {
             colsCars.CAR_CARRYING_CAPACITY,
         ],
     },
+    else: {
+        prohibited: [
+            colsCars.CAR_DANGER_CLASS_ID,
+            colsCars.CAR_LOADING_METHODS,
+            colsCars.CAR_VEHICLE_TYPE_ID,
+            colsCars.CAR_WIDTH,
+            colsCars.CAR_HEIGHT,
+            colsCars.CAR_LENGTH,
+            colsCars.CAR_CARRYING_CAPACITY,
+        ],
+    },
 };
 
 const createCarTruckAsync = {
