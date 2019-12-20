@@ -550,6 +550,34 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    DRAFT_TRAILERS: {
+        NAME: 'draft_trailers',
+        COLUMNS: {
+            TRAILER_ID: 'trailer_id',
+            TRAILER_VIN: 'trailer_vin',
+            TRAILER_STATE_NUMBER: 'trailer_state_number',
+            TRAILER_MARK: 'trailer_mark',
+            TRAILER_MODEL: 'trailer_model',
+            TRAILER_MADE_YEAR_AT: 'trailer_made_year_at',
+            TRAILER_LOADING_METHODS: 'trailer_loading_methods',
+            TRAILER_VEHICLE_TYPE_ID: 'trailer_vehicle_type_id',
+            TRAILER_DANGER_CLASS_ID: 'trailer_danger_class_id',
+            TRAILER_WIDTH: 'trailer_width',
+            TRAILER_HEIGHT: 'trailer_height',
+            TRAILER_LENGTH: 'trailer_length',
+            TRAILER_CARRYING_CAPACITY: 'trailer_carrying_capacity',
+            COMMENTS: 'comments',
+            CREATED_AT: 'created_at',
+        },
+    },
+    DRAFT_TRAILERS_TO_FILES: {
+        NAME: 'draft_trailers_to_files',
+        COLUMNS: {
+            DRAFT_TRAILER_ID: 'draft_trailer_id',
+            DRAFT_FILE_ID: 'draft_file_id',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
