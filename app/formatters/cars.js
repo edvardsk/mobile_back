@@ -68,14 +68,15 @@ const formatCarToEdit = (body) => {
 const formatRecordForList = car => {
     let result = {
         id: car.id,
-        [cols.CAR_MARK]: car[cols.CAR_MARK],
-        [cols.CAR_MODEL]: car[cols.CAR_MODEL],
-        [cols.CAR_VIN]: car[cols.CAR_VIN],
-        [cols.CAR_TYPE]: car[cols.CAR_TYPE],
-        [cols.CAR_MADE_YEAR_AT]: car[cols.CAR_MADE_YEAR_AT],
-        [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
+        [cols.CAR_MARK]: car[HOMELESS_COLUMNS.DRAFT_CAR_MARK] || car[cols.CAR_MARK],
+        [cols.CAR_MODEL]: car[HOMELESS_COLUMNS.DRAFT_CAR_MODEL] || car[cols.CAR_MODEL],
+        [cols.CAR_VIN]: car[HOMELESS_COLUMNS.DRAFT_CAR_VIN] || car[cols.CAR_VIN],
+        [cols.CAR_TYPE]: car[HOMELESS_COLUMNS.DRAFT_CAR_TYPE] || car[cols.CAR_TYPE],
+        [cols.CAR_MADE_YEAR_AT]: car[HOMELESS_COLUMNS.DRAFT_CAR_MADE_YEAR_AT] || car[cols.CAR_MADE_YEAR_AT],
+        [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.DRAFT_CAR_STATE_NUMBER] || car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
         [cols.CREATED_AT]: car[cols.CREATED_AT],
         [HOMELESS_COLUMNS.CAR_VERIFIED]: car[cols.VERIFIED],
+        [HOMELESS_COLUMNS.CAR_IS_DRAFT]: !!car[HOMELESS_COLUMNS.DRAFT_CAR_MARK],
     };
     if (car[HOMELESS_COLUMNS.TRAILER_ID]) {
         result = {

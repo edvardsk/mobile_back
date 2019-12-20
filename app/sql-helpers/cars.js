@@ -18,6 +18,7 @@ const tableDeals = SQL_TABLES.DEALS;
 const tableDealsStatuses = SQL_TABLES.DEAL_STATUSES;
 const tableDealsStatusesHistory = SQL_TABLES.DEAL_HISTORY_STATUSES;
 const tableCargos = SQL_TABLES.CARGOS;
+const tableDraftCars = SQL_TABLES.DRAFT_CARS;
 
 const cols = table.COLUMNS;
 const colsCarsStateNumbers = tableCarsStateNumbers.COLUMNS;
@@ -31,6 +32,7 @@ const colsDeals = tableDeals.COLUMNS;
 const colsDealsStatuses = tableDealsStatuses.COLUMNS;
 const colsDealsStatusesHistory = tableDealsStatusesHistory.COLUMNS;
 const colsCargos = tableCargos.COLUMNS;
+const colsDraftCars = tableDraftCars.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -107,6 +109,12 @@ const selectCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortCo
         .field(`vt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME)
         .field(`tsn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
         .field(`csn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
+        .field(`drc.${colsDraftCars.CAR_MARK}`, HOMELESS_COLUMNS.DRAFT_CAR_MARK)
+        .field(`drc.${colsDraftCars.CAR_MODEL}`, HOMELESS_COLUMNS.DRAFT_CAR_MODEL)
+        .field(`drc.${colsDraftCars.CAR_VIN}`, HOMELESS_COLUMNS.DRAFT_CAR_VIN)
+        .field(`drc.${colsDraftCars.CAR_STATE_NUMBER}`, HOMELESS_COLUMNS.DRAFT_CAR_STATE_NUMBER)
+        .field(`drc.${colsDraftCars.CAR_MADE_YEAR_AT}`, HOMELESS_COLUMNS.DRAFT_CAR_MADE_YEAR_AT)
+        .field(`drc.${colsDraftCars.CAR_TYPE}`, HOMELESS_COLUMNS.DRAFT_CAR_TYPE)
         .from(table.NAME, 'c')
         .where(`c.${cols.COMPANY_ID} = '${companyId}'`)
         .where(`c.${cols.DELETED} = 'f'`)
@@ -120,6 +128,7 @@ const selectCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortCo
         .left_join(tableDangerClasses.NAME, 'dc', `dc.id = t.${colsTrailers.TRAILER_DANGER_CLASS_ID}`)
         .left_join(tableVehicleTypes.NAME, 'vt', `vt.id = t.${colsTrailers.TRAILER_VEHICLE_TYPE_ID}`)
         .left_join(tableTrailersNumbers.NAME, 'tsn', `tsn.${colsTrailersNumbers.TRAILER_ID} = t.id`)
+        .left_join(tableDraftCars.NAME, 'drc', `drc.${colsDraftCars.CAR_ID} = c.id`)
         .order(sortColumn, asc)
         .limit(limit)
         .offset(offset)

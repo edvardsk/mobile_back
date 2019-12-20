@@ -646,6 +646,13 @@ const HOMELESS_COLUMNS = {
     IS_DRAFT: 'is_draft',
     DATE_FROM: 'date_from',
     DATE_TO: 'date_to',
+    DRAFT_CAR_VIN: 'draft_car_vin',
+    DRAFT_CAR_STATE_NUMBER: 'draft_car_state_number',
+    DRAFT_CAR_MARK: 'draft_car_mark',
+    DRAFT_CAR_MODEL: 'draft_car_model',
+    DRAFT_CAR_MADE_YEAR_AT: 'draft_car_made_year_at',
+    DRAFT_CAR_TYPE: 'draft_car_type',
+    CAR_IS_DRAFT: 'car_is_draft',
 };
 
 module.exports = {
