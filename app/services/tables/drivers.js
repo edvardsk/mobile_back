@@ -34,6 +34,8 @@ const editDriverAsTransaction = (id, values) => [updateRecord(id, values), OPERA
 
 const getRecordByUserId = userId => oneOrNone(selectRecordByUserId(userId));
 
+const getRecordByUserIdStrict = userId => one(selectRecordByUserId(userId));
+
 const getRecord = id => oneOrNone(selectRecordById(id));
 
 const getRecordWithActiveDeals = id => oneOrNone(selectRecordWithActiveDealsById(id));
@@ -87,6 +89,7 @@ module.exports = {
     getRecord,
     getRecordWithActiveDeals,
     getRecordByUserId,
+    getRecordByUserIdStrict,
     getRecordStrict,
     getRecordStrictWithDeleted,
     getAvailableDriversPaginationSorting,

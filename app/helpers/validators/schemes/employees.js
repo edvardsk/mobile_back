@@ -21,6 +21,32 @@ const createOrModifyDriver = {
             type: 'string',
             maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
+        [colsUsers.PASSPORT_NUMBER]: {
+            type: 'string',
+            minLength: 1,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsUsers.PASSPORT_PERSONAL_ID]: {
+            type: 'string',
+            minLength: 1,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsUsers.PASSPORT_ISSUING_AUTHORITY]: {
+            type: 'string',
+            minLength: 1,
+            maxLength: POSTGRES_MAX_STRING_LENGTH,
+        },
+        [colsUsers.PASSPORT_CREATED_AT]: {
+            type: 'string',
+            format: 'date',
+        },
+        [colsUsers.PASSPORT_EXPIRED_AT]: {
+            type: 'string',
+            format: 'date',
+            formatMinimum: {
+                '$data': `1/${colsUsers.PASSPORT_CREATED_AT}`,
+            },
+        },
         [HOMELESS_COLUMNS.PHONE_PREFIX_ID]: {
             type: 'string',
             format: 'uuid',
@@ -41,11 +67,24 @@ const createOrModifyDriver = {
     required: [
         colsUsers.EMAIL,
         colsUsers.FULL_NAME,
+        colsUsers.PASSPORT_NUMBER,
+        colsUsers.PASSPORT_PERSONAL_ID,
+        colsUsers.PASSPORT_ISSUING_AUTHORITY,
+        colsUsers.PASSPORT_CREATED_AT,
+        colsUsers.PASSPORT_EXPIRED_AT,
         HOMELESS_COLUMNS.PHONE_PREFIX_ID,
         HOMELESS_COLUMNS.PHONE_NUMBER,
         colsDrivers.DRIVER_LICENCE_REGISTERED_AT,
         colsDrivers.DRIVER_LICENCE_EXPIRED_AT,
     ],
+    patternProperties: {
+        '^visa.*.valid_date_from$': {
+            type: 'string',
+        },
+        '^visa.*.valid_date_to$': {
+            type: 'string',
+        },
+    },
     additionalProperties: false,
 };
 

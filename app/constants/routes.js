@@ -61,6 +61,7 @@ const BASES = {
     DRIVERS: '/drivers',
     EXCHANGE_RATES: '/exchange-rates',
     VERIFY: '/verify',
+    REJECT: '/reject',
 };
 
 const IDS = {
@@ -438,6 +439,10 @@ const ROUTES = {
         BASE: BASES.DRIVERS,
         VERIFY: {
             BASE: IDS.DRIVER_ID + BASES.VERIFY,
+            POST: '',
+        },
+        REJECT: {
+            BASE: IDS.DRIVER_ID + BASES.REJECT,
             POST: '',
         },
     },

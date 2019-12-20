@@ -57,6 +57,8 @@ const ERRORS = {
         ALREADY_CONFIRMED: 'invites.already_confirmed',
         TOO_OFTEN: 'invites.too_often',
         PROHIBITED: 'invites.prohibited',
+        SKIPPED_DATES: 'invites.skipped_dates',
+        SKIPPED_REQUIRED_FILES: 'invites.skipped_required_files',
     },
     ACCOUNT_CONFIRMATIONS: {
         PROHIBITED: 'account_confirmations.prohibited',
@@ -91,6 +93,12 @@ const ERRORS = {
     },
     VERIFY: {
         ALREADY_VERIFIED: 'verify.already_verified',
+    },
+    REJECT: {
+        NOTHING_TO_REJECT: 'reject.nothing_to_reject',
+    },
+    PHONE_NUMBERS: {
+        BUSY: 'phone_numbers.busy',
     },
 };
 

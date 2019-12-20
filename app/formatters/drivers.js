@@ -8,6 +8,7 @@ const colsDrivers = SQL_TABLES.DRIVERS.COLUMNS;
 const colsUsersRoles = SQL_TABLES.USERS_TO_ROLES.COLUMNS;
 const colsUsersCompanies = SQL_TABLES.USERS_TO_COMPANIES.COLUMNS;
 const colsPhoneNumbers = SQL_TABLES.PHONE_NUMBERS.COLUMNS;
+const colsDraftDrivers = SQL_TABLES.DRAFT_DRIVERS.COLUMNS;
 
 const formatRecordToSave = (userId, body) => ({
     [cols.USER_ID]: userId,
@@ -17,14 +18,15 @@ const formatRecordToSave = (userId, body) => ({
 
 const formatDriversWithPhoneAndRole = data => ({
     id: data.id,
-    [colsUsers.FULL_NAME]: data[colsUsers.FULL_NAME],
-    [colsUsers.EMAIL]: data[colsUsers.EMAIL],
+    [colsUsers.FULL_NAME]: data[HOMELESS_COLUMNS.DRAFT_FULL_NAME] || data[colsUsers.FULL_NAME],
+    [colsUsers.EMAIL]: data[HOMELESS_COLUMNS.DRAFT_EMAIL] || data[colsUsers.EMAIL],
     [HOMELESS_COLUMNS.ROLE]: data[HOMELESS_COLUMNS.ROLE],
-    [HOMELESS_COLUMNS.FULL_PHONE_NUMBER]: data[HOMELESS_COLUMNS.FULL_PHONE_NUMBER],
-    [cols.DRIVER_LICENCE_REGISTERED_AT]: data[cols.DRIVER_LICENCE_REGISTERED_AT],
-    [cols.DRIVER_LICENCE_EXPIRED_AT]: data[cols.DRIVER_LICENCE_EXPIRED_AT],
+    [HOMELESS_COLUMNS.FULL_PHONE_NUMBER]: data[HOMELESS_COLUMNS.DRAFT_FULL_PHONE_NUMBER] || data[HOMELESS_COLUMNS.FULL_PHONE_NUMBER],
+    [cols.DRIVER_LICENCE_REGISTERED_AT]: data[HOMELESS_COLUMNS.DRAFT_DRIVER_LICENCE_REGISTERED_AT] || data[cols.DRIVER_LICENCE_REGISTERED_AT],
+    [cols.DRIVER_LICENCE_EXPIRED_AT]: data[HOMELESS_COLUMNS.DRAFT_DRIVER_LICENCE_EXPIRED_AT] || data[cols.DRIVER_LICENCE_EXPIRED_AT],
     [colsUsers.FREEZED]: data[colsUsers.FREEZED],
     [colsDrivers.VERIFIED]: data[colsDrivers.VERIFIED],
+    [HOMELESS_COLUMNS.IS_DRAFT]: !!data[HOMELESS_COLUMNS.DRAFT_EMAIL],
 });
 
 const formatRecordForList = data => ({
@@ -90,6 +92,18 @@ const formatRecordAsVerified = (data = {}) => ({
     [colsDrivers.VERIFIED]: true,
 });
 
+const formatRecordAsNotShadow = (data = {}) => ({
+    ...data,
+    [colsDrivers.SHADOW]: false,
+});
+
+const formatRecordToUpdateFromDraft = draftDriver => ({
+    [cols.DRIVER_LICENCE_REGISTERED_AT]: draftDriver[colsDraftDrivers.DRIVER_LICENCE_REGISTERED_AT].toISOString(),
+    [cols.DRIVER_LICENCE_EXPIRED_AT]: draftDriver[colsDraftDrivers.DRIVER_LICENCE_EXPIRED_AT].toISOString(),
+    [cols.SHADOW]: false,
+    [cols.VERIFIED]: true,
+});
+
 module.exports = {
     formatRecordToSave,
     formatDriversWithPhoneAndRole,
@@ -98,4 +112,6 @@ module.exports = {
     formatShadowDriversToSave,
     formatRecordAsNotVerified,
     formatRecordAsVerified,
+    formatRecordAsNotShadow,
+    formatRecordToUpdateFromDraft,
 };

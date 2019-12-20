@@ -5,7 +5,9 @@ const { get } = require('lodash');
 const UsersService = require('services/tables/users');
 const UsersCompaniesService = require('services/tables/users-to-companies');
 const DriverService = require('services/tables/drivers');
+const DraftDriverService = require('services/tables/draft-drivers');
 const FilesService = require('services/tables/files');
+const DraftFilesService = require('services/tables/draft-files');
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
@@ -15,9 +17,9 @@ const { SET_DRIVER_ROLES } = require('constants/system');
 
 // formatters
 const { formatPaginationDataForResponse } = require('formatters/pagination-sorting');
-const { formatUserWithPhoneAndRole, formatUserWithPhoneNumberAndRole } = require('formatters/users');
+const { formatUserWithPhoneAndRole, formatUserWithPhoneNumberAndRole, formatUserFromDraftDriver } = require('formatters/users');
 const { formatDriversWithPhoneAndRole } = require('formatters/drivers');
-const { formatFilesForResponse } = require('formatters/files');
+const { formatFilesForResponse, mergeFilesWithDraft } = require('formatters/files');
 
 // helpers
 const { getParams } = require('helpers/pagination-sorting');
@@ -27,6 +29,9 @@ const employeesPaginationOptions = {
     DEFAULT_SORT_COLUMN: 'id',
     DEFAULT_SORT_DIRECTION: SORTING_DIRECTIONS.ASC,
 };
+
+const colsDrivers = SQL_TABLES.DRIVERS.COLUMNS;
+const colsDraftDrivers = SQL_TABLES.DRAFT_DRIVERS.COLUMNS;
 
 const getListEmployees = async (req, res, next) => {
     try {
@@ -104,9 +109,8 @@ const getListDrivers = async (req, res, next) => {
 
 const getEmployee = async (req, res, next) => {
     try {
-        const { company } = res.locals;
+        const { company, isControlRole } = res.locals;
         const targetUserId = req.params.userId;
-
 
         const isFromOneCompany = await UsersCompaniesService.hasCompanyUser(company.id, targetUserId);
         if (!isFromOneCompany) {
@@ -121,16 +125,58 @@ const getEmployee = async (req, res, next) => {
         };
 
         if (SET_DRIVER_ROLES.has(targetRole)) {
-            const [driver, files] = await Promise.all([
+            const [driver, draftDriver, files, draftFiles] = await Promise.all([
                 DriverService.getRecordByUserId(targetUserId),
+                DraftDriverService.getRecordByUserId(targetUserId),
                 FilesService.getFilesByUserId(targetUserId),
+                DraftFilesService.getFilesByUserId(targetUserId),
             ]);
 
-            const filesLinks = await FilesService.formatTemporaryLinks(files);
-            const formattedFilesLinks = formatFilesForResponse(filesLinks);
+            if (isControlRole) {
+                result.driver = driver;
+                result.draftDriver = draftDriver;
 
-            result.driver = driver;
-            result.files = formattedFilesLinks;
+                const [filesLinks, draftFilesLinks] = await Promise.all([
+                    FilesService.formatTemporaryLinks(files),
+                    FilesService.formatTemporaryLinks(draftFiles),
+                ]);
+                result.files = formatFilesForResponse(filesLinks);
+                result.draftFiles = formatFilesForResponse(draftFilesLinks);
+
+            } else {
+                result.driver = driver;
+
+                let mergedFiles = files;
+
+                if (draftDriver) {
+                    result.user = {
+                        ...result.user,
+                        ...formatUserFromDraftDriver(draftDriver),
+                    };
+
+                    result.driver = {
+                        ...driver,
+                        [colsDrivers.DRIVER_LICENCE_REGISTERED_AT]: draftDriver[colsDraftDrivers.DRIVER_LICENCE_REGISTERED_AT],
+                        [colsDrivers.DRIVER_LICENCE_EXPIRED_AT]: draftDriver[colsDraftDrivers.DRIVER_LICENCE_EXPIRED_AT],
+                        [HOMELESS_COLUMNS.IS_DRAFT]: true,
+                        [colsDraftDrivers.COMMENTS]: draftDriver[colsDraftDrivers.COMMENTS],
+                    };
+
+                    if (draftFiles.length) {
+                        mergedFiles = mergeFilesWithDraft(files, draftFiles);
+                    }
+                } else {
+                    result.driver = {
+                        ...driver,
+                        [HOMELESS_COLUMNS.IS_DRAFT]: false,
+                    };
+                }
+
+                const filesLinks = await FilesService.formatTemporaryLinks(mergedFiles);
+                const formattedFilesLinks = formatFilesForResponse(filesLinks);
+
+                result.files = formattedFilesLinks;
+            }
         }
 
         return success(res, { ...result });

@@ -28,6 +28,10 @@ function SqlArray(data) {
     this.toString = function () {
         return `ARRAY [${this.data.map(value => `'${value}'`).toString()}]`;
     };
+
+    this.toArray = function () {
+        return [...this.data];
+    };
 }
 
 function SqlString(data) {
