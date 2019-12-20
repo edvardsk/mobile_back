@@ -19,6 +19,8 @@ const tableDealsStatuses = SQL_TABLES.DEAL_STATUSES;
 const tableDealsStatusesHistory = SQL_TABLES.DEAL_HISTORY_STATUSES;
 const tableCargos = SQL_TABLES.CARGOS;
 const tableDraftCars = SQL_TABLES.DRAFT_CARS;
+const tableDraftCarsFiles = SQL_TABLES.DRAFT_CARS_TO_FILES;
+const tableDraftFiles = SQL_TABLES.DRAFT_FILES;
 
 const cols = table.COLUMNS;
 const colsCarsStateNumbers = tableCarsStateNumbers.COLUMNS;
@@ -33,6 +35,8 @@ const colsDealsStatuses = tableDealsStatuses.COLUMNS;
 const colsDealsStatusesHistory = tableDealsStatusesHistory.COLUMNS;
 const colsCargos = tableCargos.COLUMNS;
 const colsDraftCars = tableDraftCars.COLUMNS;
+const colsDraftCarsFiles = tableDraftCarsFiles.COLUMNS;
+const colsDraftFiles = tableDraftFiles.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -197,6 +201,22 @@ const selectRecordByIdFull = id => squelPostgres
     .field(`vt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
     .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
     .field(`csn.${colsCarsStateNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
+    .field(`drc.${colsDraftCars.CAR_MARK}`, HOMELESS_COLUMNS.DRAFT_CAR_MARK)
+    .field(`drc.${colsDraftCars.CAR_MODEL}`, HOMELESS_COLUMNS.DRAFT_CAR_MODEL)
+    .field(`drc.${colsDraftCars.CAR_VIN}`, HOMELESS_COLUMNS.DRAFT_CAR_VIN)
+    .field(`drc.${colsDraftCars.CAR_STATE_NUMBER}`, HOMELESS_COLUMNS.DRAFT_CAR_STATE_NUMBER)
+    .field(`drc.${colsDraftCars.CAR_MADE_YEAR_AT}`, HOMELESS_COLUMNS.DRAFT_CAR_MADE_YEAR_AT)
+    .field(`drc.${colsDraftCars.CAR_TYPE}`, HOMELESS_COLUMNS.DRAFT_CAR_TYPE)
+    .field(`drc.${colsDraftCars.CAR_LOADING_METHODS}`, HOMELESS_COLUMNS.DRAFT_CAR_LOADING_METHODS)
+    .field(`drc.${colsDraftCars.CAR_DANGER_CLASS_ID}`, HOMELESS_COLUMNS.DRAFT_CAR_DANGER_CLASS_ID)
+    .field(`drc.${colsDraftCars.CAR_VEHICLE_TYPE_ID}`, HOMELESS_COLUMNS.DRAFT_CAR_VEHICLE_TYPE_ID)
+    .field(`drc.${colsDraftCars.CAR_WIDTH}`, HOMELESS_COLUMNS.DRAFT_CAR_WIDTH)
+    .field(`drc.${colsDraftCars.CAR_HEIGHT}`, HOMELESS_COLUMNS.DRAFT_CAR_HEIGHT)
+    .field(`drc.${colsDraftCars.CAR_LENGTH}`, HOMELESS_COLUMNS.DRAFT_CAR_LENGTH)
+    .field(`drc.${colsDraftCars.CAR_CARRYING_CAPACITY}`, HOMELESS_COLUMNS.DRAFT_CAR_CARRYING_CAPACITY)
+    .field(`drc.${colsDraftCars.COMMENTS}`, colsDraftCars.COMMENTS)
+    .field(`dvt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.DRAFT_VEHICLE_TYPE_NAME)
+    .field(`ddc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DRAFT_DANGER_CLASS_NAME)
     .field(`ARRAY(${
         squelPostgres
             .select()
@@ -206,6 +226,16 @@ const selectRecordByIdFull = id => squelPostgres
             .left_join(tableCarsFiles.NAME, 'cf', `cf.${colsCarsFiles.FILE_ID} = f.id`)
             .toString()
     })`, HOMELESS_COLUMNS.FILES)
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(df.id, df.${colsDraftFiles.NAME}, df.${colsDraftFiles.LABELS}, df.${colsDraftFiles.URL}))`)
+            .from(tableDraftFiles.NAME, 'df')
+            .where(`dc.${colsDraftCars.CAR_ID} = '${id}'`)
+            .left_join(tableDraftCarsFiles.NAME, 'dcf', `dcf.${colsDraftCarsFiles.DRAFT_FILE_ID} = df.id`)
+            .left_join(tableDraftCars.NAME, 'dc', `dc.id = dcf.${colsDraftCarsFiles.DRAFT_CAR_ID}`)
+            .toString()
+    })`, HOMELESS_COLUMNS.DRAFT_FILES)
     .from(table.NAME, 'c')
     .where(`c.id = '${id}'`)
     .where(`c.${cols.DELETED} = 'f'`)
@@ -213,6 +243,9 @@ const selectRecordByIdFull = id => squelPostgres
     .left_join(tableVehicleTypes.NAME, 'vt', `vt.id = c.${cols.CAR_VEHICLE_TYPE_ID}`)
     .left_join(tableDangerClasses.NAME, 'dc', `dc.id = c.${cols.CAR_DANGER_CLASS_ID}`)
     .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = c.id`)
+    .left_join(tableDraftCars.NAME, 'drc', `drc.${colsDraftCars.CAR_ID} = c.id`)
+    .left_join(tableVehicleTypes.NAME, 'dvt', `dvt.id = drc.${colsDraftCars.CAR_VEHICLE_TYPE_ID}`)
+    .left_join(tableDangerClasses.NAME, 'ddc', `ddc.id = drc.${colsDraftCars.CAR_DANGER_CLASS_ID}`)
     .toString();
 
 const selectRecordByIdAndCompanyIdWithoutTrailer = (id, companyId) => squelPostgres

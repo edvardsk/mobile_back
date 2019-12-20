@@ -652,7 +652,17 @@ const HOMELESS_COLUMNS = {
     DRAFT_CAR_MODEL: 'draft_car_model',
     DRAFT_CAR_MADE_YEAR_AT: 'draft_car_made_year_at',
     DRAFT_CAR_TYPE: 'draft_car_type',
+    DRAFT_CAR_DANGER_CLASS_ID: 'draft_car_danger_class_id',
+    DRAFT_CAR_VEHICLE_TYPE_ID: 'draft_car_vehicle_type_id',
+    DRAFT_CAR_LOADING_METHODS: 'draft_car_loading_methods',
+    DRAFT_CAR_WIDTH: 'draft_car_width',
+    DRAFT_CAR_HEIGHT: 'draft_car_height',
+    DRAFT_CAR_LENGTH: 'draft_car_length',
+    DRAFT_CAR_CARRYING_CAPACITY: 'draft_car_carrying_capacity',
+    DRAFT_VEHICLE_TYPE_NAME: 'draft_vehicle_type_name',
+    DRAFT_DANGER_CLASS_NAME: 'draft_danger_class_name',
     CAR_IS_DRAFT: 'car_is_draft',
+    DRAFT_FILES: 'draft_files',
 };
 
 module.exports = {

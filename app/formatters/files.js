@@ -1,6 +1,6 @@
 const moment = require('moment');
 const uuid = require('uuid/v4');
-const { difference } = require('lodash');
+const { flatten } = require('lodash');
 
 // constants
 const { SqlArray } = require('constants/instances');
@@ -322,16 +322,42 @@ const selectFilesToStore = (files, mapData) => {
 };
 
 const mergeFilesWithDraft = (files, draftFiles) => {
-    let mergedFiles = files.reduce((acc, file) => {
-        const draftFileIndex = draftFiles.findIndex(draftFile => (
-            !difference(draftFile[colsDraftFiles.LABELS], file[cols.LABELS]).length
-        ));
+    const groupedFiles = {};
+    const groupedDraftFiles = {};
 
-        if (draftFileIndex !== -1) {
-            acc.push(draftFiles[draftFileIndex]);
-            draftFiles.splice(draftFileIndex, 1);
+    files.forEach((file) => {
+        const labelsString = file[cols.LABELS].sort().toString();
+        if (groupedFiles[labelsString]) {
+            groupedFiles[labelsString].push(file);
         } else {
-            acc.push(file);
+            groupedFiles[labelsString] = [file];
+        }
+    });
+
+    draftFiles.forEach((file) => {
+        const labelsString = file[colsDraftFiles.LABELS].sort().toString();
+        if (groupedDraftFiles[labelsString]) {
+            groupedDraftFiles[labelsString].push(file);
+        } else {
+            groupedDraftFiles[labelsString] = [file];
+        }
+    });
+
+    let mergedFiles = Object.keys(groupedFiles).reduce((acc, filesKey) => {
+        const draftFileArr = groupedDraftFiles[filesKey];
+        const fileArr = groupedFiles[filesKey];
+
+        if (draftFileArr) {
+            acc = [
+                ...acc,
+                ...draftFileArr,
+            ];
+            delete groupedDraftFiles[filesKey];
+        } else {
+            acc = [
+                ...acc,
+                ...fileArr,
+            ];
         }
 
         return acc;
@@ -339,7 +365,7 @@ const mergeFilesWithDraft = (files, draftFiles) => {
     }, []);
     return [
         ...mergedFiles,
-        ...draftFiles,
+        ...flatten(Object.keys(groupedDraftFiles).map(key => groupedDraftFiles[key])),
     ];
 };
 

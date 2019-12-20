@@ -58,9 +58,18 @@ const getListCars = async (req, res, next) => {
 const getCar = async (req, res, next) => {
     try {
         const { carId } = req.params;
+        const { isControlRole } = res.locals;
+
         const car = await CarsService.getRecordFullStrict(carId);
-        const formattedData = formatRecordForResponse(car);
-        formattedData.car.files = await FilesService.formatTemporaryLinks(formattedData.car.files);
+
+        const formattedData = formatRecordForResponse(car, isControlRole);
+
+        formattedData.files = await FilesService.formatTemporaryLinks(formattedData.files);
+
+        if (isControlRole) {
+            formattedData.draftFiles = await FilesService.formatTemporaryLinks(formattedData.draftFiles);
+        }
+
         return success(res, { ...formattedData });
     } catch (error) {
         next(error);
