@@ -42,6 +42,10 @@ router.get(
 // cars
 router.get(
     ROUTES.SEARCH.CARS.BASE + ROUTES.SEARCH.CARS.GET,
+    validate(ValidatorSchemes.searchCarQuery, 'query'),
+    validate(ValidatorSchemes.modifyStringValues, 'query'),
+    validate(ValidatorSchemes.searchCarAfterModifyingQuery, 'query'),
+    validate(ValidatorSchemes.searchCarAsync, 'query'),
     injectNotRequiredUser,
     injectNotRequiredCompanyId,
     getCars.searchCars,
@@ -49,6 +53,9 @@ router.get(
 
 router.get(
     ROUTES.SEARCH.CARS.BASE + ROUTES.SEARCH.CARS.GET_ALL,
+    validate(ValidatorSchemes.searchAllCarsQuery, 'query'),
+    validate(ValidatorSchemes.modifyStringValues, 'query'),
+    validate(ValidatorSchemes.searchAllCarsAfterModifyingQuery, 'query'),
     injectNotRequiredUser,
     injectNotRequiredCompanyId,
     getCars.getAllCars,

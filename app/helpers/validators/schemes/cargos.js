@@ -314,6 +314,81 @@ const searchCargoQuery = {
     additionalProperties: false,
 };
 
+const searchCarQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.ZOOM]: {
+            type: 'string',
+            pattern: DIGITS_VALIDATION_PATTERN,
+        },
+        [HOMELESS_COLUMNS.CLUSTER_SW]: {
+            type: 'string',
+            format: 'json',
+        },
+        [HOMELESS_COLUMNS.CLUSTER_NE]: {
+            type: 'string',
+            format: 'json',
+        },
+        [HOMELESS_COLUMNS.UPLOADING_POINT]: {
+            type: 'string',
+            format: 'json',
+        },
+        [HOMELESS_COLUMNS.UPLOADING_DATE]: {
+            type: 'string',
+            format: 'date-time',
+        },
+        [HOMELESS_COLUMNS.DOWNLOADING_DATE]: {
+            type: 'string',
+            format: 'date-time',
+            formatMinimum: {
+                '$data': `1/${HOMELESS_COLUMNS.UPLOADING_DATE}`,
+            },
+        },
+        [colsCargos.GROSS_WEIGHT]: {
+            type: 'string',
+        },
+        [colsCargos.WIDTH]: {
+            type: 'string',
+        },
+        [colsCargos.HEIGHT]: {
+            type: 'string',
+        },
+        [colsCargos.LENGTH]: {
+            type: 'string',
+        },
+        [colsCargos.LOADING_METHODS]: {
+            type: 'string',
+        },
+        [colsCargos.LOADING_TYPE]: {
+            type: 'string',
+            enum: [LOADING_TYPES_MAP.FTL, LOADING_TYPES_MAP.LTL],
+        },
+        [colsCargos.GUARANTEES]: {
+            type: 'string',
+        },
+        [colsCargos.DANGER_CLASS_ID]: {
+            type: 'string',
+            format: 'uuid',
+        },
+        [colsCargos.VEHICLE_TYPE_ID]: {
+            type: 'string',
+            format: 'uuid',
+        },
+        [HOMELESS_COLUMNS.SEARCH_ITEMS]: {
+            type: 'string',
+        },
+        [HOMELESS_COLUMNS.SEARCH_RADIUS]: {
+            type: 'string',
+            pattern: DIGITS_VALIDATION_PATTERN,
+        },
+    },
+    required: [
+        HOMELESS_COLUMNS.UPLOADING_POINT,
+        HOMELESS_COLUMNS.UPLOADING_DATE,
+        HOMELESS_COLUMNS.SEARCH_RADIUS,
+    ],
+    additionalProperties: false,
+};
+
 const modifyStringValues = {
     properties: {
         [HOMELESS_COLUMNS.ZOOM]: {
@@ -415,7 +490,78 @@ const searchCargoAfterModifyingQuery = {
     },
 };
 
+const searchCarAfterModifyingQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.ZOOM]: {
+            type: 'number',
+            minimum: 1,
+            maximum: 16,
+        },
+        [HOMELESS_COLUMNS.CLUSTER_SW]: coordinatesFormatWithoutName,
+        [HOMELESS_COLUMNS.CLUSTER_NE]: coordinatesFormatWithoutName,
+        [HOMELESS_COLUMNS.UPLOADING_POINT]: coordinatesFormatWithoutName,
+        [colsCargos.GROSS_WEIGHT]: {
+            type: 'number',
+            format: 'size',
+            exclusiveMinimum: 0,
+            exclusiveMaximum: 1000,
+        },
+        [colsCargos.WIDTH]: {
+            type: 'number',
+            format: 'size',
+            exclusiveMinimum: 0,
+            exclusiveMaximum: 1000,
+        },
+        [colsCargos.HEIGHT]: {
+            type: 'number',
+            format: 'size',
+            exclusiveMinimum: 0,
+            exclusiveMaximum: 1000,
+        },
+        [colsCargos.LENGTH]: {
+            type: 'number',
+            format: 'size',
+            exclusiveMinimum: 0,
+            exclusiveMaximum: 1000,
+        },
+        [colsCargos.LOADING_METHODS]: {
+            type: 'array',
+            minItems: 1,
+            uniqueItems: true,
+            items: {
+                enum: [LOADING_METHODS_MAP.UP, LOADING_METHODS_MAP.BACK, LOADING_METHODS_MAP.SIDE],
+
+            },
+        },
+        [colsCargos.GUARANTEES]: {
+            type: 'array',
+            minItems: 1,
+            uniqueItems: true,
+            items: {
+                enum: [GUARANTEES_MAP.CMR, GUARANTEES_MAP.TIR],
+            },
+        },
+        [HOMELESS_COLUMNS.SEARCH_RADIUS]: {
+            type: 'number',
+            minimum: 300,
+            maximum: 15000,
+        },
+    },
+};
+
 const searchCargoAsync = {
+    $async: true,
+    properties: {
+        [colsCargos.DANGER_CLASS_ID]: {
+            danger_class_not_exist: {},
+        },
+        [colsCargos.VEHICLE_TYPE_ID]: {
+            vehicle_type_not_exist: {},
+        },
+    },
+};
+
+const searchCarAsync = {
     $async: true,
     properties: {
         [colsCargos.DANGER_CLASS_ID]: {
@@ -454,7 +600,41 @@ const searchAllCargosQuery = {
     additionalProperties: false,
 };
 
+const searchAllCarsQuery = {
+    type: 'object',
+    properties: {
+        [HOMELESS_COLUMNS.ZOOM]: {
+            type: 'string',
+            pattern: DIGITS_VALIDATION_PATTERN,
+        },
+        [HOMELESS_COLUMNS.CLUSTER_SW]: {
+            type: 'string',
+            format: 'json',
+        },
+        [HOMELESS_COLUMNS.CLUSTER_NE]: {
+            type: 'string',
+            format: 'json',
+        },
+        [HOMELESS_COLUMNS.SEARCH_ITEMS]: {
+            type: 'string',
+        },
+    },
+    additionalProperties: false,
+};
+
 const searchAllCargosAfterModifyingQuery = {
+    properties: {
+        [HOMELESS_COLUMNS.ZOOM]: {
+            type: 'number',
+            minimum: 1,
+            maximum: 16,
+        },
+        [HOMELESS_COLUMNS.CLUSTER_SW]: coordinatesFormatWithoutName,
+        [HOMELESS_COLUMNS.CLUSTER_NE]: coordinatesFormatWithoutName,
+    },
+};
+
+const searchAllCarsAfterModifyingQuery = {
     properties: {
         [HOMELESS_COLUMNS.ZOOM]: {
             type: 'number',
@@ -479,4 +659,9 @@ module.exports = {
     searchCargoAsync,
     searchAllCargosQuery,
     searchAllCargosAfterModifyingQuery,
+    searchCarQuery,
+    searchCarAfterModifyingQuery,
+    searchCarAsync,
+    searchAllCarsQuery,
+    searchAllCarsAfterModifyingQuery,
 };

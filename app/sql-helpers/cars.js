@@ -1,8 +1,9 @@
 const squel = require('squel');
 const { get } = require('lodash');
+const { CAR_TYPES_MAP } = require('constants/cars');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SqlArray } = require('constants/instances');
-const { FINISHED_STATUSES_LIST, DEAL_STATUSES_MAP } = require('constants/deal-statuses');
+const { FINISHED_STATUSES_LIST, DEAL_STATUSES_MAP, SEARCHABLE_STATUSES_LIST } = require('constants/deal-statuses');
 
 const squelPostgres = squel.useFlavour('postgres');
 
@@ -129,8 +130,15 @@ const selectCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortCo
 const selectRecordsForSearch = (companyId, showMyItems) => {
     let expression = squelPostgres
         .select()
+        .field('c.*')
+        .field(`cvt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.CAR_VEHICLE_TYPE_NAME)
+        .field('t.id', HOMELESS_COLUMNS.TRAILER_ID)
+        .field(`t.${colsTrailers.VERIFIED}`, HOMELESS_COLUMNS.TRAILER_VERIFIED)
+        .field(`tsn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
+        .field(`csn.${colsCarsStateNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
         .from(table.NAME, 'c')
-        .field('c.*');
+        .where(`csn.${colsCarsStateNumbers.IS_ACTIVE} = 't'`)
+        .where(`tsn.${colsTrailersNumbers.IS_ACTIVE} = 't' OR c.${cols.CAR_TYPE} = '${CAR_TYPES_MAP.TRUCK}'`);
 
     if (companyId) {
         expression
@@ -138,21 +146,38 @@ const selectRecordsForSearch = (companyId, showMyItems) => {
     }
 
     return expression
+        .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = c.id`)
+        .left_join(tableTrailers.NAME, 't', `t.${colsTrailers.CAR_ID} = c.id`)
+        .left_join(tableVehicleTypes.NAME, 'cvt', `cvt.id = c.${cols.CAR_VEHICLE_TYPE_ID}`)
+        .left_join(tableTrailersNumbers.NAME, 'tsn', `tsn.${colsTrailersNumbers.TRAILER_ID} = t.id`)
         .toString();
 };
 
 const selectAllNewRecordsForSearch = (companyId, showMyItems) => {
-    const expression = squelPostgres
+    let expression = squelPostgres
         .select()
+        .field('c.*')
+        .field(`cvt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.CAR_VEHICLE_TYPE_NAME)
+        .field('t.id', HOMELESS_COLUMNS.TRAILER_ID)
+        .field(`t.${colsTrailers.VERIFIED}`, HOMELESS_COLUMNS.TRAILER_VERIFIED)
+        .field(`tsn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
+        .field(`csn.${colsCarsStateNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
         .from(table.NAME, 'c')
-        .field('c.*');
+        .where(`csn.${colsCarsStateNumbers.IS_ACTIVE} = 't'`)
+        .where(`tsn.${colsTrailersNumbers.IS_ACTIVE} = 't' OR c.${cols.CAR_TYPE} = '${CAR_TYPES_MAP.TRUCK}'`);
 
     if (companyId) {
         expression
             .where(`c.${cols.COMPANY_ID} ${showMyItems ? '=' : '<>'} '${companyId}'`);
     }
 
+    setCarNotInActiveDealFilter(expression);
+
     return expression
+        .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = c.id`)
+        .left_join(tableTrailers.NAME, 't', `t.${colsTrailers.CAR_ID} = c.id`)
+        .left_join(tableVehicleTypes.NAME, 'cvt', `cvt.id = c.${cols.CAR_VEHICLE_TYPE_ID}`)
+        .left_join(tableTrailersNumbers.NAME, 'tsn', `tsn.${colsTrailersNumbers.TRAILER_ID} = t.id`)
         .toString();
 };
 
@@ -301,6 +326,31 @@ const selectCountAvailableCarsByCompanyId = (companyId, cargoDates, filter) => {
         .left_join(tableTrailers.NAME, 't', `t.${colsTrailers.CAR_ID} = c.id`)
         .left_join(tableTrailersNumbers.NAME, 'tsn', `tsn.${colsTrailersNumbers.TRAILER_ID} = t.id`)
         .toString();
+};
+
+const setCarNotInActiveDealFilter = (expression) => {
+    expression.where('c.id in ?', squelPostgres
+        .select()
+        .field('DISTINCT(c2.id)')
+        .from(table.NAME, 'c2')
+        .where(`c2.${cols.DELETED} = 'f'`)
+        .where('dsh.id IS NULL OR dsh.id = ?', squelPostgres
+            .select()
+            .field('hdsh.id')
+            .from(tableDealsStatusesHistory.NAME, 'hdsh')
+            .where(`hdsh.${colsDealsStatusesHistory.DEAL_ID} = d.id`)
+            .order(colsDealsStatusesHistory.CREATED_AT, false)
+            .limit(1)
+        )
+        .where(`dsh.id IS NULL OR dsh.${colsDealsStatusesHistory.DEAL_STATUS_ID} IN ?`, squelPostgres
+            .select()
+            .field('ds.id')
+            .from(tableDealsStatuses.NAME, 'ds')
+            .where(`ds.${colsDealsStatuses.NAME} IN ?`, SEARCHABLE_STATUSES_LIST)
+        )
+        .left_join(tableDeals.NAME, 'd', `d.${colsDeals.CAR_ID} = c2.id`)
+        .left_join(tableDealsStatusesHistory.NAME, 'dsh', `dsh.${colsDealsStatusesHistory.DEAL_ID} = d.id`)
+    );
 };
 
 const setAvailableCarsForDealFilter = (expression, cargoDates, companyId) => {

@@ -20,7 +20,7 @@ const {
 const { formatQueueByPriority } = require('formatters/index');
 
 // helpers
-const { clusterizeCargos } = require('helpers/cluster');
+const { clusterizeItems } = require('helpers/cluster');
 
 const colsCurrencyPriorities = SQL_TABLES.CURRENCY_PRIORITIES.COLUMNS;
 
@@ -83,7 +83,7 @@ const searchCargo = async (req, res, next) => {
         const formattedCargos = formatRecordForSearchResponse(
             cargos, uploadingPoint, downloadingPoint, searchLanguageId, defaultEconomicSettings, formattedCurrencyPriorities
         );
-        const clusters = clusterizeCargos(formattedCargos, query);
+        const clusters = clusterizeItems(formattedCargos, query, { isCargo: true });
 
         return success(res, {
             clusters,
@@ -123,7 +123,7 @@ const getAllNewCargos = async (req, res, next) => {
         const cargos = await CargosServices.getAllNewRecordsForSearch(searchLanguageId, companyId, showMyItems);
         const formattedCargos = formatRecordForSearchAllResponse(cargos, defaultEconomicSettings, formattedCurrencyPriorities);
 
-        const clusters = clusterizeCargos(formattedCargos, query);
+        const clusters = clusterizeItems(formattedCargos, query, { isCargo: true });
 
         return success(res, {
             clusters,
