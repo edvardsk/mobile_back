@@ -663,6 +663,7 @@ const HOMELESS_COLUMNS = {
     DRAFT_DANGER_CLASS_NAME: 'draft_danger_class_name',
     CAR_IS_DRAFT: 'car_is_draft',
     DRAFT_FILES: 'draft_files',
+    COMMENTS: 'comments',
 };
 
 module.exports = {

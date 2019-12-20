@@ -209,6 +209,7 @@ const formatRecordForResponse = (car, isControlRole) => {
                 [cols.CAR_VEHICLE_TYPE_ID]: car[HOMELESS_COLUMNS.DRAFT_CAR_VEHICLE_TYPE_ID],
                 [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: car[HOMELESS_COLUMNS.DRAFT_DANGER_CLASS_NAME],
                 [HOMELESS_COLUMNS.VEHICLE_TYPE_NAME]: car[HOMELESS_COLUMNS.DRAFT_VEHICLE_TYPE_NAME],
+                [HOMELESS_COLUMNS.COMMENTS]: car[colsDraftCars.COMMENTS],
             };
             result.draftFiles = formatDraftCarFiles(car);
         }
@@ -251,6 +252,7 @@ const formatRecordForResponse = (car, isControlRole) => {
                 [cols.CAR_VEHICLE_TYPE_ID]: vehicleTypeId,
                 [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: dangerClassName,
                 [HOMELESS_COLUMNS.VEHICLE_TYPE_NAME]: vehicleTypeName,
+                [HOMELESS_COLUMNS.COMMENTS]: car[colsDraftCars.COMMENTS] || undefined,
             };
         }
 
