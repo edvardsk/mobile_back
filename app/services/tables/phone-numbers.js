@@ -51,6 +51,7 @@ module.exports = {
     addRecordAsTransaction,
     addRecordsAsTransaction,
     editRecordAsTransaction,
+    getRecordByNumberAndPrefixId,
 
     checkPhoneNumberExists,
     checkPhoneNumberValid,

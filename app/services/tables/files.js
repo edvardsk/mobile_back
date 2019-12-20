@@ -11,6 +11,7 @@ const {
     selectFilesByTrailerIdAndLabels,
     selectFilesByUserIdAndLabels,
     selectFilesByUserId,
+    selectFilesByDriverIdAndLabels,
 
     deleteFilesByIds,
 } = require('sql-helpers/files');
@@ -42,7 +43,9 @@ const getFilesByCarIdAndLabels = (carId, labels) => manyOrNone(selectFilesByCarI
 
 const getFilesByTrailerIdAndLabels = (trailerId, labels) => manyOrNone(selectFilesByTrailerIdAndLabels(trailerId, labels));
 
-const getFilesByUserIdAndLabels = (userId, labels) => manyOrNone(selectFilesByUserIdAndLabels(userId, labels));
+const getFilesByUserIdAndLabels = (userId, fileLabels) => manyOrNone(selectFilesByUserIdAndLabels(userId, fileLabels));
+
+const getFilesByDriverIdAndLabels = (driverId, labelsArr) => manyOrNone(selectFilesByDriverIdAndLabels(driverId, labelsArr));
 
 const getFilesByUserId = userId => manyOrNone(selectFilesByUserId(userId));
 
@@ -78,6 +81,7 @@ module.exports = {
     getFilesByTrailerIdAndLabels,
     getFilesByUserIdAndLabels,
     getFilesByUserId,
+    getFilesByDriverIdAndLabels,
 
     removeFilesByIdsAsTransaction,
 

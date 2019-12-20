@@ -9,12 +9,14 @@ const tableCompaniesFiles = SQL_TABLES.COMPANIES_TO_FILES;
 const tableUsersFiles = SQL_TABLES.USERS_TO_FILES;
 const tableCarsFiles = SQL_TABLES.CARS_TO_FILES;
 const tableTrailersFiles = SQL_TABLES.TRAILERS_TO_FILES;
+const tableDrivers = SQL_TABLES.DRIVERS;
 
 const cols = table.COLUMNS;
 const colsCompaniesFiles = tableCompaniesFiles.COLUMNS;
 const colsUsersFiles = tableUsersFiles.COLUMNS;
 const colsCarsFiles = tableCarsFiles.COLUMNS;
 const colsTrailersFiles = tableTrailersFiles.COLUMNS;
+const colsDrivers = tableDrivers.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -78,14 +80,17 @@ const selectFilesByTrailerIdAndLabels = (trailerId, labels) => squelPostgres
     .left_join(tableTrailersFiles.NAME, 'tf', `tf.${colsTrailersFiles.FILE_ID} = f.id`)
     .toString();
 
-const selectFilesByUserIdAndLabels = (userId, labels) => squelPostgres
-    .select()
-    .from(table.NAME, 'f')
-    .field('f.*')
-    .where(`uf.${colsUsersFiles.USER_ID} = '${userId}'`)
-    .where(`f.${cols.LABELS} && ARRAY[${labels.map(label => `'${label}'`).toString()}]`)
-    .left_join(tableUsersFiles.NAME, 'uf', `uf.${colsCompaniesFiles.FILE_ID} = f.id`)
-    .toString();
+const selectFilesByUserIdAndLabels = (userId, fileLabels) => {
+    const exp = squelPostgres
+        .select()
+        .from(table.NAME, 'f')
+        .field('f.*')
+        .where(`uf.${colsUsersFiles.USER_ID} = '${userId}'`);
+    setLabelsArrFilter(exp, fileLabels);
+    return exp
+        .left_join(tableUsersFiles.NAME, 'uf', `uf.${colsCompaniesFiles.FILE_ID} = f.id`)
+        .toString();
+};
 
 const selectFilesByUserId = userId => squelPostgres
     .select()
@@ -93,6 +98,35 @@ const selectFilesByUserId = userId => squelPostgres
     .where(`uf.${colsUsersFiles.USER_ID} = '${userId}'`)
     .left_join(tableUsersFiles.NAME, 'uf', `uf.${colsUsersFiles.FILE_ID} = f.id`)
     .toString();
+
+const selectFilesByDriverIdAndLabels = (driverId, labelsArr) => {
+    const exp = squelPostgres
+        .select()
+        .field('f.*')
+        .from(table.NAME, 'f')
+        .where(`d.id = '${driverId}'`);
+
+    setLabelsArrFilter(exp, labelsArr);
+    return exp
+        .left_join(tableUsersFiles.NAME, 'uf', `uf.${colsUsersFiles.FILE_ID} = f.id`)
+        .left_join(tableDrivers.NAME, 'd', `d.${colsDrivers.USER_ID} = uf.${colsUsersFiles.USER_ID}`)
+        .toString();
+};
+
+const setLabelsArrFilter = (exp, labelsArr) => {
+    const innerExp = squel
+        .expr()
+        .and(`f.${cols.LABELS} = ARRAY[${labelsArr[0].map(label => `'${label}'`).toString()}]`);
+
+    labelsArr.forEach((labels, i) => {
+        if (i) {
+            innerExp
+                .or(`f.${cols.LABELS} = ARRAY[${labels.map(label => `'${label}'`).toString()}]`);
+        }
+    });
+
+    exp.where(innerExp);
+};
 
 module.exports = {
     insertFiles,
@@ -104,4 +138,5 @@ module.exports = {
     selectFilesByTrailerIdAndLabels,
     selectFilesByUserIdAndLabels,
     selectFilesByUserId,
+    selectFilesByDriverIdAndLabels,
 };

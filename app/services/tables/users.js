@@ -3,6 +3,7 @@ const {
     insertUser,
     insertUsers,
     selectUser,
+    selectUserWithDraftDriver,
     selectUserWithRole,
     selectUserByEmail,
     selectUserByEmailWithRole,
@@ -24,6 +25,7 @@ const {
 
     selectUsersPaginationSorting,
     selectCountUsers,
+    selectUserByDriverId,
 } = require('sql-helpers/users');
 
 const { OPERATIONS } = require('constants/postgres');
@@ -34,6 +36,8 @@ const cols = SQL_TABLES.USERS.COLUMNS;
 const addUser = data => one(insertUser(data));
 
 const getUser = id => oneOrNone(selectUser(id));
+
+const getUserWithDraftDriverStrict = id => one(selectUserWithDraftDriver(id));
 
 const getUserWithRole = id => oneOrNone(selectUserWithRole(id));
 
@@ -47,6 +51,8 @@ const getUserByEmailWithRoleAndFreezingData = email => oneOrNone(selectUserByEma
 
 const getUserRole = id => one(selectUserRole(id))
     .then(({ name }) => name);
+
+const getUserByDriverIdStrict = driverId => one(selectUserByDriverId(driverId));
 
 const addUserAsTransaction = data => [insertUser(data), OPERATIONS.ONE];
 
@@ -129,12 +135,14 @@ module.exports = {
     addUser,
     addUsersAsTransaction,
     getUser,
+    getUserWithDraftDriverStrict,
     getUserWithRole,
     getUserWithRoleAndPhoneNumber,
     getUserByEmailWithRole,
     getUserByEmailWithRoleAndFreezingData,
     getUserByEmail,
     getUserRole,
+    getUserByDriverIdStrict,
     addUserAsTransaction,
     updateUserAsTransaction,
     markAsFreezedAsTransaction,
