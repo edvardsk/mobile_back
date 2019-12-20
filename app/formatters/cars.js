@@ -11,6 +11,7 @@ const colsCarsNumbers = SQL_TABLES.CARS_STATE_NUMBERS.COLUMNS;
 const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
 const colsFiles = SQL_TABLES.FILES.COLUMNS;
 const colsDraftFiles = SQL_TABLES.DRAFT_FILES.COLUMNS;
+const colsDraftCars = SQL_TABLES.DRAFT_CARS.COLUMNS;
 
 const formatCarToSave = (id, companyId, body) => {
     const carType = body[cols.CAR_TYPE];
@@ -326,6 +327,26 @@ const formatRecordAsVerified = (data = {}) => ({
     [cols.VERIFIED]: true,
 });
 
+const formatRecordAsNotShadow = (data = {}) => ({
+    ...data,
+    [cols.SHADOW]: false,
+});
+
+const formatRecordToUpdateFromDraft = draftCar => ({
+    [cols.CAR_VIN]: draftCar[colsDraftCars.CAR_VIN],
+    [cols.CAR_MARK]: draftCar[colsDraftCars.CAR_MARK],
+    [cols.CAR_MODEL]: draftCar[colsDraftCars.CAR_MODEL],
+    [cols.CAR_MADE_YEAR_AT]: draftCar[colsDraftCars.CAR_MADE_YEAR_AT],
+    [cols.CAR_TYPE]: draftCar[colsDraftCars.CAR_TYPE],
+    [cols.CAR_LOADING_METHODS]: (draftCar[colsDraftCars.CAR_LOADING_METHODS] && new SqlArray(draftCar[colsDraftCars.CAR_LOADING_METHODS])) || null,
+    [cols.CAR_VEHICLE_TYPE_ID]: draftCar[colsDraftCars.CAR_VEHICLE_TYPE_ID] || null,
+    [cols.CAR_DANGER_CLASS_ID]: draftCar[colsDraftCars.CAR_DANGER_CLASS_ID] || null,
+    [cols.CAR_WIDTH]: draftCar[colsDraftCars.CAR_WIDTH] || null,
+    [cols.CAR_HEIGHT]: draftCar[colsDraftCars.CAR_HEIGHT] || null,
+    [cols.CAR_LENGTH]: draftCar[colsDraftCars.CAR_LENGTH] || null,
+    [cols.CAR_CARRYING_CAPACITY]: draftCar[colsDraftCars.CAR_CARRYING_CAPACITY] || null,
+});
+
 module.exports = {
     formatCarToSave,
     formatCarToEdit,
@@ -336,4 +357,6 @@ module.exports = {
     formatShadowCarsToSave,
     formatRecordAsNotVerified,
     formatRecordAsVerified,
+    formatRecordAsNotShadow,
+    formatRecordToUpdateFromDraft,
 };

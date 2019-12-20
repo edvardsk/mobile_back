@@ -39,7 +39,7 @@ const getFilesByCompanyIdAndFileGroup = (companyId, fileGroup) => manyOrNone(sel
 
 const getFilesByCompanyIdAndLabels = (companyId, labels) => manyOrNone(selectFilesByCompanyIdAndLabels(companyId, labels));
 
-const getFilesByCarIdAndLabels = (carId, labels) => manyOrNone(selectFilesByCarIdAndLabels(carId, labels));
+const getFilesByCarIdAndLabels = (carId, labelsArr) => manyOrNone(selectFilesByCarIdAndLabels(carId, labelsArr));
 
 const getFilesByTrailerIdAndLabels = (trailerId, labels) => manyOrNone(selectFilesByTrailerIdAndLabels(trailerId, labels));
 

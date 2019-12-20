@@ -70,5 +70,4 @@ module.exports = {
     updateRecordAppendCommentsById,
     selectRecordById,
     selectRecordByCarId,
-
 };
