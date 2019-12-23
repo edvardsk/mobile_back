@@ -7,6 +7,7 @@ const cols = SQL_TABLES.TRAILERS.COLUMNS;
 const colsTrailersNumbers = SQL_TABLES.TRAILERS_STATE_NUMBERS.COLUMNS;
 const colsCars = SQL_TABLES.CARS.COLUMNS;
 const colsFiles = SQL_TABLES.FILES.COLUMNS;
+// const colsDraftTrailers = SQL_TABLES.DRAFT_TRAILERS.COLUMNS;
 
 const formatTrailerToSave = (companyId, trailerId, body, carId) => ({
     id: trailerId,
@@ -25,26 +26,34 @@ const formatTrailerToSave = (companyId, trailerId, body, carId) => ({
     [cols.TRAILER_DANGER_CLASS_ID]: body[cols.TRAILER_DANGER_CLASS_ID],
 });
 
-const formatRecordForList = data => ({
-    id: data.id,
-    [HOMELESS_COLUMNS.LINKED]: !!data[cols.CAR_ID],
-    [cols.TRAILER_MARK]: data[cols.TRAILER_MARK],
-    [cols.TRAILER_MODEL]: data[cols.TRAILER_MODEL],
-    [cols.TRAILER_VIN]: data[cols.TRAILER_VIN],
-    [cols.TRAILER_MADE_YEAR_AT]: data[cols.TRAILER_MADE_YEAR_AT],
-    [cols.TRAILER_LOADING_METHODS]: data[cols.TRAILER_LOADING_METHODS],
-    [cols.TRAILER_VEHICLE_TYPE_ID]: data[cols.TRAILER_VEHICLE_TYPE_ID],
-    [cols.TRAILER_CARRYING_CAPACITY]: parseFloat(data[cols.TRAILER_CARRYING_CAPACITY]),
-    [cols.TRAILER_LENGTH]: parseFloat(data[cols.TRAILER_LENGTH]),
-    [cols.TRAILER_HEIGHT]: parseFloat(data[cols.TRAILER_HEIGHT]),
-    [cols.TRAILER_WIDTH]: parseFloat(data[cols.TRAILER_WIDTH]),
-    [HOMELESS_COLUMNS.VEHICLE_TYPE_NAME]: data[HOMELESS_COLUMNS.VEHICLE_TYPE_NAME],
-    [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: data[HOMELESS_COLUMNS.DANGER_CLASS_NAME],
-    [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: data[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
-    [cols.TRAILER_DANGER_CLASS_ID]: data[cols.TRAILER_DANGER_CLASS_ID],
-    [cols.VERIFIED]: data[cols.VERIFIED],
-    [cols.SHADOW]: data[cols.SHADOW],
-});
+const formatRecordForList = data => {
+    const carryingCapacity = data[HOMELESS_COLUMNS.DRAFT_TRAILER_CARRYING_CAPACITY] || data[cols.TRAILER_CARRYING_CAPACITY];
+    const length = data[HOMELESS_COLUMNS.DRAFT_TRAILER_LENGTH] || data[cols.TRAILER_LENGTH];
+    const height = data[HOMELESS_COLUMNS.DRAFT_TRAILER_HEIGHT] || data[cols.TRAILER_HEIGHT];
+    const width = data[HOMELESS_COLUMNS.DRAFT_TRAILER_WIDTH] || data[cols.TRAILER_WIDTH];
+
+    return {
+        id: data.id,
+        [HOMELESS_COLUMNS.LINKED]: !!data[cols.CAR_ID],
+        [cols.TRAILER_MARK]: data[HOMELESS_COLUMNS.DRAFT_TRAILER_MARK] || data[cols.TRAILER_MARK],
+        [cols.TRAILER_MODEL]: data[HOMELESS_COLUMNS.DRAFT_TRAILER_MODEL] || data[cols.TRAILER_MODEL],
+        [cols.TRAILER_VIN]: data[HOMELESS_COLUMNS.DRAFT_TRAILER_VIN] || data[cols.TRAILER_VIN],
+        [cols.TRAILER_MADE_YEAR_AT]: data[HOMELESS_COLUMNS.DRAFT_TRAILER_MADE_YEAR_AT] || data[cols.TRAILER_MADE_YEAR_AT],
+        [cols.TRAILER_LOADING_METHODS]: data[HOMELESS_COLUMNS.DRAFT_TRAILER_LOADING_METHODS] || data[cols.TRAILER_LOADING_METHODS],
+        [cols.TRAILER_CARRYING_CAPACITY]: parseFloat(carryingCapacity),
+        [cols.TRAILER_LENGTH]: parseFloat(length),
+        [cols.TRAILER_HEIGHT]: parseFloat(height),
+        [cols.TRAILER_WIDTH]: parseFloat(width),
+        [HOMELESS_COLUMNS.VEHICLE_TYPE_NAME]: data[HOMELESS_COLUMNS.DRAFT_VEHICLE_TYPE_NAME] || data[HOMELESS_COLUMNS.VEHICLE_TYPE_NAME],
+        [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: data[HOMELESS_COLUMNS.DRAFT_DANGER_CLASS_NAME] || data[HOMELESS_COLUMNS.DANGER_CLASS_NAME],
+        [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: data[HOMELESS_COLUMNS.DRAFT_TRAILER_STATE_NUMBER] || data[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
+        [cols.TRAILER_VEHICLE_TYPE_ID]: data[HOMELESS_COLUMNS.DRAFT_TRAILER_DANGER_CLASS_ID] || data[cols.TRAILER_VEHICLE_TYPE_ID],
+        [cols.TRAILER_DANGER_CLASS_ID]: data[HOMELESS_COLUMNS.DRAFT_TRAILER_DANGER_CLASS_ID] || data[cols.TRAILER_DANGER_CLASS_ID],
+        [cols.VERIFIED]: data[cols.VERIFIED],
+        [cols.SHADOW]: data[cols.SHADOW],
+        [HOMELESS_COLUMNS.IS_DRAFT]: !!data[HOMELESS_COLUMNS.DRAFT_TRAILER_VIN],
+    };
+};
 
 const formatRecordForListAvailable = data => {
     const result = {};
