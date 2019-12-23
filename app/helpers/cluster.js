@@ -3,30 +3,12 @@ const Supercluster = require('supercluster');
 // constants
 const { HOMELESS_COLUMNS } = require('constants/tables');
 
-function getCargoCoordinates(cargo) {
-    return [
-        cargo['uploading_points'][0][HOMELESS_COLUMNS.LONGITUDE],
-        cargo['uploading_points'][0][HOMELESS_COLUMNS.LATITUDE]
-    ];
-}
-
-// TODO:
-function getCarCoordinates() {
-    return [
-        27.56667, //lng
-        53.9 // lat
-    ];
-}
-
-const getCoords = () => ([]);
-
-const clusterizeItems = (items, query, { isCargo = false, isCar = false } = {}) => {
+const clusterizeItems = (items, query) => {
     const index = new Supercluster({
         radius: 200,
         maxZoom: 16,
         extent: 256,
     });
-    const getCoordinates = (isCargo && getCargoCoordinates) || (isCar && getCarCoordinates) || getCoords;
     const geoItem = items.map(item => ({
         type: 'Feature',
         properties: {
@@ -35,7 +17,7 @@ const clusterizeItems = (items, query, { isCargo = false, isCar = false } = {}) 
         geometry: {
             id: item['id'],
             type: 'Point',
-            coordinates: getCoordinates(item),
+            coordinates: item['coords'],
         },
     }));
 

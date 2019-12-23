@@ -127,7 +127,7 @@ const selectCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortCo
         .toString();
 };
 
-const selectRecordsForSearch = (companyId, showMyItems) => {
+const selectRecordsForSearch = (companyId, showMyCars, filteringObject) => {
     let expression = squelPostgres
         .select()
         .field('c.*')
@@ -142,8 +142,10 @@ const selectRecordsForSearch = (companyId, showMyItems) => {
 
     if (companyId) {
         expression
-            .where(`c.${cols.COMPANY_ID} ${showMyItems ? '=' : '<>'} '${companyId}'`);
+            .where(`c.${cols.COMPANY_ID} ${showMyCars ? '=' : '<>'} '${companyId}'`);
     }
+
+    setCarsSearchFilter(expression, filteringObject);
 
     return expression
         .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = c.id`)
@@ -153,7 +155,28 @@ const selectRecordsForSearch = (companyId, showMyItems) => {
         .toString();
 };
 
-const selectAllNewRecordsForSearch = (companyId, showMyItems) => {
+const setCarsSearchFilter = (expression, filteringObject) => {
+    const filteringObjectSQLExpressions = [
+        [cols.GROSS_WEIGHT, `c.${cols.GROSS_WEIGHT} >= ${filteringObject[cols.GROSS_WEIGHT]}`],
+        [cols.WIDTH, `c.${cols.WIDTH} >= ${filteringObject[cols.WIDTH]}`],
+        [cols.HEIGHT, `c.${cols.HEIGHT} >= ${filteringObject[cols.HEIGHT]}`],
+        [cols.LENGTH, `c.${cols.LENGTH} >= ${filteringObject[cols.LENGTH]}`],
+        [cols.LOADING_TYPE, `c.${cols.LOADING_TYPE} = '${filteringObject[cols.LOADING_TYPE]}'`],
+        [cols.VEHICLE_TYPE_ID, `c.${cols.VEHICLE_TYPE_ID} = '${filteringObject[cols.VEHICLE_TYPE_ID]}'`],
+        [cols.DANGER_CLASS_ID, `c.${cols.DANGER_CLASS_ID} = '${filteringObject[cols.DANGER_CLASS_ID]}'`],
+        [cols.LOADING_METHODS, `c.${cols.LOADING_METHODS} @> '{${filteringObject[cols.LOADING_METHODS]}}'`],
+        [cols.GUARANTEES, `c.${cols.GUARANTEES} @> '{${filteringObject[cols.GUARANTEES]}}'`],
+    ];
+
+    for (let [key, exp] of filteringObjectSQLExpressions) {
+        if (get(filteringObject, key) !== undefined) {
+            expression = expression.where(exp);
+        }
+    }
+    return expression;
+};
+
+const selectAllNewRecordsForSearch = (companyId, showMyCars) => {
     let expression = squelPostgres
         .select()
         .field('c.*')
@@ -168,7 +191,7 @@ const selectAllNewRecordsForSearch = (companyId, showMyItems) => {
 
     if (companyId) {
         expression
-            .where(`c.${cols.COMPANY_ID} ${showMyItems ? '=' : '<>'} '${companyId}'`);
+            .where(`c.${cols.COMPANY_ID} ${showMyCars ? '=' : '<>'} '${companyId}'`);
     }
 
     setCarNotInActiveDealFilter(expression);

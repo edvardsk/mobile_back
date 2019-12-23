@@ -100,12 +100,12 @@ const getRecordsByStateNumbers = numbers => (
     manyOrNone(selectRecordsByStateNumbers(numbers))
 );
 
-const getRecordsForSearch = (companyId, showMyItems) => (
-    manyOrNone(selectRecordsForSearch(companyId, showMyItems))
+const getRecordsForSearch = (companyId, showMyCars, filter) => (
+    manyOrNone(selectRecordsForSearch(companyId, showMyCars, filter))
 );
 
-const getAllNewRecordsForSearch = (companyId, showMyItems) => (
-    manyOrNone(selectAllNewRecordsForSearch(companyId, showMyItems))
+const getAllNewRecordsForSearch = (companyId, showMyCars) => (
+    manyOrNone(selectAllNewRecordsForSearch(companyId, showMyCars))
 );
 
 const checkCarStateNumberExistsOpposite = async (meta, stateNumber) => {
