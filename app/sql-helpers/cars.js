@@ -21,6 +21,7 @@ const tableCargos = SQL_TABLES.CARGOS;
 const tableDraftCars = SQL_TABLES.DRAFT_CARS;
 const tableDraftCarsFiles = SQL_TABLES.DRAFT_CARS_TO_FILES;
 const tableDraftFiles = SQL_TABLES.DRAFT_FILES;
+const tableDraftTrailers = SQL_TABLES.DRAFT_TRAILERS;
 
 const cols = table.COLUMNS;
 const colsCarsStateNumbers = tableCarsStateNumbers.COLUMNS;
@@ -37,6 +38,7 @@ const colsCargos = tableCargos.COLUMNS;
 const colsDraftCars = tableDraftCars.COLUMNS;
 const colsDraftCarsFiles = tableDraftCarsFiles.COLUMNS;
 const colsDraftFiles = tableDraftFiles.COLUMNS;
+const colsDraftTrailers = tableDraftTrailers.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -106,6 +108,7 @@ const selectCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortCo
     let expression = squelPostgres
         .select()
         .field('c.*')
+
         .field('t.id', HOMELESS_COLUMNS.TRAILER_ID)
         .field(`t.${colsTrailers.TRAILER_MARK}`, colsTrailers.TRAILER_MARK)
         .field(`t.${colsTrailers.TRAILER_MODEL}`, colsTrailers.TRAILER_MODEL)
@@ -114,16 +117,29 @@ const selectCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortCo
         .field(`t.${colsTrailers.TRAILER_LENGTH}`, colsTrailers.TRAILER_LENGTH)
         .field(`t.${colsTrailers.TRAILER_CARRYING_CAPACITY}`, colsTrailers.TRAILER_CARRYING_CAPACITY)
         .field(`t.${colsTrailers.VERIFIED}`, HOMELESS_COLUMNS.TRAILER_VERIFIED)
+        .field(`t.${colsTrailers.SHADOW}`, HOMELESS_COLUMNS.TRAILER_SHADOW)
+
         .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME)
         .field(`vt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME)
         .field(`tsn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
         .field(`csn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
+
         .field(`drc.${colsDraftCars.CAR_MARK}`, HOMELESS_COLUMNS.DRAFT_CAR_MARK)
         .field(`drc.${colsDraftCars.CAR_MODEL}`, HOMELESS_COLUMNS.DRAFT_CAR_MODEL)
         .field(`drc.${colsDraftCars.CAR_VIN}`, HOMELESS_COLUMNS.DRAFT_CAR_VIN)
         .field(`drc.${colsDraftCars.CAR_STATE_NUMBER}`, HOMELESS_COLUMNS.DRAFT_CAR_STATE_NUMBER)
         .field(`drc.${colsDraftCars.CAR_MADE_YEAR_AT}`, HOMELESS_COLUMNS.DRAFT_CAR_MADE_YEAR_AT)
         .field(`drc.${colsDraftCars.CAR_TYPE}`, HOMELESS_COLUMNS.DRAFT_CAR_TYPE)
+
+        .field(`dt.${colsDraftTrailers.TRAILER_MARK}`, HOMELESS_COLUMNS.DRAFT_TRAILER_MARK)
+        .field(`dt.${colsDraftTrailers.TRAILER_MODEL}`, HOMELESS_COLUMNS.DRAFT_TRAILER_MODEL)
+        .field(`dt.${colsDraftTrailers.TRAILER_WIDTH}`, HOMELESS_COLUMNS.DRAFT_TRAILER_WIDTH)
+        .field(`dt.${colsDraftTrailers.TRAILER_HEIGHT}`, HOMELESS_COLUMNS.DRAFT_TRAILER_HEIGHT)
+        .field(`dt.${colsDraftTrailers.TRAILER_LENGTH}`, HOMELESS_COLUMNS.DRAFT_TRAILER_LENGTH)
+        .field(`dt.${colsDraftTrailers.TRAILER_CARRYING_CAPACITY}`, HOMELESS_COLUMNS.DRAFT_TRAILER_CARRYING_CAPACITY)
+        .field(`ddc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DRAFT_TRAILER_DANGER_CLASS_NAME)
+        .field(`dvt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.DRAFT_TRAILER_VEHICLE_TYPE_NAME)
+
         .from(table.NAME, 'c')
         .where(`c.${cols.COMPANY_ID} = '${companyId}'`)
         .where(`c.${cols.DELETED} = 'f'`)
@@ -138,6 +154,9 @@ const selectCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortCo
         .left_join(tableVehicleTypes.NAME, 'vt', `vt.id = t.${colsTrailers.TRAILER_VEHICLE_TYPE_ID}`)
         .left_join(tableTrailersNumbers.NAME, 'tsn', `tsn.${colsTrailersNumbers.TRAILER_ID} = t.id`)
         .left_join(tableDraftCars.NAME, 'drc', `drc.${colsDraftCars.CAR_ID} = c.id`)
+        .left_join(tableDraftTrailers.NAME, 'dt', `dt.${colsDraftTrailers.TRAILER_ID} = t.id`)
+        .left_join(tableDangerClasses.NAME, 'ddc', `ddc.id = dt.${colsDraftTrailers.TRAILER_DANGER_CLASS_ID}`)
+        .left_join(tableVehicleTypes.NAME, 'dvt', `dvt.id = dt.${colsDraftTrailers.TRAILER_VEHICLE_TYPE_ID}`)
         .order(sortColumn, asc)
         .limit(limit)
         .offset(offset)

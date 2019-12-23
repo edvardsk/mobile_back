@@ -9,7 +9,7 @@ const formatRecordToSave = (id, trailerId, body) => ({
     id,
     [cols.TRAILER_ID]: trailerId,
     [cols.TRAILER_VIN]: body[colsTrailers.TRAILER_VIN],
-    [cols.TRAILER_STATE_NUMBER]: body[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
+    [cols.TRAILER_STATE_NUMBER]: body[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER].toUpperCase(),
     [cols.TRAILER_MARK]: body[colsTrailers.TRAILER_MARK],
     [cols.TRAILER_MODEL]: body[colsTrailers.TRAILER_MODEL],
     [cols.TRAILER_MADE_YEAR_AT]: body[colsTrailers.TRAILER_MADE_YEAR_AT],
@@ -24,7 +24,7 @@ const formatRecordToSave = (id, trailerId, body) => ({
 
 const formatRecordToEdit = (body) => ({
     [cols.TRAILER_VIN]: body[colsTrailers.TRAILER_VIN],
-    [cols.TRAILER_STATE_NUMBER]: body[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
+    [cols.TRAILER_STATE_NUMBER]: body[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER].toUpperCase(),
     [cols.TRAILER_MARK]: body[colsTrailers.TRAILER_MARK],
     [cols.TRAILER_MODEL]: body[colsTrailers.TRAILER_MODEL],
     [cols.TRAILER_MADE_YEAR_AT]: body[colsTrailers.TRAILER_MADE_YEAR_AT],

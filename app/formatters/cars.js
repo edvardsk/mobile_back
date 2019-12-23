@@ -92,19 +92,24 @@ const formatRecordForList = car => {
         [HOMELESS_COLUMNS.CAR_IS_DRAFT]: !!car[HOMELESS_COLUMNS.DRAFT_CAR_MARK],
     };
     if (car[HOMELESS_COLUMNS.TRAILER_ID]) {
+        const width = car[HOMELESS_COLUMNS.DRAFT_TRAILER_WIDTH] || car[colsTrailers.TRAILER_WIDTH];
+        const height = car[HOMELESS_COLUMNS.DRAFT_TRAILER_HEIGHT] || car[colsTrailers.TRAILER_HEIGHT];
+        const length = car[HOMELESS_COLUMNS.DRAFT_TRAILER_LENGTH] || car[colsTrailers.TRAILER_LENGTH];
+        const carryingCapacity = car[HOMELESS_COLUMNS.DRAFT_TRAILER_CARRYING_CAPACITY] || car[colsTrailers.TRAILER_CARRYING_CAPACITY];
         result = {
             ...result,
             [HOMELESS_COLUMNS.TRAILER_ID]: car[HOMELESS_COLUMNS.TRAILER_ID],
-            [colsTrailers.TRAILER_MARK]: car[colsTrailers.TRAILER_MARK],
-            [colsTrailers.TRAILER_MODEL]: car[colsTrailers.TRAILER_MODEL],
-            [colsTrailers.TRAILER_WIDTH]: parseFloat(car[colsTrailers.TRAILER_WIDTH]),
-            [colsTrailers.TRAILER_HEIGHT]: parseFloat(car[colsTrailers.TRAILER_HEIGHT]),
-            [colsTrailers.TRAILER_LENGTH]: parseFloat(car[colsTrailers.TRAILER_LENGTH]),
-            [colsTrailers.TRAILER_CARRYING_CAPACITY]: parseFloat(car[colsTrailers.TRAILER_CARRYING_CAPACITY]),
-            [HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME]: car[HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME],
-            [HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME]: car[HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME],
-            [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: car[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
+            [colsTrailers.TRAILER_MARK]: car[HOMELESS_COLUMNS.DRAFT_TRAILER_MARK] || car[colsTrailers.TRAILER_MARK],
+            [colsTrailers.TRAILER_MODEL]: car[HOMELESS_COLUMNS.DRAFT_TRAILER_MODEL] || car[colsTrailers.TRAILER_MODEL],
+            [colsTrailers.TRAILER_WIDTH]: parseFloat(width),
+            [colsTrailers.TRAILER_HEIGHT]: parseFloat(height),
+            [colsTrailers.TRAILER_LENGTH]: parseFloat(length),
+            [colsTrailers.TRAILER_CARRYING_CAPACITY]: parseFloat(carryingCapacity),
+            [HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME]: car[HOMELESS_COLUMNS.DRAFT_TRAILER_DANGER_CLASS_NAME] || car[HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME],
+            [HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME]: car[HOMELESS_COLUMNS.DRAFT_TRAILER_VEHICLE_TYPE_NAME] || car[HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME],
+            [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: car[HOMELESS_COLUMNS.DRAFT_TRAILER_STATE_NUMBER] || car[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
             [HOMELESS_COLUMNS.TRAILER_VERIFIED]: car[HOMELESS_COLUMNS.TRAILER_VERIFIED],
+            [HOMELESS_COLUMNS.TRAILER_IS_DRAFT]: !!car[HOMELESS_COLUMNS.DRAFT_TRAILER_MARK]
         };
     }
     return result;
