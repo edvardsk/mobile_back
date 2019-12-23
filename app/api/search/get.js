@@ -114,8 +114,8 @@ const search = async (req, res, next) => {
 
         if (companyId) {
             const [cargos, cars] = await Promise.all([
-                CargosServices.getRecordsForSearch(coordinates, dates, searchRadius, searchLanguageId, companyId, showCargos, query),
-                CarsServices.getRecordsForSearch(companyId, showCars, query)
+                CargosServices.getRecordsForSearch(coordinates, dates, searchRadius, searchLanguageId, companyId, !showCargos, query),
+                CarsServices.getRecordsForSearch(companyId, !showCars, query)
             ]);
             const formattedCargos = formatCargosForSearchResponse(
                 cargos, uploadingPoint, downloadingPoint, searchLanguageId, defaultEconomicSettings, formattedCurrencyPriorities
@@ -186,8 +186,8 @@ const searchAll = async (req, res, next) => {
 
         if (companyId) {
             const [cargos, cars] = await Promise.all([
-                CargosServices.getAllNewRecordsForSearch(searchLanguageId, companyId, showCargos),
-                CarsServices.getAllNewRecordsForSearch(companyId, showCars)
+                CargosServices.getAllNewRecordsForSearch(searchLanguageId, companyId, !showCargos),
+                CarsServices.getAllNewRecordsForSearch(companyId, !showCars)
             ]);
             const formattedCargos = formatCargosForSearchAllResponse(cargos, defaultEconomicSettings, formattedCurrencyPriorities);
             const formattedCars = formatCarsForSearchAllResponse(cars);
@@ -198,7 +198,7 @@ const searchAll = async (req, res, next) => {
             result.cargos = formattedCargos;
         } else {
             if (showCargos) {
-                const cargos = await CargosServices.getAllNewRecordsForSearch(searchLanguageId, companyId, showCargos);
+                const cargos = await CargosServices.getAllNewRecordsForSearch(searchLanguageId, companyId);
                 const formattedCargos = formatCargosForSearchAllResponse(cargos, defaultEconomicSettings, formattedCurrencyPriorities);
                 const itemsForClustering = formattedCargos.map(mapCargoForClustering);
 
@@ -206,7 +206,7 @@ const searchAll = async (req, res, next) => {
                 result.cars = [];
                 result.cargos = formattedCargos;
             } else if (showCars) {
-                const cars = await CarsServices.getAllNewRecordsForSearch(companyId, showCars);
+                const cars = await CarsServices.getAllNewRecordsForSearch(companyId);
                 const formattedCars = formatCarsForSearchAllResponse(cars);
                 const itemsForClustering = formattedCars.map(mapCarForClustering);
     
