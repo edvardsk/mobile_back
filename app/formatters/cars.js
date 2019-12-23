@@ -6,6 +6,12 @@ const { SqlArray } = require('constants/instances');
 // formatters
 const { mergeFilesWithDraft } = require('./files');
 
+// helpers
+const { isDangerous } = require('helpers/danger-classes');
+
+// constants
+const { DOCUMENTS } = require('constants/files');
+
 const cols = SQL_TABLES.CARS.COLUMNS;
 const colsCarsNumbers = SQL_TABLES.CARS_STATE_NUMBERS.COLUMNS;
 const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
@@ -257,6 +263,12 @@ const formatRecordForResponse = (car, isControlRole) => {
         }
 
         result.files = formatCarFiles(car);
+
+        const draftDangerClassName = car[HOMELESS_COLUMNS.DRAFT_DANGER_CLASS_NAME];
+        const currentDangerClassName = car[cols.DANGER_CLASS_NAME];
+        if (draftDangerClassName && isDangerous(currentDangerClassName) && !isDangerous(draftDangerClassName)) {
+            result.files = result.files.filter(file => !file[colsFiles.LABELS].includes(DOCUMENTS.DANGER_CLASS));
+        }
         let draftFiles = [];
         if (car[HOMELESS_COLUMNS.DRAFT_FILES] && car[HOMELESS_COLUMNS.DRAFT_FILES].length) {
             draftFiles = formatDraftCarFiles(car);

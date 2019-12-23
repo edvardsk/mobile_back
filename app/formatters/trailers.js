@@ -6,6 +6,12 @@ const { CAR_TYPES_MAP } = require('constants/cars');
 // formatters
 const { mergeFilesWithDraft } = require('./files');
 
+// helpers
+const { isDangerous } = require('helpers/danger-classes');
+
+// constants
+const { DOCUMENTS } = require('constants/files');
+
 const cols = SQL_TABLES.TRAILERS.COLUMNS;
 const colsTrailersNumbers = SQL_TABLES.TRAILERS_STATE_NUMBERS.COLUMNS;
 const colsCars = SQL_TABLES.CARS.COLUMNS;
@@ -187,6 +193,13 @@ const formatRecordForResponse = (trailer, isControlRole) => {
         };
 
         result.files = formatTrailerFiles(trailer);
+
+        const draftDangerClassName = trailer[HOMELESS_COLUMNS.DRAFT_DANGER_CLASS_NAME];
+        const currentDangerClassName = trailer[cols.DANGER_CLASS_NAME];
+
+        if (draftDangerClassName && isDangerous(currentDangerClassName) && !isDangerous(draftDangerClassName)) {
+            result.files = result.files.filter(file => !file[colsFiles.LABELS].includes(DOCUMENTS.DANGER_CLASS));
+        }
 
         if (trailer[HOMELESS_COLUMNS.DRAFT_FILES] && trailer[HOMELESS_COLUMNS.DRAFT_FILES].length) {
             const draftFiles = formatDraftTrailerFiles(trailer);
