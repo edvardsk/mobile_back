@@ -161,6 +161,7 @@ const formatRecordForResponse = (trailer, isControlRole) => {
                 [cols.TRAILER_VEHICLE_TYPE_ID]: trailer[HOMELESS_COLUMNS.DRAFT_TRAILER_VEHICLE_TYPE_ID],
                 [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: trailer[HOMELESS_COLUMNS.DRAFT_DANGER_CLASS_NAME],
                 [HOMELESS_COLUMNS.VEHICLE_TYPE_NAME]: trailer[HOMELESS_COLUMNS.DRAFT_VEHICLE_TYPE_NAME],
+                [colsDraftTrailers.COMMENTS]: trailer[colsDraftTrailers.COMMENTS],
             };
             result.draftFiles = formatDraftTrailerFiles(trailer);
         }
@@ -190,6 +191,7 @@ const formatRecordForResponse = (trailer, isControlRole) => {
             [cols.VERIFIED]: trailer[cols.VERIFIED],
             [cols.SHADOW]: trailer[cols.SHADOW],
             [HOMELESS_COLUMNS.IS_DRAFT]: !!trailer[HOMELESS_COLUMNS.DRAFT_TRAILER_VIN],
+            [colsDraftTrailers.COMMENTS]: trailer[colsDraftTrailers.COMMENTS],
         };
 
         result.files = formatTrailerFiles(trailer);

@@ -206,6 +206,7 @@ const selectRecordByIdFull = id => squelPostgres
     .field(`drt.${colsDraftTrailers.TRAILER_HEIGHT}`, HOMELESS_COLUMNS.DRAFT_TRAILER_HEIGHT)
     .field(`drt.${colsDraftTrailers.TRAILER_LENGTH}`, HOMELESS_COLUMNS.DRAFT_TRAILER_LENGTH)
     .field(`drt.${colsDraftTrailers.TRAILER_CARRYING_CAPACITY}`, HOMELESS_COLUMNS.DRAFT_TRAILER_CARRYING_CAPACITY)
+    .field(`drt.${colsDraftTrailers.COMMENTS}`, colsDraftTrailers.COMMENTS)
     .field(`dvt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.DRAFT_VEHICLE_TYPE_NAME)
     .field(`ddc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DRAFT_DANGER_CLASS_NAME)
     .field(`ARRAY(${
