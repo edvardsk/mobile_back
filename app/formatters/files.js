@@ -319,6 +319,26 @@ const prepareFilesToStoreForDraftTrailers = (files, draftTrailerId) => Object.ke
     return acc;
 }, [[], [], []]);
 
+const prepareFilesToStoreForTrailersFromDraft = (files, trailerId) => files.reduce((acc, file) => {
+    const [dbFiles, dbTrailersFiles] = acc;
+    const fileId = file.id;
+
+    const fileLabels = new SqlArray(file[colsDraftFiles.LABELS]);
+
+    dbFiles.push({
+        id: fileId,
+        [cols.NAME]: file[colsDraftFiles.NAME],
+        [cols.LABELS]: fileLabels,
+        [cols.URL]: file[colsDraftFiles.URL],
+        [cols.CREATED_AT]: file[colsDraftFiles.CREATED_AT].toISOString(),
+    });
+    dbTrailersFiles.push({
+        [colsTrailersFiles.TRAILER_ID]: trailerId,
+        [colsTrailersFiles.FILE_ID]: fileId,
+    });
+    return acc;
+}, [[], []]);
+
 const prepareFilesToStoreForDraftDrivers = (files, draftDriverId, body) => Object.keys(files).reduce((acc, type) => {
     const [dbFiles, dbDraftDriversFiles, storageFiles] = acc;
     files[type].forEach(file => {
@@ -435,6 +455,7 @@ module.exports = {
     prepareFilesToStoreForCarsFromDraft,
     prepareFilesToStoreForTrailers,
     prepareFilesToStoreForDraftTrailers,
+    prepareFilesToStoreForTrailersFromDraft,
     prepareFilesToStoreForDraftDrivers,
     prepareFilesToDelete,
     selectFilesToStore,

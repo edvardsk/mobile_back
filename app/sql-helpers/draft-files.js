@@ -90,6 +90,14 @@ const selectFilesByDraftCarId = (draftCarId) => squelPostgres
     .left_join(tableDraftCarsFiles.NAME, 'dcf', `dcf.${colsDraftCarsFiles.DRAFT_FILE_ID} = f.id`)
     .toString();
 
+const selectFilesByDraftTrailerId = (draftTrailerId) => squelPostgres
+    .select()
+    .from(table.NAME, 'f')
+    .field('f.*')
+    .where(`dtf.${colsDraftTrailersFiles.DRAFT_TRAILER_ID} = '${draftTrailerId}'`)
+    .left_join(tableDraftTrailersFiles.NAME, 'dtf', `dtf.${colsDraftTrailersFiles.DRAFT_FILE_ID} = f.id`)
+    .toString();
+
 const selectFilesByUserId = (userId) => squelPostgres
     .select()
     .from(table.NAME, 'f')
@@ -123,5 +131,6 @@ module.exports = {
     selectFilesByCarIdAndLabels,
     selectFilesByTrailerIdAndLabels,
     selectFilesByDraftCarId,
+    selectFilesByDraftTrailerId,
     selectFilesByUserId,
 };

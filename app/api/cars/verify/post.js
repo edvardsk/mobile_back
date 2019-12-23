@@ -64,7 +64,7 @@ const verifyCar = async (req, res, next) => {
             const draftFiles = await DraftFilesService.getFilesByDraftCarId(draftCar.id);
             if (draftFiles.length) {
                 const basicDraftLabels = FilesFormatters.formatBasicFileLabels(draftFiles);
-                const filesToDelete = await FilesService.getFilesByCarIdAndLabels(carId, basicDraftLabels);
+                const filesToDelete = await FilesService.getFilesByCarIdAndArrayLabels(carId, basicDraftLabels);
                 if (filesToDelete.length) {
                     const [ids, urls] = FilesFormatters.prepareFilesToDelete(filesToDelete);
                     urlsToDelete = [...urls];
@@ -111,16 +111,16 @@ const verifyCar = async (req, res, next) => {
                 (newCarType === CAR_TYPES_MAP.QUAD && oldCarType === CAR_TYPES_MAP.TRUCK && isDangerous(oldDangerClassName)) ||
                 (oldCarType === CAR_TYPES_MAP.TRUCK && isDangerous(oldDangerClassName) && newCarType === CAR_TYPES_MAP.TRUCK && !isDangerous(newDangerClassName))
             ) { // remove old file with danger class
-                const filesToDelete = await DraftFilesService.getFilesByCarIdAndLabels(carId, [DOCUMENTS.DANGER_CLASS]);
+                const filesToDelete = await FilesService.getFilesByCarIdAndLabels(carId, [DOCUMENTS.DANGER_CLASS]);
 
                 if (filesToDelete.length) {
                     const [ids, urls] = FilesFormatters.prepareFilesToDelete(filesToDelete);
 
                     transactionsList.push(
-                        DraftCarsFilesService.removeRecordsByFileIdsAsTransaction(ids)
+                        CarsFilesService.removeRecordsByFileIdsAsTransaction(ids)
                     );
                     transactionsList.push(
-                        DraftFilesService.removeFilesByIdsAsTransaction(ids)
+                        FilesService.removeFilesByIdsAsTransaction(ids)
                     );
 
                     urlsToDelete = [

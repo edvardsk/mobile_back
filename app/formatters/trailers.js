@@ -11,6 +11,7 @@ const colsTrailersNumbers = SQL_TABLES.TRAILERS_STATE_NUMBERS.COLUMNS;
 const colsCars = SQL_TABLES.CARS.COLUMNS;
 const colsFiles = SQL_TABLES.FILES.COLUMNS;
 const colsDraftFiles = SQL_TABLES.DRAFT_FILES.COLUMNS;
+const colsDraftTrailers = SQL_TABLES.DRAFT_TRAILERS.COLUMNS;
 
 const formatTrailerToSave = (companyId, trailerId, body, carId) => ({
     id: trailerId,
@@ -262,6 +263,25 @@ const formatRecordAsVerified = (data = {}) => ({
     [cols.VERIFIED]: true,
 });
 
+const formatRecordAsNotShadow = (data = {}) => ({
+    ...data,
+    [cols.SHADOW]: false,
+});
+
+const formatRecordToUpdateFromDraft = draftTrailer => ({
+    [cols.TRAILER_VIN]: draftTrailer[colsDraftTrailers.TRAILER_VIN],
+    [cols.TRAILER_MARK]: draftTrailer[colsDraftTrailers.TRAILER_MARK],
+    [cols.TRAILER_MODEL]: draftTrailer[colsDraftTrailers.TRAILER_MODEL],
+    [cols.TRAILER_MADE_YEAR_AT]: draftTrailer[colsDraftTrailers.TRAILER_MADE_YEAR_AT],
+    [cols.TRAILER_LOADING_METHODS]: new SqlArray(draftTrailer[colsDraftTrailers.TRAILER_LOADING_METHODS]),
+    [cols.TRAILER_VEHICLE_TYPE_ID]: draftTrailer[colsDraftTrailers.TRAILER_VEHICLE_TYPE_ID],
+    [cols.TRAILER_DANGER_CLASS_ID]: draftTrailer[colsDraftTrailers.TRAILER_DANGER_CLASS_ID],
+    [cols.TRAILER_WIDTH]: draftTrailer[colsDraftTrailers.TRAILER_WIDTH],
+    [cols.TRAILER_HEIGHT]: draftTrailer[colsDraftTrailers.TRAILER_HEIGHT],
+    [cols.TRAILER_LENGTH]: draftTrailer[colsDraftTrailers.TRAILER_LENGTH],
+    [cols.TRAILER_CARRYING_CAPACITY]: draftTrailer[colsDraftTrailers.TRAILER_CARRYING_CAPACITY],
+});
+
 module.exports = {
     formatTrailerToSave,
     formatRecordForList,
@@ -271,4 +291,6 @@ module.exports = {
     formatShadowTrailersToSave,
     formatRecordAsNotVerified,
     formatRecordAsVerified,
+    formatRecordAsNotShadow,
+    formatRecordToUpdateFromDraft,
 };
