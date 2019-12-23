@@ -258,7 +258,7 @@ const formatRecordForResponse = (car, isControlRole) => {
 
         result.files = formatCarFiles(car);
         let draftFiles = [];
-        if (car[HOMELESS_COLUMNS.DRAFT_FILES].length) {
+        if (car[HOMELESS_COLUMNS.DRAFT_FILES] && car[HOMELESS_COLUMNS.DRAFT_FILES].length) {
             draftFiles = formatDraftCarFiles(car);
             result.files = mergeFilesWithDraft(result.files, draftFiles);
         }

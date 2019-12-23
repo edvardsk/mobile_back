@@ -22,6 +22,7 @@ const {
 
 // services
 const DangerClassesService = require('./danger-classes');
+const DraftTrailersService = require('./draft-trailers');
 
 // constants
 const { OPERATIONS } = require('constants/postgres');
@@ -32,6 +33,7 @@ const { DOCUMENTS } = require('constants/files');
 const { isDangerous } = require('helpers/danger-classes');
 
 const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
+const colsDraftTrailers = SQL_TABLES.DRAFT_TRAILERS.COLUMNS;
 const colsDangerClasses = SQL_TABLES.DANGER_CLASSES.COLUMNS;
 
 const addRecordAsTransaction = values => [insertRecord(values), OPERATIONS.ONE];
@@ -148,11 +150,23 @@ const checkTrailerExists = async (meta, id) => {
 };
 
 const checkIsPassedFileWithNewDangerClass = async (meta, newDangerClassId, schema, key, data) => {
-    const { trailerId } = meta;
+    const { trailerId, isControlRole } = meta;
     const dangerClassFile = data[DOCUMENTS.DANGER_CLASS];
 
     const trailer = await getRecordStrict(trailerId);
-    const oldDangerClassId = trailer[colsTrailers.TRAILER_DANGER_CLASS_ID];
+
+    let oldDangerClassId;
+    if (!isControlRole) {
+        const draftTrailer = await DraftTrailersService.getRecordByTrailerId(trailerId);
+        if (draftTrailer) {
+            oldDangerClassId = draftTrailer[colsDraftTrailers.TRAILER_DANGER_CLASS_ID];
+        } else {
+            oldDangerClassId = trailer[colsTrailers.TRAILER_DANGER_CLASS_ID];
+        }
+
+    } else {
+        oldDangerClassId = trailer[colsTrailers.TRAILER_DANGER_CLASS_ID];
+    }
 
     const [oldDangerClass, newDangerClass] = await Promise.all([
         DangerClassesService.getRecordStrict(oldDangerClassId),

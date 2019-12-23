@@ -24,6 +24,8 @@ const editRecordByTrailerIdAsTransaction = (trailerId, values) => [updateRecordB
 
 const getRecordByTrailerId = trailerId => oneOrNone(selectRecordByTrailerId(trailerId));
 
+const getRecordByTrailerIdStrict = trailerId => one(selectRecordByTrailerId(trailerId));
+
 const getRecord = id => oneOrNone(selectRecordById(id));
 
 const addComments = (id, comments) => one(updateRecordAppendCommentsById(id, comments));
@@ -35,5 +37,6 @@ module.exports = {
     removeRecordAsTransaction,
     getRecord,
     getRecordByTrailerId,
+    getRecordByTrailerIdStrict,
     addComments,
 };
