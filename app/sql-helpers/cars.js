@@ -132,7 +132,17 @@ const selectRecordsForSearch = (companyId, showMyCars, filteringObject) => {
         .select()
         .field('c.*')
         .field(`cvt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.CAR_VEHICLE_TYPE_NAME)
+        .field(`cdc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.CAR_DANGER_CLASS_NAME)
         .field('t.id', HOMELESS_COLUMNS.TRAILER_ID)
+        .field(`t.${colsTrailers.TRAILER_MARK}`, colsTrailers.TRAILER_MARK)
+        .field(`t.${colsTrailers.TRAILER_MODEL}`, colsTrailers.TRAILER_MODEL)
+        .field(`t.${colsTrailers.TRAILER_WIDTH}`, colsTrailers.TRAILER_WIDTH)
+        .field(`t.${colsTrailers.TRAILER_HEIGHT}`, colsTrailers.TRAILER_HEIGHT)
+        .field(`t.${colsTrailers.TRAILER_LENGTH}`, colsTrailers.TRAILER_LENGTH)
+        .field(`t.${colsTrailers.TRAILER_CARRYING_CAPACITY}`, colsTrailers.TRAILER_CARRYING_CAPACITY)
+        .field(`t.${colsTrailers.TRAILER_VEHICLE_TYPE_ID}`, colsTrailers.TRAILER_VEHICLE_TYPE_ID)
+        .field(`tvt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.TRAILER_VEHICLE_TYPE_NAME)
+        .field(`tdc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.TRAILER_DANGER_CLASS_NAME)
         .field(`t.${colsTrailers.VERIFIED}`, HOMELESS_COLUMNS.TRAILER_VERIFIED)
         .field(`tsn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
         .field(`csn.${colsCarsStateNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
@@ -145,34 +155,65 @@ const selectRecordsForSearch = (companyId, showMyCars, filteringObject) => {
             .where(`c.${cols.COMPANY_ID} ${showMyCars ? '=' : '<>'} '${companyId}'`);
     }
 
-    setCarsSearchFilter(expression, filteringObject);
+    setCarsWithTrailersSearchFilter(expression, filteringObject);
+    setCarNotInActiveDealFilter(expression);
 
     return expression
         .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = c.id`)
-        .left_join(tableTrailers.NAME, 't', `t.${colsTrailers.CAR_ID} = c.id`)
+        .left_join(tableDangerClasses.NAME, 'cdc', `cdc.id = c.${cols.CAR_DANGER_CLASS_ID}`)
         .left_join(tableVehicleTypes.NAME, 'cvt', `cvt.id = c.${cols.CAR_VEHICLE_TYPE_ID}`)
+        .left_join(tableTrailers.NAME, 't', `t.${colsTrailers.CAR_ID} = c.id`)
         .left_join(tableTrailersNumbers.NAME, 'tsn', `tsn.${colsTrailersNumbers.TRAILER_ID} = t.id`)
+        .left_join(tableVehicleTypes.NAME, 'tvt', `tvt.id = t.${colsTrailers.TRAILER_VEHICLE_TYPE_ID}`)
+        .left_join(tableDangerClasses.NAME, 'tdc', `tdc.id = t.${colsTrailers.TRAILER_DANGER_CLASS_ID}`)
         .toString();
 };
 
-const setCarsSearchFilter = (expression, filteringObject) => {
-    const filteringObjectSQLExpressions = [
-        [cols.GROSS_WEIGHT, `c.${cols.GROSS_WEIGHT} >= ${filteringObject[cols.GROSS_WEIGHT]}`],
-        [cols.WIDTH, `c.${cols.WIDTH} >= ${filteringObject[cols.WIDTH]}`],
-        [cols.HEIGHT, `c.${cols.HEIGHT} >= ${filteringObject[cols.HEIGHT]}`],
-        [cols.LENGTH, `c.${cols.LENGTH} >= ${filteringObject[cols.LENGTH]}`],
-        [cols.LOADING_TYPE, `c.${cols.LOADING_TYPE} = '${filteringObject[cols.LOADING_TYPE]}'`],
-        [cols.VEHICLE_TYPE_ID, `c.${cols.VEHICLE_TYPE_ID} = '${filteringObject[cols.VEHICLE_TYPE_ID]}'`],
-        [cols.DANGER_CLASS_ID, `c.${cols.DANGER_CLASS_ID} = '${filteringObject[cols.DANGER_CLASS_ID]}'`],
-        [cols.LOADING_METHODS, `c.${cols.LOADING_METHODS} @> '{${filteringObject[cols.LOADING_METHODS]}}'`],
-        [cols.GUARANTEES, `c.${cols.GUARANTEES} @> '{${filteringObject[cols.GUARANTEES]}}'`],
+const setCarsWithTrailersSearchFilter = (expression, filteringObject) => {
+    let carExp = '';
+    const filteringObjectCarSQLExpressions = [
+        [colsCargos.GROSS_WEIGHT, `c.${cols.CAR_CARRYING_CAPACITY} >= ${filteringObject[colsCargos.GROSS_WEIGHT]}`],
+        [colsCargos.WIDTH, `c.${cols.CAR_WIDTH} >= ${filteringObject[colsCargos.WIDTH]}`],
+        [colsCargos.HEIGHT, `c.${cols.CAR_HEIGHT} >= ${filteringObject[colsCargos.HEIGHT]}`],
+        [colsCargos.LENGTH, `c.${cols.CAR_LENGTH} >= ${filteringObject[colsCargos.LENGTH]}`],
+        [colsCargos.VEHICLE_TYPE_ID, `c.${cols.CAR_VEHICLE_TYPE_ID} = '${filteringObject[colsCargos.VEHICLE_TYPE_ID]}'`],
+        [colsCargos.DANGER_CLASS_ID, `c.${cols.CAR_DANGER_CLASS_ID} = '${filteringObject[colsCargos.DANGER_CLASS_ID]}'`],
+        [colsCargos.LOADING_METHODS, `c.${cols.CAR_LOADING_METHODS} @> '{${filteringObject[colsCargos.LOADING_METHODS]}}'`],
     ];
 
-    for (let [key, exp] of filteringObjectSQLExpressions) {
+    for (let [key, exp] of filteringObjectCarSQLExpressions) {
         if (get(filteringObject, key) !== undefined) {
-            expression = expression.where(exp);
+            if (carExp.length > 0) {
+                carExp += ' AND ';
+            }
+            carExp += exp;
         }
     }
+
+    let trailerExp = '';
+    const filteringObjectTrailerSQLExpressions = [
+        [colsCargos.GROSS_WEIGHT, `t.${colsTrailers.TRAILER_CARRYING_CAPACITY} >= ${filteringObject[colsCargos.GROSS_WEIGHT]}`],
+        [colsCargos.WIDTH, `t.${colsTrailers.TRAILER_WIDTH} >= ${filteringObject[colsCargos.WIDTH]}`],
+        [colsCargos.HEIGHT, `t.${colsTrailers.TRAILER_HEIGHT} >= ${filteringObject[colsCargos.HEIGHT]}`],
+        [colsCargos.LENGTH, `t.${colsTrailers.TRAILER_LENGTH} >= ${filteringObject[colsCargos.LENGTH]}`],
+        [colsCargos.VEHICLE_TYPE_ID, `t.${colsTrailers.TRAILER_VEHICLE_TYPE_ID} = '${filteringObject[colsCargos.VEHICLE_TYPE_ID]}'`],
+        [colsCargos.DANGER_CLASS_ID, `t.${colsTrailers.TRAILER_DANGER_CLASS_ID} = '${filteringObject[colsCargos.DANGER_CLASS_ID]}'`],
+        [colsCargos.LOADING_METHODS, `t.${colsTrailers.TRAILER_LOADING_METHODS} @> '{${filteringObject[colsCargos.LOADING_METHODS]}}'`],
+    ];
+
+    for (let [key, exp] of filteringObjectTrailerSQLExpressions) {
+        if (get(filteringObject, key) !== undefined) {
+            if (trailerExp.length > 0) {
+                trailerExp += ' AND ';
+            }
+            trailerExp += exp;
+        }
+    }
+
+    const resultExpression = `${carExp}${carExp && trailerExp ? ' OR ' : ''}${trailerExp}`;
+
+    expression = expression.where(resultExpression);
+
     return expression;
 };
 
