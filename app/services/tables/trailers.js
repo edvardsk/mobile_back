@@ -162,10 +162,11 @@ const checkIsPassedFileWithNewDangerClass = async (meta, newDangerClassId, schem
     const olsDangerClassName = oldDangerClass[colsDangerClasses.NAME];
     const newDangerClassName = newDangerClass[colsDangerClasses.NAME];
 
-    return !(
-        (!isDangerous(olsDangerClassName) && isDangerous(newDangerClassName) && !dangerClassFile) ||
-        (!isDangerous(olsDangerClassName) && !isDangerous(newDangerClassName) && dangerClassFile) ||
-        (isDangerous(olsDangerClassName) && !isDangerous(newDangerClassName) && dangerClassFile)
+    return (
+        (isDangerous(olsDangerClassName) && isDangerous(newDangerClassName)) ||
+        (isDangerous(olsDangerClassName) && !isDangerous(newDangerClassName) && !dangerClassFile) ||
+        (!isDangerous(olsDangerClassName) && isDangerous(newDangerClassName) && dangerClassFile) ||
+        (!isDangerous(olsDangerClassName) && !isDangerous(newDangerClassName) && !dangerClassFile)
     );
 };
 

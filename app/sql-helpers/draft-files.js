@@ -11,6 +11,8 @@ const tableDrivers = SQL_TABLES.DRIVERS;
 const tableCars = SQL_TABLES.CARS;
 const tableDraftCars = SQL_TABLES.DRAFT_CARS;
 const tableDraftCarsFiles = SQL_TABLES.DRAFT_CARS_TO_FILES;
+const tableDraftTrailers = SQL_TABLES.DRAFT_TRAILERS;
+const tableDraftTrailersFiles = SQL_TABLES.DRAFT_TRAILERS_TO_FILES;
 
 const cols = table.COLUMNS;
 const colsDraftDriversFiles = tableDraftDriversFiles.COLUMNS;
@@ -18,6 +20,8 @@ const colsDraftDrivers = tableDraftDrivers.COLUMNS;
 const colsDrivers = tableDrivers.COLUMNS;
 const colsDraftCars = tableDraftCars.COLUMNS;
 const colsDraftCarsFiles = tableDraftCarsFiles.COLUMNS;
+const colsDraftTrailers = tableDraftTrailers.COLUMNS;
+const colsDraftTrailersFiles = tableDraftTrailersFiles.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -68,6 +72,16 @@ const selectFilesByCarIdAndLabels = (carId, labels) => squelPostgres
     .left_join(tableCars.NAME, 'c', `c.id = dc.${colsDraftCars.CAR_ID}`)
     .toString();
 
+const selectFilesByTrailerIdAndLabels = (trailerId, labels) => squelPostgres
+    .select()
+    .from(table.NAME, 'f')
+    .field('f.*')
+    .where(`dt.${colsDraftTrailers.TRAILER_ID} = '${trailerId}'`)
+    .where(`f.${cols.LABELS} && ARRAY[${labels.map(label => `'${label}'`).toString()}]`)
+    .left_join(tableDraftTrailersFiles.NAME, 'dtf', `dtf.${colsDraftTrailersFiles.DRAFT_FILE_ID} = f.id`)
+    .left_join(tableDraftTrailers.NAME, 'dt', `dt.id = dtf.${colsDraftTrailersFiles.DRAFT_TRAILER_ID}`)
+    .toString();
+
 const selectFilesByDraftCarId = (draftCarId) => squelPostgres
     .select()
     .from(table.NAME, 'f')
@@ -107,6 +121,7 @@ module.exports = {
     selectFilesByDraftDriverIdAndLabels,
     selectFilesByDraftDriverId,
     selectFilesByCarIdAndLabels,
+    selectFilesByTrailerIdAndLabels,
     selectFilesByDraftCarId,
     selectFilesByUserId,
 };

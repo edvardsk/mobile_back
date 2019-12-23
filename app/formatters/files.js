@@ -22,6 +22,7 @@ const colsTrailersFiles = SQL_TABLES.TRAILERS_TO_FILES.COLUMNS;
 const colsDraftDriversFiles = SQL_TABLES.DRAFT_DRIVERS_TO_FILES.COLUMNS;
 const colsDraftFiles = SQL_TABLES.DRAFT_FILES.COLUMNS;
 const colsDraftCarsFiles = SQL_TABLES.DRAFT_CARS_TO_FILES.COLUMNS;
+const colsDraftTrailersFiles = SQL_TABLES.DRAFT_TRAILERS_TO_FILES.COLUMNS;
 
 const formatStoringFile = (bucket, path) => `${bucket}/${path}`;
 
@@ -288,6 +289,36 @@ const prepareFilesToStoreForTrailers = (files, trailerId) => Object.keys(files).
     return acc;
 }, [[], [], []]);
 
+const prepareFilesToStoreForDraftTrailers = (files, draftTrailerId) => Object.keys(files).reduce((acc, type) => {
+    const [dbDraftFiles, dbDraftTrailersFiles, storageFiles] = acc;
+    files[type].forEach(file => {
+        const fileId = uuid();
+        const fileHash = uuid();
+        const filePath = `${fileHash}${file.originalname}`;
+        const fileUrl = formatStoringFile(AWS_S3_BUCKET_NAME, filePath);
+
+        const fileLabels = formatLabelsToStore(type);
+
+        dbDraftFiles.push({
+            id: fileId,
+            [colsDraftFiles.NAME]: file.originalname,
+            [colsDraftFiles.LABELS]: fileLabels,
+            [colsDraftFiles.URL]: CryptService.encrypt(fileUrl),
+        });
+        dbDraftTrailersFiles.push({
+            [colsDraftTrailersFiles.DRAFT_TRAILER_ID]: draftTrailerId,
+            [colsDraftCarsFiles.DRAFT_FILE_ID]: fileId,
+        });
+        storageFiles.push({
+            bucket: AWS_S3_BUCKET_NAME,
+            path: filePath,
+            data: file.buffer,
+            contentType: file.mimetype,
+        });
+    });
+    return acc;
+}, [[], [], []]);
+
 const prepareFilesToStoreForDraftDrivers = (files, draftDriverId, body) => Object.keys(files).reduce((acc, type) => {
     const [dbFiles, dbDraftDriversFiles, storageFiles] = acc;
     files[type].forEach(file => {
@@ -403,6 +434,7 @@ module.exports = {
     prepareFilesToStoreForDraftCars,
     prepareFilesToStoreForCarsFromDraft,
     prepareFilesToStoreForTrailers,
+    prepareFilesToStoreForDraftTrailers,
     prepareFilesToStoreForDraftDrivers,
     prepareFilesToDelete,
     selectFilesToStore,
