@@ -26,30 +26,10 @@ const {
 const { formatQueueByPriority } = require('formatters/index');
 
 // helpers
-const { clusterizeItems } = require('helpers/cluster');
+const { clusterizeItems, mapCarForClustering, mapCargoForClustering } = require('helpers/cluster');
 
 const colsCurrencyPriorities = SQL_TABLES.CURRENCY_PRIORITIES.COLUMNS;
 
-
-function mapCargoForClustering(cargo) {
-    return {
-        coords: [
-            cargo[HOMELESS_COLUMNS.UPLOADING_POINTS][0][HOMELESS_COLUMNS.LONGITUDE],
-            cargo[HOMELESS_COLUMNS.UPLOADING_POINTS][0][HOMELESS_COLUMNS.LATITUDE]
-        ],
-        id: cargo.id,
-    };
-}
-
-function mapCarForClustering(car) {
-    return {
-        coords: [
-            car[HOMELESS_COLUMNS.COORDINATES][0][HOMELESS_COLUMNS.LONGITUDE],
-            car[HOMELESS_COLUMNS.COORDINATES][0][HOMELESS_COLUMNS.LATITUDE]
-        ],
-        id: car.id,
-    };
-}
 
 const search = async (req, res, next) => {
     try {
