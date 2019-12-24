@@ -100,8 +100,8 @@ const getRecordsByStateNumbers = numbers => (
     manyOrNone(selectRecordsByStateNumbers(numbers))
 );
 
-const getRecordsForSearch = (companyId, showMyCars, filter) => (
-    manyOrNone(selectRecordsForSearch(companyId, showMyCars, filter))
+const getRecordsForSearch = (coordinates, companyId, showMyCars, searchRadius, filter) => (
+    manyOrNone(selectRecordsForSearch(coordinates, companyId, showMyCars, searchRadius, filter))
 );
 
 const getAllNewRecordsForSearch = (companyId, showMyCars) => (

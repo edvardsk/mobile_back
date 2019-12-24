@@ -34,24 +34,22 @@ const colsCurrencyPriorities = SQL_TABLES.CURRENCY_PRIORITIES.COLUMNS;
 function mapCargoForClustering(cargo) {
     return {
         coords: [
-            cargo['uploading_points'][0][HOMELESS_COLUMNS.LONGITUDE],
-            cargo['uploading_points'][0][HOMELESS_COLUMNS.LATITUDE]
+            cargo[HOMELESS_COLUMNS.UPLOADING_POINTS][0][HOMELESS_COLUMNS.LONGITUDE],
+            cargo[HOMELESS_COLUMNS.UPLOADING_POINTS][0][HOMELESS_COLUMNS.LATITUDE]
         ],
         id: cargo.id,
     };
 }
 
-// TODO:
 function mapCarForClustering(car) {
     return {
         coords: [
-            27.56667 + Math.random(), //lng
-            53.9 + Math.random() // lat
+            car[HOMELESS_COLUMNS.COORDINATES][0][HOMELESS_COLUMNS.LONGITUDE],
+            car[HOMELESS_COLUMNS.COORDINATES][0][HOMELESS_COLUMNS.LATITUDE]
         ],
         id: car.id,
     };
 }
-
 
 const search = async (req, res, next) => {
     try {
@@ -115,12 +113,12 @@ const search = async (req, res, next) => {
         if (companyId) {
             const [cargos, cars] = await Promise.all([
                 CargosServices.getRecordsForSearch(coordinates, dates, searchRadius, searchLanguageId, companyId, !showCargos, query),
-                CarsServices.getRecordsForSearch(companyId, !showCars, query)
+                CarsServices.getRecordsForSearch(coordinates, companyId, !showCars, searchRadius, query)
             ]);
             const formattedCargos = formatCargosForSearchResponse(
                 cargos, uploadingPoint, downloadingPoint, searchLanguageId, defaultEconomicSettings, formattedCurrencyPriorities
             );
-            const formattedCars = formatCarsForSearchResponse(cars);
+            const formattedCars = formatCarsForSearchResponse(cars, dates);
             const itemsForClustering = formattedCargos.map(mapCargoForClustering).concat(formattedCars.map(mapCarForClustering));
 
             result.clusters = clusterizeItems(itemsForClustering, query);
@@ -138,8 +136,8 @@ const search = async (req, res, next) => {
                 result.cars = [];
                 result.cargos = formattedCargos;
             } else if (showCars) {
-                const cars = await CarsServices.getRecordsForSearch(companyId, showCars, query);
-                const formattedCars = formatCarsForSearchResponse(cars);
+                const cars = await CarsServices.getRecordsForSearch(coordinates, companyId, showCars, searchRadius, query);
+                const formattedCars = formatCarsForSearchResponse(cars, dates);
                 const itemsForClustering = formattedCars.map(mapCarForClustering);
     
                 result.clusters = clusterizeItems(itemsForClustering, query);
