@@ -60,12 +60,12 @@ const markAsDeleted = id => editRecord(id, {
     [cols.DELETED]: true,
 });
 
-const getRecordsForSearch = (coordinates, dates, searchRadius, languageId, companyId, filter) => {
-    return manyOrNone(selectRecordsForSearch(coordinates, dates, searchRadius, languageId, companyId, filter));
+const getRecordsForSearch = (coordinates, dates, searchRadius, languageId, companyId, showMyCargos, filter) => {
+    return manyOrNone(selectRecordsForSearch(coordinates, dates, searchRadius, languageId, companyId, showMyCargos, filter));
 };
 
-const getAllNewRecordsForSearch = (languageId, companyId) => {
-    return manyOrNone(selectAllNewRecordsForSearch(languageId, companyId));
+const getAllNewRecordsForSearch = (languageId, companyId, showMyCargos) => {
+    return manyOrNone(selectAllNewRecordsForSearch(languageId, companyId, showMyCargos));
 };
 
 const getAvailableCargosByIds = (ids) => manyOrNone(selectAvailableCargosByIds(ids));

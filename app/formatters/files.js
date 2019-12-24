@@ -1,6 +1,6 @@
 const moment = require('moment');
 const uuid = require('uuid/v4');
-const { difference } = require('lodash');
+const { flatten } = require('lodash');
 
 // constants
 const { SqlArray } = require('constants/instances');
@@ -21,6 +21,8 @@ const colsCarsFiles = SQL_TABLES.CARS_TO_FILES.COLUMNS;
 const colsTrailersFiles = SQL_TABLES.TRAILERS_TO_FILES.COLUMNS;
 const colsDraftDriversFiles = SQL_TABLES.DRAFT_DRIVERS_TO_FILES.COLUMNS;
 const colsDraftFiles = SQL_TABLES.DRAFT_FILES.COLUMNS;
+const colsDraftCarsFiles = SQL_TABLES.DRAFT_CARS_TO_FILES.COLUMNS;
+const colsDraftTrailersFiles = SQL_TABLES.DRAFT_TRAILERS_TO_FILES.COLUMNS;
 
 const formatStoringFile = (bucket, path) => `${bucket}/${path}`;
 
@@ -207,6 +209,56 @@ const prepareFilesToStoreForCars = (files, carId) => Object.keys(files).reduce((
     return acc;
 }, [[], [], []]);
 
+const prepareFilesToStoreForDraftCars = (files, draftCarsId) => Object.keys(files).reduce((acc, type) => {
+    const [dbDraftFiles, dbDraftCarsFiles, storageFiles] = acc;
+    files[type].forEach(file => {
+        const fileId = uuid();
+        const fileHash = uuid();
+        const filePath = `${fileHash}${file.originalname}`;
+        const fileUrl = formatStoringFile(AWS_S3_BUCKET_NAME, filePath);
+
+        const fileLabels = formatLabelsToStore(type);
+
+        dbDraftFiles.push({
+            id: fileId,
+            [colsDraftFiles.NAME]: file.originalname,
+            [colsDraftFiles.LABELS]: fileLabels,
+            [colsDraftFiles.URL]: CryptService.encrypt(fileUrl),
+        });
+        dbDraftCarsFiles.push({
+            [colsDraftCarsFiles.DRAFT_CAR_ID]: draftCarsId,
+            [colsDraftCarsFiles.DRAFT_FILE_ID]: fileId,
+        });
+        storageFiles.push({
+            bucket: AWS_S3_BUCKET_NAME,
+            path: filePath,
+            data: file.buffer,
+            contentType: file.mimetype,
+        });
+    });
+    return acc;
+}, [[], [], []]);
+
+const prepareFilesToStoreForCarsFromDraft = (files, carId) => files.reduce((acc, file) => {
+    const [dbFiles, dbCarsFiles] = acc;
+    const fileId = file.id;
+
+    const fileLabels = new SqlArray(file[colsDraftFiles.LABELS]);
+
+    dbFiles.push({
+        id: fileId,
+        [cols.NAME]: file[colsDraftFiles.NAME],
+        [cols.LABELS]: fileLabels,
+        [cols.URL]: file[colsDraftFiles.URL],
+        [cols.CREATED_AT]: file[colsDraftFiles.CREATED_AT].toISOString(),
+    });
+    dbCarsFiles.push({
+        [colsCarsFiles.CAR_ID]: carId,
+        [colsCarsFiles.FILE_ID]: fileId,
+    });
+    return acc;
+}, [[], []]);
+
 const prepareFilesToStoreForTrailers = (files, trailerId) => Object.keys(files).reduce((acc, type) => {
     const [dbFiles, dbTrailersFiles, storageFiles] = acc;
     files[type].forEach(file => {
@@ -236,6 +288,56 @@ const prepareFilesToStoreForTrailers = (files, trailerId) => Object.keys(files).
     });
     return acc;
 }, [[], [], []]);
+
+const prepareFilesToStoreForDraftTrailers = (files, draftTrailerId) => Object.keys(files).reduce((acc, type) => {
+    const [dbDraftFiles, dbDraftTrailersFiles, storageFiles] = acc;
+    files[type].forEach(file => {
+        const fileId = uuid();
+        const fileHash = uuid();
+        const filePath = `${fileHash}${file.originalname}`;
+        const fileUrl = formatStoringFile(AWS_S3_BUCKET_NAME, filePath);
+
+        const fileLabels = formatLabelsToStore(type);
+
+        dbDraftFiles.push({
+            id: fileId,
+            [colsDraftFiles.NAME]: file.originalname,
+            [colsDraftFiles.LABELS]: fileLabels,
+            [colsDraftFiles.URL]: CryptService.encrypt(fileUrl),
+        });
+        dbDraftTrailersFiles.push({
+            [colsDraftTrailersFiles.DRAFT_TRAILER_ID]: draftTrailerId,
+            [colsDraftCarsFiles.DRAFT_FILE_ID]: fileId,
+        });
+        storageFiles.push({
+            bucket: AWS_S3_BUCKET_NAME,
+            path: filePath,
+            data: file.buffer,
+            contentType: file.mimetype,
+        });
+    });
+    return acc;
+}, [[], [], []]);
+
+const prepareFilesToStoreForTrailersFromDraft = (files, trailerId) => files.reduce((acc, file) => {
+    const [dbFiles, dbTrailersFiles] = acc;
+    const fileId = file.id;
+
+    const fileLabels = new SqlArray(file[colsDraftFiles.LABELS]);
+
+    dbFiles.push({
+        id: fileId,
+        [cols.NAME]: file[colsDraftFiles.NAME],
+        [cols.LABELS]: fileLabels,
+        [cols.URL]: file[colsDraftFiles.URL],
+        [cols.CREATED_AT]: file[colsDraftFiles.CREATED_AT].toISOString(),
+    });
+    dbTrailersFiles.push({
+        [colsTrailersFiles.TRAILER_ID]: trailerId,
+        [colsTrailersFiles.FILE_ID]: fileId,
+    });
+    return acc;
+}, [[], []]);
 
 const prepareFilesToStoreForDraftDrivers = (files, draftDriverId, body) => Object.keys(files).reduce((acc, type) => {
     const [dbFiles, dbDraftDriversFiles, storageFiles] = acc;
@@ -291,16 +393,42 @@ const selectFilesToStore = (files, mapData) => {
 };
 
 const mergeFilesWithDraft = (files, draftFiles) => {
-    let mergedFiles = files.reduce((acc, file) => {
-        const draftFileIndex = draftFiles.findIndex(draftFile => (
-            !difference(draftFile[colsDraftFiles.LABELS], file[cols.LABELS]).length
-        ));
+    const groupedFiles = {};
+    const groupedDraftFiles = {};
 
-        if (draftFileIndex !== -1) {
-            acc.push(draftFiles[draftFileIndex]);
-            draftFiles.splice(draftFileIndex, 1);
+    files.forEach((file) => {
+        const labelsString = file[cols.LABELS].sort().toString();
+        if (groupedFiles[labelsString]) {
+            groupedFiles[labelsString].push(file);
         } else {
-            acc.push(file);
+            groupedFiles[labelsString] = [file];
+        }
+    });
+
+    draftFiles.forEach((file) => {
+        const labelsString = file[colsDraftFiles.LABELS].sort().toString();
+        if (groupedDraftFiles[labelsString]) {
+            groupedDraftFiles[labelsString].push(file);
+        } else {
+            groupedDraftFiles[labelsString] = [file];
+        }
+    });
+
+    let mergedFiles = Object.keys(groupedFiles).reduce((acc, filesKey) => {
+        const draftFileArr = groupedDraftFiles[filesKey];
+        const fileArr = groupedFiles[filesKey];
+
+        if (draftFileArr) {
+            acc = [
+                ...acc,
+                ...draftFileArr,
+            ];
+            delete groupedDraftFiles[filesKey];
+        } else {
+            acc = [
+                ...acc,
+                ...fileArr,
+            ];
         }
 
         return acc;
@@ -308,7 +436,7 @@ const mergeFilesWithDraft = (files, draftFiles) => {
     }, []);
     return [
         ...mergedFiles,
-        ...draftFiles,
+        ...flatten(Object.keys(groupedDraftFiles).map(key => groupedDraftFiles[key])),
     ];
 };
 
@@ -323,7 +451,11 @@ module.exports = {
     prepareFilesToStoreForUsers,
     prepareFilesToStoreForUsersFromDraft,
     prepareFilesToStoreForCars,
+    prepareFilesToStoreForDraftCars,
+    prepareFilesToStoreForCarsFromDraft,
     prepareFilesToStoreForTrailers,
+    prepareFilesToStoreForDraftTrailers,
+    prepareFilesToStoreForTrailersFromDraft,
     prepareFilesToStoreForDraftDrivers,
     prepareFilesToDelete,
     selectFilesToStore,

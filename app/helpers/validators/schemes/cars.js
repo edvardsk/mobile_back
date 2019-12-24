@@ -464,11 +464,12 @@ const editTrailerFiles = {
     additionalProperties: false,
 };
 
-const editTrailerFilesCheckDangerClassAsyncFunc = ({ trailerId }) => ({
+const editTrailerFilesCheckDangerClassAsyncFunc = ({ trailerId, isControlRole }) => ({
     $async: true,
     properties: {
         [colsTrailers.TRAILER_DANGER_CLASS_ID]: {
             new_trailer_danger_class_without_or_extra_file: {
+                isControlRole,
                 trailerId,
             },
         },
@@ -617,6 +618,17 @@ const editCarTruck = {
     },
     then: {
         required: [
+            colsCars.CAR_DANGER_CLASS_ID,
+            colsCars.CAR_LOADING_METHODS,
+            colsCars.CAR_VEHICLE_TYPE_ID,
+            colsCars.CAR_WIDTH,
+            colsCars.CAR_HEIGHT,
+            colsCars.CAR_LENGTH,
+            colsCars.CAR_CARRYING_CAPACITY,
+        ],
+    },
+    else: {
+        prohibited: [
             colsCars.CAR_DANGER_CLASS_ID,
             colsCars.CAR_LOADING_METHODS,
             colsCars.CAR_VEHICLE_TYPE_ID,

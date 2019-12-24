@@ -10,12 +10,16 @@ const tableCargos = SQL_TABLES.CARGOS;
 const tableCargoPoints = SQL_TABLES.CARGO_POINTS;
 const tablePoints = SQL_TABLES.POINTS;
 const tableTranslations = SQL_TABLES.POINT_TRANSLATIONS;
+const tableDealStatuses = SQL_TABLES.DEAL_STATUSES;
+const tableDealHistory = SQL_TABLES.DEAL_HISTORY_STATUSES;
 
 const cols = table.COLUMNS;
 const colsCargos = tableCargos.COLUMNS;
 const colsCargoPoints = tableCargoPoints.COLUMNS;
 const colsPoints = tablePoints.COLUMNS;
 const colsTranslations = tableTranslations.COLUMNS;
+const colsDealStatuses = tableDealStatuses.COLUMNS;
+const colsDealHistory = tableDealHistory.COLUMNS;
 
 const insertRecords = values => squelPostgres
     .insert()
@@ -98,7 +102,17 @@ const selectDealsByCompanyIdPaginationSorting = (companyId, limit, offset, sortC
                 .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
                 .toString()
         })`, HOMELESS_COLUMNS.DOWNLOADING_POINTS)
+        .field(`ds.${colsDealStatuses.NAME}`, 'status')
         .from(table.NAME, 'd')
+        .where('dsh.id = ?',
+            squelPostgres
+                .select()
+                .field('dsh2.id')
+                .from(tableDealHistory.NAME, 'dsh2')
+                .where(`dsh2.${colsDealHistory.DEAL_ID} = d.id`)
+                .order(`dsh2.${colsDealHistory.CREATED_AT}`, false)
+                .limit(1)
+        )
         .where(`c.${colsCargos.COMPANY_ID} = '${companyId}' OR d.${cols.TRANSPORTER_COMPANY_ID} = '${companyId}'`);
 
     if (dateFrom) {
@@ -117,6 +131,8 @@ const selectDealsByCompanyIdPaginationSorting = (companyId, limit, offset, sortC
     expression = setAvailableDealsFilter(expression, filter);
     return expression
         .left_join(tableCargos.NAME, 'c', `c.id = d.${cols.CARGO_ID}`)
+        .left_join(tableDealHistory.NAME, 'dsh', `dsh.${colsDealHistory.DEAL_ID} = d.id`)
+        .left_join(tableDealStatuses.NAME, 'ds', `ds.id = dsh.${colsDealHistory.DEAL_STATUS_ID}`)
         .order(sortColumn, asc)
         .limit(limit)
         .offset(offset)

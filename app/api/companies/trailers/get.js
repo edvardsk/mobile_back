@@ -58,9 +58,18 @@ const getListTrailers = async (req, res, next) => {
 const getTrailer = async (req, res, next) => {
     try {
         const { trailerId } = req.params;
+        const { isControlRole } = res.locals;
+
         const trailer = await TrailersService.getRecordFullStrict(trailerId);
-        const formattedData = formatRecordForResponse(trailer);
-        formattedData.trailer.files = await FilesService.formatTemporaryLinks(formattedData.trailer.files);
+
+        const formattedData = formatRecordForResponse(trailer, isControlRole);
+
+        formattedData.files = await FilesService.formatTemporaryLinks(formattedData.files);
+
+        if (isControlRole) {
+            formattedData.draftFiles = await FilesService.formatTemporaryLinks(formattedData.draftFiles);
+        }
+
         return success(res, { ...formattedData });
     } catch (error) {
         next(error);
