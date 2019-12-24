@@ -598,6 +598,15 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    DEAL_STATUSES_HISTORY_CONFIRMATIONS: {
+        NAME: 'deal_statuses_history_confirmations',
+        COLUMNS: {
+            DEAL_STATUS_HISTORY_ID: 'deal_status_history_id',
+            CONFIRMED_BY_TRANSPORTER: 'confirmed_by_transporter',
+            CONFIRMED_BY_HOLDER: 'confirmed_by_holder',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
