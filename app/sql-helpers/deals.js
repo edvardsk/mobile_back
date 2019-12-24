@@ -81,7 +81,7 @@ const selectDealsByCompanyIdPaginationSorting = (companyId, limit, offset, sortC
         .field(`ARRAY(${
             squelPostgres
                 .select()
-                .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
                 .from(tableCargoPoints.NAME, 'cp')
                 .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
                 .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
@@ -93,7 +93,7 @@ const selectDealsByCompanyIdPaginationSorting = (companyId, limit, offset, sortC
         .field(`ARRAY(${
             squelPostgres
                 .select()
-                .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
                 .from(tableCargoPoints.NAME, 'cp')
                 .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
                 .where(`cp.${colsCargoPoints.TYPE} = 'download'`)

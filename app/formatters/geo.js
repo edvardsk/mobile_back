@@ -46,10 +46,12 @@ const formatGeoPointToObjectWithTranslation = (string, translation) => {
 };
 
 const formatGeoPointWithNameFromPostgresJSONToObject = obj => {
-    const coordinatesString = obj.f1;
-    const cityName = obj.f2;
-    const languageId = obj.f3;
+    const cargoPointId = obj.f1;
+    const coordinatesString = obj.f2;
+    const cityName = obj.f3;
+    const languageId = obj.f4;
     return {
+        id: cargoPointId,
         [HOMELESS_COLUMNS.COORDINATES]: coordinatesString,
         [HOMELESS_COLUMNS.CITY_NAME]: cityName,
         languageId,
@@ -60,6 +62,7 @@ const formatGeoPointWithName = data => {
     const coordinatesString = data[HOMELESS_COLUMNS.COORDINATES];
     const [longitude, latitude] = coordinatesString.slice(6, -1).split(' ');
     return {
+        id: data.id,
         [HOMELESS_COLUMNS.LONGITUDE]: longitude,
         [HOMELESS_COLUMNS.LATITUDE]: latitude,
         [HOMELESS_COLUMNS.CITY_NAME]: data[HOMELESS_COLUMNS.CITY_NAME],

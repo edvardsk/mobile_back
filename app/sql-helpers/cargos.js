@@ -109,7 +109,7 @@ const selectRecordByWithCoordinatesId = (id, userLanguageId) => squelPostgres
     .field(`ARRAY(${
         squelPostgres
             .select()
-            .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+            .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
             .from(tableCargoPoints.NAME, 'cp')
             .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
             .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
@@ -121,7 +121,7 @@ const selectRecordByWithCoordinatesId = (id, userLanguageId) => squelPostgres
     .field(`ARRAY(${
         squelPostgres
             .select()
-            .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+            .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
             .from(tableCargoPoints.NAME, 'cp')
             .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
             .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
@@ -161,7 +161,7 @@ const selectRecordByIdWithCoordinatesAndEconomicSettings = (id, userLanguageId) 
     .field(`ARRAY(${
         squelPostgres
             .select()
-            .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+            .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
             .from(tableCargoPoints.NAME, 'cp')
             .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
             .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
@@ -173,7 +173,7 @@ const selectRecordByIdWithCoordinatesAndEconomicSettings = (id, userLanguageId) 
     .field(`ARRAY(${
         squelPostgres
             .select()
-            .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+            .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
             .from(tableCargoPoints.NAME, 'cp')
             .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
             .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
@@ -227,7 +227,7 @@ const selectCargosByCompanyIdPaginationSorting = (companyId, limit, offset, sort
         .field(`ARRAY(${
             squelPostgres
                 .select()
-                .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
                 .from(tableCargoPoints.NAME, 'cp')
                 .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
                 .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
@@ -239,7 +239,7 @@ const selectCargosByCompanyIdPaginationSorting = (companyId, limit, offset, sort
         .field(`ARRAY(${
             squelPostgres
                 .select()
-                .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
                 .from(tableCargoPoints.NAME, 'cp')
                 .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
                 .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
@@ -319,7 +319,7 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
             .field(`ARRAY(${
                 squelPostgres
                     .select()
-                    .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                    .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
                     .from(tableCargoPoints.NAME, 'cp')
                     .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
                     .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
@@ -348,7 +348,7 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
             .field(`ARRAY(${
                 squelPostgres
                     .select()
-                    .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                    .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
                     .from(tableCargoPoints.NAME, 'cp')
                     .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
                     .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
@@ -379,7 +379,7 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
             .field(`ARRAY(${
                 squelPostgres
                     .select()
-                    .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                    .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
                     .from(tableCargoPoints.NAME, 'cp')
                     .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
                     .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
@@ -402,7 +402,7 @@ const selectRecordsForSearch = ({ upGeo, downGeo, geoLine }, { uploadingDate, do
             .field(`ARRAY(${
                 squelPostgres
                     .select()
-                    .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                    .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
                     .from(tableCargoPoints.NAME, 'cp')
                     .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
                     .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
@@ -489,7 +489,7 @@ const selectAllNewRecordsForSearch = (languageId, companyId, showMyCargos) => {
         .field(`ARRAY(${
             squelPostgres
                 .select()
-                .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
                 .from(tableCargoPoints.NAME, 'cp')
                 .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
                 .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
@@ -501,7 +501,7 @@ const selectAllNewRecordsForSearch = (languageId, companyId, showMyCargos) => {
         .field(`ARRAY(${
             squelPostgres
                 .select()
-                .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
                 .from(tableCargoPoints.NAME, 'cp')
                 .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
                 .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
