@@ -12,9 +12,10 @@ const linkTrailerWithCar = async (req, res, next) => {
     try {
         const { trailerId } = req.params;
         const carId = req.body.car_id;
-        const carPointstransactions = await CarPointsService.addPointOnLinking(carId, trailerId);
-
-        const linkTrailerTransaction = await TrailersServices.linkTrailerAndCar(trailerId, carId);
+        const [ carPointstransactions, linkTrailerTransaction] = await Promise.all([
+            CarPointsService.addPointOnLinking(carId, trailerId),
+            TrailersServices.linkTrailerAndCar(trailerId, carId),
+        ]);
 
         await TableService.runTransaction([... carPointstransactions, linkTrailerTransaction]);
 
@@ -27,9 +28,11 @@ const linkTrailerWithCar = async (req, res, next) => {
 const unlinkTrailerFromCar = async (req, res, next) => {
     try {
         const { trailerId } = req.params;
-        const carPointstransactions = await CarPointsService.addPointOnUnlinking(trailerId);
 
-        const unlinkTrailerTransaction = await TrailersServices.unlinkTrailerFromCar(trailerId);
+        const [ carPointstransactions, unlinkTrailerTransaction ] = await Promise.all([
+            CarPointsService.addPointOnUnlinking(trailerId),
+            TrailersServices.unlinkTrailerFromCar(trailerId),
+        ]);
 
         await TableService.runTransaction([... carPointstransactions, unlinkTrailerTransaction]);
 
