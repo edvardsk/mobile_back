@@ -197,6 +197,36 @@ const formatCarFiles = data => {
     });
 };
 
+const formatRecordForSearch = car => {
+    let result = {
+        id: car.id,
+        [cols.CAR_MARK]: car[cols.CAR_MARK],
+        [cols.CAR_MODEL]: car[cols.CAR_MODEL],
+        [cols.CAR_TYPE]: car[cols.CAR_TYPE],
+        [cols.CAR_MADE_YEAR_AT]: car[cols.CAR_MADE_YEAR_AT],
+        [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
+        [cols.CREATED_AT]: car[cols.CREATED_AT],
+        [HOMELESS_COLUMNS.CAR_VERIFIED]: car[cols.VERIFIED],
+    };
+    if (car[HOMELESS_COLUMNS.TRAILER_ID]) {
+        result = {
+            ...result,
+            [HOMELESS_COLUMNS.TRAILER_ID]: car[HOMELESS_COLUMNS.TRAILER_ID],
+            [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: car[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
+            [HOMELESS_COLUMNS.TRAILER_VERIFIED]: car[HOMELESS_COLUMNS.TRAILER_VERIFIED],
+        };
+    }
+    return result;
+};
+
+const formatRecordForSearchResponse = (cars) => {
+    return cars.map(car => formatRecordForSearch(car));
+};
+
+const formatRecordForSearchAllResponse = (cars) => {
+    return cars.map(car => formatRecordForSearch(car));
+};
+
 const formatAvailableCars = cars => cars.map(car => formatAvailableCar(car));
 
 const formatAvailableCar = car => ({
@@ -243,4 +273,6 @@ module.exports = {
     formatShadowCarsToSave,
     formatRecordAsNotVerified,
     formatRecordAsVerified,
+    formatRecordForSearchAllResponse,
+    formatRecordForSearchResponse,
 };
