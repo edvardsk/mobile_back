@@ -2,9 +2,12 @@ const uuid = require('uuid/v4');
 const { success } = require('api/response');
 
 // services
-const CarsServices = require('services/tables/cars');
+const CarPointsService = require('services/tables/car-points');
+const CarLatestPointsService = require('services/tables/car-latest-points');
+const CarsService = require('services/tables/cars');
 const CarsStateNumbersService = require('services/tables/cars-state-numbers');
 const CarsFilesService = require('services/tables/cars-to-files');
+const CompaniesService = require('services/tables/companies');
 const TrailersServices = require('services/tables/trailers');
 const TrailersStateNumbersService = require('services/tables/trailers-state-numbers');
 const TrailersFilesService = require('services/tables/trailers-to-files');
@@ -21,9 +24,12 @@ const { DOCUMENTS } = require('constants/files');
 const CarsFormatters = require('formatters/cars');
 const TrailersFormatters = require('formatters/trailers');
 const FilesFormatters = require('formatters/files');
+const CarPointsFormatters = require('formatters/car-points');
+const CarLatestPointsFormatters = require('formatters/car-latest-points');
 
 const colsCarsNumbers = SQL_TABLES.CARS_STATE_NUMBERS.COLUMNS;
 const colsTrailersNumbers = SQL_TABLES.TRAILERS_STATE_NUMBERS.COLUMNS;
+const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
 
 const MAP_CARS_PROPS_AND_FILES = {
     [HOMELESS_COLUMNS.CAR_DANGER_CLASS]: DOCUMENTS.DANGER_CLASS,
@@ -53,6 +59,7 @@ const createCar = async (req, res, next) => {
 
         const result = {};
         let carId = null;
+        let trailerId = null;
 
         if (isCar) {
             carId = uuid();
@@ -64,7 +71,7 @@ const createCar = async (req, res, next) => {
             const carData = CarsFormatters.formatCarToSave(carId, companyId, body);
 
             transactionsList.push(
-                CarsServices.addRecordAsTransaction(carData)
+                CarsService.addRecordAsTransaction(carData)
             );
             transactionsList.push(
                 CarsStateNumbersService.addRecordAsTransaction(carStateNumberData)
@@ -88,7 +95,7 @@ const createCar = async (req, res, next) => {
         }
 
         if (isTrailer) {
-            const trailerId = uuid();
+            trailerId = uuid();
             const trailerStateNumberData = {
                 [colsTrailersNumbers.TRAILER_ID]: trailerId,
                 [colsTrailersNumbers.NUMBER]: body[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
@@ -118,6 +125,31 @@ const createCar = async (req, res, next) => {
             );
 
             result.trailerId = trailerId;
+        }
+
+        if (carId) {
+            const company = await CompaniesService.getCompany(companyId);
+            const carPoint = CarPointsFormatters.formatRecordToSave(
+                uuid(),
+                null,
+                carId,
+                trailerId,
+                company[colsCompanies.LEGAL_CITY_COORDINATES],
+            );
+            const carLatestPoint = CarLatestPointsFormatters.formatRecordToSave(
+                uuid(),
+                null,
+                carId,
+                trailerId,
+                company[colsCompanies.LEGAL_CITY_COORDINATES],
+            );
+            
+            transactionsList.push(
+                CarPointsService.addRecordAsTransaction(carPoint),
+            );
+            transactionsList.push(
+                CarLatestPointsService.addRecordAsTransaction(carLatestPoint),
+            );
         }
 
         await TablesService.runTransaction(transactionsList);

@@ -81,11 +81,11 @@ const markAsDeletedAsTransaction = id => [updateRecord(id, {
     [colsTrailers.DELETED]: true,
 }), OPERATIONS.ONE];
 
-const linkTrailerAndCar = (trailerId, carId) => editRecord(trailerId, {
+const linkTrailerAndCar = async (trailerId, carId) => editRecordAsTransaction(trailerId, {
     [colsTrailers.CAR_ID]: carId,
 });
 
-const unlinkTrailerFromCar = id => editRecord(id, {
+const unlinkTrailerFromCar = async id => editRecordAsTransaction(id, {
     [colsTrailers.CAR_ID]: null,
 });
 
