@@ -1,6 +1,9 @@
 const express = require('express');
 const { ROUTES } = require('constants/routes');
+
 const postVerify = require('./verify/post');
+
+const postReject = require('./reject/post');
 
 // middlewares
 const { validate } = require('api/middlewares/validator');
@@ -20,6 +23,15 @@ router.post(
     validate(ValidatorSchemes.requiredTrailerId, 'params'),
     validate(ValidatorSchemes.requiredExistingTrailerAsync, 'params'),
     postVerify.verifyTrailer,
+);
+
+router.post(
+    ROUTES.TRAILERS.REJECT.BASE + ROUTES.TRAILERS.REJECT.POST,
+    isHasPermissions([PERMISSIONS.VERIFY_DEAL_INSTANCE]),
+    validate(ValidatorSchemes.requiredTrailerId, 'params'),
+    validate(ValidatorSchemes.requiredExistingCarAsync, 'params'),
+    validate(ValidatorSchemes.rejectDraft),
+    postReject.rejectDraft,
 );
 
 module.exports = router;

@@ -71,6 +71,20 @@ const selectFilesByCarIdAndLabels = (carId, labels) => squelPostgres
     .left_join(tableCarsFiles.NAME, 'cf', `cf.${colsCarsFiles.FILE_ID} = f.id`)
     .toString();
 
+const selectFilesByCarIdAndArrayLabels = (carId, labelsArr) => {
+    const exp = squelPostgres
+        .select()
+        .from(table.NAME, 'f')
+        .field('f.*')
+        .where(`cf.${colsCarsFiles.CAR_ID} = '${carId}'`);
+
+    setLabelsArrFilter(exp, labelsArr);
+
+    return exp
+        .left_join(tableCarsFiles.NAME, 'cf', `cf.${colsCarsFiles.FILE_ID} = f.id`)
+        .toString();
+};
+
 const selectFilesByTrailerIdAndLabels = (trailerId, labels) => squelPostgres
     .select()
     .from(table.NAME, 'f')
@@ -79,6 +93,20 @@ const selectFilesByTrailerIdAndLabels = (trailerId, labels) => squelPostgres
     .where(`f.${cols.LABELS} && ARRAY[${labels.map(label => `'${label}'`).toString()}]`)
     .left_join(tableTrailersFiles.NAME, 'tf', `tf.${colsTrailersFiles.FILE_ID} = f.id`)
     .toString();
+
+const selectFilesByTrailerIdAndArrayLabels = (trailerId, labelsArr) => {
+    const exp = squelPostgres
+        .select()
+        .from(table.NAME, 'f')
+        .field('f.*')
+        .where(`tf.${colsTrailersFiles.TRAILER_ID} = '${trailerId}'`);
+
+    setLabelsArrFilter(exp, labelsArr);
+
+    return exp
+        .left_join(tableTrailersFiles.NAME, 'tf', `tf.${colsTrailersFiles.FILE_ID} = f.id`)
+        .toString();
+};
 
 const selectFilesByUserIdAndLabels = (userId, fileLabels) => {
     const exp = squelPostgres
@@ -135,7 +163,9 @@ module.exports = {
     selectFilesByCompanyIdAndLabel,
     selectFilesByCompanyIdAndLabels,
     selectFilesByCarIdAndLabels,
+    selectFilesByCarIdAndArrayLabels,
     selectFilesByTrailerIdAndLabels,
+    selectFilesByTrailerIdAndArrayLabels,
     selectFilesByUserIdAndLabels,
     selectFilesByUserId,
     selectFilesByDriverIdAndLabels,

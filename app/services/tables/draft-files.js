@@ -6,7 +6,11 @@ const {
     deleteFilesByIds,
     selectFilesByDraftDriverIdAndLabels,
     selectFilesByDraftDriverId,
+    selectFilesByCarIdAndLabels,
+    selectFilesByTrailerIdAndLabels,
     selectFilesByUserId,
+    selectFilesByDraftCarId,
+    selectFilesByDraftTrailerId,
 } = require('sql-helpers/draft-files');
 
 // services
@@ -36,8 +40,24 @@ const getFilesByDraftDriverId = (draftDriverId) => (
     manyOrNone(selectFilesByDraftDriverId(draftDriverId))
 );
 
+const getFilesByCarIdAndLabels = (carId, labels) => (
+    manyOrNone(selectFilesByCarIdAndLabels(carId, labels))
+);
+
+const getFilesByTrailerIdAndLabels = (trailerId, labels) => (
+    manyOrNone(selectFilesByTrailerIdAndLabels(trailerId, labels))
+);
+
 const getFilesByUserId = (userId) => (
     manyOrNone(selectFilesByUserId(userId))
+);
+
+const getFilesByDraftCarId = (draftCarId) => (
+    manyOrNone(selectFilesByDraftCarId(draftCarId))
+);
+
+const getFilesByDraftTrailerId = (draftTrailerId) => (
+    manyOrNone(selectFilesByDraftTrailerId(draftTrailerId))
 );
 
 const formatTemporaryLinks = async files => {
@@ -62,10 +82,14 @@ const formatTemporaryLinks = async files => {
 
 module.exports = {
     addFilesAsTransaction,
+    removeFilesByIdsAsTransaction,
     getFilesByDraftDriverIdAndLabels,
     getFilesByDraftDriverId,
     getFilesByUserId,
-    removeFilesByIdsAsTransaction,
+    getFilesByCarIdAndLabels,
+    getFilesByTrailerIdAndLabels,
+    getFilesByDraftCarId,
+    getFilesByDraftTrailerId,
 
     formatTemporaryLinks,
 };

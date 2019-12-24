@@ -112,6 +112,7 @@ const formatRecordForList = (deal, userLanguageId) => {
         [colsCargo.UPLOADING_DATE_TO]: deal[colsCargo.UPLOADING_DATE_TO],
         [colsCargo.DOWNLOADING_DATE_FROM]: deal[colsCargo.DOWNLOADING_DATE_FROM],
         [colsCargo.DOWNLOADING_DATE_TO]: deal[colsCargo.DOWNLOADING_DATE_TO],
+        status: deal['status'],
     };
 
     const [uploadingPoints, downloadingPoints] = formatGeoPoints(deal, userLanguageId);

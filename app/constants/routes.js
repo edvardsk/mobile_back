@@ -419,11 +419,19 @@ const ROUTES = {
             BASE: IDS.CAR_ID + BASES.VERIFY,
             POST: '',
         },
+        REJECT: {
+            BASE: IDS.CAR_ID + BASES.REJECT,
+            POST: '',
+        },
     },
     TRAILERS: {
         BASE: BASES.TRAILERS,
         VERIFY: {
             BASE: IDS.TRAILER_ID + BASES.VERIFY,
+            POST: '',
+        },
+        REJECT: {
+            BASE: IDS.TRAILER_ID + BASES.REJECT,
             POST: '',
         },
     },

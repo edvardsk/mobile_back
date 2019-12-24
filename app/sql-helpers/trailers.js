@@ -18,6 +18,9 @@ const tableDeals = SQL_TABLES.DEALS;
 const tableDealsStatuses = SQL_TABLES.DEAL_STATUSES;
 const tableDealsStatusesHistory = SQL_TABLES.DEAL_HISTORY_STATUSES;
 const tableCargos = SQL_TABLES.CARGOS;
+const tableDraftTrailers = SQL_TABLES.DRAFT_TRAILERS;
+const tableDraftFiles = SQL_TABLES.DRAFT_FILES;
+const tableDraftTrailersFiles = SQL_TABLES.DRAFT_TRAILERS_TO_FILES;
 
 const cols = table.COLUMNS;
 const colsCars = tableCars.COLUMNS;
@@ -31,6 +34,9 @@ const colsDeals = tableDeals.COLUMNS;
 const colsDealsStatuses = tableDealsStatuses.COLUMNS;
 const colsDealsStatusesHistory = tableDealsStatusesHistory.COLUMNS;
 const colsCargos = tableCargos.COLUMNS;
+const colsDraftTrailers = tableDraftTrailers.COLUMNS;
+const colsDraftFiles = tableDraftFiles.COLUMNS;
+const colsDraftTrailersFiles = tableDraftTrailersFiles.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -100,6 +106,20 @@ const selectTrailersByCompanyIdPaginationSorting = (companyId, limit, offset, so
         .field(`tsn.${colsTrailersStateNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
         .field(`vt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
         .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
+        .field(`drt.${colsDraftTrailers.TRAILER_VIN}`, HOMELESS_COLUMNS.DRAFT_TRAILER_VIN)
+        .field(`drt.${colsDraftTrailers.TRAILER_STATE_NUMBER}`, HOMELESS_COLUMNS.DRAFT_TRAILER_STATE_NUMBER)
+        .field(`drt.${colsDraftTrailers.TRAILER_MARK}`, HOMELESS_COLUMNS.DRAFT_TRAILER_MARK)
+        .field(`drt.${colsDraftTrailers.TRAILER_MODEL}`, HOMELESS_COLUMNS.DRAFT_TRAILER_MODEL)
+        .field(`drt.${colsDraftTrailers.TRAILER_MADE_YEAR_AT}`, HOMELESS_COLUMNS.DRAFT_TRAILER_MADE_YEAR_AT)
+        .field(`drt.${colsDraftTrailers.TRAILER_DANGER_CLASS_ID}`, HOMELESS_COLUMNS.DRAFT_TRAILER_DANGER_CLASS_ID)
+        .field(`drt.${colsDraftTrailers.TRAILER_VEHICLE_TYPE_ID}`, HOMELESS_COLUMNS.DRAFT_TRAILER_VEHICLE_TYPE_ID)
+        .field(`drt.${colsDraftTrailers.TRAILER_LOADING_METHODS}`, HOMELESS_COLUMNS.DRAFT_TRAILER_LOADING_METHODS)
+        .field(`drt.${colsDraftTrailers.TRAILER_WIDTH}`, HOMELESS_COLUMNS.DRAFT_TRAILER_WIDTH)
+        .field(`drt.${colsDraftTrailers.TRAILER_HEIGHT}`, HOMELESS_COLUMNS.DRAFT_TRAILER_HEIGHT)
+        .field(`drt.${colsDraftTrailers.TRAILER_LENGTH}`, HOMELESS_COLUMNS.DRAFT_TRAILER_LENGTH)
+        .field(`drt.${colsDraftTrailers.TRAILER_CARRYING_CAPACITY}`, HOMELESS_COLUMNS.DRAFT_TRAILER_CARRYING_CAPACITY)
+        .field(`dvt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.DRAFT_VEHICLE_TYPE_NAME)
+        .field(`ddc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DRAFT_DANGER_CLASS_NAME)
         .from(table.NAME, 't')
         .where(`t.${cols.COMPANY_ID} = '${companyId}'`)
         .where(`t.${cols.DELETED} = 'f'`)
@@ -110,6 +130,9 @@ const selectTrailersByCompanyIdPaginationSorting = (companyId, limit, offset, so
         .left_join(tableTrailersStateNumbers.NAME, 'tsn', `tsn.${colsTrailersStateNumbers.TRAILER_ID} = t.id`)
         .left_join(tableVehicleTypes.NAME, 'vt', `vt.id = t.${cols.TRAILER_VEHICLE_TYPE_ID}`)
         .left_join(tableDangerClasses.NAME, 'dc', `dc.id = t.${cols.TRAILER_DANGER_CLASS_ID}`)
+        .left_join(tableDraftTrailers.NAME, 'drt', `drt.${colsDraftTrailers.TRAILER_ID} = t.id`)
+        .left_join(tableVehicleTypes.NAME, 'dvt', `dvt.id = drt.${colsDraftTrailers.TRAILER_VEHICLE_TYPE_ID}`)
+        .left_join(tableDangerClasses.NAME, 'ddc', `ddc.id = drt.${colsDraftTrailers.TRAILER_DANGER_CLASS_ID}`)
         .order(sortColumn, asc)
         .limit(limit)
         .offset(offset)
@@ -171,6 +194,21 @@ const selectRecordByIdFull = id => squelPostgres
     .field(`vt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.VEHICLE_TYPE_NAME)
     .field(`dc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DANGER_CLASS_NAME)
     .field(`tsn.${colsTrailersStateNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
+    .field(`drt.${colsDraftTrailers.TRAILER_VIN}`, HOMELESS_COLUMNS.DRAFT_TRAILER_VIN)
+    .field(`drt.${colsDraftTrailers.TRAILER_STATE_NUMBER}`, HOMELESS_COLUMNS.DRAFT_TRAILER_STATE_NUMBER)
+    .field(`drt.${colsDraftTrailers.TRAILER_MARK}`, HOMELESS_COLUMNS.DRAFT_TRAILER_MARK)
+    .field(`drt.${colsDraftTrailers.TRAILER_MODEL}`, HOMELESS_COLUMNS.DRAFT_TRAILER_MODEL)
+    .field(`drt.${colsDraftTrailers.TRAILER_MADE_YEAR_AT}`, HOMELESS_COLUMNS.DRAFT_TRAILER_MADE_YEAR_AT)
+    .field(`drt.${colsDraftTrailers.TRAILER_DANGER_CLASS_ID}`, HOMELESS_COLUMNS.DRAFT_TRAILER_DANGER_CLASS_ID)
+    .field(`drt.${colsDraftTrailers.TRAILER_VEHICLE_TYPE_ID}`, HOMELESS_COLUMNS.DRAFT_TRAILER_VEHICLE_TYPE_ID)
+    .field(`drt.${colsDraftTrailers.TRAILER_LOADING_METHODS}`, HOMELESS_COLUMNS.DRAFT_TRAILER_LOADING_METHODS)
+    .field(`drt.${colsDraftTrailers.TRAILER_WIDTH}`, HOMELESS_COLUMNS.DRAFT_TRAILER_WIDTH)
+    .field(`drt.${colsDraftTrailers.TRAILER_HEIGHT}`, HOMELESS_COLUMNS.DRAFT_TRAILER_HEIGHT)
+    .field(`drt.${colsDraftTrailers.TRAILER_LENGTH}`, HOMELESS_COLUMNS.DRAFT_TRAILER_LENGTH)
+    .field(`drt.${colsDraftTrailers.TRAILER_CARRYING_CAPACITY}`, HOMELESS_COLUMNS.DRAFT_TRAILER_CARRYING_CAPACITY)
+    .field(`drt.${colsDraftTrailers.COMMENTS}`, colsDraftTrailers.COMMENTS)
+    .field(`dvt.${colsVehicleTypes.NAME}`, HOMELESS_COLUMNS.DRAFT_VEHICLE_TYPE_NAME)
+    .field(`ddc.${colsDangerClasses.NAME}`, HOMELESS_COLUMNS.DRAFT_DANGER_CLASS_NAME)
     .field(`ARRAY(${
         squelPostgres
             .select()
@@ -180,6 +218,16 @@ const selectRecordByIdFull = id => squelPostgres
             .left_join(tableTrailersFiles.NAME, 'tf', `tf.${colsTrailersFiles.FILE_ID} = f.id`)
             .toString()
     })`, HOMELESS_COLUMNS.FILES)
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(df.id, df.${colsDraftFiles.NAME}, df.${colsDraftFiles.LABELS}, df.${colsDraftFiles.URL}))`)
+            .from(tableDraftFiles.NAME, 'df')
+            .where(`drt.${colsDraftTrailers.TRAILER_ID} = '${id}'`)
+            .left_join(tableDraftTrailersFiles.NAME, 'dtf', `dtf.${colsDraftTrailersFiles.DRAFT_FILE_ID} = df.id`)
+            .left_join(tableDraftTrailers.NAME, 'drt', `drt.id = dtf.${colsDraftTrailersFiles.DRAFT_TRAILER_ID}`)
+            .toString()
+    })`, HOMELESS_COLUMNS.DRAFT_FILES)
     .from(table.NAME, 't')
     .where(`tsn.${colsTrailersStateNumbers.IS_ACTIVE} = 't'`)
     .where(`t.id = '${id}'`)
@@ -187,6 +235,9 @@ const selectRecordByIdFull = id => squelPostgres
     .left_join(tableVehicleTypes.NAME, 'vt', `vt.id = t.${cols.TRAILER_VEHICLE_TYPE_ID}`)
     .left_join(tableDangerClasses.NAME, 'dc', `dc.id = t.${cols.TRAILER_DANGER_CLASS_ID}`)
     .left_join(tableTrailersStateNumbers.NAME, 'tsn', `tsn.${colsTrailersStateNumbers.TRAILER_ID} = t.id`)
+    .left_join(tableDraftTrailers.NAME, 'drt', `drt.${colsDraftTrailers.TRAILER_ID} = t.id`)
+    .left_join(tableVehicleTypes.NAME, 'dvt', `dvt.id = drt.${colsDraftTrailers.TRAILER_VEHICLE_TYPE_ID}`)
+    .left_join(tableDangerClasses.NAME, 'ddc', `ddc.id = drt.${colsDraftTrailers.TRAILER_DANGER_CLASS_ID}`)
     .toString();
 
 const selectRecordByIdAndCompanyIdLight = (id, companyId) => squelPostgres

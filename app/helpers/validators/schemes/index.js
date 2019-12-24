@@ -287,6 +287,20 @@ const notRequiredFiles = {
     },
 };
 
+const rejectDraft = {
+    properties: {
+        [HOMELESS_COLUMNS.COMMENTS]: {
+            type: 'array',
+            minItems: 1,
+            uniqueItems: true,
+        },
+    },
+    required: [
+        HOMELESS_COLUMNS.COMMENTS,
+    ],
+    additionalProperties: false,
+};
+
 module.exports = {
     requiredUserId,
     requiredExistingUserWithIdAsync,
@@ -314,6 +328,7 @@ module.exports = {
     meOrIdRequiredIdParams,
     listFilesGroupParams,
     notRequiredFiles,
+    rejectDraft,
 
     ...SortingPaginationSchemes,
     ...FinishRegistrationSchemes,
