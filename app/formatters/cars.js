@@ -300,7 +300,7 @@ const formatCarFiles = data => {
 const formatDraftCarFiles = data => {
     const files = data[HOMELESS_COLUMNS.DRAFT_FILES];
     return files.map(file => {
-        const { f1, f2, f3, f4 } = file;
+        const {f1, f2, f3, f4} = file;
         return {
             id: f1,
             [colsDraftFiles.NAME]: f2,
@@ -308,6 +308,36 @@ const formatDraftCarFiles = data => {
             [colsDraftFiles.URL]: f4,
         };
     });
+};
+
+const formatRecordForSearch = car => {
+    let result = {
+        id: car.id,
+        [cols.CAR_MARK]: car[cols.CAR_MARK],
+        [cols.CAR_MODEL]: car[cols.CAR_MODEL],
+        [cols.CAR_TYPE]: car[cols.CAR_TYPE],
+        [cols.CAR_MADE_YEAR_AT]: car[cols.CAR_MADE_YEAR_AT],
+        [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
+        [cols.CREATED_AT]: car[cols.CREATED_AT],
+        [HOMELESS_COLUMNS.CAR_VERIFIED]: car[cols.VERIFIED],
+    };
+    if (car[HOMELESS_COLUMNS.TRAILER_ID]) {
+        result = {
+            ...result,
+            [HOMELESS_COLUMNS.TRAILER_ID]: car[HOMELESS_COLUMNS.TRAILER_ID],
+            [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: car[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
+            [HOMELESS_COLUMNS.TRAILER_VERIFIED]: car[HOMELESS_COLUMNS.TRAILER_VERIFIED],
+        };
+    }
+    return result;
+};
+
+const formatRecordForSearchResponse = (cars) => {
+    return cars.map(car => formatRecordForSearch(car));
+};
+
+const formatRecordForSearchAllResponse = (cars) => {
+    return cars.map(car => formatRecordForSearch(car));
 };
 
 const formatAvailableCars = cars => cars.map(car => formatAvailableCar(car));
@@ -378,4 +408,6 @@ module.exports = {
     formatRecordAsVerified,
     formatRecordAsNotShadow,
     formatRecordToUpdateFromDraft,
+    formatRecordForSearchAllResponse,
+    formatRecordForSearchResponse,
 };

@@ -666,6 +666,7 @@ const HOMELESS_COLUMNS = {
     TRAILER_VERIFIED: 'trailer_verified',
     TRAILER_SHADOW: 'trailer_shadow',
     KEYWORD: 'keyword',
+    SEARCH_ITEMS: 'search_items',
     DEALS: 'deals',
     DRAFT_EMAIL: 'draft_email',
     DRAFT_FULL_NAME: 'draft_full_name',
