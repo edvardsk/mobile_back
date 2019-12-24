@@ -231,7 +231,7 @@ const requiredExistingCargoAsync = {
     },
 };
 
-const searchCargoQuery = {
+const searchQuery = {
     properties: {
         [HOMELESS_COLUMNS.ZOOM]: {
             type: 'string',
@@ -299,6 +299,9 @@ const searchCargoQuery = {
             type: 'string',
             format: 'uuid',
         },
+        [HOMELESS_COLUMNS.SEARCH_ITEMS]: {
+            type: 'string',
+        },
         [HOMELESS_COLUMNS.SEARCH_RADIUS]: {
             type: 'string',
             pattern: DIGITS_VALIDATION_PATTERN,
@@ -352,7 +355,7 @@ const modifyStringValues = {
     },
 };
 
-const searchCargoAfterModifyingQuery = {
+const searchAfterModifyingQuery = {
     properties: {
         [HOMELESS_COLUMNS.ZOOM]: {
             type: 'number',
@@ -412,7 +415,7 @@ const searchCargoAfterModifyingQuery = {
     },
 };
 
-const searchCargoAsync = {
+const searchAsync = {
     $async: true,
     properties: {
         [colsCargos.DANGER_CLASS_ID]: {
@@ -424,7 +427,7 @@ const searchCargoAsync = {
     },
 };
 
-const searchAllCargosQuery = {
+const searchAllQuery = {
     type: 'object',
     properties: {
         [HOMELESS_COLUMNS.ZOOM]: {
@@ -444,11 +447,14 @@ const searchAllCargosQuery = {
             minLength: 2,
             maxLength: 10,
         },
+        [HOMELESS_COLUMNS.SEARCH_ITEMS]: {
+            type: 'string',
+        },
     },
     additionalProperties: false,
 };
 
-const searchAllCargosAfterModifyingQuery = {
+const searchAllAfterModifyingQuery = {
     properties: {
         [HOMELESS_COLUMNS.ZOOM]: {
             type: 'number',
@@ -468,9 +474,9 @@ module.exports = {
     requiredExistingCargoInCompanyAsyncFunc,
     requiredExistingCargoAsync,
     modifyStringValues,
-    searchCargoQuery,
-    searchCargoAfterModifyingQuery,
-    searchCargoAsync,
-    searchAllCargosQuery,
-    searchAllCargosAfterModifyingQuery,
+    searchQuery,
+    searchAfterModifyingQuery,
+    searchAsync,
+    searchAllQuery,
+    searchAllAfterModifyingQuery,
 };

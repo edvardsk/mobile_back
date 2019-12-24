@@ -1,7 +1,7 @@
 const express = require('express');
 const { ROUTES } = require('constants/routes');
 
-const getCargos = require('./cargos/get');
+const getCargosAndCars = require('./get');
 
 // middlewares
 const { validate } = require('api/middlewares/validator');
@@ -16,26 +16,25 @@ const ValidatorSchemes = require('helpers/validators/schemes');
 const router = express.Router();
 
 
-// cargos
 router.get(
-    ROUTES.SEARCH.CARGOS.BASE + ROUTES.SEARCH.CARGOS.GET,
-    validate(ValidatorSchemes.searchCargoQuery, 'query'),
+    ROUTES.SEARCH.GET,
+    validate(ValidatorSchemes.searchQuery, 'query'),
     validate(ValidatorSchemes.modifyStringValues, 'query'),
-    validate(ValidatorSchemes.searchCargoAfterModifyingQuery, 'query'),
-    validate(ValidatorSchemes.searchCargoAsync, 'query'),
+    validate(ValidatorSchemes.searchAfterModifyingQuery, 'query'),
+    validate(ValidatorSchemes.searchAsync, 'query'),
     injectNotRequiredUser,
     injectNotRequiredCompanyId,
-    getCargos.searchCargo,
+    getCargosAndCars.search,
 );
 
 router.get(
-    ROUTES.SEARCH.CARGOS.BASE + ROUTES.SEARCH.CARGOS.GET_ALL,
-    validate(ValidatorSchemes.searchAllCargosQuery, 'query'),
+    ROUTES.SEARCH.GET_ALL,
+    validate(ValidatorSchemes.searchAllQuery, 'query'),
     validate(ValidatorSchemes.modifyStringValues, 'query'),
-    validate(ValidatorSchemes.searchAllCargosAfterModifyingQuery, 'query'),
+    validate(ValidatorSchemes.searchAllAfterModifyingQuery, 'query'),
     injectNotRequiredUser,
     injectNotRequiredCompanyId,
-    getCargos.getAllNewCargos,
+    getCargosAndCars.searchAll,
 );
 
 module.exports = router;
