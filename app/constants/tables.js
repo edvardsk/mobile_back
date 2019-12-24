@@ -521,6 +521,26 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    CAR_POINTS: {
+        NAME: 'car_points',
+        COLUMNS: {
+            DEAL_ID: 'deal_id',
+            CAR_ID: 'car_id',
+            TRAILER_ID: 'trailer_id',
+            COORDINATES: 'coordinates',
+            CREATED_AT: 'created_at',
+        },
+    },
+    CAR_LATEST_POINTS: {
+        NAME: 'car_latest_points',
+        COLUMNS: {
+            DEAL_ID: 'deal_id',
+            CAR_ID: 'car_id',
+            TRAILER_ID: 'trailer_id',
+            COORDINATES: 'coordinates',
+            AVAILABILITY_TIME: 'availability_time',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
