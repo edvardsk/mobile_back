@@ -22,8 +22,6 @@ const {
 
 // services
 const DangerClassesService = require('./danger-classes');
-const CarPointsService = require('./car-points');
-const TablesService = require('./index');
 const DraftTrailersService = require('./draft-trailers');
 
 // constants
@@ -83,19 +81,13 @@ const markAsDeletedAsTransaction = id => [updateRecord(id, {
     [colsTrailers.DELETED]: true,
 }), OPERATIONS.ONE];
 
-const linkTrailerAndCar = async (trailerId, carId) => {
-    await TablesService.runTransaction(await CarPointsService.addPointOnLinking(carId, trailerId));
-    return editRecord(trailerId, {
-        [colsTrailers.CAR_ID]: carId,
-    });
-};
+const linkTrailerAndCar = async (trailerId, carId) => editRecordAsTransaction(trailerId, {
+    [colsTrailers.CAR_ID]: carId,
+});
 
-const unlinkTrailerFromCar = async id => {
-    await TablesService.runTransaction(await CarPointsService.addPointOnUninking(id));
-    return editRecord(id, {
-        [colsTrailers.CAR_ID]: null,
-    });
-};
+const unlinkTrailerFromCar = async id => editRecordAsTransaction(id, {
+    [colsTrailers.CAR_ID]: null,
+});
 
 const getAvailableTrailersPaginationSorting = (companyId, cargoDates, limit, offset, sortColumn, asc, filter) => (
     manyOrNone(selectAvailableTrailersByCompanyIdPaginationSorting(companyId, cargoDates, limit, offset, sortColumn, asc, filter))
