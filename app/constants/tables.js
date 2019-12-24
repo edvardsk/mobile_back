@@ -550,6 +550,34 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    DRAFT_TRAILERS: {
+        NAME: 'draft_trailers',
+        COLUMNS: {
+            TRAILER_ID: 'trailer_id',
+            TRAILER_VIN: 'trailer_vin',
+            TRAILER_STATE_NUMBER: 'trailer_state_number',
+            TRAILER_MARK: 'trailer_mark',
+            TRAILER_MODEL: 'trailer_model',
+            TRAILER_MADE_YEAR_AT: 'trailer_made_year_at',
+            TRAILER_LOADING_METHODS: 'trailer_loading_methods',
+            TRAILER_VEHICLE_TYPE_ID: 'trailer_vehicle_type_id',
+            TRAILER_DANGER_CLASS_ID: 'trailer_danger_class_id',
+            TRAILER_WIDTH: 'trailer_width',
+            TRAILER_HEIGHT: 'trailer_height',
+            TRAILER_LENGTH: 'trailer_length',
+            TRAILER_CARRYING_CAPACITY: 'trailer_carrying_capacity',
+            COMMENTS: 'comments',
+            CREATED_AT: 'created_at',
+        },
+    },
+    DRAFT_TRAILERS_TO_FILES: {
+        NAME: 'draft_trailers_to_files',
+        COLUMNS: {
+            DRAFT_TRAILER_ID: 'draft_trailer_id',
+            DRAFT_FILE_ID: 'draft_file_id',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
@@ -636,6 +664,7 @@ const HOMELESS_COLUMNS = {
     COUNTRY_CURRENCY_CODE: 'country_currency_code',
     CAR_VERIFIED: 'car_verified',
     TRAILER_VERIFIED: 'trailer_verified',
+    TRAILER_SHADOW: 'trailer_shadow',
     KEYWORD: 'keyword',
     SEARCH_ITEMS: 'search_items',
     DEALS: 'deals',
@@ -662,9 +691,24 @@ const HOMELESS_COLUMNS = {
     DRAFT_CAR_CARRYING_CAPACITY: 'draft_car_carrying_capacity',
     DRAFT_VEHICLE_TYPE_NAME: 'draft_vehicle_type_name',
     DRAFT_DANGER_CLASS_NAME: 'draft_danger_class_name',
+    DRAFT_TRAILER_DANGER_CLASS_NAME: 'draft_trailer_danger_class_name',
+    DRAFT_TRAILER_VEHICLE_TYPE_NAME: 'draft_trailer_vehicle_type_name',
     CAR_IS_DRAFT: 'car_is_draft',
     DRAFT_FILES: 'draft_files',
     COMMENTS: 'comments',
+    DRAFT_TRAILER_VIN: 'draft_trailer_vin',
+    DRAFT_TRAILER_STATE_NUMBER: 'draft_trailer_state_number',
+    DRAFT_TRAILER_MARK: 'draft_trailer_mark',
+    DRAFT_TRAILER_MODEL: 'draft_trailer_model',
+    DRAFT_TRAILER_MADE_YEAR_AT: 'draft_trailer_made_year_at',
+    DRAFT_TRAILER_DANGER_CLASS_ID: 'draft_trailer_danger_class_id',
+    DRAFT_TRAILER_VEHICLE_TYPE_ID: 'draft_trailer_vehicle_type_id',
+    DRAFT_TRAILER_LOADING_METHODS: 'draft_trailer_loading_methods',
+    DRAFT_TRAILER_WIDTH: 'draft_trailer_width',
+    DRAFT_TRAILER_HEIGHT: 'draft_trailer_height',
+    DRAFT_TRAILER_LENGTH: 'draft_trailer_length',
+    DRAFT_TRAILER_CARRYING_CAPACITY: 'draft_trailer_carrying_capacity',
+    TRAILER_IS_DRAFT: 'trailer_is_draft',
 };
 
 module.exports = {

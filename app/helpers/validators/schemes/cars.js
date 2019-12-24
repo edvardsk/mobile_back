@@ -464,11 +464,12 @@ const editTrailerFiles = {
     additionalProperties: false,
 };
 
-const editTrailerFilesCheckDangerClassAsyncFunc = ({ trailerId }) => ({
+const editTrailerFilesCheckDangerClassAsyncFunc = ({ trailerId, isControlRole }) => ({
     $async: true,
     properties: {
         [colsTrailers.TRAILER_DANGER_CLASS_ID]: {
             new_trailer_danger_class_without_or_extra_file: {
+                isControlRole,
                 trailerId,
             },
         },

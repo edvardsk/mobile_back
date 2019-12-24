@@ -475,7 +475,7 @@ router.put(
     validate(ValidatorSchemes.editTrailer),
     validate(({ requestParams }) => ValidatorSchemes.editTrailerAsyncFunc({ trailerId: requestParams.trailerId })),
     validate(ValidatorSchemes.editTrailerFiles, 'files'),
-    validate(({ requestParams }) => ValidatorSchemes.editTrailerFilesCheckDangerClassAsyncFunc({ trailerId: requestParams.trailerId}), ['body', 'files']),
+    validate(({ requestParams, isControlRole }) => ValidatorSchemes.editTrailerFilesCheckDangerClassAsyncFunc({ trailerId: requestParams.trailerId, isControlRole }), ['body', 'files']),
     validate(ValidatorSchemes.modifyEditCarTruckFloats),
     putTrailers.editTrailer,
 );

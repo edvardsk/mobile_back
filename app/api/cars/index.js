@@ -30,7 +30,7 @@ router.post(
     isHasPermissions([PERMISSIONS.VERIFY_DEAL_INSTANCE]),
     validate(ValidatorSchemes.requiredCarId, 'params'),
     validate(ValidatorSchemes.requiredExistingCarAsync, 'params'),
-    validate(ValidatorSchemes.rejectDraft, ),
+    validate(ValidatorSchemes.rejectDraft),
     postReject.rejectDraft,
 );
 

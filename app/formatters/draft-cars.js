@@ -9,7 +9,7 @@ const formatRecordToSave = (id, carId, body) => ({
     id,
     [cols.CAR_ID]: carId,
     [cols.CAR_VIN]: body[colsCars.CAR_VIN],
-    [cols.CAR_STATE_NUMBER]: body[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
+    [cols.CAR_STATE_NUMBER]: body[HOMELESS_COLUMNS.CAR_STATE_NUMBER].toUpperCase(),
     [cols.CAR_MARK]: body[colsCars.CAR_MARK],
     [cols.CAR_MODEL]: body[colsCars.CAR_MODEL],
     [cols.CAR_MADE_YEAR_AT]: body[colsCars.CAR_MADE_YEAR_AT],
@@ -26,7 +26,7 @@ const formatRecordToSave = (id, carId, body) => ({
 
 const formatRecordToEdit = (body) => ({
     [cols.CAR_VIN]: body[colsCars.CAR_VIN],
-    [cols.CAR_STATE_NUMBER]: body[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
+    [cols.CAR_STATE_NUMBER]: body[HOMELESS_COLUMNS.CAR_STATE_NUMBER].toUpperCase(),
     [cols.CAR_MARK]: body[colsCars.CAR_MARK],
     [cols.CAR_MODEL]: body[colsCars.CAR_MODEL],
     [cols.CAR_MADE_YEAR_AT]: body[colsCars.CAR_MADE_YEAR_AT],
