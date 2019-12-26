@@ -212,6 +212,39 @@ const formatRecordForResponse = (trailer, isControlRole) => {
     return result;
 };
 
+const formatRecordForUnauthorizedResponse = (trailer) => {
+    const result = {};
+
+    const carryingCapacity = trailer[cols.TRAILER_CARRYING_CAPACITY];
+    const length = trailer[cols.TRAILER_LENGTH];
+    const height = trailer[cols.TRAILER_HEIGHT];
+    const width = trailer[cols.TRAILER_WIDTH];
+
+    result.trailer = {
+        id: trailer.id,
+        [HOMELESS_COLUMNS.LINKED]: !!trailer[cols.CAR_ID],
+        [cols.TRAILER_MARK]: trailer[cols.TRAILER_MARK],
+        [cols.TRAILER_MODEL]: trailer[cols.TRAILER_MODEL],
+        [cols.TRAILER_VIN]: trailer[cols.TRAILER_VIN],
+        [cols.TRAILER_MADE_YEAR_AT]: trailer[cols.TRAILER_MADE_YEAR_AT],
+        [cols.TRAILER_LOADING_METHODS]: trailer[cols.TRAILER_LOADING_METHODS],
+        [cols.TRAILER_CARRYING_CAPACITY]: parseFloat(carryingCapacity),
+        [cols.TRAILER_LENGTH]: parseFloat(length),
+        [cols.TRAILER_HEIGHT]: parseFloat(height),
+        [cols.TRAILER_WIDTH]: parseFloat(width),
+        [HOMELESS_COLUMNS.VEHICLE_TYPE_NAME]: trailer[HOMELESS_COLUMNS.VEHICLE_TYPE_NAME],
+        [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: trailer[HOMELESS_COLUMNS.DANGER_CLASS_NAME],
+        [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: trailer[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
+        [cols.TRAILER_VEHICLE_TYPE_ID]: trailer[cols.TRAILER_VEHICLE_TYPE_ID],
+        [cols.TRAILER_DANGER_CLASS_ID]: trailer[cols.TRAILER_DANGER_CLASS_ID],
+        [cols.VERIFIED]: trailer[cols.VERIFIED],
+    };
+
+    result.files = formatTrailerFiles(trailer);
+
+    return result;
+};
+
 const formatTrailerFiles = data => {
     const files = data[HOMELESS_COLUMNS.FILES];
     return files.map(file => {
@@ -302,6 +335,7 @@ module.exports = {
     formatRecordForList,
     formatRecordForListAvailable,
     formatRecordForResponse,
+    formatRecordForUnauthorizedResponse,
     formatTrailerToEdit,
     formatShadowTrailersToSave,
     formatRecordAsNotVerified,
