@@ -1,4 +1,4 @@
-const  { one, manyOrNone } = require('db');
+const  { one, oneOrNone, manyOrNone } = require('db');
 
 // sql-helpers
 const {
@@ -15,10 +15,11 @@ const TrailersService = require('./trailers');
 const CargosService = require('./cargos');
 
 // constants
-const { HOMELESS_COLUMNS } = require('constants/tables');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
 const { OPERATIONS } = require('constants/postgres');
 const { LOADING_TYPES_MAP } = require('constants/cargos');
+const { FINISHED_STATUSES_LIST, ALLOWED_NEXT_STATUSES_MAP } = require('constants/deal-statuses');
 
 // helpers
 const { isValidUUID } = require('helpers/validators');
@@ -26,9 +27,14 @@ const { isValidUUID } = require('helpers/validators');
 // formatters
 const { formatCargoDates } = require('formatters/cargos');
 
+const cols = SQL_TABLES.DEALS.COLUMNS;
+const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
+
 const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MANY];
 
 const getRecordStrict = id => one(selectRecordById(id));
+
+const getRecord = id => oneOrNone(selectRecordById(id));
 
 const validateDealItems = async (arr, companyId, cargoLoadingType, userLanguageId) => {
     const availableDrivers = [];
@@ -89,10 +95,30 @@ const getCountDeals = (companyId, filter) => (
         .then(({ count }) => +count)
 );
 
+const checkOwnActiveDealExist = async (meta, dealId) => {
+    const deal = await getRecord(dealId);
+    const { companyId } = meta;
+    return !!deal &&
+        !FINISHED_STATUSES_LIST.includes(deal[HOMELESS_COLUMNS.DEAL_STATUS_NAME]) &&
+        (deal[cols.TRANSPORTER_COMPANY_ID] === companyId || deal[colsCargos.COMPANY_ID] === companyId);
+};
+
+const checkNextStatusAllowed = async (meta, dealId) => {
+    const deal = await getRecordStrict(dealId);
+
+    const prevStatus = deal[HOMELESS_COLUMNS.DEAL_STATUS_NAME];
+    const { nextStatus } = meta;
+
+    return ALLOWED_NEXT_STATUSES_MAP[prevStatus].has(nextStatus);
+};
+
 module.exports = {
     addRecordsAsTransaction,
     getRecordStrict,
     validateDealItems,
     getDealsPaginationSorting,
     getCountDeals,
+
+    checkOwnActiveDealExist,
+    checkNextStatusAllowed,
 };

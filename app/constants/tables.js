@@ -453,7 +453,17 @@ const SQL_TABLES = {
             NAME: 'name',
             PAY_CURRENCY_ID: 'pay_currency_id',
             PAY_VALUE: 'pay_value',
-            APPROVED: 'approved',
+            DEPARTURE_CUSTOMS_COUNTRY: 'departure_customs_country',
+            DEPARTURE_CUSTOMS_PERSON_FULL_NAME: 'departure_customs_person_full_name',
+            DEPARTURE_CUSTOMS_PERSON_FULL_PHONE_NUMBER: 'departure_customs_person_full_phone_number',
+            ARRIVAL_CUSTOMS_COUNTRY: 'arrival_customs_country',
+            ARRIVAL_CUSTOMS_PERSON_FULL_NAME: 'arrival_customs_person_full_name',
+            ARRIVAL_CUSTOMS_PERSON_FULL_PHONE_NUMBER: 'arrival_customs_person_full_phone_number',
+            TNVED_CODE_ID: 'tnved_code_id',
+            INVOICE_CURRENCY_ID: 'invoice_currency_id',
+            INVOICE_PRICE: 'invoice_price',
+            STANDARD_LOADING_TIME_HOURS: 'standard_loading_time_hours',
+            SPECIAL_REQUIREMENTS: 'special_requirements',
             CREATED_AT: 'created_at',
         },
     },
@@ -607,6 +617,17 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    DEAL_POINTS_INFO: {
+        NAME: 'deal_points_info',
+        COLUMNS: {
+            DEAL_ID: 'deal_id',
+            CARGO_POINT_ID: 'cargo_point_id',
+            POINT_ADDRESS: 'point_address',
+            POINT_PERSON_FULL_NAME: 'point_person_full_name',
+            POINT_PERSON_FULL_PHONE_NUMBER: 'point_person_full_phone_number',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
@@ -738,6 +759,7 @@ const HOMELESS_COLUMNS = {
     DRAFT_TRAILER_LENGTH: 'draft_trailer_length',
     DRAFT_TRAILER_CARRYING_CAPACITY: 'draft_trailer_carrying_capacity',
     TRAILER_IS_DRAFT: 'trailer_is_draft',
+    DEAL_STATUS_NAME: 'deal_status_name',
 };
 
 module.exports = {

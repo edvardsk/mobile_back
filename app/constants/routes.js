@@ -62,6 +62,8 @@ const BASES = {
     EXCHANGE_RATES: '/exchange-rates',
     VERIFY: '/verify',
     REJECT: '/reject',
+    STATUSES: '/statuses',
+    CONFIRMED: '/confirmed',
 };
 
 const IDS = {
@@ -76,6 +78,7 @@ const IDS = {
     TRAILER_ID: '/:trailerId',
     DRIVER_ID: '/:driverId',
     KEYWORD_ID: '/:keywordId',
+    DEAL_ID: '/:dealId',
 };
 
 const ROUTES = {
@@ -346,6 +349,13 @@ const ROUTES = {
             CARGOS: {
                 BASE: BASES.CARGOS,
                 POST: '',
+            },
+            STATUSES: {
+                BASE: IDS.DEAL_ID + BASES.STATUSES,
+                CONFIRMED: {
+                    BASE: BASES.CONFIRMED,
+                    POST: '',
+                },
             },
         },
     },
