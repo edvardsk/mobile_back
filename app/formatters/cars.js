@@ -246,7 +246,7 @@ const formatRecordForResponse = (car, isControlRole) => {
             [cols.CAR_VIN]: car[HOMELESS_COLUMNS.DRAFT_CAR_VIN] || car[cols.CAR_VIN],
             [cols.CAR_TYPE]: tempCarType,
             [cols.SHADOW]: car[cols.SHADOW],
-            [cols.CAR_MADE_YEAR_AT]: car[HOMELESS_COLUMNS.CAR_MADE_YEAR_AT] || car[cols.CAR_MADE_YEAR_AT],
+            [cols.CAR_MADE_YEAR_AT]: car[HOMELESS_COLUMNS.DRAFT_CAR_MADE_YEAR_AT] || car[cols.CAR_MADE_YEAR_AT],
             [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.DRAFT_CAR_STATE_NUMBER] || car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
             [cols.CREATED_AT]: car[cols.CREATED_AT],
             [cols.VERIFIED]: car[cols.VERIFIED],
