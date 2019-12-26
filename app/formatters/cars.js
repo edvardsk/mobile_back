@@ -296,6 +296,50 @@ const formatRecordForResponse = (car, isControlRole) => {
     return result;
 };
 
+const formatRecordForUnauthorizedResponse = (car) => {
+    const result = {};
+
+    result.car = {
+        id: car.id,
+        [cols.CAR_MARK]: car[cols.CAR_MARK],
+        [cols.CAR_MODEL]: car[cols.CAR_MODEL],
+        [cols.CAR_VIN]: car[cols.CAR_VIN],
+        [cols.CAR_TYPE]: car[cols.CAR_TYPE],
+        [cols.CAR_MADE_YEAR_AT]: car[cols.CAR_MADE_YEAR_AT],
+        [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
+        [cols.CREATED_AT]: car[cols.CREATED_AT],
+    };
+
+    if (car[cols.CAR_TYPE] === CAR_TYPES_MAP.TRUCK) {
+        const loadingMethods = car[cols.CAR_LOADING_METHODS];
+        const carryingCapacity = car[cols.CAR_CARRYING_CAPACITY];
+        const length = car[cols.CAR_LENGTH];
+        const height = car[cols.CAR_HEIGHT];
+        const width = car[cols.CAR_WIDTH];
+        const dangerClassId = car[cols.CAR_DANGER_CLASS_ID];
+        const vehicleTypeId = car[cols.CAR_VEHICLE_TYPE_ID];
+        const dangerClassName = car[HOMELESS_COLUMNS.DANGER_CLASS_NAME];
+        const vehicleTypeName = car[HOMELESS_COLUMNS.VEHICLE_TYPE_NAME];
+
+        result.car = {
+            ...result.car,
+            [cols.CAR_LOADING_METHODS]: loadingMethods,
+            [cols.CAR_CARRYING_CAPACITY]: parseFloat(carryingCapacity),
+            [cols.CAR_LENGTH]: parseFloat(length),
+            [cols.CAR_HEIGHT]: parseFloat(height),
+            [cols.CAR_WIDTH]: parseFloat(width),
+            [cols.CAR_DANGER_CLASS_ID]: dangerClassId,
+            [cols.CAR_VEHICLE_TYPE_ID]: vehicleTypeId,
+            [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: dangerClassName,
+            [HOMELESS_COLUMNS.VEHICLE_TYPE_NAME]: vehicleTypeName,
+        };
+    }
+
+    result.files = formatCarFiles(car);
+
+    return result;
+};
+
 const formatCarFiles = data => {
     const files = data[HOMELESS_COLUMNS.FILES];
     return files.map(file => {
@@ -505,6 +549,7 @@ module.exports = {
     formatCarToEdit,
     formatRecordForList,
     formatRecordForResponse,
+    formatRecordForUnauthorizedResponse,
     formatAvailableCars,
     formatRecordForListAvailable,
     formatShadowCarsToSave,
