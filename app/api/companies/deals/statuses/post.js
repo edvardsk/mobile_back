@@ -1,28 +1,62 @@
 const { success, reject } = require('api/response');
 
 // services
-// const DealsService = require('services/tables/deals');
+const DealsService = require('services/tables/deals');
+const CargoPointsService = require('services/tables/cargo-points');
 
 // constants
-const { HOMELESS_COLUMNS } = require('constants/tables');
-const { ROLES } = require('constants/system');
+const { SQL_TABLES } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
+
+// formatters
+const DealsFormatters = require('formatters/deals');
+const CargoPointsFormatters = require('formatters/cargo-points');
+
+const colsDeals = SQL_TABLES.DEALS.COLUMNS;
+const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 
 const setConfirmedStatus = async (req, res, next) => {
     try {
         const { company } = res.locals;
+        const { body } = req;
+        const { dealId } = req.params;
 
-        const headCompanyRole = company[HOMELESS_COLUMNS.HEAD_ROLE_NAME];
+        const deal = await DealsService.getRecordStrict(dealId);
 
-        if (headCompanyRole === ROLES.TRANSPORTER) {
+        const transporterCompanyId = deal[colsDeals.TRANSPORTER_COMPANY_ID];
+        const holderCompanyId = deal[colsCargos.COMPANY_ID];
 
+        if (transporterCompanyId === company.id) {
+            // todo: add driver after using forwarder role
+        } else if (holderCompanyId === company.id) {
+            const cargoId = deal[colsDeals.CARGO_ID];
+            const cargoPoints = await CargoPointsService.getRecordsByCargoId(cargoId);
 
-        } else if (headCompanyRole === ROLES.HOLDER) {
+            const [uploadingPointsInfo, downloadingPointsInfo] = DealsFormatters.separatePointsInConfirmedRequest(body);
+
+            const [uploadingPoints, downloadingPoints] = CargoPointsFormatters.separatePointsByType(cargoPoints);
+
+            const invalidUploadingPoints = uploadingPoints.filter(point => {
+                const pointInfo = uploadingPointsInfo[point.id];
+                return !pointInfo || Object.keys(pointInfo).length !== 3;
+            });
+
+            if (invalidUploadingPoints.length) {
+                return reject(res, ERRORS.DEALS.INVALID_UPLOADING_POINTS_INFO);
+            }
+
+            const invalidDownloadingPoints = downloadingPoints.filter(point => {
+                const pointInfo = downloadingPointsInfo[point.id];
+                return !pointInfo || Object.keys(pointInfo).length !== 3;
+            });
+
+            if (invalidDownloadingPoints.length) {
+                return reject(res, ERRORS.DEALS.INVALID_DOWNLOADING_POINTS_INFO);
+            }
 
         } else {
             return reject(res, ERRORS.SYSTEM.ERROR);
         }
-
 
         return success(res, {});
     } catch (error) {

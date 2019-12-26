@@ -500,6 +500,7 @@ const validateChangeDealStatus = (nextStatus) => async (req, res, next) => {
                 }
 
             } else if (holderCompanyId === company.id) {
+                // body
                 scheme = ValidatorSchemes.validateNextStepConfirmedHolder;
                 let validate = ajv.compile(scheme);
                 let isValidData = validate(data);
@@ -508,6 +509,7 @@ const validateChangeDealStatus = (nextStatus) => async (req, res, next) => {
                     return reject(res, ERRORS.VALIDATION.ERROR, validate.errors);
                 }
 
+                // files
                 scheme = ValidatorSchemes.validateNextStepConfirmedHolderFiles;
                 validate = ajv.compile(scheme);
                 isValidData = validate(req.files);
@@ -516,6 +518,7 @@ const validateChangeDealStatus = (nextStatus) => async (req, res, next) => {
                     return reject(res, ERRORS.VALIDATION.ERROR, validate.errors);
                 }
 
+                // files with body
                 scheme = ValidatorSchemes.validateNextStepConfirmedHolderBodyWithFiles;
                 validate = ajv.compile(scheme);
                 isValidData = validate({
@@ -527,10 +530,10 @@ const validateChangeDealStatus = (nextStatus) => async (req, res, next) => {
                     return reject(res, ERRORS.VALIDATION.ERROR, validate.errors);
                 }
 
+                // body async
                 scheme = ValidatorSchemes.validateNextStepConfirmedHolderAsync;
                 validate = ajv.compile(scheme);
                 isValidData = validate(data);
-
                 try {
                     await isValidData;
                 } catch (error) {

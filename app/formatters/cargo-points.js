@@ -26,7 +26,18 @@ const formatRecordToSave = record => ({
     [cols.TYPE]: record[cols.TYPE],
 });
 
+const separatePointsByType = points => points.reduce((acc, point) => {
+    const [uploadingPoints, downloadingPoints] = acc;
+    if (point[cols.TYPE] === POINT_TYPES.UPLOAD) {
+        uploadingPoints.push(point);
+    } else {
+        downloadingPoints.push(point);
+    }
+    return acc;
+}, [[], []]);
+
 module.exports = {
     formatRecordsWithName,
     formatRecordsToSave,
+    separatePointsByType,
 };

@@ -1,4 +1,5 @@
 const uuid = require('uuid/v4');
+const { set } = require('lodash');
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
@@ -124,7 +125,19 @@ const formatRecordForList = (deal, userLanguageId) => {
     };
 };
 
+const separatePointsInConfirmedRequest = body => Object.keys(body).reduce((acc, key) => {
+    const [uploadingPoints, downloadingPoints] = acc;
+    const keySplit = key.split('.');
+    if (keySplit[0] === HOMELESS_COLUMNS.UPLOADING_POINT) {
+        set(uploadingPoints, `${keySplit[1]}.${keySplit[2]}`, body[key]);
+    } else if (keySplit[0] === HOMELESS_COLUMNS.DOWNLOADING_POINT) {
+        set(downloadingPoints, `${keySplit[1]}.${keySplit[2]}`, body[key]);
+    }
+    return acc;
+}, [{}, {}]);
+
 module.exports = {
     formatAllInstancesToSave,
     formatRecordForList,
+    separatePointsInConfirmedRequest,
 };

@@ -90,6 +90,8 @@ const ERRORS = {
         CAR_STATE_NUMBER_EXISTS: 'deals.car_state_number_exists',
         TRAILER_STATE_NUMBER_EXISTS: 'deals.trailer_state_number_exists',
         INVALID_CAR_WITH_TRAILER_JOIN: 'deals.invalid_car_with_trailer_join',
+        INVALID_UPLOADING_POINTS_INFO: 'deals.invalid_uploading_points_info',
+        INVALID_DOWNLOADING_POINTS_INFO: 'deals.invalid_downloading_points_info',
     },
     VERIFY: {
         ALREADY_VERIFIED: 'verify.already_verified',
