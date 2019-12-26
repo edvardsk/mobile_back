@@ -59,7 +59,7 @@ const addPointOnLinking = async (carId, trailerId) => {
     return result;
 };
 
-const addPointOnUninking = async (trailerId) => {
+const addPointOnUnlinking = async (trailerId) => {
     const previousPoint = await getRecordByTrailerId(trailerId);
     const newPoint = formatRecordToSave(
         uuid(),
@@ -91,5 +91,5 @@ module.exports = {
     addRecordAsTransaction,
     getRecordByCarId,
     addPointOnLinking,
-    addPointOnUninking,
+    addPointOnUnlinking,
 };

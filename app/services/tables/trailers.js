@@ -22,8 +22,6 @@ const {
 
 // services
 const DangerClassesService = require('./danger-classes');
-const CarPointsService = require('./car-points');
-const TablesService = require('./index');
 const DraftTrailersService = require('./draft-trailers');
 
 // constants
@@ -83,19 +81,13 @@ const markAsDeletedAsTransaction = id => [updateRecord(id, {
     [colsTrailers.DELETED]: true,
 }), OPERATIONS.ONE];
 
-const linkTrailerAndCar = async (trailerId, carId) => {
-    await TablesService.runTransaction(await CarPointsService.addPointOnLinking(carId, trailerId));
-    return editRecord(trailerId, {
-        [colsTrailers.CAR_ID]: carId,
-    });
-};
+const linkTrailerAndCar = async (trailerId, carId) => editRecordAsTransaction(trailerId, {
+    [colsTrailers.CAR_ID]: carId,
+});
 
-const unlinkTrailerFromCar = async id => {
-    await TablesService.runTransaction(await CarPointsService.addPointOnUninking(id));
-    return editRecord(id, {
-        [colsTrailers.CAR_ID]: null,
-    });
-};
+const unlinkTrailerFromCar = async id => editRecordAsTransaction(id, {
+    [colsTrailers.CAR_ID]: null,
+});
 
 const getAvailableTrailersPaginationSorting = (companyId, cargoDates, limit, offset, sortColumn, asc, filter) => (
     manyOrNone(selectAvailableTrailersByCompanyIdPaginationSorting(companyId, cargoDates, limit, offset, sortColumn, asc, filter))
@@ -163,17 +155,36 @@ const checkIsPassedFileWithNewDangerClass = async (meta, newDangerClassId, schem
 
     const trailer = await getRecordStrict(trailerId);
 
+    const isShadow = trailer[colsTrailers.SHADOW];
+
+
     let oldDangerClassId;
     if (!isControlRole) {
         const draftTrailer = await DraftTrailersService.getRecordByTrailerId(trailerId);
         if (draftTrailer) {
             oldDangerClassId = draftTrailer[colsDraftTrailers.TRAILER_DANGER_CLASS_ID];
+        } else if (isShadow) {
+            const newDangerClass = await DangerClassesService.getRecordStrict(newDangerClassId);
+            const newDangerClassName = newDangerClass[colsDangerClasses.NAME];
+            return (
+                (isDangerous(newDangerClassName) && dangerClassFile) ||
+                (!isDangerous(newDangerClassName) && !dangerClassFile)
+            );
         } else {
             oldDangerClassId = trailer[colsTrailers.TRAILER_DANGER_CLASS_ID];
         }
 
     } else {
-        oldDangerClassId = trailer[colsTrailers.TRAILER_DANGER_CLASS_ID];
+        if (isShadow) {
+            const newDangerClass = await DangerClassesService.getRecordStrict(newDangerClassId);
+            const newDangerClassName = newDangerClass[colsDangerClasses.NAME];
+            return (
+                (isDangerous(newDangerClassName) && dangerClassFile) ||
+                (!isDangerous(newDangerClassName) && !dangerClassFile)
+            );
+        } else {
+            oldDangerClassId = trailer[colsTrailers.TRAILER_DANGER_CLASS_ID];
+        }
     }
 
     const [oldDangerClass, newDangerClass] = await Promise.all([

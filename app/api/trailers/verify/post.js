@@ -97,14 +97,14 @@ const verifyTrailer = async (req, res, next) => {
             const oldDangerClassId = trailer[colsTrailers.TRAILER_DANGER_CLASS_ID];
 
             const [oldDangerClass, newDangerClass] = await Promise.all([
-                DangerClassesService.getRecord(oldDangerClassId),
+                oldDangerClassId && DangerClassesService.getRecord(oldDangerClassId),
                 DangerClassesService.getRecord(newDangerClassId),
             ]);
 
-            const oldDangerClassName = oldDangerClass[colsDangerClasses.NAME];
+            const oldDangerClassName = oldDangerClass && oldDangerClass[colsDangerClasses.NAME];
             const newDangerClassName = newDangerClass[colsDangerClasses.NAME];
 
-            if (isDangerous(oldDangerClassName) && !isDangerous(newDangerClassName)) { // remove old file with danger class
+            if (!trailer[colsTrailers.SHADOW] && isDangerous(oldDangerClassName) && !isDangerous(newDangerClassName)) { // remove old file with danger class
                 const filesToDelete = await FilesService.getFilesByTrailerIdAndLabels(trailerId, [DOCUMENTS.DANGER_CLASS]);
 
                 if (filesToDelete.length) {

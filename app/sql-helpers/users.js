@@ -229,6 +229,7 @@ const selectUsersByCompanyIdAndDriverRolePaginationSorting = (companyId, limit, 
         .field(`d.${colsDrivers.DRIVER_LICENCE_REGISTERED_AT}`)
         .field(`d.${colsDrivers.DRIVER_LICENCE_EXPIRED_AT}`)
         .field(`d.${colsDrivers.VERIFIED}`, colsDrivers.VERIFIED)
+        .field(`d.${colsDrivers.SHADOW}`, colsDrivers.SHADOW)
         .field(`dd.${colsDraftDrivers.EMAIL}`, HOMELESS_COLUMNS.DRAFT_EMAIL)
         .field(`dd.${colsDraftDrivers.FULL_NAME}`, HOMELESS_COLUMNS.DRAFT_FULL_NAME)
         .field(`dd.${colsDraftDrivers.DRIVER_LICENCE_REGISTERED_AT}`, HOMELESS_COLUMNS.DRAFT_DRIVER_LICENCE_REGISTERED_AT)

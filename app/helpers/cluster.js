@@ -52,6 +52,29 @@ const clusterizeItems = (items, query) => {
     return clusters;
 };
 
+
+const mapCargoForClustering = (cargo) => {
+    return {
+        coords: [
+            cargo[HOMELESS_COLUMNS.UPLOADING_POINTS][0][HOMELESS_COLUMNS.LONGITUDE],
+            cargo[HOMELESS_COLUMNS.UPLOADING_POINTS][0][HOMELESS_COLUMNS.LATITUDE]
+        ],
+        id: cargo.id,
+    };
+};
+
+const mapCarForClustering = (car) => {
+    return {
+        coords: [
+            car[HOMELESS_COLUMNS.COORDINATES][0][HOMELESS_COLUMNS.LONGITUDE],
+            car[HOMELESS_COLUMNS.COORDINATES][0][HOMELESS_COLUMNS.LATITUDE]
+        ],
+        id: car.id,
+    };
+};
+
 module.exports = {
     clusterizeItems,
+    mapCargoForClustering,
+    mapCarForClustering,
 };
