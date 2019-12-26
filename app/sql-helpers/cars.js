@@ -3,7 +3,7 @@ const { get } = require('lodash');
 const { CAR_TYPES_MAP } = require('constants/cars');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SqlArray } = require('constants/instances');
-const { FINISHED_STATUSES_LIST, DEAL_STATUSES_MAP, SEARCHABLE_STATUSES_LIST } = require('constants/deal-statuses');
+const { FINISHED_STATUSES_LIST, DEAL_STATUSES_MAP } = require('constants/deal-statuses');
 
 const squelPostgres = squel.useFlavour('postgres');
 
@@ -23,6 +23,7 @@ const tableDraftCars = SQL_TABLES.DRAFT_CARS;
 const tableDraftCarsFiles = SQL_TABLES.DRAFT_CARS_TO_FILES;
 const tableDraftFiles = SQL_TABLES.DRAFT_FILES;
 const tableDraftTrailers = SQL_TABLES.DRAFT_TRAILERS;
+const tableCarLatestPoints = SQL_TABLES.CAR_LATEST_POINTS;
 
 const cols = table.COLUMNS;
 const colsCarsStateNumbers = tableCarsStateNumbers.COLUMNS;
@@ -40,6 +41,7 @@ const colsDraftCars = tableDraftCars.COLUMNS;
 const colsDraftCarsFiles = tableDraftCarsFiles.COLUMNS;
 const colsDraftFiles = tableDraftFiles.COLUMNS;
 const colsDraftTrailers = tableDraftTrailers.COLUMNS;
+const colsCarLatestPoints = tableCarLatestPoints.COLUMNS;
 
 squelPostgres.registerValueHandler(SqlArray, function(value) {
     return value.toString();
@@ -164,7 +166,7 @@ const selectCarsByCompanyIdPaginationSorting = (companyId, limit, offset, sortCo
         .toString();
 };
 
-const selectRecordsForSearch = (companyId, showMyCars, filteringObject) => {
+const selectRecordsForSearch = ({ upGeo }, companyId, showMyCars, searchRadius, filteringObject) => {
     let expression = squelPostgres
         .select()
         .field('c.*')
@@ -183,6 +185,36 @@ const selectRecordsForSearch = (companyId, showMyCars, filteringObject) => {
         .field(`t.${colsTrailers.VERIFIED}`, HOMELESS_COLUMNS.TRAILER_VERIFIED)
         .field(`tsn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
         .field(`csn.${colsCarsStateNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
+        .field(`ARRAY(${
+            squelPostgres
+                .select()
+                .field(`row_to_json(row(
+                  d.id, ds.${colsDealsStatuses.NAME}, crg.${colsCargos.UPLOADING_DATE_FROM}, crg.${colsCargos.DOWNLOADING_DATE_TO}
+                ))`)
+                .from(tableDeals.NAME, 'd')
+                .where(`d.${colsDeals.CAR_ID} = c.id`)
+                .where('dsh.id IS NULL OR dsh.id = ?', squelPostgres
+                    .select()
+                    .field('hdsh.id')
+                    .from(tableDealsStatusesHistory.NAME, 'hdsh')
+                    .where(`hdsh.${colsDealsStatusesHistory.DEAL_ID} = d.id`)
+                    .order(colsDealsStatusesHistory.CREATED_AT, false)
+                    .limit(1)
+                )
+                .left_join(tableCargos.NAME, 'crg', `crg.id = d.${colsDeals.CARGO_ID}`)
+                .left_join(tableDealsStatusesHistory.NAME, 'dsh', `dsh.${colsDealsStatusesHistory.DEAL_ID} = d.id`)
+                .left_join(tableDealsStatuses.NAME, 'ds', `ds.id = dsh.${colsDealsStatusesHistory.DEAL_STATUS_ID}`)
+                .toString()
+        })`, HOMELESS_COLUMNS.DEALS)
+        .field(`ARRAY(${
+            squelPostgres
+                .select()
+                .field(`ST_AsText(cp.${colsCarLatestPoints.COORDINATES})`)
+                .from(tableCarLatestPoints.NAME, 'cp')
+                .where(`cp.${colsCarLatestPoints.CAR_ID} = c.id`)
+                .where(`ST_Distance(${upGeo}, cp.${colsCarLatestPoints.COORDINATES}) <= ${searchRadius * 1000}`)
+                .toString()
+        })`, HOMELESS_COLUMNS.COORDINATES)
         .from(table.NAME, 'c')
         .where(`csn.${colsCarsStateNumbers.IS_ACTIVE} = 't'`)
         .where(`tsn.${colsTrailersNumbers.IS_ACTIVE} = 't' OR c.${cols.CAR_TYPE} = '${CAR_TYPES_MAP.TRUCK}'`);
@@ -193,7 +225,6 @@ const selectRecordsForSearch = (companyId, showMyCars, filteringObject) => {
     }
 
     setCarsWithTrailersSearchFilter(expression, filteringObject);
-    setCarNotInActiveDealFilter(expression);
 
     return expression
         .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = c.id`)
@@ -263,6 +294,35 @@ const selectAllNewRecordsForSearch = (companyId, showMyCars) => {
         .field(`t.${colsTrailers.VERIFIED}`, HOMELESS_COLUMNS.TRAILER_VERIFIED)
         .field(`tsn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
         .field(`csn.${colsCarsStateNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
+        .field(`ARRAY(${
+            squelPostgres
+                .select()
+                .field(`row_to_json(row(
+                  d.id, ds.${colsDealsStatuses.NAME}, crg.${colsCargos.UPLOADING_DATE_FROM}, crg.${colsCargos.UPLOADING_DATE_TO}, crg.${colsCargos.DOWNLOADING_DATE_FROM}, crg.${colsCargos.DOWNLOADING_DATE_TO}
+                ))`)
+                .from(tableDeals.NAME, 'd')
+                .where(`d.${colsDeals.CAR_ID} = c.id`)
+                .where('dsh.id IS NULL OR dsh.id = ?', squelPostgres
+                    .select()
+                    .field('hdsh.id')
+                    .from(tableDealsStatusesHistory.NAME, 'hdsh')
+                    .where(`hdsh.${colsDealsStatusesHistory.DEAL_ID} = d.id`)
+                    .order(colsDealsStatusesHistory.CREATED_AT, false)
+                    .limit(1)
+                )
+                .left_join(tableCargos.NAME, 'crg', `crg.id = d.${colsDeals.CARGO_ID}`)
+                .left_join(tableDealsStatusesHistory.NAME, 'dsh', `dsh.${colsDealsStatusesHistory.DEAL_ID} = d.id`)
+                .left_join(tableDealsStatuses.NAME, 'ds', `ds.id = dsh.${colsDealsStatusesHistory.DEAL_STATUS_ID}`)
+                .toString()
+        })`, HOMELESS_COLUMNS.DEALS)
+        .field(`ARRAY(${
+            squelPostgres
+                .select()
+                .field(`ST_AsText(cp.${colsCarLatestPoints.COORDINATES})`)
+                .from(tableCarLatestPoints.NAME, 'cp')
+                .where(`cp.${colsCarLatestPoints.CAR_ID} = c.id`)
+                .toString()
+        })`, HOMELESS_COLUMNS.COORDINATES)
         .from(table.NAME, 'c')
         .where(`csn.${colsCarsStateNumbers.IS_ACTIVE} = 't'`)
         .where(`tsn.${colsTrailersNumbers.IS_ACTIVE} = 't' OR c.${cols.CAR_TYPE} = '${CAR_TYPES_MAP.TRUCK}'`);
@@ -271,8 +331,6 @@ const selectAllNewRecordsForSearch = (companyId, showMyCars) => {
         expression
             .where(`c.${cols.COMPANY_ID} ${showMyCars ? '=' : '<>'} '${companyId}'`);
     }
-
-    setCarNotInActiveDealFilter(expression);
 
     return expression
         .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = c.id`)
@@ -456,31 +514,6 @@ const selectCountAvailableCarsByCompanyId = (companyId, cargoDates, filter) => {
         .left_join(tableTrailers.NAME, 't', `t.${colsTrailers.CAR_ID} = c.id`)
         .left_join(tableTrailersNumbers.NAME, 'tsn', `tsn.${colsTrailersNumbers.TRAILER_ID} = t.id`)
         .toString();
-};
-
-const setCarNotInActiveDealFilter = (expression) => {
-    expression.where('c.id in ?', squelPostgres
-        .select()
-        .field('DISTINCT(c2.id)')
-        .from(table.NAME, 'c2')
-        .where(`c2.${cols.DELETED} = 'f'`)
-        .where('dsh.id IS NULL OR dsh.id = ?', squelPostgres
-            .select()
-            .field('hdsh.id')
-            .from(tableDealsStatusesHistory.NAME, 'hdsh')
-            .where(`hdsh.${colsDealsStatusesHistory.DEAL_ID} = d.id`)
-            .order(colsDealsStatusesHistory.CREATED_AT, false)
-            .limit(1)
-        )
-        .where(`dsh.id IS NULL OR dsh.${colsDealsStatusesHistory.DEAL_STATUS_ID} IN ?`, squelPostgres
-            .select()
-            .field('ds.id')
-            .from(tableDealsStatuses.NAME, 'ds')
-            .where(`ds.${colsDealsStatuses.NAME} IN ?`, SEARCHABLE_STATUSES_LIST)
-        )
-        .left_join(tableDeals.NAME, 'd', `d.${colsDeals.CAR_ID} = c2.id`)
-        .left_join(tableDealsStatusesHistory.NAME, 'dsh', `dsh.${colsDealsStatusesHistory.DEAL_ID} = d.id`)
-    );
 };
 
 const setAvailableCarsForDealFilter = (expression, cargoDates, companyId) => {
