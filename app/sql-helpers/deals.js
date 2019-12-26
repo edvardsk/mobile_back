@@ -12,6 +12,7 @@ const tablePoints = SQL_TABLES.POINTS;
 const tableTranslations = SQL_TABLES.POINT_TRANSLATIONS;
 const tableDealStatuses = SQL_TABLES.DEAL_STATUSES;
 const tableDealHistory = SQL_TABLES.DEAL_HISTORY_STATUSES;
+const tableDealHistoryConfirmations = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATIONS;
 
 const cols = table.COLUMNS;
 const colsCargos = tableCargos.COLUMNS;
@@ -20,6 +21,7 @@ const colsPoints = tablePoints.COLUMNS;
 const colsTranslations = tableTranslations.COLUMNS;
 const colsDealStatuses = tableDealStatuses.COLUMNS;
 const colsDealHistory = tableDealHistory.COLUMNS;
+const colsDealHistoryConfirmations = tableDealHistoryConfirmations.COLUMNS;
 
 const insertRecords = values => squelPostgres
     .insert()
@@ -144,11 +146,14 @@ const selectRecordById = id => squelPostgres
     .field('d.*')
     .field(`c.${colsCargos.COMPANY_ID}`)
     .field(`ds.${colsDealStatuses.NAME}`, HOMELESS_COLUMNS.DEAL_STATUS_NAME)
+    .field(`dsc.${colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER}`, colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER)
+    .field(`dsc.${colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER}`, colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER)
     .from(table.NAME, 'd')
     .where(`d.id = '${id}'`)
     .left_join(tableCargos.NAME, 'c', `c.id = d.${cols.CARGO_ID}`)
     .left_join(tableDealHistory.NAME, 'dh', `dh.${colsDealHistory.DEAL_ID} = d.id`)
     .left_join(tableDealStatuses.NAME, 'ds', `ds.id = dh.${colsDealHistory.DEAL_STATUS_ID}`)
+    .left_join(tableDealHistoryConfirmations.NAME, 'dsc', `dsc.${colsDealHistoryConfirmations.DEAL_STATUS_HISTORY_ID} = dh.id`)
     .order(`dh.${colsDealHistory.CREATED_AT}`, false)
     .limit(1)
     .toString();

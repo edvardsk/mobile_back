@@ -44,6 +44,7 @@ const ValidatorSchemes = require('helpers/validators/schemes');
 
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
+const colsDealsStatusesConfirmations = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATIONS.COLUMNS;
 
 const yearRegex = /^[0-9]{1,4}$/;
 
@@ -490,7 +491,18 @@ const validateChangeDealStatus = (nextStatus) => async (req, res, next) => {
 
         switch (nextStatus) {
         case DEAL_STATUSES_MAP.CONFIRMED: {
+
+            const confirmedByTransporter = deal[colsDealsStatusesConfirmations.CONFIRMED_BY_TRANSPORTER];
+            const confirmedByHolder = deal[colsDealsStatusesConfirmations.CONFIRMED_BY_HOLDER];
+
+            if (confirmedByTransporter === null || confirmedByHolder === null) {
+                return reject(res, ERRORS.SYSTEM.ERROR);
+            }
+
             if (transporterCompanyId === company.id) {
+                if (confirmedByTransporter) {
+                    return reject(res, ERRORS.DEALS.STEP_ALREADY_CONFIRMED_BY_THIS_ROLE);
+                }
                 scheme = ValidatorSchemes.validateNextStepConfirmedTransporter;
                 const validate = ajv.compile(scheme);
                 const isValidData = validate(data);
@@ -500,6 +512,10 @@ const validateChangeDealStatus = (nextStatus) => async (req, res, next) => {
                 }
 
             } else if (holderCompanyId === company.id) {
+                if (confirmedByHolder) {
+                    return reject(res, ERRORS.DEALS.STEP_ALREADY_CONFIRMED_BY_THIS_ROLE);
+                }
+
                 // body
                 scheme = ValidatorSchemes.validateNextStepConfirmedHolder;
                 let validate = ajv.compile(scheme);

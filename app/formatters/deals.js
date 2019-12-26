@@ -13,6 +13,7 @@ const { formatGeoPoints } = require('./cargos');
 
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
 const colsDealStatuses = SQL_TABLES.DEAL_HISTORY_STATUSES.COLUMNS;
+const colsDealStatusesConfirmation = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATIONS.COLUMNS;
 const colsCargo = SQL_TABLES.CARGOS.COLUMNS;
 
 const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, companyId, initiatorId, dealStatusId) => {
@@ -21,7 +22,7 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
     const generatedTrailerId = uuid();
 
     return arr.reduce((acc, item, i) => {
-        const [deals, dealHistory, newDrivers, newCars, newTrailers, editTrailers] = acc;
+        const [deals, dealHistory, dealStatusHistoryConfirmations, newDrivers, newCars, newTrailers, editTrailers] = acc;
         const cargoId = item[HOMELESS_COLUMNS.CARGO_ID];
         const driverIdOrData = item[HOMELESS_COLUMNS.DRIVER_ID_OR_DATA];
         const carIdOrData = item[HOMELESS_COLUMNS.CAR_ID_OR_DATA];
@@ -88,13 +89,22 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
             [colsDeals.NAME]: item[colsDeals.NAME] || null,
         });
 
+        const dealHistoryId = uuid();
         dealHistory.push({
+            id: dealHistoryId,
             [colsDealStatuses.DEAL_ID]: dealId,
             [colsDealStatuses.INITIATOR_ID]: initiatorId,
             [colsDealStatuses.DEAL_STATUS_ID]: dealStatusId,
         });
+
+        dealStatusHistoryConfirmations.push({
+            [colsDealStatusesConfirmation.DEAL_STATUS_HISTORY_ID]: dealHistoryId,
+            [colsDealStatusesConfirmation.CONFIRMED_BY_TRANSPORTER]: true, // todo: false for FORWARDER
+            [colsDealStatusesConfirmation.CONFIRMED_BY_HOLDER]: false,
+        });
+
         return acc;
-    }, [[], [], [], [], [], []]);
+    }, [[], [], [], [], [], [], []]);
 };
 
 const formatRecordForList = (deal, userLanguageId) => {

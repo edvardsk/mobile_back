@@ -92,6 +92,7 @@ const ERRORS = {
         INVALID_CAR_WITH_TRAILER_JOIN: 'deals.invalid_car_with_trailer_join',
         INVALID_UPLOADING_POINTS_INFO: 'deals.invalid_uploading_points_info',
         INVALID_DOWNLOADING_POINTS_INFO: 'deals.invalid_downloading_points_info',
+        STEP_ALREADY_CONFIRMED_BY_THIS_ROLE: 'deals.step_already_confirmed_by_this_role',
     },
     VERIFY: {
         ALREADY_VERIFIED: 'verify.already_verified',
