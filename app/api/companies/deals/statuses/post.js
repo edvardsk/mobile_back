@@ -4,6 +4,8 @@ const { success, reject } = require('api/response');
 
 // services
 const DealsService = require('services/tables/deals');
+const CarsService = require('services/tables/cars');
+const TrailersService = require('services/tables/trailers');
 const CargoPointsService = require('services/tables/cargo-points');
 const DealPointsInfoService = require('services/tables/deal-points-info');
 const DealsStatusesServices = require('services/tables/deal-statuses');
@@ -20,6 +22,8 @@ const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
 const { DEAL_STATUSES_MAP } = require('constants/deal-statuses');
 const { ACTION_TYPES } = require('constants/background');
+const { LOADING_TYPES_MAP } = require('constants/cargos');
+const { CAR_TYPES_MAP } = require('constants/cars');
 
 // formatters
 const DealsFormatters = require('formatters/deals');
@@ -32,6 +36,7 @@ const DealStatusesHistoryFormatters = require('formatters/deal-statuses-history'
 const { validateDealInstancesToConfirmedStatus } = require('helpers/validators/deals');
 
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
+const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 const colsDealHistoryConfirmations = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATIONS.COLUMNS;
 
@@ -80,6 +85,89 @@ const setConfirmedStatus = async (req, res, next) => {
 
             if (dealsErrors.length) {
                 return reject(res, ERRORS.DEALS.INSTANCES_ERROR, dealsErrors);
+            }
+
+            const carId = deal[colsDeals.CAR_ID];
+            const trailerId = deal[colsDeals.TRAILER_ID];
+            const [car, trailer] = await Promise.all([
+                CarsService.getRecordStrict(carId),
+                TrailersService.getRecordStrict(trailerId),
+            ]);
+
+            const isCarAbleTransport = !!car[CAR_TYPES_MAP.TRUCK];
+            const carWidth = parseFloat(car[colsTrailers.CAR_WIDTH]) || 0;
+            const carLength = parseFloat(car[colsTrailers.CAR_LENGTH]) || 0;
+            const carHeight = parseFloat(car[colsTrailers.CAR_HEIGHT]) || 0;
+            const carCarryingCapacity = parseFloat(car[colsTrailers.CAR_CARRYING_CAPACITY]) || 0;
+
+            const trailerWidth = trailer ? parseFloat(trailer[colsTrailers.TRAILER_WIDTH]) : 0;
+            const trailerLength = trailer ? parseFloat(trailer[colsTrailers.TRAILER_LENGTH]) : 0;
+            const trailerHeight = trailer ? parseFloat(trailer[colsTrailers.TRAILER_HEIGHT]) : 0;
+            const trailerCarryingCapacity = trailer ? parseFloat(trailer[colsTrailers.TRAILER_CARRYING_CAPACITY]) : 0;
+
+            const currentCargoWidth = parseFloat(deal[colsCargos.WIDTH]);
+            const currentCargoLength = parseFloat(deal[colsCargos.LENGTH]);
+            const currentCargoHeight = parseFloat(deal[colsCargos.HEIGHT]);
+            const currentCargoGrossWeight = parseFloat(deal[colsCargos.GROSS_WEIGHT]);
+            const currentCargoVolume = currentCargoWidth * currentCargoLength * currentCargoHeight;
+
+            const widthSizes = [];
+            const heightSizes = [];
+
+            if (isCarAbleTransport) {
+                widthSizes.push(carWidth);
+                heightSizes.push(carHeight);
+            }
+            if (trailer) {
+                widthSizes.push(trailerWidth);
+                heightSizes.push(trailerHeight);
+            }
+            if (!isCarAbleTransport && !trailer) {
+                return reject(res, ERRORS.DEALS.CARGO_DOES_NOT_SUIT);
+            }
+
+            const minTransportWidth = Math.min(...widthSizes);
+            const minTransportHeight = Math.min(...heightSizes);
+            const transportLength = carLength + trailerLength;
+            const transportVolume = carLength * carHeight * carWidth + trailerLength * trailerHeight * trailerWidth;
+            const transportCarryingCapacity = carCarryingCapacity + trailerCarryingCapacity;
+
+            const cargoLoadingType = deal[colsCargos.LOADING_TYPE];
+
+            if (
+                minTransportWidth < currentCargoWidth ||
+                minTransportHeight < currentCargoHeight ||
+                transportLength < currentCargoLength
+            ) {
+                return reject(res, ERRORS.DEALS.CARGO_DOES_NOT_SUIT);
+            }
+
+            let sumGrossWeight = currentCargoGrossWeight;
+            let sumVolume = currentCargoVolume;
+
+            if (cargoLoadingType === LOADING_TYPES_MAP.LTL) {
+                const dealStartDate = new Date(deal[colsCargos.UPLOADING_DATE_FROM]).toISOString();
+                const dealEndDate = new Date(deal[colsCargos.DOWNLOADING_DATE_TO]).toISOString();
+                const sameTimeDeals = await DealsService.getDealsInProcessByRangeAndCarId(carId, dealStartDate, dealEndDate);
+                const [cargosVolume, cargosWeight] = sameTimeDeals.reduce((acc, deal) => {
+                    const [volume, weight] = acc;
+                    const length = parseFloat(deal[colsCargos.LENGTH]);
+                    const height = parseFloat(deal[colsCargos.HEIGHT]);
+                    const width = parseFloat(deal[colsCargos.WIDTH]);
+                    const grossWeight = parseFloat(deal[colsCargos.GROSS_WEIGHT]);
+                    return [volume + length * height * width, weight + grossWeight];
+                }, [currentCargoVolume, currentCargoGrossWeight]);
+
+                sumGrossWeight = cargosWeight;
+                sumVolume = cargosVolume;
+            }
+
+            if (
+                transportCarryingCapacity < sumGrossWeight ||
+                transportVolume < sumVolume
+            ) {
+                // remove cargo
+                return reject(res, ERRORS.DEALS.CARGO_DOES_NOT_SUIT);
             }
 
             const dataToEditDeal = DealsFormatters.formatRecordToEditDataForConfirmedStatusForHolder(body);
@@ -131,7 +219,6 @@ const setConfirmedStatus = async (req, res, next) => {
                     PgJobService.removeRecordByNameAndDataPathAsTransaction(ACTION_TYPES.AUTO_CANCEL_UNCONFIRMED_DEAL, dealId)
                 );
             }
-
 
         } else {
             return reject(res, ERRORS.SYSTEM.ERROR);

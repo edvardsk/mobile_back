@@ -103,6 +103,7 @@ const ERRORS = {
         SHADOW_DRIVER: 'deals.shadow_driver',
         NOT_VERIFIED_DRIVER: 'deals.not_verified_driver',
         DRIVER_IN_DRAFT: 'deals.driver_in_draft',
+        CARGO_DOES_NOT_SUIT: 'deals.cargo_does_not_suit',
     },
     VERIFY: {
         ALREADY_VERIFIED: 'verify.already_verified',

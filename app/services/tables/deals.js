@@ -8,6 +8,7 @@ const {
     selectCountDealsByCompanyId,
     selectRecordById,
     selectRecordWithInstancesInfoById,
+    selectDealsInProcessByRangeAndCarId,
 } = require('sql-helpers/deals');
 
 // services
@@ -101,6 +102,10 @@ const getCountDeals = (companyId, filter) => (
         .then(({ count }) => +count)
 );
 
+const getDealsInProcessByRangeAndCarId = (carId, startDate, endDate) => (
+    manyOrNone(selectDealsInProcessByRangeAndCarId(carId, startDate, endDate))
+);
+
 const checkOwnActiveDealExist = async (meta, dealId) => {
     const deal = await getRecord(dealId);
     const { companyId } = meta;
@@ -126,6 +131,7 @@ module.exports = {
     validateDealItems,
     getDealsPaginationSorting,
     getCountDeals,
+    getDealsInProcessByRangeAndCarId,
 
     checkOwnActiveDealExist,
     checkNextStatusAllowed,

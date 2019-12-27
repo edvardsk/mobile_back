@@ -1,6 +1,7 @@
 const squel = require('squel');
 const { get } = require('lodash');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
+const { IN_WORK_STATUSES_LIST } = require('constants/deal-statuses');
 
 const squelPostgres = squel.useFlavour('postgres');
 
@@ -182,6 +183,13 @@ const selectRecordWithInstancesInfoById = id => squelPostgres
     .select()
     .field('d.*')
     .field(`c.${colsCargos.COMPANY_ID}`)
+    .field(`c.${colsCargos.GROSS_WEIGHT}`)
+    .field(`c.${colsCargos.WIDTH}`)
+    .field(`c.${colsCargos.HEIGHT}`)
+    .field(`c.${colsCargos.LENGTH}`)
+    .field(`c.${colsCargos.UPLOADING_DATE_FROM}`)
+    .field(`c.${colsCargos.DOWNLOADING_DATE_TO}`)
+    .field(`c.${colsCargos.LOADING_TYPE}`)
 
     .field(`ds.${colsDealStatuses.NAME}`, HOMELESS_COLUMNS.DEAL_STATUS_NAME)
     .field('dsc.id', HOMELESS_COLUMNS.DEAL_STATUS_CONFIRMATION_ID)
@@ -220,6 +228,38 @@ const selectRecordWithInstancesInfoById = id => squelPostgres
     .limit(1)
     .toString();
 
+const selectDealsInProcessByRangeAndCarId = (carId, startDate, endDate) => squelPostgres
+    .select()
+    .field('d.*')
+    .field(`c.${colsCargos.GROSS_WEIGHT}`)
+    .field(`c.${colsCargos.WIDTH}`)
+    .field(`c.${colsCargos.HEIGHT}`)
+    .field(`c.${colsCargos.LENGTH}`)
+
+    .from(table.NAME, 'd')
+    .where(`d.${cols.CAR_ID} = '${carId}'`)
+    .where(
+        squel
+            .expr()
+            .and(`c.${colsCargos.UPLOADING_DATE_FROM} >= '${startDate}' AND c.${colsCargos.UPLOADING_DATE_FROM} <= '${endDate}'`)
+            .or(`c.${colsCargos.DOWNLOADING_DATE_TO} > '${startDate}' AND c.${colsCargos.DOWNLOADING_DATE_TO} <= '${endDate}'`)
+    )
+    .where(`ds.${colsDealStatuses.NAME} IN ?`, IN_WORK_STATUSES_LIST)
+    .where('dh.id = ?',
+        squelPostgres
+            .select()
+            .field('dh2.id')
+            .from(tableDealHistory.NAME, 'dh2')
+            .where(`d.id = dh2.${colsDealHistory.DEAL_ID}`)
+            .order(`dh2.${colsDealHistory.CREATED_AT}`, false)
+            .limit(1)
+    )
+    .left_join(tableCargos.NAME, 'c', `c.id = d.${cols.CARGO_ID}`)
+    .left_join(tableDealHistory.NAME, 'dh', `dh.${colsDealHistory.DEAL_ID} = d.id`)
+    .left_join(tableDealStatuses.NAME, 'ds', `ds.id = dh.${colsDealHistory.DEAL_STATUS_ID}`)
+    .left_join(tableCars.NAME, 'crs', `crs.id = d.${cols.CAR_ID}`)
+    .toString();
+
 module.exports = {
     insertRecords,
     updateRecord,
@@ -228,4 +268,5 @@ module.exports = {
     setAvailableDealsFilter,
     selectRecordById,
     selectRecordWithInstancesInfoById,
+    selectDealsInProcessByRangeAndCarId,
 };
