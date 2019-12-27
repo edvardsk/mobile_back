@@ -5,6 +5,7 @@ const { success, reject } = require('api/response');
 // services
 const DealsService = require('services/tables/deals');
 const CarsService = require('services/tables/cars');
+const DriversService = require('services/tables/drivers');
 const TrailersService = require('services/tables/trailers');
 const CargoPointsService = require('services/tables/cargo-points');
 const DealPointsInfoService = require('services/tables/deal-points-info');
@@ -27,6 +28,7 @@ const { CAR_TYPES_MAP } = require('constants/cars');
 
 // formatters
 const DealsFormatters = require('formatters/deals');
+const CargosFormatters = require('formatters/cargos');
 const CargoPointsFormatters = require('formatters/cargo-points');
 const DealPointsInfoFormatters = require('formatters/deal-points-info');
 const FilesFormatters = require('formatters/files');
@@ -49,13 +51,29 @@ const setConfirmedStatus = async (req, res, next) => {
 
         const transporterCompanyId = deal[colsDeals.TRANSPORTER_COMPANY_ID];
         const holderCompanyId = deal[colsCargos.COMPANY_ID];
+        const confirmedByTransporter = deal[colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER];
 
         const transactionsList = [];
         let filesToStore = [];
 
         if (transporterCompanyId === company.id) {
-            // todo: add driver after using forwarder role
+            const driverId = body[HOMELESS_COLUMNS.DRIVER_ID];
+            const cargoDates = CargosFormatters.formatCargoDates(deal);
+            const availableDriver = await DriversService.getAvailableDriverByIdAndCompanyId(driverId, company.id, cargoDates);
+            if (!availableDriver) {
+                return reject(res, ERRORS.DEALS.AVAILABLE_DRIVER_IS_NOT_FOUND);
+            }
+
+            transactionsList.push(
+                DealsService.editRecordAsTransaction(dealId, {
+                    [colsDeals.DRIVER_ID]: driverId,
+                })
+            );
+
         } else if (holderCompanyId === company.id) {
+            if (!confirmedByTransporter) {
+                return reject(res, ERRORS.DEALS.WAIT_FOR_CONFIRM_FROM_TRANSPORTER_FIRST);
+            }
             const cargoId = deal[colsDeals.CARGO_ID];
             const cargoPoints = await CargoPointsService.getRecordsByCargoId(cargoId);
 

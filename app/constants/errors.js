@@ -104,6 +104,8 @@ const ERRORS = {
         NOT_VERIFIED_DRIVER: 'deals.not_verified_driver',
         DRIVER_IN_DRAFT: 'deals.driver_in_draft',
         CARGO_DOES_NOT_SUIT: 'deals.cargo_does_not_suit',
+        WAIT_FOR_CONFIRM_FROM_TRANSPORTER_FIRST: 'deals.wait_for_confirm_from_transporter_first',
+        AVAILABLE_DRIVER_IS_NOT_FOUND: 'deals.available_driver_is_not_found',
     },
     VERIFY: {
         ALREADY_VERIFIED: 'verify.already_verified',
