@@ -183,9 +183,9 @@ const selectRecordWithInstancesInfoById = id => squelPostgres
     .field(`t.${colsTrailers.VERIFIED}`, HOMELESS_COLUMNS.TRAILER_VERIFIED)
     .field('dt.id', HOMELESS_COLUMNS.DRAFT_TRAILER_ID)
 
-    .field(`dr.${colsDrivers.SHADOW}`, HOMELESS_COLUMNS.TRAILER_SHADOW)
-    .field(`dr.${colsDrivers.VERIFIED}`, HOMELESS_COLUMNS.TRAILER_VERIFIED)
-    .field('ddr.id', HOMELESS_COLUMNS.DRAFT_TRAILER_ID)
+    .field(`dr.${colsDrivers.SHADOW}`, HOMELESS_COLUMNS.DRIVER_SHADOW)
+    .field(`dr.${colsDrivers.VERIFIED}`, HOMELESS_COLUMNS.DRIVER_VERIFIED)
+    .field('ddr.id', HOMELESS_COLUMNS.DRAFT_DRIVER_ID)
 
     .from(table.NAME, 'd')
     .where(`d.id = '${id}'`)

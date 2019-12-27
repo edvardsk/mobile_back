@@ -48,16 +48,12 @@ const verifyTrailer = async (req, res, next) => {
         if (!trailer[colsTrailers.VERIFIED]) {
             trailerData = TrailersFormatters.formatRecordAsVerified();
         }
-        if (trailer[colsTrailers.SHADOW]) {
-            trailerData = TrailersFormatters.formatRecordAsNotShadow(trailerData);
-        }
 
         if (draftTrailer) {
             trailerData = {
                 ...trailerData,
                 ...TrailersFormatters.formatRecordToUpdateFromDraft(draftTrailer),
                 ...TrailersFormatters.formatRecordAsNotShadow(),
-                ...TrailersFormatters.formatRecordAsVerified(),
             };
 
             const draftFiles = await DraftFilesService.getFilesByDraftTrailerId(draftTrailer.id);

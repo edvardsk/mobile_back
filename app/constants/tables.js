@@ -761,7 +761,7 @@ const HOMELESS_COLUMNS = {
     TRAILER_IS_DRAFT: 'trailer_is_draft',
     DEAL_STATUS_NAME: 'deal_status_name',
     CAR_SHADOW: 'car_shadow',
-    DRIVER_SHADOW: 'trailer_shadow',
+    DRIVER_SHADOW: 'driver_shadow',
     DRIVER_VERIFIED: 'driver_verified',
     DRAFT_CAR_ID: 'draft_car_id',
     DRAFT_TRAILER_ID: 'draft_trailer_id',
