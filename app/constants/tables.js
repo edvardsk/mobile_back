@@ -598,6 +598,16 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    TRACKING_SOCKET_HASHES: {
+        NAME: 'tracking_socket_hashes',
+        COLUMNS: {
+            DEAL_ID: 'deal_id',
+            USER_ID: 'user_id',
+            HASH: 'hash',
+            CREATED_AT: 'created_at',
+            EXPIRED_AT: 'expired_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {

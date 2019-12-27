@@ -1,9 +1,11 @@
-const  { one, manyOrNone } = require('db');
+const  { one, oneOrNone, manyOrNone } = require('db');
 
 // sql-helpers
 const {
     insertRecords,
     selectDealsByCompanyIdPaginationSorting,
+    selectRecordByIdAndCompanyIdLight,
+    selectRecordByIdAndTransporterCompanyIdLight,
     selectCountDealsByCompanyId,
     selectRecordById,
 } = require('sql-helpers/deals');
@@ -29,6 +31,10 @@ const { formatCargoDates } = require('formatters/cargos');
 const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MANY];
 
 const getRecordStrict = id => one(selectRecordById(id));
+
+const getRecordByIdAndTransporterCompanyIdLight = (id, companyId) => oneOrNone(selectRecordByIdAndTransporterCompanyIdLight(id, companyId));
+
+const getRecordByIdAndCompanyIdLight = (id, companyId) => oneOrNone(selectRecordByIdAndCompanyIdLight(id, companyId));
 
 const validateDealItems = async (arr, companyId, cargoLoadingType, userLanguageId) => {
     const availableDrivers = [];
@@ -89,10 +95,24 @@ const getCountDeals = (companyId, filter) => (
         .then(({ count }) => +count)
 );
 
+const checkDealInCompanyExist = async (meta, id) => {
+    const { companyId } = meta;
+    const deal = await getRecordByIdAndCompanyIdLight(id, companyId);
+    return !!deal;
+};
+
+const checkDealInTransporterCompanyExist = async (meta, id) => {
+    const { companyId } = meta;
+    const deal = await getRecordByIdAndTransporterCompanyIdLight(id, companyId);
+    return !!deal;
+};
+
 module.exports = {
     addRecordsAsTransaction,
     getRecordStrict,
     validateDealItems,
     getDealsPaginationSorting,
     getCountDeals,
+    checkDealInCompanyExist,
+    checkDealInTransporterCompanyExist,
 };

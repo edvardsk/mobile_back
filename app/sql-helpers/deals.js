@@ -41,6 +41,24 @@ const setAvailableDealsFilter = (expression, filteringObject) => {
     return expression;
 };
 
+const selectRecordByIdAndTransporterCompanyIdLight = (id, companyId) => squelPostgres
+    .select()
+    .field('id')
+    .from(table.NAME)
+    .where(`id = '${id}'`)
+    .where(`${cols.TRANSPORTER_COMPANY_ID} = '${companyId}'`)
+    .where(`${cols.DELETED} = 'f'`)
+    .toString();
+
+const selectRecordByIdAndCompanyIdLight = (id, companyId) => squelPostgres
+    .select()
+    .field('id')
+    .from(table.NAME)
+    .where(`id = '${id}'`)
+    .where(`${cols.TRANSPORTER_COMPANY_ID} = '${companyId}' OR ${colsCargos.COMPANY_ID} = '${companyId}'`)
+    .where(`${cols.DELETED} = 'f'`)
+    .toString();
+
 
 const selectCountDealsByCompanyId = (companyId, filter) => {
     const { dateFrom, dateTo } = filter;
@@ -151,4 +169,6 @@ module.exports = {
     selectCountDealsByCompanyId,
     setAvailableDealsFilter,
     selectRecordById,
+    selectRecordByIdAndCompanyIdLight,
+    selectRecordByIdAndTransporterCompanyIdLight,
 };

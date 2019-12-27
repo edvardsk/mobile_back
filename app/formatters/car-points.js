@@ -11,6 +11,13 @@ const formatRecordToSave = (id, dealId, carId, trailerId, coordinates) => ({
     [cols.COORDINATES]: coordinates,
 });
 
+const formatPoinstForList = (point) => ({
+    id: point.id,
+    [cols.COORDINATES]: point[cols.COORDINATES],
+    [cols.CREATED_AT]: point[cols.CREATED_AT],
+});
+
 module.exports = {
     formatRecordToSave,
+    formatPoinstForList,
 };

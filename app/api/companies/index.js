@@ -37,6 +37,9 @@ const getDriversDeals = require('./drivers/deals/get');
 
 const postDealsCargos = require('./deals/cargos/post');
 const getDeals = require('./deals/get');
+const postTracking = require('./deals/tracking/post');
+const getTracking = require('./deals/tracking/get');
+const wsTracking = require('./deals/tracking/ws');
 
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
@@ -558,6 +561,30 @@ router.get(
     validate(ValidatorSchemes.dealsFilterQuery, 'query'),
     injectCompanyData,
     getDeals.getListDeals,
+);
+
+router.post(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.TRACKING.BASE + ROUTES.COMPANIES.DEALS.TRACKING.POST,
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredDealId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingDealInTransporterCompanyAsyncFunc({ companyId: company.id }), 'params'),
+    postTracking.createTrackingPoint,
+);
+
+router.get(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.TRACKING.BASE + ROUTES.COMPANIES.DEALS.TRACKING.GET,
+    isHasPermissions([PERMISSIONS.CREATE_CARGO_DEAL]),
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredDealId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingDealInCompanyAsyncFunc({ companyId: company.id }), 'params'),
+    getTracking.getListDealPoints,
+);
+
+router.ws(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.TRACKING.BASE + ROUTES.COMPANIES.DEALS.TRACKING.GET,
+    wsTracking.getListDealPoints,
 );
 
 module.exports = router;

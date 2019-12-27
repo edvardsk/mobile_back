@@ -196,9 +196,47 @@ const createCargoDealPhoneNumberWithPrefixAsync = {
     },
 };
 
+
+const requiredDealId = {
+    properties: {
+        carId: {
+            type: 'string',
+            format: 'uuid',
+        },
+    },
+    required: [
+        'carId',
+    ]
+};
+
+const requiredExistingDealInTransporterCompanyAsyncFunc = ({ companyId }) => ({
+    $async: true,
+    properties: {
+        dealId: {
+            deal_in_transporter_company_not_exists: {
+                companyId,
+            },
+        },
+    },
+});
+
+const requiredExistingDealInCompanyAsyncFunc = ({ companyId }) => ({
+    $async: true,
+    properties: {
+        dealId: {
+            deal_in_company_not_exists: {
+                companyId,
+            },
+        },
+    },
+});
+
 module.exports = {
     createCargoDeal,
     createCargoDealAsync,
     createCargoDealPhoneNumberAsync,
     createCargoDealPhoneNumberWithPrefixAsync,
+    requiredDealId,
+    requiredExistingDealInCompanyAsyncFunc,
+    requiredExistingDealInTransporterCompanyAsyncFunc,
 };

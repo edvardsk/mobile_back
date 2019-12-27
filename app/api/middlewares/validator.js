@@ -23,6 +23,7 @@ const CarsService = require('services/tables/cars');
 const TrailersService = require('services/tables/trailers');
 const DriversService = require('services/tables/drivers');
 const TNVEDCodesService = require('services/tables/tnved-codes');
+const DealsService = require('services/tables/deals');
 
 // constants
 const { ERRORS } = require('constants/errors');
@@ -364,6 +365,19 @@ ajv.addFormat('json', {
             return false;
         }
     },
+});
+
+
+ajv.addKeyword('deal_in_transporter_company_not_exists', {
+    async: true,
+    type: 'string',
+    validate: DealsService.checkDealInTransporterCompanyExist,
+});
+
+ajv.addKeyword('deal_in_company_not_exists', {
+    async: true,
+    type: 'string',
+    validate: DealsService.checkDealInCompanyExist,
 });
 
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {
