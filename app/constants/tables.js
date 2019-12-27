@@ -636,6 +636,17 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    PG_JOBS: {
+        NAME: 'pgboss.job',
+        COLUMNS: {
+            NAME: 'name',
+            STARTEDON: 'startedon',
+            RETRY_LIMIT: 'retrylimit',
+            RETRY_COUNT: 'retrycount',
+            DATA: 'data',
+            STATE: 'state',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {

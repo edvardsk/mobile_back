@@ -13,11 +13,13 @@ const DealsFilesService = require('services/tables/deals-to-files');
 const DealStatusesConfirmationsService = require('services/tables/deal-statuses-history-confirmations');
 const TablesService = require('services/tables');
 const S3Service = require('services/aws/s3');
+const PgJobService = require('services/pg-jobs');
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
 const { DEAL_STATUSES_MAP } = require('constants/deal-statuses');
+const { ACTION_TYPES } = require('constants/background');
 
 // formatters
 const DealsFormatters = require('formatters/deals');
@@ -125,7 +127,11 @@ const setConfirmedStatus = async (req, res, next) => {
                     DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory)
                 );
 
+                transactionsList.push(
+                    PgJobService.removeRecordByNameAndDataPathAsTransaction(ACTION_TYPES.AUTO_CANCEL_UNCONFIRMED_DEAL, dealId)
+                );
             }
+
 
         } else {
             return reject(res, ERRORS.SYSTEM.ERROR);
