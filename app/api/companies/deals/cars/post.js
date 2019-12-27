@@ -16,7 +16,7 @@ const { DEAL_STATUSES_MAP } = require('constants/deal-statuses');
 
 // formatters
 const { formatPricesFromPostgresJSON } = require('formatters/cargo-prices');
-const { formatAllInstancesToSave } = require('formatters/deals');
+const { formatAllInstancesToSaveCarDeal } = require('formatters/deals');
 
 // helpers
 const {
@@ -79,7 +79,7 @@ const createCarDeal = async (req, res, next) => {
         const dealCreatedStatus = await DealStatusesService.getRecordStrict(DEAL_STATUSES_MAP.CREATED);
         const [
             deals, dealStatusesHistory,
-        ] = formatAllInstancesToSave(body, availableTrailers, cargoLoadingType, company.id, user.id, dealCreatedStatus.id);
+        ] = formatAllInstancesToSaveCarDeal(body, cargoLoadingType, company.id, user.id, dealCreatedStatus.id);
 
         transactionsList = [
             ...transactionsList,
