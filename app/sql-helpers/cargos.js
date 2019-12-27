@@ -279,6 +279,13 @@ const selectCountCargosByCompanyId = (companyId, filter) => {
 
 const setCargosFilter = (expression, filteringObject) => {
     const filteringObjectSQLExpressions = [
+        [HOMELESS_COLUMNS.QUERY, `
+            c.id::text ILIKE '%${filteringObject[HOMELESS_COLUMNS.QUERY]}%'
+            OR
+            c.${cols.DESCRIPTION}::text ILIKE '%${filteringObject[HOMELESS_COLUMNS.QUERY]}%'
+            OR
+            c.${cols.PACKING_DESCRIPTION}::text ILIKE '%${filteringObject[HOMELESS_COLUMNS.QUERY]}%'
+        `],
     ];
 
     for (let [key, exp, values] of filteringObjectSQLExpressions) {
