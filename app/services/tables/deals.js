@@ -3,6 +3,7 @@ const  { one, oneOrNone, manyOrNone } = require('db');
 // sql-helpers
 const {
     insertRecords,
+    updateRecord,
     selectDealsByCompanyIdPaginationSorting,
     selectCountDealsByCompanyId,
     selectRecordById,
@@ -32,6 +33,8 @@ const cols = SQL_TABLES.DEALS.COLUMNS;
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 
 const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MANY];
+
+const editRecordAsTransaction = (id, data) => [updateRecord(id, data), OPERATIONS.ONE];
 
 const getRecordStrict = id => one(selectRecordById(id));
 
@@ -117,6 +120,7 @@ const checkNextStatusAllowed = async (meta, dealId) => {
 
 module.exports = {
     addRecordsAsTransaction,
+    editRecordAsTransaction,
     getRecordStrict,
     getRecordWithInstancesInfoStrict,
     validateDealItems,

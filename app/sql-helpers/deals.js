@@ -42,6 +42,14 @@ const insertRecords = values => squelPostgres
     .returning('*')
     .toString();
 
+const updateRecord = (id, data) => squelPostgres
+    .update()
+    .table(table.NAME)
+    .setFields(data)
+    .where(`id = '${id}'`)
+    .returning('*')
+    .toString();
+
 const setAvailableDealsFilter = (expression, filteringObject) => {
     const filteringObjectSQLExpressions = [
         [HOMELESS_COLUMNS.NAME, `d.${cols.NAME}::text ILIKE '%${filteringObject[HOMELESS_COLUMNS.NAME]}%'`],
@@ -175,6 +183,12 @@ const selectRecordWithInstancesInfoById = id => squelPostgres
     .field('d.*')
     .field(`c.${colsCargos.COMPANY_ID}`)
 
+    .field(`ds.${colsDealStatuses.NAME}`, HOMELESS_COLUMNS.DEAL_STATUS_NAME)
+    .field('dsc.id', HOMELESS_COLUMNS.DEAL_STATUS_CONFIRMATION_ID)
+    .field(`dsc.${colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER}`, colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER)
+    .field(`dsc.${colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER}`, colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER)
+
+
     .field(`crs.${colsCars.SHADOW}`, HOMELESS_COLUMNS.CAR_SHADOW)
     .field(`crs.${colsCars.VERIFIED}`, HOMELESS_COLUMNS.CAR_VERIFIED)
     .field('dcrs.id', HOMELESS_COLUMNS.DRAFT_CAR_ID)
@@ -190,16 +204,25 @@ const selectRecordWithInstancesInfoById = id => squelPostgres
     .from(table.NAME, 'd')
     .where(`d.id = '${id}'`)
     .left_join(tableCargos.NAME, 'c', `c.id = d.${cols.CARGO_ID}`)
+
+    .left_join(tableDealHistory.NAME, 'dh', `dh.${colsDealHistory.DEAL_ID} = d.id`)
+    .left_join(tableDealStatuses.NAME, 'ds', `ds.id = dh.${colsDealHistory.DEAL_STATUS_ID}`)
+    .left_join(tableDealHistoryConfirmations.NAME, 'dsc', `dsc.${colsDealHistoryConfirmations.DEAL_STATUS_HISTORY_ID} = dh.id`)
+
     .left_join(tableCars.NAME, 'crs', `crs.id = d.${cols.CAR_ID}`)
     .left_join(tableDraftCars.NAME, 'dcrs', `dcrs.${colsDraftCars.CAR_ID} = d.${cols.CAR_ID}`)
     .left_join(tableTrailers.NAME, 't', `t.id = d.${cols.TRAILER_ID}`)
     .left_join(tableDraftTrailers.NAME, 'dt', `dt.${colsDraftTrailers.TRAILER_ID} = d.${cols.TRAILER_ID}`)
     .left_join(tableDrivers.NAME, 'dr', `dr.id = d.${cols.DRIVER_ID}`)
     .left_join(tableDraftDrivers.NAME, 'ddr', `ddr.${colsDraftDrivers.DRIVER_ID} = d.${cols.DRIVER_ID}`)
+
+    .order(`dh.${colsDealHistory.CREATED_AT}`, false)
+    .limit(1)
     .toString();
 
 module.exports = {
     insertRecords,
+    updateRecord,
     selectDealsByCompanyIdPaginationSorting,
     selectCountDealsByCompanyId,
     setAvailableDealsFilter,

@@ -3,7 +3,7 @@ const { SQL_TABLES } = require('constants/tables');
 
 const squelPostgres = squel.useFlavour('postgres');
 
-const table = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATIONS;
+const table = SQL_TABLES.DEAL_POINTS_INFO;
 
 const insertRecords = values => squelPostgres
     .insert()
@@ -19,16 +19,7 @@ const insertRecord = values => squelPostgres
     .returning('*')
     .toString();
 
-const updateRecordById = (id, data) => squelPostgres
-    .update()
-    .table(table.NAME)
-    .setFields(data)
-    .where(`id = '${id}'`)
-    .returning('*')
-    .toString();
-
 module.exports = {
     insertRecords,
     insertRecord,
-    updateRecordById,
 };

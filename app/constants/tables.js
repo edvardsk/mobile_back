@@ -628,6 +628,14 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    DEALS_TO_FILES: {
+        NAME: 'deals_to_files',
+        COLUMNS: {
+            DEAL_ID: 'deal_id',
+            FILE_ID: 'file_id',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
@@ -765,6 +773,7 @@ const HOMELESS_COLUMNS = {
     DRIVER_VERIFIED: 'driver_verified',
     DRAFT_CAR_ID: 'draft_car_id',
     DRAFT_TRAILER_ID: 'draft_trailer_id',
+    DEAL_STATUS_CONFIRMATION_ID: 'deal_status_confirmation_id',
 };
 
 module.exports = {
