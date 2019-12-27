@@ -199,7 +199,12 @@ const cargosFilterQuery = {
     properties: {
         [HOMELESS_COLUMNS.FILTER]: {
             type: 'object',
-            properties: {},
+            properties: {
+                [HOMELESS_COLUMNS.QUERY]: {
+                    type: 'string',
+                    minLength: 1,
+                },
+            },
             additionalProperties: false,
         },
     },
