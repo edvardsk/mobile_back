@@ -12,6 +12,9 @@ const { ERRORS } = require('constants/errors');
 const DealsFormatters = require('formatters/deals');
 const CargoPointsFormatters = require('formatters/cargo-points');
 
+// helpers
+const { validateDealInstancesToConfirmedStatus } = require('helpers/validators/deals');
+
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 
@@ -20,8 +23,7 @@ const setConfirmedStatus = async (req, res, next) => {
         const { company } = res.locals;
         const { body } = req;
         const { dealId } = req.params;
-
-        const deal = await DealsService.getRecordStrict(dealId);
+        const deal = await DealsService.getRecordWithInstancesInfoStrict(dealId);
 
         const transporterCompanyId = deal[colsDeals.TRANSPORTER_COMPANY_ID];
         const holderCompanyId = deal[colsCargos.COMPANY_ID];
@@ -52,6 +54,12 @@ const setConfirmedStatus = async (req, res, next) => {
 
             if (invalidDownloadingPoints.length) {
                 return reject(res, ERRORS.DEALS.INVALID_DOWNLOADING_POINTS_INFO);
+            }
+
+            const dealsErrors = validateDealInstancesToConfirmedStatus(deal);
+
+            if (dealsErrors.length) {
+                return reject(res, ERRORS.DEALS.INSTANCES_ERROR, dealsErrors);
             }
 
         } else {

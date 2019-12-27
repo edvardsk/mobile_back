@@ -187,6 +187,41 @@ const extractData = body => body.reduce((acc, item) => {
     return [cargosIds, driversIds, driversData, carsIds, carsData, trailersIds, trailersData];
 }, [[], [], [], [], [], [], []]);
 
+const validateDealInstancesToConfirmedStatus = deal => {
+    const dealsErrors = [];
+    if (deal[HOMELESS_COLUMNS.CAR_SHADOW]) {
+        dealsErrors.push(ERRORS.DEALS.SHADOW_CAR);
+    }
+    if (!deal[HOMELESS_COLUMNS.CAR_VERIFIED]) {
+        dealsErrors.push(ERRORS.DEALS.NOT_VERIFIED_CAR);
+    }
+    if (deal[HOMELESS_COLUMNS.DRAFT_CAR_ID]) {
+        dealsErrors.push(ERRORS.DEALS.CAR_IN_DRAFT);
+    }
+
+    if (deal[HOMELESS_COLUMNS.TRAILER_SHADOW]) {
+        dealsErrors.push(ERRORS.DEALS.SHADOW_TRAILER);
+    }
+    if (!deal[HOMELESS_COLUMNS.TRAILER_VERIFIED]) {
+        dealsErrors.push(ERRORS.DEALS.NOT_VERIFIED_TRAILER);
+    }
+    if (deal[HOMELESS_COLUMNS.DRAFT_TRAILER_ID]) {
+        dealsErrors.push(ERRORS.DEALS.TRAILER_IN_DRAFT);
+    }
+
+    if (deal[HOMELESS_COLUMNS.DRIVER_SHADOW]) {
+        dealsErrors.push(ERRORS.DEALS.SHADOW_DRIVER);
+    }
+    if (!deal[HOMELESS_COLUMNS.DRIVER_VERIFIED]) {
+        dealsErrors.push(ERRORS.DEALS.NOT_VERIFIED_DRIVER);
+    }
+    if (deal[HOMELESS_COLUMNS.DRAFT_DRIVER_ID]) {
+        dealsErrors.push(ERRORS.DEALS.DRIVER_IN_DRAFT);
+    }
+
+    return dealsErrors;
+};
+
 module.exports = {
     validateCargos,
     validateDrivers,
@@ -196,4 +231,5 @@ module.exports = {
     validateShadowTrailers,
     validateCarsTrailers,
     extractData,
+    validateDealInstancesToConfirmedStatus,
 };

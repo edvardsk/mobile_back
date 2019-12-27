@@ -6,6 +6,7 @@ const {
     selectDealsByCompanyIdPaginationSorting,
     selectCountDealsByCompanyId,
     selectRecordById,
+    selectRecordWithInstancesInfoById,
 } = require('sql-helpers/deals');
 
 // services
@@ -33,6 +34,8 @@ const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MANY];
 
 const getRecordStrict = id => one(selectRecordById(id));
+
+const getRecordWithInstancesInfoStrict = id => one(selectRecordWithInstancesInfoById(id));
 
 const getRecord = id => oneOrNone(selectRecordById(id));
 
@@ -115,6 +118,7 @@ const checkNextStatusAllowed = async (meta, dealId) => {
 module.exports = {
     addRecordsAsTransaction,
     getRecordStrict,
+    getRecordWithInstancesInfoStrict,
     validateDealItems,
     getDealsPaginationSorting,
     getCountDeals,
