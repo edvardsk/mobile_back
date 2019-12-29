@@ -560,4 +560,11 @@ router.get(
     getDeals.getListDeals,
 );
 
+router.get(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.GET,
+    isHasPermissions([PERMISSIONS.READ_LIST_DEALS]), // permissions middleware
+    injectCompanyData,
+    getDeals.getDeal,
+);
+
 module.exports = router;

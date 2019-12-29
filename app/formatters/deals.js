@@ -13,6 +13,9 @@ const { formatGeoPoints } = require('./cargos');
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
 const colsDealStatuses = SQL_TABLES.DEAL_HISTORY_STATUSES.COLUMNS;
 const colsCargo = SQL_TABLES.CARGOS.COLUMNS;
+const colsCars = SQL_TABLES.CARS.COLUMNS;
+const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
+const colsUsers = SQL_TABLES.USERS.COLUMNS;
 
 const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, companyId, initiatorId, dealStatusId) => {
     const generatedDriverId = uuid();
@@ -124,7 +127,60 @@ const formatRecordForList = (deal, userLanguageId) => {
     };
 };
 
+const formatRecordForResponse = (deal, userLanguageId) => {
+    const result = {
+        id: deal.id,
+        [colsDeals.NAME]: deal[colsDeals.NAME],
+        [colsDeals.TRANSPORTER_COMPANY_ID]: deal[colsDeals.TRANSPORTER_COMPANY_ID],
+        [colsDeals.CREATED_AT]: deal[colsDeals.CREATED_AT],
+        [colsDeals.PAY_CURRENCY_ID]: deal[colsDeals.PAY_CURRENCY_ID],
+        [colsDeals.PAY_VALUE]: parseFloat(deal[colsDeals.PAY_VALUE]),
+        [HOMELESS_COLUMNS.DEAL_STATUS]: deal[HOMELESS_COLUMNS.DEAL_STATUS],
+        cargo: {
+            [colsCargo.UPLOADING_DATE_FROM]: deal[colsCargo.UPLOADING_DATE_FROM],
+            [colsCargo.UPLOADING_DATE_TO]: deal[colsCargo.UPLOADING_DATE_TO],
+            [colsCargo.DOWNLOADING_DATE_FROM]: deal[colsCargo.DOWNLOADING_DATE_FROM],
+            [colsCargo.DOWNLOADING_DATE_TO]: deal[colsCargo.DOWNLOADING_DATE_TO],
+            [colsCargo.DISTANCE]: parseFloat(deal[colsCargo.DISTANCE]),
+            [colsCargo.GROSS_WEIGHT]: parseFloat(deal[colsCargo.GROSS_WEIGHT]),
+            [colsCargo.WIDTH]: parseFloat(deal[colsCargo.WIDTH]),
+            [colsCargo.HEIGHT]: parseFloat(deal[colsCargo.HEIGHT]),
+            [colsCargo.LENGTH]: parseFloat(deal[colsCargo.LENGTH]),
+        },
+        car: {
+            [colsDeals.CAR_ID]: deal[colsDeals.CAR_ID],
+            [colsCars.CAR_MARK]: deal[colsCars.CAR_MARK],
+            [colsCars.CAR_MODEL]: deal[colsCars.CAR_MODEL],
+            [colsCars.CAR_WIDTH]: parseFloat(deal[colsCars.CAR_WIDTH]),
+            [colsCars.CAR_HEIGHT]: parseFloat(deal[colsCars.CAR_HEIGHT]),
+            [colsCars.CAR_LENGTH]: parseFloat(deal[colsCars.CAR_LENGTH]),
+            [colsCars.CAR_CARRYING_CAPACITY]: parseFloat(deal[colsCars.CAR_CARRYING_CAPACITY]),
+            trailer_id: deal['trailer_id'],
+            [colsTrailers.TRAILER_MARK]: deal[colsTrailers.TRAILER_MARK],
+            [colsTrailers.TRAILER_MODEL]: deal[colsTrailers.TRAILER_MODEL],
+            [colsTrailers.TRAILER_WIDTH]: parseFloat(deal[colsTrailers.TRAILER_WIDTH]),
+            [colsTrailers.TRAILER_HEIGHT]: parseFloat(deal[colsTrailers.TRAILER_HEIGHT]),
+            [colsTrailers.TRAILER_LENGTH]: parseFloat(deal[colsTrailers.TRAILER_LENGTH]),
+            [colsTrailers.TRAILER_CARRYING_CAPACITY]: parseFloat(deal[colsTrailers.TRAILER_CARRYING_CAPACITY]),
+        },
+        driver: {
+            driver_id: deal['driver_id'],
+            [colsUsers.FULL_NAME]: deal[colsUsers.FULL_NAME],
+            [HOMELESS_COLUMNS.FULL_PHONE_NUMBER]: deal[HOMELESS_COLUMNS.FULL_PHONE_NUMBER],
+        }
+    };
+
+    const [uploadingPoints, downloadingPoints] = formatGeoPoints(deal, userLanguageId);
+
+    return {
+        ...result,
+        [HOMELESS_COLUMNS.UPLOADING_POINTS]: uploadingPoints,
+        [HOMELESS_COLUMNS.DOWNLOADING_POINTS]: downloadingPoints,
+    };
+};
+
 module.exports = {
     formatAllInstancesToSave,
     formatRecordForList,
+    formatRecordForResponse,
 };

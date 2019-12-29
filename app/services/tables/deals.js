@@ -28,7 +28,7 @@ const { formatCargoDates } = require('formatters/cargos');
 
 const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MANY];
 
-const getRecordStrict = id => one(selectRecordById(id));
+const getRecordStrict = (id, userLanguageId) => one(selectRecordById(id, userLanguageId));
 
 const validateDealItems = async (arr, companyId, cargoLoadingType, userLanguageId) => {
     const availableDrivers = [];

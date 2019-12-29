@@ -76,6 +76,7 @@ const IDS = {
     TRAILER_ID: '/:trailerId',
     DRIVER_ID: '/:driverId',
     KEYWORD_ID: '/:keywordId',
+    DEAL_ID: '/:dealId',
 };
 
 const ROUTES = {
@@ -343,6 +344,7 @@ const ROUTES = {
         },
         DEALS: {
             BASE: IDS.ME_OR_ID + BASES.DEALS,
+            GET: IDS.DEAL_ID,
             CARGOS: {
                 BASE: BASES.CARGOS,
                 POST: '',

@@ -10,7 +10,7 @@ const { SORTING_DIRECTIONS } = require('constants/pagination-sorting');
 
 // formatters
 const { formatPaginationDataForResponse } = require('formatters/pagination-sorting');
-const { formatRecordForList } = require('formatters/deals');
+const { formatRecordForList, formatRecordForResponse } = require('formatters/deals');
 
 // helpers
 const { getParams } = require('helpers/pagination-sorting');
@@ -57,6 +57,23 @@ const getListDeals = async (req, res, next) => {
     }
 };
 
+const getDeal = async (req, res, next) => {
+    try {
+        const { user } = res.locals;
+        const userLanguageId = user[colsUsers.LANGUAGE_ID];
+        const { dealId } = req.params;
+
+        const deal = await DealsService.getRecordStrict(dealId, userLanguageId);
+
+        const formattedDeal = formatRecordForResponse(deal, userLanguageId);
+
+        return success(res, { ...formattedDeal });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     getListDeals,
+    getDeal,
 };
