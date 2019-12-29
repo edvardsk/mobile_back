@@ -184,7 +184,7 @@ const selectRecordById = (id, userLanguageId) => squelPostgres
     .field(`t.${colsTrailers.TRAILER_CARRYING_CAPACITY}`, colsTrailers.TRAILER_CARRYING_CAPACITY)
     .field('dr.id', 'driver_id')
     .field(`u.${colsUsers.FULL_NAME}`, colsUsers.FULL_NAME)
-    .field(`CONCAT(php.${colsPhonePrefixes.CODE}, phn.${colsPhoneNumbers.NUMBER})::bigint`, HOMELESS_COLUMNS.FULL_PHONE_NUMBER)
+    .field(`CONCAT(php.${colsPhonePrefixes.CODE}, phn.${colsPhoneNumbers.NUMBER})`, HOMELESS_COLUMNS.FULL_PHONE_NUMBER)
     .field(`ARRAY(${
         squelPostgres
             .select()
