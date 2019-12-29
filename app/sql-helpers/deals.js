@@ -70,7 +70,7 @@ const selectCountDealsByCompanyId = (companyId, filter) => {
 };
 
 const selectDealsByCompanyIdPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter, userLanguageId) => {
-    const { date_from: dateFrom, date_to: dateTo } = filter;
+    const { date_from: dateFrom, date_to: dateTo, status } = filter;
     let expression = squelPostgres
         .select()
         .field('d.*')
@@ -102,7 +102,7 @@ const selectDealsByCompanyIdPaginationSorting = (companyId, limit, offset, sortC
                 .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
                 .toString()
         })`, HOMELESS_COLUMNS.DOWNLOADING_POINTS)
-        .field(`ds.${colsDealStatuses.NAME}`, 'status')
+        .field(`ds.${colsDealStatuses.NAME}`, HOMELESS_COLUMNS.DEAL_STATUS)
         .from(table.NAME, 'd')
         .where('dsh.id = ?',
             squelPostgres
@@ -126,6 +126,11 @@ const selectDealsByCompanyIdPaginationSorting = (companyId, limit, offset, sortC
             .where(`(c.${colsCargos.DOWNLOADING_DATE_FROM} IS NOT NULL AND '${dateTo}' >= c.${colsCargos.DOWNLOADING_DATE_FROM}) OR
                 c.${colsCargos.DOWNLOADING_DATE_FROM} IS NULL
             `);
+    }
+
+    if (status) {
+        expression = expression
+            .where(`ds.${colsDealStatuses.NAME} = '${status}'`);
     }
 
     expression = setAvailableDealsFilter(expression, filter);
