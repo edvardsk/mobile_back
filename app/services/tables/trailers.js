@@ -155,17 +155,36 @@ const checkIsPassedFileWithNewDangerClass = async (meta, newDangerClassId, schem
 
     const trailer = await getRecordStrict(trailerId);
 
+    const isShadow = trailer[colsTrailers.SHADOW];
+
+
     let oldDangerClassId;
     if (!isControlRole) {
         const draftTrailer = await DraftTrailersService.getRecordByTrailerId(trailerId);
         if (draftTrailer) {
             oldDangerClassId = draftTrailer[colsDraftTrailers.TRAILER_DANGER_CLASS_ID];
+        } else if (isShadow) {
+            const newDangerClass = await DangerClassesService.getRecordStrict(newDangerClassId);
+            const newDangerClassName = newDangerClass[colsDangerClasses.NAME];
+            return (
+                (isDangerous(newDangerClassName) && dangerClassFile) ||
+                (!isDangerous(newDangerClassName) && !dangerClassFile)
+            );
         } else {
             oldDangerClassId = trailer[colsTrailers.TRAILER_DANGER_CLASS_ID];
         }
 
     } else {
-        oldDangerClassId = trailer[colsTrailers.TRAILER_DANGER_CLASS_ID];
+        if (isShadow) {
+            const newDangerClass = await DangerClassesService.getRecordStrict(newDangerClassId);
+            const newDangerClassName = newDangerClass[colsDangerClasses.NAME];
+            return (
+                (isDangerous(newDangerClassName) && dangerClassFile) ||
+                (!isDangerous(newDangerClassName) && !dangerClassFile)
+            );
+        } else {
+            oldDangerClassId = trailer[colsTrailers.TRAILER_DANGER_CLASS_ID];
+        }
     }
 
     const [oldDangerClass, newDangerClass] = await Promise.all([

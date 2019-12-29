@@ -1,10 +1,14 @@
+const moment = require('moment');
+
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { CAR_TYPES_MAP } = require('constants/cars');
 const { SqlArray } = require('constants/instances');
+const { ACTIVE_STATUSES_LIST } = require('constants/deal-statuses');
 
 // formatters
 const { mergeFilesWithDraft } = require('./files');
+const { formatGeoPointToObject } = require('./geo');
 
 // helpers
 const { isDangerous } = require('helpers/danger-classes');
@@ -18,6 +22,11 @@ const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
 const colsFiles = SQL_TABLES.FILES.COLUMNS;
 const colsDraftFiles = SQL_TABLES.DRAFT_FILES.COLUMNS;
 const colsDraftCars = SQL_TABLES.DRAFT_CARS.COLUMNS;
+
+const tableDealsStatuses = SQL_TABLES.DEAL_STATUSES;
+const tableCargos = SQL_TABLES.CARGOS;
+const colsDealsStatuses = tableDealsStatuses.COLUMNS;
+const colsCargos = tableCargos.COLUMNS;
 
 const formatCarToSave = (id, companyId, body) => {
     const carType = body[cols.CAR_TYPE];
@@ -83,6 +92,7 @@ const formatRecordForList = car => {
         id: car.id,
         [cols.CAR_MARK]: car[HOMELESS_COLUMNS.DRAFT_CAR_MARK] || car[cols.CAR_MARK],
         [cols.CAR_MODEL]: car[HOMELESS_COLUMNS.DRAFT_CAR_MODEL] || car[cols.CAR_MODEL],
+        [cols.SHADOW]: car[cols.SHADOW],
         [cols.CAR_VIN]: car[HOMELESS_COLUMNS.DRAFT_CAR_VIN] || car[cols.CAR_VIN],
         [cols.CAR_TYPE]: car[HOMELESS_COLUMNS.DRAFT_CAR_TYPE] || car[cols.CAR_TYPE],
         [cols.CAR_MADE_YEAR_AT]: car[HOMELESS_COLUMNS.DRAFT_CAR_MADE_YEAR_AT] || car[cols.CAR_MADE_YEAR_AT],
@@ -174,6 +184,7 @@ const formatRecordForResponse = (car, isControlRole) => {
             [cols.CAR_MODEL]: car[cols.CAR_MODEL],
             [cols.CAR_VIN]: car[cols.CAR_VIN],
             [cols.CAR_TYPE]: car[cols.CAR_TYPE],
+            [cols.SHADOW]: car[cols.SHADOW],
             [cols.CAR_MADE_YEAR_AT]: car[cols.CAR_MADE_YEAR_AT],
             [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
             [cols.CREATED_AT]: car[cols.CREATED_AT],
@@ -234,7 +245,8 @@ const formatRecordForResponse = (car, isControlRole) => {
             [cols.CAR_MODEL]: car[HOMELESS_COLUMNS.DRAFT_CAR_MODEL] || car[cols.CAR_MODEL],
             [cols.CAR_VIN]: car[HOMELESS_COLUMNS.DRAFT_CAR_VIN] || car[cols.CAR_VIN],
             [cols.CAR_TYPE]: tempCarType,
-            [cols.CAR_MADE_YEAR_AT]: car[HOMELESS_COLUMNS.CAR_MADE_YEAR_AT] || car[cols.CAR_MADE_YEAR_AT],
+            [cols.SHADOW]: car[cols.SHADOW],
+            [cols.CAR_MADE_YEAR_AT]: car[HOMELESS_COLUMNS.DRAFT_CAR_MADE_YEAR_AT] || car[cols.CAR_MADE_YEAR_AT],
             [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.DRAFT_CAR_STATE_NUMBER] || car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
             [cols.CREATED_AT]: car[cols.CREATED_AT],
             [cols.VERIFIED]: car[cols.VERIFIED],
@@ -284,6 +296,50 @@ const formatRecordForResponse = (car, isControlRole) => {
     return result;
 };
 
+const formatRecordForUnauthorizedResponse = (car) => {
+    const result = {};
+
+    result.car = {
+        id: car.id,
+        [cols.CAR_MARK]: car[cols.CAR_MARK],
+        [cols.CAR_MODEL]: car[cols.CAR_MODEL],
+        [cols.CAR_VIN]: car[cols.CAR_VIN],
+        [cols.CAR_TYPE]: car[cols.CAR_TYPE],
+        [cols.CAR_MADE_YEAR_AT]: car[cols.CAR_MADE_YEAR_AT],
+        [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
+        [cols.CREATED_AT]: car[cols.CREATED_AT],
+    };
+
+    if (car[cols.CAR_TYPE] === CAR_TYPES_MAP.TRUCK) {
+        const loadingMethods = car[cols.CAR_LOADING_METHODS];
+        const carryingCapacity = car[cols.CAR_CARRYING_CAPACITY];
+        const length = car[cols.CAR_LENGTH];
+        const height = car[cols.CAR_HEIGHT];
+        const width = car[cols.CAR_WIDTH];
+        const dangerClassId = car[cols.CAR_DANGER_CLASS_ID];
+        const vehicleTypeId = car[cols.CAR_VEHICLE_TYPE_ID];
+        const dangerClassName = car[HOMELESS_COLUMNS.DANGER_CLASS_NAME];
+        const vehicleTypeName = car[HOMELESS_COLUMNS.VEHICLE_TYPE_NAME];
+
+        result.car = {
+            ...result.car,
+            [cols.CAR_LOADING_METHODS]: loadingMethods,
+            [cols.CAR_CARRYING_CAPACITY]: parseFloat(carryingCapacity),
+            [cols.CAR_LENGTH]: parseFloat(length),
+            [cols.CAR_HEIGHT]: parseFloat(height),
+            [cols.CAR_WIDTH]: parseFloat(width),
+            [cols.CAR_DANGER_CLASS_ID]: dangerClassId,
+            [cols.CAR_VEHICLE_TYPE_ID]: vehicleTypeId,
+            [HOMELESS_COLUMNS.DANGER_CLASS_NAME]: dangerClassName,
+            [HOMELESS_COLUMNS.VEHICLE_TYPE_NAME]: vehicleTypeName,
+        };
+    }
+
+    result.files = formatCarFiles(car);
+
+    return result;
+};
+
 const formatCarFiles = data => {
     const files = data[HOMELESS_COLUMNS.FILES];
     return files.map(file => {
@@ -310,7 +366,7 @@ const formatDraftCarFiles = data => {
     });
 };
 
-const formatRecordForSearch = car => {
+const formatRecordForSearchBeforeFiltering = car => {
     let result = {
         id: car.id,
         [cols.CAR_MARK]: car[cols.CAR_MARK],
@@ -320,6 +376,15 @@ const formatRecordForSearch = car => {
         [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
         [cols.CREATED_AT]: car[cols.CREATED_AT],
         [HOMELESS_COLUMNS.CAR_VERIFIED]: car[cols.VERIFIED],
+        [HOMELESS_COLUMNS.COORDINATES]: car[HOMELESS_COLUMNS.COORDINATES].map((geoPoint) => formatGeoPointToObject(geoPoint)),
+        [HOMELESS_COLUMNS.DEALS]: car[HOMELESS_COLUMNS.DEALS].map((deal) => ({
+            id: deal.f1,
+            [colsDealsStatuses.NAME]: deal.f2,
+            [colsCargos.UPLOADING_DATE_FROM]: deal.f3,
+            [colsCargos.UPLOADING_DATE_TO]: deal.f4,
+            [colsCargos.DOWNLOADING_DATE_FROM]: deal.f5,
+            [colsCargos.DOWNLOADING_DATE_TO]: deal.f6,
+        })),
     };
     if (car[HOMELESS_COLUMNS.TRAILER_ID]) {
         result = {
@@ -332,12 +397,95 @@ const formatRecordForSearch = car => {
     return result;
 };
 
-const formatRecordForSearchResponse = (cars) => {
-    return cars.map(car => formatRecordForSearch(car));
+const formatRecordForSearchAfterFiltering = car => {
+    let result = {
+        id: car.id,
+        [cols.CAR_MARK]: car[cols.CAR_MARK],
+        [cols.CAR_MODEL]: car[cols.CAR_MODEL],
+        [cols.CAR_TYPE]: car[cols.CAR_TYPE],
+        [cols.CAR_MADE_YEAR_AT]: car[cols.CAR_MADE_YEAR_AT],
+        [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: car[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
+        [cols.CREATED_AT]: car[cols.CREATED_AT],
+        [HOMELESS_COLUMNS.CAR_VERIFIED]: car[cols.VERIFIED],
+        [HOMELESS_COLUMNS.COORDINATES]: car[HOMELESS_COLUMNS.COORDINATES],
+    };
+    if (car[HOMELESS_COLUMNS.TRAILER_ID]) {
+        result = {
+            ...result,
+            [HOMELESS_COLUMNS.TRAILER_ID]: car[HOMELESS_COLUMNS.TRAILER_ID],
+            [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: car[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
+            [HOMELESS_COLUMNS.TRAILER_VERIFIED]: car[HOMELESS_COLUMNS.TRAILER_VERIFIED],
+        };
+    }
+    return result;
+};
+
+const filterCarsByDealInfoForSearch = (cars, { uploadingDate, downloadingDate }) => {
+    return cars.filter((car) => {
+        const activeDeals = car.deals.filter((deal) => ACTIVE_STATUSES_LIST.includes(deal[colsDealsStatuses.NAME]));
+
+        if (activeDeals.length === 0) return true;
+
+        const upTo = uploadingDate ? moment(uploadingDate) : moment();
+        const downTo = downloadingDate && moment(downloadingDate);
+
+        if (upTo && downTo) {
+            return activeDeals.every((activeDeal) => {
+                const dealUpFrom = activeDeal[colsCargos.UPLOADING_DATE_FROM];
+                let dealUpTo = activeDeal[colsCargos.UPLOADING_DATE_TO];
+                let dealDownFrom = activeDeal[colsCargos.DOWNLOADING_DATE_FROM];
+                const dealDownTo = activeDeal[colsCargos.DOWNLOADING_DATE_TO];
+
+                if (!dealUpTo && !dealDownFrom) {
+                    dealUpTo = dealDownTo;
+                    dealDownFrom = dealUpFrom;
+                } else if (!dealUpTo) {
+                    dealUpTo = dealDownFrom;
+                } else if (!dealDownFrom) {
+                    dealDownFrom = dealUpTo;
+                }
+
+                return (upTo.isBefore(dealUpFrom) && downTo.isBefore(dealUpFrom))
+                    || (upTo.isBefore(dealUpFrom) && downTo.isAfter(dealUpFrom) && downTo.isBefore(dealUpTo))
+                    || (upTo.isAfter(dealDownTo) && downTo.isAfter(dealDownTo));
+            });
+        } else if (upTo) {
+            return activeDeals.every((activeDeal) => (
+                upTo.isBefore(activeDeal[colsCargos.UPLOADING_DATE_FROM])
+                || upTo.isAfter(activeDeal[colsCargos.DOWNLOADING_DATE_TO])
+            ));
+        }
+
+        return false;
+    });
+};
+
+const filterCarsByDealInfoForSearchAll = (cars) => {
+    return cars.filter((car) => {
+        const activeDeals = car.deals.filter((deal) => ACTIVE_STATUSES_LIST.includes(deal[colsDealsStatuses.NAME]));
+
+        return (activeDeals.length === 0);
+    });
+};
+
+const formatRecordForSearchResponse = (cars, { uploadingDate, downloadingDate }) => {
+    const mappedCars = cars
+        .map(car => formatRecordForSearchBeforeFiltering(car))
+        .filter((car) => car[HOMELESS_COLUMNS.COORDINATES].length > 0);
+    const filteredCars = filterCarsByDealInfoForSearch(mappedCars, { uploadingDate, downloadingDate });
+    const formattedCars = filteredCars.map(car => formatRecordForSearchAfterFiltering(car));
+
+    return formattedCars;
 };
 
 const formatRecordForSearchAllResponse = (cars) => {
-    return cars.map(car => formatRecordForSearch(car));
+    const mappedCars = cars
+        .map(car => formatRecordForSearchBeforeFiltering(car))
+        .filter((car) => car[HOMELESS_COLUMNS.COORDINATES].length > 0);
+    const filteredCars = filterCarsByDealInfoForSearchAll(mappedCars);
+    const formattedCars = filteredCars.map(car => formatRecordForSearchAfterFiltering(car));
+
+    return formattedCars;
 };
 
 const formatAvailableCars = cars => cars.map(car => formatAvailableCar(car));
@@ -401,6 +549,7 @@ module.exports = {
     formatCarToEdit,
     formatRecordForList,
     formatRecordForResponse,
+    formatRecordForUnauthorizedResponse,
     formatAvailableCars,
     formatRecordForListAvailable,
     formatShadowCarsToSave,

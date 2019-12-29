@@ -5,6 +5,8 @@ const postVerify = require('./verify/post');
 
 const postReject = require('./reject/post');
 
+const getCar = require('./get');
+
 // middlewares
 const { validate } = require('api/middlewares/validator');
 const { isHasPermissions } = require('api/middlewares');
@@ -16,6 +18,13 @@ const ValidatorSchemes = require('helpers/validators/schemes');
 const { PERMISSIONS } = require('constants/system');
 
 const router = express.Router();
+
+router.get(
+    ROUTES.CARS.GET,
+    validate(ValidatorSchemes.requiredCarId, 'params'),
+    validate(ValidatorSchemes.requiredExistingCarAsync, 'params'),
+    getCar.getCarUnauthorized,
+);
 
 router.post(
     ROUTES.CARS.VERIFY.BASE + ROUTES.CARS.VERIFY.POST,
