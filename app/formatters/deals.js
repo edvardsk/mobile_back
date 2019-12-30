@@ -99,6 +99,47 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
     }, [[], [], [], [], [], []]);
 };
 
+const formatAllInstancesToSaveCarDeal = (arr, cargoLoadingType, companyId, initiatorId, dealStatusId) => {
+    const generatedCarId = uuid();
+    const generatedTrailerId = uuid();
+
+    return arr.reduce((acc, item) => {
+        const [deals, dealHistory] = acc;
+        const cargoId = item[HOMELESS_COLUMNS.CARGO_ID];
+        const carIdOrData = item[HOMELESS_COLUMNS.CAR_ID_OR_DATA];
+        const trailerIdOrData = item[HOMELESS_COLUMNS.TRAILER_ID_OR_DATA];
+
+        let carId;
+        let trailerId;
+        if (cargoLoadingType === LOADING_TYPES_MAP.LTL) {
+            carId = isValidUUID(carIdOrData) ? carIdOrData : generatedCarId;
+            trailerId = isValidUUID(trailerIdOrData) ? trailerIdOrData : generatedTrailerId;
+        } else {
+            carId = isValidUUID(carIdOrData) ? carIdOrData : uuid();
+            trailerId = isValidUUID(trailerIdOrData) ? trailerIdOrData : uuid();
+        }
+
+        const dealId = uuid();
+        deals.push({
+            id: dealId,
+            [colsDeals.CARGO_ID]: cargoId,
+            [colsDeals.TRANSPORTER_COMPANY_ID]: companyId,
+            [colsDeals.CAR_ID]: carId,
+            [colsDeals.TRAILER_ID]: trailerIdOrData ? trailerId : null,
+            [colsDeals.PAY_CURRENCY_ID]: item[HOMELESS_COLUMNS.PAY_CURRENCY_ID],
+            [colsDeals.PAY_VALUE]: item[HOMELESS_COLUMNS.PAY_VALUE],
+            [colsDeals.NAME]: item[colsDeals.NAME] || null,
+        });
+
+        dealHistory.push({
+            [colsDealStatuses.DEAL_ID]: dealId,
+            [colsDealStatuses.INITIATOR_ID]: initiatorId,
+            [colsDealStatuses.DEAL_STATUS_ID]: dealStatusId,
+        });
+        return acc;
+    }, [[], [], [], [], [], []]);
+};
+
 const formatRecordForList = (deal, userLanguageId) => {
     const result = {
         id: deal.id,
@@ -181,6 +222,7 @@ const formatRecordForResponse = (deal, userLanguageId) => {
 
 module.exports = {
     formatAllInstancesToSave,
+    formatAllInstancesToSaveCarDeal,
     formatRecordForList,
     formatRecordForResponse,
 };

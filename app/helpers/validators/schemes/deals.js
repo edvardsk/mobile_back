@@ -114,6 +114,81 @@ const createCargoDeal = {
     minItems: 1,
 };
 
+const createCarDeal = {
+    type: 'array',
+    items: {
+        type: 'object',
+        properties: {
+            [HOMELESS_COLUMNS.CARGO_ID]: {
+                type: 'string',
+                format: 'uuid',
+            },
+            [HOMELESS_COLUMNS.CAR_ID_OR_DATA]: {
+                oneOf: [
+                    {
+                        type: 'string',
+                        format: 'uuid',
+                    },
+                    {
+                        type: 'object',
+                        properties: {
+                            [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: {
+                                type: 'string',
+                                minLength: 3,
+                            },
+                        },
+                        required: [
+                            HOMELESS_COLUMNS.CAR_STATE_NUMBER,
+                        ],
+                        additionalProperties: false,
+                    }
+                ],
+            },
+            [HOMELESS_COLUMNS.TRAILER_ID_OR_DATA]: {
+                oneOf: [
+                    {
+                        type: 'string',
+                        format: 'uuid',
+                    },
+                    {
+                        type: 'object',
+                        properties: {
+                            [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: {
+                                type: 'string',
+                                minLength: 3,
+                            },
+                        },
+                        required: [
+                            HOMELESS_COLUMNS.TRAILER_STATE_NUMBER,
+                        ],
+                        additionalProperties: false,
+                    }
+                ],
+            },
+            [HOMELESS_COLUMNS.PAY_CURRENCY_ID]: {
+                type: 'string',
+                format: 'uuid',
+            },
+            [HOMELESS_COLUMNS.PAY_VALUE]: {
+                type: 'number',
+                format: 'price',
+            },
+            [colsDeals.NAME]: {
+                type: 'string',
+                minLength: 1,
+            },
+        },
+        required: [
+            HOMELESS_COLUMNS.CARGO_ID,
+            HOMELESS_COLUMNS.CAR_ID_OR_DATA,
+            HOMELESS_COLUMNS.PAY_CURRENCY_ID,
+            HOMELESS_COLUMNS.PAY_VALUE,
+        ],
+        additionalProperties: false,
+    },
+    minItems: 1,
+};
+
 const createCargoDealAsync = {
     $async: true,
     type: 'array',
@@ -201,4 +276,5 @@ module.exports = {
     createCargoDealAsync,
     createCargoDealPhoneNumberAsync,
     createCargoDealPhoneNumberWithPrefixAsync,
+    createCarDeal,
 };

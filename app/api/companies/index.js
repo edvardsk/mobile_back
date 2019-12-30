@@ -36,6 +36,7 @@ const getTrailersDeals = require('./trailers/deals/get');
 const getDriversDeals = require('./drivers/deals/get');
 
 const postDealsCargos = require('./deals/cargos/post');
+const postDealsCars = require('./deals/cars/post');
 const getDeals = require('./deals/get');
 
 // middlewares
@@ -547,6 +548,15 @@ router.post(
     validate(ValidatorSchemes.createCargoDealPhoneNumberAsync),
     validate(ValidatorSchemes.createCargoDealPhoneNumberWithPrefixAsync),
     postDealsCargos.createCargoDeal,
+);
+
+router.post(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.CARS.BASE + ROUTES.COMPANIES.DEALS.CARS.POST,
+    isHasPermissions([PERMISSIONS.CREATE_CAR_DEAL]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.createCarDeal),
+    postDealsCars.createCarDeal,
 );
 
 router.get(
