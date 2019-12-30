@@ -552,7 +552,7 @@ router.post(
 
 router.post(
     ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.CARS.BASE + ROUTES.COMPANIES.DEALS.CARS.POST,
-    isHasPermissions([PERMISSIONS.CREATE_CARGO_DEAL]), // permissions middleware
+    isHasPermissions([PERMISSIONS.CREATE_CAR_DEAL]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
     validate(ValidatorSchemes.createCarDeal),
