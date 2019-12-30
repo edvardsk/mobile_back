@@ -10,6 +10,7 @@ const { isValidUUID } = require('helpers/validators');
 
 // formatters
 const { formatGeoPoints } = require('./cargos');
+const { formatPricesFromPostgresJSON } = require('./cargo-prices');
 
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
 const colsDealStatuses = SQL_TABLES.DEAL_HISTORY_STATUSES.COLUMNS;
@@ -202,6 +203,7 @@ const formatRecordForResponse = (deal, userLanguageId) => {
             [colsCargo.WIDTH]: parseFloat(deal[colsCargo.WIDTH]),
             [colsCargo.HEIGHT]: parseFloat(deal[colsCargo.HEIGHT]),
             [colsCargo.LENGTH]: parseFloat(deal[colsCargo.LENGTH]),
+            [HOMELESS_COLUMNS.PRICES]: formatPricesFromPostgresJSON(deal[HOMELESS_COLUMNS.PRICES]),
         },
         car: {
             [colsDeals.CAR_ID]: deal[colsDeals.CAR_ID],

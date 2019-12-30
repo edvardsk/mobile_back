@@ -23,6 +23,8 @@ const tableDealHistoryConfirmations = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMAT
 const tableDraftCars = SQL_TABLES.DRAFT_CARS;
 const tableDraftTrailers = SQL_TABLES.DRAFT_TRAILERS;
 const tableDraftDrivers = SQL_TABLES.DRAFT_DRIVERS;
+const tableCargoPrices = SQL_TABLES.CARGO_PRICES;
+const tableCurrencies = SQL_TABLES.CURRENCIES;
 
 const cols = table.COLUMNS;
 const colsCargos = tableCargos.COLUMNS;
@@ -41,6 +43,8 @@ const colsDealHistoryConfirmations = tableDealHistoryConfirmations.COLUMNS;
 const colsDraftCars = tableDraftCars.COLUMNS;
 const colsDraftTrailers = tableDraftTrailers.COLUMNS;
 const colsDraftDrivers = tableDraftDrivers.COLUMNS;
+const colsCargoPrices = tableCargoPrices.COLUMNS;
+const colsCurrencies = tableCurrencies.COLUMNS;
 
 const insertRecords = values => squelPostgres
     .insert()
@@ -177,6 +181,7 @@ const selectDealsByCompanyIdPaginationSorting = (companyId, limit, offset, sortC
 const selectRecordById = (id, userLanguageId) => squelPostgres
     .select()
     .field('d.*')
+    // cargo
     .field(`c.${colsCargos.UPLOADING_DATE_FROM}`, colsCargos.UPLOADING_DATE_FROM)
     .field(`c.${colsCargos.UPLOADING_DATE_TO}`, colsCargos.UPLOADING_DATE_TO)
     .field(`c.${colsCargos.DOWNLOADING_DATE_FROM}`, colsCargos.DOWNLOADING_DATE_FROM)
@@ -186,12 +191,25 @@ const selectRecordById = (id, userLanguageId) => squelPostgres
     .field(`c.${colsCargos.WIDTH}`, colsCargos.WIDTH)
     .field(`c.${colsCargos.HEIGHT}`, colsCargos.HEIGHT)
     .field(`c.${colsCargos.LENGTH}`, colsCargos.LENGTH)
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(
+            cpr.${colsCargoPrices.CURRENCY_ID}, cpr.${colsCargoPrices.NEXT_CURRENCY_ID}, cpr.${colsCargoPrices.PRICE}, cur.${colsCurrencies.CODE}
+            ))`)
+            .from(tableCargoPrices.NAME, 'cpr')
+            .where(`cpr.${colsCargoPrices.CARGO_ID} = c.id`)
+            .left_join(tableCurrencies.NAME, 'cur', `cur.id= cpr.${colsCargoPrices.CURRENCY_ID}`)
+            .toString()
+    })`, HOMELESS_COLUMNS.PRICES)
+    // car
     .field(`cr.${colsCars.CAR_MARK}`, colsCars.CAR_MARK)
     .field(`cr.${colsCars.CAR_MODEL}`, colsCars.CAR_MODEL)
     .field(`cr.${colsCars.CAR_WIDTH}`, colsCars.CAR_WIDTH)
     .field(`cr.${colsCars.CAR_HEIGHT}`, colsCars.CAR_HEIGHT)
     .field(`cr.${colsCars.CAR_LENGTH}`, colsCars.CAR_LENGTH)
     .field(`cr.${colsCars.CAR_CARRYING_CAPACITY}`, colsCars.CAR_CARRYING_CAPACITY)
+    // trailer
     .field('t.id', 'trailer_id')
     .field(`t.${colsTrailers.TRAILER_MARK}`, colsTrailers.TRAILER_MARK)
     .field(`t.${colsTrailers.TRAILER_MODEL}`, colsTrailers.TRAILER_MODEL)
@@ -199,9 +217,11 @@ const selectRecordById = (id, userLanguageId) => squelPostgres
     .field(`t.${colsTrailers.TRAILER_HEIGHT}`, colsTrailers.TRAILER_HEIGHT)
     .field(`t.${colsTrailers.TRAILER_LENGTH}`, colsTrailers.TRAILER_LENGTH)
     .field(`t.${colsTrailers.TRAILER_CARRYING_CAPACITY}`, colsTrailers.TRAILER_CARRYING_CAPACITY)
+    // driver
     .field('dr.id', 'driver_id')
     .field(`u.${colsUsers.FULL_NAME}`, colsUsers.FULL_NAME)
     .field(`CONCAT(php.${colsPhonePrefixes.CODE}, phn.${colsPhoneNumbers.NUMBER})`, HOMELESS_COLUMNS.FULL_PHONE_NUMBER)
+    // deal info
     .field(`ARRAY(${
         squelPostgres
             .select()
