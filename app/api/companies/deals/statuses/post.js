@@ -7,10 +7,13 @@ const DealsService = require('services/tables/deals');
 const CarsService = require('services/tables/cars');
 const DriversService = require('services/tables/drivers');
 const TrailersService = require('services/tables/trailers');
+const CargosService = require('services/tables/cargos');
 const CargoPointsService = require('services/tables/cargo-points');
 const DealPointsInfoService = require('services/tables/deal-points-info');
 const DealsStatusesServices = require('services/tables/deal-statuses');
+const DealsSubStatusesServices = require('services/tables/deal-sub-statuses');
 const DealsStatusesHistoryServices = require('services/tables/deal-statuses-history');
+const DealsSubStatusesHistoryServices = require('services/tables/deal-sub-statuses-history');
 const FilesService = require('services/tables/files');
 const DealsFilesService = require('services/tables/deals-to-files');
 const DealStatusesConfirmationsService = require('services/tables/deal-statuses-history-confirmations');
@@ -22,9 +25,11 @@ const PgJobService = require('services/pg-jobs');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
 const { DEAL_STATUSES_MAP } = require('constants/deal-statuses');
+const { DEAL_SUB_STATUSES_MAP } = require('constants/deal-sub-statuses');
 const { ACTION_TYPES } = require('constants/background');
 const { LOADING_TYPES_MAP } = require('constants/cargos');
 const { CAR_TYPES_MAP } = require('constants/cars');
+const { SUCCESS_CODES } = require('constants/http-codes');
 
 // formatters
 const DealsFormatters = require('formatters/deals');
@@ -33,6 +38,7 @@ const CargoPointsFormatters = require('formatters/cargo-points');
 const DealPointsInfoFormatters = require('formatters/deal-points-info');
 const FilesFormatters = require('formatters/files');
 const DealStatusesHistoryFormatters = require('formatters/deal-statuses-history');
+const DealSubStatusesHistoryFormatters = require('formatters/deal-sub-statuses-history');
 
 // helpers
 const { validateDealInstancesToConfirmedStatus } = require('helpers/validators/deals');
@@ -255,7 +261,48 @@ const setConfirmedStatus = async (req, res, next) => {
             return S3Service.putObject(bucket, path, data, contentType);
         }));
 
-        return success(res, {});
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const setCancelledStatus = async (req, res, next) => {
+    try {
+        const { user } = res.locals;
+        const { dealId } = req.params;
+
+        const transactionsList = [];
+
+        const [deal, failedDealStatus, cancelledDealSubStatus] = await Promise.all([
+            DealsService.getRecordStrict(dealId),
+            DealsStatusesServices.getRecordStrict(DEAL_STATUSES_MAP.FAILED),
+            DealsSubStatusesServices.getRecordStrict(DEAL_SUB_STATUSES_MAP.CANCELLED),
+        ]);
+        const dealStatusHistoryId = uuid();
+
+        const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, failedDealStatus.id, user.id);
+        const subStatusHistory = DealSubStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, cancelledDealSubStatus.id, user.id);
+
+        transactionsList.push(
+            DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory)
+        );
+
+        transactionsList.push(
+            DealsSubStatusesHistoryServices.addRecordAsTransaction(subStatusHistory)
+        );
+
+        transactionsList.push(
+            CargosService.editRecordIncreaseFreeCountAsTransaction(deal[colsDeals.CARGO_ID], 1),
+        );
+
+        transactionsList.push(
+            PgJobService.removeRecordByNameAndDataPathAsTransaction(ACTION_TYPES.AUTO_CANCEL_UNCONFIRMED_DEAL, dealId)
+        );
+
+        await TablesService.runTransaction(transactionsList);
+
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
     } catch (error) {
         next(error);
     }
@@ -263,4 +310,5 @@ const setConfirmedStatus = async (req, res, next) => {
 
 module.exports = {
     setConfirmedStatus,
+    setCancelledStatus,
 };
