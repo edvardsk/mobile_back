@@ -12,9 +12,7 @@ const CargosService = require('services/tables/cargos');
 const CargoPointsService = require('services/tables/cargo-points');
 const DealPointsInfoService = require('services/tables/deal-points-info');
 const DealsStatusesServices = require('services/tables/deal-statuses');
-const DealsSubStatusesServices = require('services/tables/deal-sub-statuses');
 const DealsStatusesHistoryServices = require('services/tables/deal-statuses-history');
-const DealsSubStatusesHistoryServices = require('services/tables/deal-sub-statuses-history');
 const FilesService = require('services/tables/files');
 const DealsFilesService = require('services/tables/deals-to-files');
 const DealStatusesConfirmationsService = require('services/tables/deal-statuses-history-confirmations');
@@ -27,7 +25,6 @@ const BackgroundService = require('services/background/creators');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
 const { DEAL_STATUSES_MAP } = require('constants/deal-statuses');
-const { DEAL_SUB_STATUSES_MAP } = require('constants/deal-sub-statuses');
 const { ACTION_TYPES } = require('constants/background');
 const { LOADING_TYPES_MAP } = require('constants/cargos');
 const { CAR_TYPES_MAP } = require('constants/cars');
@@ -40,7 +37,6 @@ const CargoPointsFormatters = require('formatters/cargo-points');
 const DealPointsInfoFormatters = require('formatters/deal-points-info');
 const FilesFormatters = require('formatters/files');
 const DealStatusesHistoryFormatters = require('formatters/deal-statuses-history');
-const DealSubStatusesHistoryFormatters = require('formatters/deal-sub-statuses-history');
 
 // helpers
 const { validateDealInstancesToConfirmedStatus } = require('helpers/validators/deals');
@@ -296,22 +292,16 @@ const setCancelledStatus = async (req, res, next) => {
 
         const transactionsList = [];
 
-        const [deal, failedDealStatus, cancelledDealSubStatus] = await Promise.all([
+        const [deal, failedDealStatus] = await Promise.all([
             DealsService.getRecordStrict(dealId),
-            DealsStatusesServices.getRecordStrict(DEAL_STATUSES_MAP.FAILED),
-            DealsSubStatusesServices.getRecordStrict(DEAL_SUB_STATUSES_MAP.CANCELLED),
+            DealsStatusesServices.getRecordStrict(DEAL_STATUSES_MAP.CANCELLED),
         ]);
         const dealStatusHistoryId = uuid();
 
         const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, failedDealStatus.id, user.id);
-        const subStatusHistory = DealSubStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, cancelledDealSubStatus.id, user.id);
 
         transactionsList.push(
             DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory)
-        );
-
-        transactionsList.push(
-            DealsSubStatusesHistoryServices.addRecordAsTransaction(subStatusHistory)
         );
 
         transactionsList.push(

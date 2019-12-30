@@ -12,9 +12,7 @@ const GeoService = require('services/google/geo');
 const CargosService = require('services/tables/cargos');
 const DealsService = require('services/tables/deals');
 const DealsStatusesService = require('services/tables/deal-statuses');
-const DealsSubStatusesService = require('services/tables/deal-sub-statuses');
 const DealsStatusesHistoryService = require('services/tables/deal-statuses-history');
-const DealsSubStatusesHistoryService = require('services/tables/deal-sub-statuses-history');
 const CarsService = require('services/tables/cars');
 const TrailersService = require('services/tables/trailers');
 const DriversService = require('services/tables/drivers');
@@ -25,14 +23,12 @@ const TablesService = require('services/tables');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { COUNTRIES_MAP } = require('constants/countries');
 const { DEAL_STATUSES_MAP } = require('constants/deal-statuses');
-const { DEAL_SUB_STATUSES_MAP } = require('constants/deal-sub-statuses');
 
 // formatters
 const PointTranslationsFormatters = require('formatters/point-translations');
 const GeoFormatters = require('formatters/geo');
 const GoogleGeoFormatters = require('formatters/google/geo');
 const DealStatusesHistoryFormatters = require('formatters/deal-statuses-history');
-const DealSubStatusesHistoryFormatters = require('formatters/deal-sub-statuses-history');
 
 const colsLanguages = SQL_TABLES.LANGUAGES.COLUMNS;
 const colsPoints = SQL_TABLES.POINTS.COLUMNS;
@@ -124,10 +120,9 @@ const autoCancelUnconfirmedDeal = async job => {
     logger.info(`received ${job.name} ${job.id}`);
     try {
         const dealStatusHistoryId = uuid();
-        const [deal, dealStatus, dealSubStatus] = await Promise.all([
+        const [deal, dealStatus] = await Promise.all([
             DealsService.getRecordStrict(dealId),
-            DealsStatusesService.getRecordStrict(DEAL_STATUSES_MAP.FAILED),
-            DealsSubStatusesService.getRecordStrict(DEAL_SUB_STATUSES_MAP.CANCELLED),
+            DealsStatusesService.getRecordStrict(DEAL_STATUSES_MAP.CANCELLED),
         ]);
 
         const driverId = deal[colsDeals.DRIVER_ID];
@@ -159,13 +154,11 @@ const autoCancelUnconfirmedDeal = async job => {
         }
 
         const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, dealStatus.id, null);
-        const subStatusHistory = DealSubStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealSubStatus.id, null, null);
 
         transactionsList = [
             ...transactionsList,
             CargosService.editRecordIncreaseFreeCountAsTransaction(deal[colsDeals.CARGO_ID], 1),
             DealsStatusesHistoryService.addRecordAsTransaction(statusHistory),
-            DealsSubStatusesHistoryService.addRecordAsTransaction(subStatusHistory),
         ];
 
         await TablesService.runTransaction(transactionsList);

@@ -473,23 +473,7 @@ const SQL_TABLES = {
             DEAL_ID: 'deal_id',
             INITIATOR_ID: 'initiator_id',
             DEAL_STATUS_ID: 'deal_status_id',
-            CREATED_AT: 'created_at',
-        },
-    },
-    DEAL_SUB_STATUSES: {
-        NAME: 'deal_sub_statuses',
-        COLUMNS: {
-            NAME: 'name',
-            CREATED_AT: 'created_at',
-        },
-    },
-    DEAL_SUB_STATUSES_HISTORY: {
-        NAME: 'deal_sub_statuses_history',
-        COLUMNS: {
-            DEAL_STATUS_HISTORY_ID: 'deal_status_history_id',
-            DEAL_SUB_STATUS_ID: 'deal_sub_status_id',
-            INITIATOR_ID: 'initiator_id',
-            DESCRIPTION: 'description',
+            COMMENT: 'comment',
             CREATED_AT: 'created_at',
         },
     },
