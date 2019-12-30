@@ -25,6 +25,8 @@ const tableDraftTrailers = SQL_TABLES.DRAFT_TRAILERS;
 const tableDraftDrivers = SQL_TABLES.DRAFT_DRIVERS;
 const tableCargoPrices = SQL_TABLES.CARGO_PRICES;
 const tableCurrencies = SQL_TABLES.CURRENCIES;
+const tableCarsStateNumbers = SQL_TABLES.CARS_STATE_NUMBERS;
+const tableTrailersNumbers = SQL_TABLES.TRAILERS_STATE_NUMBERS;
 
 const cols = table.COLUMNS;
 const colsCargos = tableCargos.COLUMNS;
@@ -45,6 +47,8 @@ const colsDraftTrailers = tableDraftTrailers.COLUMNS;
 const colsDraftDrivers = tableDraftDrivers.COLUMNS;
 const colsCargoPrices = tableCargoPrices.COLUMNS;
 const colsCurrencies = tableCurrencies.COLUMNS;
+const colsCarsStateNumbers = tableCarsStateNumbers.COLUMNS;
+const colsTrailersNumbers = tableTrailersNumbers.COLUMNS;
 
 const insertRecords = values => squelPostgres
     .insert()
@@ -209,6 +213,7 @@ const selectRecordById = (id, userLanguageId) => squelPostgres
     .field(`cr.${colsCars.CAR_HEIGHT}`, colsCars.CAR_HEIGHT)
     .field(`cr.${colsCars.CAR_LENGTH}`, colsCars.CAR_LENGTH)
     .field(`cr.${colsCars.CAR_CARRYING_CAPACITY}`, colsCars.CAR_CARRYING_CAPACITY)
+    .field(`csn.${colsCarsStateNumbers.NUMBER}`, HOMELESS_COLUMNS.CAR_STATE_NUMBER)
     // trailer
     .field('t.id', 'trailer_id')
     .field(`t.${colsTrailers.TRAILER_MARK}`, colsTrailers.TRAILER_MARK)
@@ -217,6 +222,7 @@ const selectRecordById = (id, userLanguageId) => squelPostgres
     .field(`t.${colsTrailers.TRAILER_HEIGHT}`, colsTrailers.TRAILER_HEIGHT)
     .field(`t.${colsTrailers.TRAILER_LENGTH}`, colsTrailers.TRAILER_LENGTH)
     .field(`t.${colsTrailers.TRAILER_CARRYING_CAPACITY}`, colsTrailers.TRAILER_CARRYING_CAPACITY)
+    .field(`tsn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
     // driver
     .field('dr.id', 'driver_id')
     .field(`u.${colsUsers.FULL_NAME}`, colsUsers.FULL_NAME)
@@ -266,6 +272,8 @@ const selectRecordById = (id, userLanguageId) => squelPostgres
     .left_join(tableDrivers.NAME, 'dr', `dr.id = d.${cols.DRIVER_ID}`)
     .left_join(tableUsers.NAME, 'u', `u.id = dr.${colsDrivers.USER_ID}`)
     .left_join(tableTrailers.NAME, 't', `t.${colsTrailers.CAR_ID} = d.${cols.CAR_ID}`)
+    .left_join(tableCarsStateNumbers.NAME, 'csn', `csn.${colsCarsStateNumbers.CAR_ID} = cr.id`)
+    .left_join(tableTrailersNumbers.NAME, 'tsn', `tsn.${colsTrailersNumbers.TRAILER_ID} = t.id`)
     .left_join(tableDealStatuses.NAME, 'ds', `ds.id = dsh.${colsDealHistory.DEAL_STATUS_ID}`)
     .left_join(tablePhoneNumbers.NAME, 'phn', `phn.${colsPhoneNumbers.USER_ID} = u.id`)
     .left_join(tablePhonePrefixes.NAME, 'php', `php.id = phn.${colsPhoneNumbers.PHONE_PREFIX_ID}`)

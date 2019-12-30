@@ -213,13 +213,7 @@ const formatRecordForResponse = (deal, userLanguageId) => {
             [colsCars.CAR_HEIGHT]: parseFloat(deal[colsCars.CAR_HEIGHT]),
             [colsCars.CAR_LENGTH]: parseFloat(deal[colsCars.CAR_LENGTH]),
             [colsCars.CAR_CARRYING_CAPACITY]: parseFloat(deal[colsCars.CAR_CARRYING_CAPACITY]),
-            trailer_id: deal['trailer_id'],
-            [colsTrailers.TRAILER_MARK]: deal[colsTrailers.TRAILER_MARK],
-            [colsTrailers.TRAILER_MODEL]: deal[colsTrailers.TRAILER_MODEL],
-            [colsTrailers.TRAILER_WIDTH]: parseFloat(deal[colsTrailers.TRAILER_WIDTH]),
-            [colsTrailers.TRAILER_HEIGHT]: parseFloat(deal[colsTrailers.TRAILER_HEIGHT]),
-            [colsTrailers.TRAILER_LENGTH]: parseFloat(deal[colsTrailers.TRAILER_LENGTH]),
-            [colsTrailers.TRAILER_CARRYING_CAPACITY]: parseFloat(deal[colsTrailers.TRAILER_CARRYING_CAPACITY]),
+            [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: deal[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
         },
         driver: {
             driver_id: deal['driver_id'],
@@ -227,6 +221,19 @@ const formatRecordForResponse = (deal, userLanguageId) => {
             [HOMELESS_COLUMNS.FULL_PHONE_NUMBER]: deal[HOMELESS_COLUMNS.FULL_PHONE_NUMBER],
         }
     };
+
+    if (deal['trailer_id']) {
+        result.trailer = {
+            trailer_id: deal['trailer_id'],
+            [colsTrailers.TRAILER_MARK]: deal[colsTrailers.TRAILER_MARK],
+            [colsTrailers.TRAILER_MODEL]: deal[colsTrailers.TRAILER_MODEL],
+            [colsTrailers.TRAILER_WIDTH]: parseFloat(deal[colsTrailers.TRAILER_WIDTH]),
+            [colsTrailers.TRAILER_HEIGHT]: parseFloat(deal[colsTrailers.TRAILER_HEIGHT]),
+            [colsTrailers.TRAILER_LENGTH]: parseFloat(deal[colsTrailers.TRAILER_LENGTH]),
+            [colsTrailers.TRAILER_CARRYING_CAPACITY]: parseFloat(deal[colsTrailers.TRAILER_CARRYING_CAPACITY]),
+            [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: deal[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
+        };
+    }
 
     const [uploadingPoints, downloadingPoints] = formatGeoPoints(deal, userLanguageId);
 
