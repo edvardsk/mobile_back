@@ -68,7 +68,7 @@ const validateDealItems = async (arr, companyId, cargoLoadingType, userLanguageI
             }
         }
         if (isValidUUID(carIdOrData)) {
-            const availableCar = await CarsService.getAvailableCarByIdAndCompanyId(carIdOrData, companyId, cargoDates);
+            const availableCar = await CarsService.getAvailableCarByIdAndCompanyId(carIdOrData, companyId, cargoDates, false);
             if (!availableCar) {
                 return {
                     position: i,
@@ -79,7 +79,7 @@ const validateDealItems = async (arr, companyId, cargoLoadingType, userLanguageI
             }
         }
         if (isValidUUID(trailerIdOrData)) {
-            const availableTrailer = await TrailersService.getAvailableTrailerByIdAndCompanyId(trailerIdOrData, companyId, cargoDates);
+            const availableTrailer = await TrailersService.getAvailableTrailerByIdAndCompanyId(trailerIdOrData, companyId, cargoDates, false);
             if (!availableTrailer) {
                 return {
                     position: i,
@@ -91,6 +91,44 @@ const validateDealItems = async (arr, companyId, cargoLoadingType, userLanguageI
         }
     }));
     return [invalidItems.filter(Boolean), availableCars, availableTrailers, availableDrivers];
+};
+
+
+const validateCarDealItems = async (arr, companyId, cargoLoadingType, userLanguageId) => {
+    const availableCars = [];
+    const availableTrailers = [];
+    const items = cargoLoadingType === LOADING_TYPES_MAP.FTL ? [...arr] : [arr[0]]; // use only first item for LTL (because drivers/cars/trailers the same for all items)
+    const invalidItems = await Promise.all(items.map(async (item, i) => {
+        const cargoId = item[HOMELESS_COLUMNS.CARGO_ID];
+        const carIdOrData = item[HOMELESS_COLUMNS.CAR_ID_OR_DATA];
+        const trailerIdOrData = item[HOMELESS_COLUMNS.TRAILER_ID_OR_DATA];
+        const cargo = await CargosService.getRecordStrict(cargoId, userLanguageId);
+        const cargoDates = formatCargoDates(cargo);
+
+        if (isValidUUID(carIdOrData)) {
+            const availableCar = await CarsService.getAvailableCarByIdAndCompanyId(carIdOrData, companyId, cargoDates, true);
+            if (!availableCar) {
+                return {
+                    position: i,
+                    type: ERRORS.DEALS.INVALID_CAR_ID,
+                };
+            } else {
+                availableCars.push(availableCar);
+            }
+        }
+        if (isValidUUID(trailerIdOrData)) {
+            const availableTrailer = await TrailersService.getAvailableTrailerByIdAndCompanyId(trailerIdOrData, companyId, cargoDates, true);
+            if (!availableTrailer) {
+                return {
+                    position: i,
+                    type: ERRORS.DEALS.INVALID_TRAILER_ID,
+                };
+            } else {
+                availableTrailers.push(availableTrailer);
+            }
+        }
+    }));
+    return [invalidItems.filter(Boolean), availableCars, availableTrailers];
 };
 
 const getDealsPaginationSorting = (companyId, limit, offset, sortColumn, asc, filter, userLanguageId) => (
@@ -135,4 +173,5 @@ module.exports = {
 
     checkOwnActiveDealExist,
     checkNextStatusAllowed,
+    validateCarDealItems,
 };
