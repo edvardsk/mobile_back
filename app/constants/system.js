@@ -92,6 +92,7 @@ const PERMISSIONS = {
     CREATE_CARGO_DEAL: 'create_cargo_deal',
     CHANGE_DEAL_STATUS_BASE: 'change_deal_status_base',
     CHANGE_DEAL_STATUS_ADVANCED: 'change_deal_status_advanced',
+    CREATE_CAR_DEAL: 'create_car_deal',
 
     VERIFY_DEAL_INSTANCE: 'verify_deal_instance',
     READ_LIST_DEALS: 'read_list_deals',

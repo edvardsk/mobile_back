@@ -356,6 +356,10 @@ const ROUTES = {
                     BASE: BASES.CONFIRMED,
                     POST: '',
                 },
+                CARS: {
+                    BASE: BASES.CARS,
+                    POST: '',
+                },
             },
         },
     },

@@ -92,8 +92,8 @@ const getAvailableCarsByIdsAndCompanyId = (ids, companyId) => (
     manyOrNone(selectAvailableCarsByIdsAndCompanyId(ids, companyId))
 );
 
-const getAvailableCarByIdAndCompanyId = (id, companyId, cargoDates) => (
-    oneOrNone(selectAvailableCarByIdAndCompanyId(id, companyId, cargoDates))
+const getAvailableCarByIdAndCompanyId = (id, companyId, cargoDates, checkExternalCars = false) => (
+    oneOrNone(selectAvailableCarByIdAndCompanyId(id, companyId, cargoDates, checkExternalCars))
 );
 
 const getRecordsByStateNumbers = numbers => (

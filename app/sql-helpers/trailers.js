@@ -304,7 +304,7 @@ const selectAvailableCountTrailersByCompanyId = (companyId, cargoDates, filter) 
         .toString();
 };
 
-const setAvailableTrailersForDealFilter = (expression, cargoDates, companyId) => {
+const setAvailableTrailersForDealFilter = (expression, cargoDates, companyId, checkExternalTrailers = false) => {
     const {
         upFrom, upTo, downTo
     } = cargoDates;
@@ -313,7 +313,7 @@ const setAvailableTrailersForDealFilter = (expression, cargoDates, companyId) =>
             .select()
             .field('DISTINCT(t2.id)')
             .from(table.NAME, 't2')
-            .where(`t2.${cols.COMPANY_ID} = '${companyId}'`)
+            .where(`t2.${cols.COMPANY_ID} ${checkExternalTrailers ? '<>' : '='} '${companyId}'`)
             .where(`t2.${cols.DELETED} = 'f'`)
             .where('dsh.id IS NULL OR dsh.id = ?', squelPostgres
                 .select()
@@ -370,14 +370,14 @@ const selectAvailableTrailersByIdsAndCompanyId = (ids, companyId) => squelPostgr
     .left_join(tableCars.NAME, 'c', `c.id = t.${cols.CAR_ID}`)
     .toString();
 
-const selectAvailableTrailerByIdAndCompanyId = (id, companyId, cargoDates) => {
+const selectAvailableTrailerByIdAndCompanyId = (id, companyId, cargoDates, checkExternalTrailers) => {
     let expression = squelPostgres
         .select()
         .field('t.*')
         .field('c.id', HOMELESS_COLUMNS.CAR_ID)
         .from(table.NAME, 't');
 
-    setAvailableTrailersForDealFilter(expression, cargoDates, companyId);
+    setAvailableTrailersForDealFilter(expression, cargoDates, companyId, checkExternalTrailers);
 
     return expression
         .where(`t.id = '${id}'`)
