@@ -23,6 +23,7 @@ const colsDraftDriversFiles = SQL_TABLES.DRAFT_DRIVERS_TO_FILES.COLUMNS;
 const colsDraftFiles = SQL_TABLES.DRAFT_FILES.COLUMNS;
 const colsDraftCarsFiles = SQL_TABLES.DRAFT_CARS_TO_FILES.COLUMNS;
 const colsDraftTrailersFiles = SQL_TABLES.DRAFT_TRAILERS_TO_FILES.COLUMNS;
+const colsDealsFiles = SQL_TABLES.DEALS_TO_FILES.COLUMNS;
 
 const formatStoringFile = (bucket, path) => `${bucket}/${path}`;
 
@@ -382,6 +383,36 @@ const prepareFilesToDelete = files => files.reduce((acc, file) => {
 
 }, [[], []]);
 
+const prepareFilesToStoreForDeals = (files, dealId) => Object.keys(files).reduce((acc, type) => {
+    const [dbFiles, dbDealsFiles, storageFiles] = acc;
+    files[type].forEach(file => {
+        const fileId = uuid();
+        const fileHash = uuid();
+        const filePath = `${fileHash}${file.originalname}`;
+        const fileUrl = formatStoringFile(AWS_S3_BUCKET_NAME, filePath);
+
+        const fileLabels = formatLabelsToStore(type);
+
+        dbFiles.push({
+            id: fileId,
+            [cols.NAME]: file.originalname,
+            [cols.LABELS]: fileLabels,
+            [cols.URL]: CryptService.encrypt(fileUrl),
+        });
+        dbDealsFiles.push({
+            [colsDealsFiles.DEAL_ID]: dealId,
+            [colsDealsFiles.FILE_ID]: fileId,
+        });
+        storageFiles.push({
+            bucket: AWS_S3_BUCKET_NAME,
+            path: filePath,
+            data: file.buffer,
+            contentType: file.mimetype,
+        });
+    });
+    return acc;
+}, [[], [], []]);
+
 const selectFilesToStore = (files, mapData) => {
     const result = {};
     Object.keys(mapData).forEach(prop => {
@@ -440,6 +471,7 @@ const mergeFilesWithDraft = (files, draftFiles) => {
     ];
 };
 
+
 module.exports = {
     formatBasicFileLabelsFromTypes,
     formatStoringFile,
@@ -457,6 +489,7 @@ module.exports = {
     prepareFilesToStoreForDraftTrailers,
     prepareFilesToStoreForTrailersFromDraft,
     prepareFilesToStoreForDraftDrivers,
+    prepareFilesToStoreForDeals,
     prepareFilesToDelete,
     selectFilesToStore,
     mergeFilesWithDraft,

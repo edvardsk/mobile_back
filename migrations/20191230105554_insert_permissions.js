@@ -1,13 +1,19 @@
 const FIRST_ROLES = require('./20191017143230_add_roles').ROLES;
 const CONTROL_ROLES = require('./20191023095323_insert_roles').ROLES;
 const DISPATCHER_ROLES = require('./20191026063335_insert_dispatcher_role.js').ROLES;
+const LOGISTICIAN_ROLES = require('./20191029090142_insert_logistician_role.js').ROLES;
+const DRIVER_ROLES = require('./20191101090430_insert_driver_role.js').ROLES;
 
 const { getRolesToPermissionsForDb } = require('../app/formatters/system');
 
 const PERMISSIONS = [
     {
-        id: 'fcc01990-723d-4702-99ab-a99bd1526e9c',
-        name: 'create_cargo_deal',
+        id: '6af7e5c4-1d0b-46b9-b5d0-bfe7e7eaa4cd',
+        name: 'change_deal_status_base',
+    },
+    {
+        id: 'c960d2fb-8ac0-4e5f-b35e-1b5daa6fa140',
+        name: 'change_deal_status_advanced',
     },
 ];
 
@@ -19,20 +25,37 @@ const ALL_ROLES = [
     ...FIRST_ROLES,
     ...CONTROL_ROLES,
     ...DISPATCHER_ROLES,
+    ...LOGISTICIAN_ROLES,
+    ...DRIVER_ROLES,
 ];
 
 const ROLES_WITH_PERMISSIONS = [
     ['admin', [
-        'create_cargo_deal',
+        'change_deal_status_base',
+        'change_deal_status_advanced',
     ]],
     ['manager', [
-        'create_cargo_deal',
+        'change_deal_status_base',
+        'change_deal_status_advanced',
     ]],
     ['transporter', [
-        'create_cargo_deal',
+        'change_deal_status_base',
+        'change_deal_status_advanced',
+    ]],
+    ['holder', [
+        'change_deal_status_base',
+        'change_deal_status_advanced',
     ]],
     ['dispatcher', [
-        'create_cargo_deal',
+        'change_deal_status_base',
+        'change_deal_status_advanced',
+    ]],
+    ['logistician', [
+        'change_deal_status_base',
+        'change_deal_status_advanced',
+    ]],
+    ['driver', [
+        'change_deal_status_base',
     ]],
 ];
 

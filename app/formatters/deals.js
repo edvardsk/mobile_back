@@ -1,4 +1,5 @@
 const uuid = require('uuid/v4');
+const { set } = require('lodash');
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
@@ -12,6 +13,7 @@ const { formatGeoPoints } = require('./cargos');
 
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
 const colsDealStatuses = SQL_TABLES.DEAL_HISTORY_STATUSES.COLUMNS;
+const colsDealStatusesConfirmation = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATIONS.COLUMNS;
 const colsCargo = SQL_TABLES.CARGOS.COLUMNS;
 
 const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, companyId, initiatorId, dealStatusId) => {
@@ -20,7 +22,7 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
     const generatedTrailerId = uuid();
 
     return arr.reduce((acc, item, i) => {
-        const [deals, dealHistory, newDrivers, newCars, newTrailers, editTrailers] = acc;
+        const [deals, dealHistory, dealStatusHistoryConfirmations, newDrivers, newCars, newTrailers, editTrailers] = acc;
         const cargoId = item[HOMELESS_COLUMNS.CARGO_ID];
         const driverIdOrData = item[HOMELESS_COLUMNS.DRIVER_ID_OR_DATA];
         const carIdOrData = item[HOMELESS_COLUMNS.CAR_ID_OR_DATA];
@@ -87,13 +89,22 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
             [colsDeals.NAME]: item[colsDeals.NAME] || null,
         });
 
+        const dealHistoryId = uuid();
         dealHistory.push({
+            id: dealHistoryId,
             [colsDealStatuses.DEAL_ID]: dealId,
             [colsDealStatuses.INITIATOR_ID]: initiatorId,
             [colsDealStatuses.DEAL_STATUS_ID]: dealStatusId,
         });
+
+        dealStatusHistoryConfirmations.push({
+            [colsDealStatusesConfirmation.DEAL_STATUS_HISTORY_ID]: dealHistoryId,
+            [colsDealStatusesConfirmation.CONFIRMED_BY_TRANSPORTER]: true, // todo: false for FORWARDER
+            [colsDealStatusesConfirmation.CONFIRMED_BY_HOLDER]: false,
+        });
+
         return acc;
-    }, [[], [], [], [], [], []]);
+    }, [[], [], [], [], [], [], []]);
 };
 
 const formatAllInstancesToSaveCarDeal = (arr, cargoLoadingType, companyId, initiatorId, dealStatusId) => {
@@ -165,8 +176,35 @@ const formatRecordForList = (deal, userLanguageId) => {
     };
 };
 
+const separatePointsInConfirmedRequest = body => Object.keys(body).reduce((acc, key) => {
+    const [uploadingPoints, downloadingPoints] = acc;
+    const keySplit = key.split('.');
+    if (keySplit[0] === HOMELESS_COLUMNS.UPLOADING_POINT) {
+        set(uploadingPoints, `${keySplit[1]}.${keySplit[2]}`, body[key]);
+    } else if (keySplit[0] === HOMELESS_COLUMNS.DOWNLOADING_POINT) {
+        set(downloadingPoints, `${keySplit[1]}.${keySplit[2]}`, body[key]);
+    }
+    return acc;
+}, [{}, {}]);
+
+const formatRecordToEditDataForConfirmedStatusForHolder = body => ({
+    [colsDeals.DEPARTURE_CUSTOMS_COUNTRY]: body[colsDeals.DEPARTURE_CUSTOMS_COUNTRY] || null,
+    [colsDeals.DEPARTURE_CUSTOMS_PERSON_FULL_NAME]: body[colsDeals.DEPARTURE_CUSTOMS_PERSON_FULL_NAME] || null,
+    [colsDeals.DEPARTURE_CUSTOMS_PERSON_FULL_PHONE_NUMBER]: body[colsDeals.DEPARTURE_CUSTOMS_PERSON_FULL_PHONE_NUMBER] || null,
+    [colsDeals.ARRIVAL_CUSTOMS_COUNTRY]: body[colsDeals.DEPARTURE_CUSTOMS_COUNTRY] || null,
+    [colsDeals.ARRIVAL_CUSTOMS_PERSON_FULL_NAME]: body[colsDeals.DEPARTURE_CUSTOMS_PERSON_FULL_NAME] || null,
+    [colsDeals.ARRIVAL_CUSTOMS_PERSON_FULL_PHONE_NUMBER]: body[colsDeals.DEPARTURE_CUSTOMS_PERSON_FULL_PHONE_NUMBER] || null,
+    [colsDeals.TNVED_CODE]: body[colsDeals.TNVED_CODE] || null,
+    [colsDeals.INVOICE_CURRENCY_ID]: body[colsDeals.INVOICE_CURRENCY_ID] || null,
+    [colsDeals.INVOICE_PRICE]: body[colsDeals.INVOICE_PRICE] || null,
+    [colsDeals.STANDARD_LOADING_TIME_HOURS]: body[colsDeals.STANDARD_LOADING_TIME_HOURS] || null,
+    [colsDeals.SPECIAL_REQUIREMENTS]: body[colsDeals.SPECIAL_REQUIREMENTS] || null,
+});
+
 module.exports = {
     formatAllInstancesToSave,
     formatAllInstancesToSaveCarDeal,
     formatRecordForList,
+    separatePointsInConfirmedRequest,
+    formatRecordToEditDataForConfirmedStatusForHolder,
 };

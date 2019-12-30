@@ -38,14 +38,19 @@ const getDriversDeals = require('./drivers/deals/get');
 const postDealsCargos = require('./deals/cargos/post');
 const postDealsCars = require('./deals/cars/post');
 const getDeals = require('./deals/get');
+const postDealsStatuses  = require('./deals/statuses/post');
 
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
-const { validate } = require('api/middlewares/validator');
+const {
+    validate,
+    validateChangeDealStatus,
+} = require('api/middlewares/validator');
 const { formDataHandler, createOrUpdateDataOnStep3 } = require('api/middlewares/files');
 
 // constants
 const { PERMISSIONS, ROLES } = require('constants/system');
+const { DEAL_STATUSES_MAP } = require('constants/deal-statuses');
 
 // helpers
 const ValidatorSchemes = require('helpers/validators/schemes');
@@ -568,6 +573,20 @@ router.get(
     validate(ValidatorSchemes.dealsFilterQuery, 'query'),
     injectCompanyData,
     getDeals.getListDeals,
+);
+
+router.post(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.STATUSES.BASE +
+    ROUTES.COMPANIES.DEALS.STATUSES.CONFIRMED.BASE + ROUTES.COMPANIES.DEALS.STATUSES.CONFIRMED.POST,
+    isHasPermissions([PERMISSIONS.CHANGE_DEAL_STATUS_ADVANCED]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredDealId, 'params'),
+    formDataHandler(uploadData), // uploading files middleware
+    validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
+    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_MAP.CONFIRMED }), 'params'),
+    validateChangeDealStatus(DEAL_STATUSES_MAP.CONFIRMED),
+    postDealsStatuses.setConfirmedStatus,
 );
 
 module.exports = router;

@@ -13,6 +13,9 @@ const DOCUMENTS = {
     VEHICLE_REGISTRATION_PASSPORT: 'vehicle_registration_passport',
     VEHICLE_TECHNICAL_INSPECTION: 'vehicle_technical_inspection',
     VEHICLE_PHOTO: 'vehicle_photo',
+    CARGO_PHOTO: 'cargo_photo',
+    TNVED_FILE: 'tnved_file',
+    INVOICE_FILE: 'invoice_file',
 };
 
 const DOCUMENTS_SET = new Set(Object.values(DOCUMENTS));

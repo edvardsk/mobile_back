@@ -62,23 +62,22 @@ const verifyDriver = async (req, res, next) => {
             driverData = DriversFormatters.formatRecordAsVerified();
         }
         let confirmationHash = '';
-        if (driver[colsDrivers.SHADOW]) {
-            driverData = DriversFormatters.formatRecordAsNotShadow(driverData);
 
-            confirmationHash = uuid();
-            const inviteExpirationDate = moment().add(+INVITE_EXPIRATION_VALUE, INVITE_EXPIRATION_UNIT).toISOString();
-            const emailConfirmationData = EmailConfirmationFormatters.formatRecordToSave(targetUserId, confirmationHash, currentUserId, inviteExpirationDate);
-
-            transactionsList.push(
-                EmailConfirmationService.addRecordAsTransaction(emailConfirmationData)
-            );
-        }
         if (!isEmpty(driverData)) {
             transactionsList.push(
                 DriversService.editDriverAsTransaction(driverId, driverData)
             );
         }
         if (draftDriver) {
+            if (driver[colsDrivers.SHADOW]) {
+                confirmationHash = uuid();
+                const inviteExpirationDate = moment().add(+INVITE_EXPIRATION_VALUE, INVITE_EXPIRATION_UNIT).toISOString();
+                const emailConfirmationData = EmailConfirmationFormatters.formatRecordToSave(targetUserId, confirmationHash, currentUserId, inviteExpirationDate);
+
+                transactionsList.push(
+                    EmailConfirmationService.addRecordAsTransaction(emailConfirmationData)
+                );
+            }
             const phoneNumber = draftDriver[colsDraftDrivers.NUMBER];
             const phonePrefixId = draftDriver[colsDraftDrivers.PHONE_PREFIX_ID];
 

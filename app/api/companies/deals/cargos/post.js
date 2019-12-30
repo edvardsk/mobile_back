@@ -15,6 +15,7 @@ const UsersCompaniesService = require('services/tables/users-to-companies');
 const DealsService = require('services/tables/deals');
 const DealStatusesService = require('services/tables/deal-statuses');
 const DealStatusesHistoryService = require('services/tables/deal-statuses-history');
+const DealStatusesHistoryConfirmationsService = require('services/tables/deal-statuses-history-confirmations');
 const TablesService = require('services/tables');
 const BackgroundService = require('services/background/creators');
 
@@ -139,7 +140,7 @@ const createCargoDeal = async (req, res, next) => {
         /* create all shadow records */
         const dealCreatedStatus = await DealStatusesService.getRecordStrict(DEAL_STATUSES_MAP.CREATED);
         const [
-            deals, dealStatusesHistory, newDrivers, newCars, newTrailers, editTrailers
+            deals, dealStatusesHistory, dealStatusHistoryConfirmations, newDrivers, newCars, newTrailers, editTrailers
         ] = formatAllInstancesToSave(body, availableTrailers, cargoLoadingType, company.id, user.id, dealCreatedStatus.id);
 
         if (newDrivers.length) {
@@ -190,10 +191,7 @@ const createCargoDeal = async (req, res, next) => {
             ...transactionsList,
             DealsService.addRecordsAsTransaction(deals),
             DealStatusesHistoryService.addRecordsAsTransaction(dealStatusesHistory),
-        ];
-
-        transactionsList = [
-            ...transactionsList,
+            DealStatusesHistoryConfirmationsService.addRecordsAsTransaction(dealStatusHistoryConfirmations),
             ...Object.keys(takenCargos).map(id => CargosService.editRecordDecreaseFreeCountAsTransaction(id, takenCargos[id])),
         ];
 

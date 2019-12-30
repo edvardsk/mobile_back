@@ -1,9 +1,10 @@
-// const { oneOrNone } = require('db');
+const { many } = require('db');
 
 // sql-helpers
 const {
     insertRecords,
     deleteRecordsByCargoId,
+    selectRecordsByCargoId,
 } = require('sql-helpers/cargo-points');
 
 // constants
@@ -13,7 +14,10 @@ const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MAN
 
 const removeRecordsByCargoIdAsTransaction = cargoId => [deleteRecordsByCargoId(cargoId), OPERATIONS.MANY_OR_NONE];
 
+const getRecordsByCargoId = cargoId => many(selectRecordsByCargoId(cargoId));
+
 module.exports = {
     addRecordsAsTransaction,
     removeRecordsByCargoIdAsTransaction,
+    getRecordsByCargoId,
 };
