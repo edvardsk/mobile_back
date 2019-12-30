@@ -180,6 +180,41 @@ const autoCancelUnconfirmedDeal = async job => {
     }
 };
 
+const autoSetGoingToUploadDealStatus = async job => {
+    const { dealId } = job.data;
+
+    logger.info(`received ${job.name} ${job.id}`);
+    try {
+        const dealStatusHistoryId = uuid();
+        const [deal, dealStatus] = await Promise.all([
+            DealsService.getRecordStrict(dealId),
+            DealsStatusesService.getRecordStrict(DEAL_STATUSES_MAP.GOING_TO_UPLOADING),
+        ]);
+
+        if (deal[HOMELESS_COLUMNS.DEAL_STATUS_NAME] === DEAL_STATUSES_MAP.CONFIRMED) {
+            const transactionsList = [];
+
+            const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, dealStatus.id, null);
+
+            transactionsList.push(
+                DealsStatusesHistoryService.addRecordAsTransaction(statusHistory)
+            );
+
+            await TablesService.runTransaction(transactionsList);
+        } else {
+            logger.info(`Job id: ${job.id} didn't do anything`);
+        }
+
+        await job.done();
+        logger.info(`Job completed id: ${job.id}`);
+
+    } catch (err) {
+        logger.error(`Job failed id: ${job.id}`);
+        await job.done(err);
+        onError(err);
+    }
+};
+
 const onError = error => {
     logger.error(error);
 };
@@ -188,4 +223,5 @@ module.exports = {
     translateCoordinates,
     extractExchangeRate,
     autoCancelUnconfirmedDeal,
+    autoSetGoingToUploadDealStatus,
 };
