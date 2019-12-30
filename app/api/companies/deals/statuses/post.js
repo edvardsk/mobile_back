@@ -52,6 +52,7 @@ const setConfirmedStatus = async (req, res, next) => {
         const transporterCompanyId = deal[colsDeals.TRANSPORTER_COMPANY_ID];
         const holderCompanyId = deal[colsCargos.COMPANY_ID];
         const confirmedByTransporter = deal[colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER];
+        const dealStatusConfirmationId = deal[HOMELESS_COLUMNS.DEAL_STATUS_CONFIRMATION_ID];
 
         const transactionsList = [];
         let filesToStore = [];
@@ -67,6 +68,13 @@ const setConfirmedStatus = async (req, res, next) => {
             transactionsList.push(
                 DealsService.editRecordAsTransaction(dealId, {
                     [colsDeals.DRIVER_ID]: driverId,
+                })
+            );
+
+            const dealStatusConfirmationId = deal[HOMELESS_COLUMNS.DEAL_STATUS_CONFIRMATION_ID];
+            transactionsList.push(
+                DealStatusesConfirmationsService.editRecordAsTransaction(dealStatusConfirmationId, {
+                    [colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER]: true,
                 })
             );
 
@@ -217,17 +225,16 @@ const setConfirmedStatus = async (req, res, next) => {
             }
 
             if (deal[colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER]) { // move to next step
-                const id = deal[HOMELESS_COLUMNS.DEAL_STATUS_CONFIRMATION_ID];
                 transactionsList.push(
-                    DealStatusesConfirmationsService.editRecordAsTransaction(id, {
+                    DealStatusesConfirmationsService.editRecordAsTransaction(dealStatusConfirmationId, {
                         [colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER]: true,
                     })
                 );
 
-                const confirmedDealStatusId = await DealsStatusesServices.getRecordStrict(DEAL_STATUSES_MAP.CONFIRMED);
+                const confirmedDealStatus = await DealsStatusesServices.getRecordStrict(DEAL_STATUSES_MAP.CONFIRMED);
                 const dealStatusHistoryId = uuid();
 
-                const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, confirmedDealStatusId.id, user.id);
+                const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, confirmedDealStatus.id, user.id);
 
                 transactionsList.push(
                     DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory)
