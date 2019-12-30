@@ -1,6 +1,7 @@
 const squel = require('squel');
 const { get } = require('lodash');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
+const { IN_WORK_STATUSES_LIST } = require('constants/deal-statuses');
 
 const squelPostgres = squel.useFlavour('postgres');
 
@@ -18,6 +19,10 @@ const tableDrivers = SQL_TABLES.DRIVERS;
 const tableUsers = SQL_TABLES.USERS;
 const tablePhoneNumbers = SQL_TABLES.PHONE_NUMBERS;
 const tablePhonePrefixes = SQL_TABLES.PHONE_PREFIXES;
+const tableDealHistoryConfirmations = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATIONS;
+const tableDraftCars = SQL_TABLES.DRAFT_CARS;
+const tableDraftTrailers = SQL_TABLES.DRAFT_TRAILERS;
+const tableDraftDrivers = SQL_TABLES.DRAFT_DRIVERS;
 
 const cols = table.COLUMNS;
 const colsCargos = tableCargos.COLUMNS;
@@ -32,11 +37,23 @@ const colsDrivers = tableDrivers.COLUMNS;
 const colsUsers = tableUsers.COLUMNS;
 const colsPhoneNumbers = tablePhoneNumbers.COLUMNS;
 const colsPhonePrefixes = tablePhonePrefixes.COLUMNS;
+const colsDealHistoryConfirmations = tableDealHistoryConfirmations.COLUMNS;
+const colsDraftCars = tableDraftCars.COLUMNS;
+const colsDraftTrailers = tableDraftTrailers.COLUMNS;
+const colsDraftDrivers = tableDraftDrivers.COLUMNS;
 
 const insertRecords = values => squelPostgres
     .insert()
     .into(table.NAME)
     .setFieldsRows(values)
+    .returning('*')
+    .toString();
+
+const updateRecord = (id, data) => squelPostgres
+    .update()
+    .table(table.NAME)
+    .setFields(data)
+    .where(`id = '${id}'`)
     .returning('*')
     .toString();
 
@@ -93,7 +110,7 @@ const selectDealsByCompanyIdPaginationSorting = (companyId, limit, offset, sortC
         .field(`ARRAY(${
             squelPostgres
                 .select()
-                .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
                 .from(tableCargoPoints.NAME, 'cp')
                 .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
                 .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
@@ -105,7 +122,7 @@ const selectDealsByCompanyIdPaginationSorting = (companyId, limit, offset, sortC
         .field(`ARRAY(${
             squelPostgres
                 .select()
-                .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+                .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
                 .from(tableCargoPoints.NAME, 'cp')
                 .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
                 .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
@@ -188,7 +205,7 @@ const selectRecordById = (id, userLanguageId) => squelPostgres
     .field(`ARRAY(${
         squelPostgres
             .select()
-            .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+            .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
             .from(tableCargoPoints.NAME, 'cp')
             .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
             .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
@@ -200,7 +217,7 @@ const selectRecordById = (id, userLanguageId) => squelPostgres
     .field(`ARRAY(${
         squelPostgres
             .select()
-            .field(`row_to_json(row(ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+            .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
             .from(tableCargoPoints.NAME, 'cp')
             .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
             .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
@@ -210,6 +227,8 @@ const selectRecordById = (id, userLanguageId) => squelPostgres
             .toString()
     })`, HOMELESS_COLUMNS.DOWNLOADING_POINTS)
     .field(`ds.${colsDealStatuses.NAME}`, HOMELESS_COLUMNS.DEAL_STATUS)
+    .field(`dsc.${colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER}`, colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER)
+    .field(`dsc.${colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER}`, colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER)
     .from(table.NAME, 'd')
     .where(`d.id = '${id}'`)
     .where('dsh.id = ?',
@@ -230,12 +249,98 @@ const selectRecordById = (id, userLanguageId) => squelPostgres
     .left_join(tableDealStatuses.NAME, 'ds', `ds.id = dsh.${colsDealHistory.DEAL_STATUS_ID}`)
     .left_join(tablePhoneNumbers.NAME, 'phn', `phn.${colsPhoneNumbers.USER_ID} = u.id`)
     .left_join(tablePhonePrefixes.NAME, 'php', `php.id = phn.${colsPhoneNumbers.PHONE_PREFIX_ID}`)
+    .left_join(tableDealHistoryConfirmations.NAME, 'dsc', `dsc.${colsDealHistoryConfirmations.DEAL_STATUS_HISTORY_ID} = dsh.id`)
+    .limit(1)
+    .toString();
+
+const selectRecordWithInstancesInfoById = id => squelPostgres
+    .select()
+    .field('d.*')
+    .field(`c.${colsCargos.COMPANY_ID}`)
+    .field(`c.${colsCargos.GROSS_WEIGHT}`)
+    .field(`c.${colsCargos.WIDTH}`)
+    .field(`c.${colsCargos.HEIGHT}`)
+    .field(`c.${colsCargos.LENGTH}`)
+    .field(`c.${colsCargos.UPLOADING_DATE_FROM}`)
+    .field(`c.${colsCargos.DOWNLOADING_DATE_TO}`)
+    .field(`c.${colsCargos.LOADING_TYPE}`)
+
+    .field(`ds.${colsDealStatuses.NAME}`, HOMELESS_COLUMNS.DEAL_STATUS_NAME)
+    .field('dsc.id', HOMELESS_COLUMNS.DEAL_STATUS_CONFIRMATION_ID)
+    .field(`dsc.${colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER}`, colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER)
+    .field(`dsc.${colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER}`, colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER)
+
+
+    .field(`crs.${colsCars.SHADOW}`, HOMELESS_COLUMNS.CAR_SHADOW)
+    .field(`crs.${colsCars.VERIFIED}`, HOMELESS_COLUMNS.CAR_VERIFIED)
+    .field('dcrs.id', HOMELESS_COLUMNS.DRAFT_CAR_ID)
+
+    .field(`t.${colsTrailers.SHADOW}`, HOMELESS_COLUMNS.TRAILER_SHADOW)
+    .field(`t.${colsTrailers.VERIFIED}`, HOMELESS_COLUMNS.TRAILER_VERIFIED)
+    .field('dt.id', HOMELESS_COLUMNS.DRAFT_TRAILER_ID)
+
+    .field(`dr.${colsDrivers.SHADOW}`, HOMELESS_COLUMNS.DRIVER_SHADOW)
+    .field(`dr.${colsDrivers.VERIFIED}`, HOMELESS_COLUMNS.DRIVER_VERIFIED)
+    .field('ddr.id', HOMELESS_COLUMNS.DRAFT_DRIVER_ID)
+
+    .from(table.NAME, 'd')
+    .where(`d.id = '${id}'`)
+    .left_join(tableCargos.NAME, 'c', `c.id = d.${cols.CARGO_ID}`)
+
+    .left_join(tableDealHistory.NAME, 'dh', `dh.${colsDealHistory.DEAL_ID} = d.id`)
+    .left_join(tableDealStatuses.NAME, 'ds', `ds.id = dh.${colsDealHistory.DEAL_STATUS_ID}`)
+    .left_join(tableDealHistoryConfirmations.NAME, 'dsc', `dsc.${colsDealHistoryConfirmations.DEAL_STATUS_HISTORY_ID} = dh.id`)
+
+    .left_join(tableCars.NAME, 'crs', `crs.id = d.${cols.CAR_ID}`)
+    .left_join(tableDraftCars.NAME, 'dcrs', `dcrs.${colsDraftCars.CAR_ID} = d.${cols.CAR_ID}`)
+    .left_join(tableTrailers.NAME, 't', `t.id = d.${cols.TRAILER_ID}`)
+    .left_join(tableDraftTrailers.NAME, 'dt', `dt.${colsDraftTrailers.TRAILER_ID} = d.${cols.TRAILER_ID}`)
+    .left_join(tableDrivers.NAME, 'dr', `dr.id = d.${cols.DRIVER_ID}`)
+    .left_join(tableDraftDrivers.NAME, 'ddr', `ddr.${colsDraftDrivers.DRIVER_ID} = d.${cols.DRIVER_ID}`)
+
+    .order(`dh.${colsDealHistory.CREATED_AT}`, false)
+    .limit(1)
+    .toString();
+
+const selectDealsInProcessByRangeAndCarId = (carId, startDate, endDate) => squelPostgres
+    .select()
+    .field('d.*')
+    .field(`c.${colsCargos.GROSS_WEIGHT}`)
+    .field(`c.${colsCargos.WIDTH}`)
+    .field(`c.${colsCargos.HEIGHT}`)
+    .field(`c.${colsCargos.LENGTH}`)
+
+    .from(table.NAME, 'd')
+    .where(`d.${cols.CAR_ID} = '${carId}'`)
+    .where(
+        squel
+            .expr()
+            .and(`c.${colsCargos.UPLOADING_DATE_FROM} >= '${startDate}' AND c.${colsCargos.UPLOADING_DATE_FROM} <= '${endDate}'`)
+            .or(`c.${colsCargos.DOWNLOADING_DATE_TO} > '${startDate}' AND c.${colsCargos.DOWNLOADING_DATE_TO} <= '${endDate}'`)
+    )
+    .where(`ds.${colsDealStatuses.NAME} IN ?`, IN_WORK_STATUSES_LIST)
+    .where('dh.id = ?',
+        squelPostgres
+            .select()
+            .field('dh2.id')
+            .from(tableDealHistory.NAME, 'dh2')
+            .where(`d.id = dh2.${colsDealHistory.DEAL_ID}`)
+            .order(`dh2.${colsDealHistory.CREATED_AT}`, false)
+            .limit(1)
+    )
+    .left_join(tableCargos.NAME, 'c', `c.id = d.${cols.CARGO_ID}`)
+    .left_join(tableDealHistory.NAME, 'dh', `dh.${colsDealHistory.DEAL_ID} = d.id`)
+    .left_join(tableDealStatuses.NAME, 'ds', `ds.id = dh.${colsDealHistory.DEAL_STATUS_ID}`)
+    .left_join(tableCars.NAME, 'crs', `crs.id = d.${cols.CAR_ID}`)
     .toString();
 
 module.exports = {
     insertRecords,
+    updateRecord,
     selectDealsByCompanyIdPaginationSorting,
     selectCountDealsByCompanyId,
     setAvailableDealsFilter,
     selectRecordById,
+    selectRecordWithInstancesInfoById,
+    selectDealsInProcessByRangeAndCarId,
 };

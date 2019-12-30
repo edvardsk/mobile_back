@@ -62,6 +62,9 @@ const BASES = {
     EXCHANGE_RATES: '/exchange-rates',
     VERIFY: '/verify',
     REJECT: '/reject',
+    STATUSES: '/statuses',
+    CONFIRM: '/confirm',
+    CANCEL: '/cancel',
 };
 
 const IDS = {
@@ -352,6 +355,17 @@ const ROUTES = {
             CARS: {
                 BASE: BASES.CARS,
                 POST: '',
+            },
+            STATUSES: {
+                BASE: IDS.DEAL_ID + BASES.STATUSES,
+                CONFIRM: {
+                    BASE: BASES.CONFIRM,
+                    POST: '',
+                },
+                CANCEL: {
+                    BASE: BASES.CANCEL,
+                    POST: '',
+                },
             },
         },
     },

@@ -54,7 +54,7 @@ const editTrailer = async (req, res, next) => {
             const trailerData = TrailersFormatters.formatTrailerToEdit(body);
 
             transactionsList.push(
-                TrailersService.editRecordAsTransaction(trailerId, trailerData)
+                TrailersService.editRecordAsTransaction(trailerId, TrailersFormatters.formatRecordAsNotShadow(trailerData))
             );
 
             const trailerFromDb = await TrailersService.getRecordStrict(trailerId);
@@ -118,14 +118,16 @@ const editTrailer = async (req, res, next) => {
             const dangerClassIdFromDb = trailerFromDb[colsTrailers.TRAILER_DANGER_CLASS_ID];
 
             const [oldDangerClass, newDangerClass] = await Promise.all([
-                DangerClassesService.getRecord(dangerClassIdFromDb),
+                dangerClassIdFromDb && DangerClassesService.getRecord(dangerClassIdFromDb),
                 DangerClassesService.getRecord(dangerClassId),
             ]);
 
-            const oldDangerClassName = oldDangerClass[colsDangerClasses.NAME];
+            const oldDangerClassName = oldDangerClass && oldDangerClass[colsDangerClasses.NAME];
             const newDangerClassName = newDangerClass[colsDangerClasses.NAME];
 
-            if (isDangerous(oldDangerClassName) && !isDangerous(newDangerClassName)) { // remove old file with danger class
+            if (!trailerFromDb[colsTrailers.SHADOW] && (
+                isDangerous(oldDangerClassName) && !isDangerous(newDangerClassName)
+            )) { // remove old file with danger class
                 const filesToDelete = await FilesService.getFilesByTrailerIdAndLabels(trailerId, [DOCUMENTS.DANGER_CLASS]);
 
                 if (filesToDelete.length) {

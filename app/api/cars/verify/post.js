@@ -49,16 +49,12 @@ const verifyCar = async (req, res, next) => {
         if (!car[colsCars.VERIFIED]) {
             carData = CarsFormatters.formatRecordAsVerified();
         }
-        if (car[colsCars.SHADOW]) {
-            carData = CarsFormatters.formatRecordAsNotShadow(carData);
-        }
 
         if (draftCar) {
             carData = {
                 ...carData,
                 ...CarsFormatters.formatRecordToUpdateFromDraft(draftCar),
                 ...CarsFormatters.formatRecordAsNotShadow(),
-                ...CarsFormatters.formatRecordAsVerified(),
             };
 
             const draftFiles = await DraftFilesService.getFilesByDraftCarId(draftCar.id);

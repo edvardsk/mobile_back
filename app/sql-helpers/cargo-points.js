@@ -26,8 +26,16 @@ const deleteRecordsByCargoId = cargoId => squelPostgres
     .returning('*')
     .toString();
 
+const selectRecordsByCargoId = cargoId => squelPostgres
+    .select()
+    .field('*')
+    .field(`ST_AsText(${cols.COORDINATES})`, cols.COORDINATES)
+    .from(table.NAME)
+    .where(`${cols.CARGO_ID} = '${cargoId}'`)
+    .toString();
 
 module.exports = {
     insertRecords,
     deleteRecordsByCargoId,
+    selectRecordsByCargoId,
 };

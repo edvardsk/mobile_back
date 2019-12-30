@@ -23,10 +23,12 @@ const CarsService = require('services/tables/cars');
 const TrailersService = require('services/tables/trailers');
 const DriversService = require('services/tables/drivers');
 const TNVEDCodesService = require('services/tables/tnved-codes');
+const DealsService = require('services/tables/deals');
 
 // constants
 const { ERRORS } = require('constants/errors');
 const { HOMELESS_COLUMNS, SQL_TABLES } = require('constants/tables');
+const { DEAL_STATUSES_MAP } = require('constants/deal-statuses');
 
 // helpers
 const {
@@ -38,6 +40,11 @@ const {
     compareYears,
     validateDownloadingDateMinimum,
 } = require('helpers/validators/custom');
+const ValidatorSchemes = require('helpers/validators/schemes');
+
+const colsDeals = SQL_TABLES.DEALS.COLUMNS;
+const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
+const colsDealsStatusesConfirmations = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATIONS.COLUMNS;
 
 const yearRegex = /^[0-9]{1,4}$/;
 
@@ -287,6 +294,20 @@ ajv.addKeyword('optional_driver_in_company_not_exists', {
     validate: DriversService.checkIsOptionalDriverInCompanyExists,
 });
 
+ajv.addKeyword('own_active_deal_not_exists', {
+    async: true,
+    type: 'string',
+    validate: DealsService.checkOwnActiveDealExist,
+});
+
+ajv.addKeyword('deal_status_not_allowed', {
+    async: true,
+    type: 'string',
+    validate: DealsService.checkNextStatusAllowed,
+});
+
+// parsing
+
 ajv.addKeyword('parse_string_to_json', {
     modifying: true,
     schema: false,
@@ -321,6 +342,8 @@ ajv.addKeyword('downloading_date_to_minimum', {
     type: 'string',
     validate: validateDownloadingDateMinimum,
 });
+
+// custom formats
 
 ajv.addFormat('year', {
     validate: (yearString) => yearRegex.test(yearString),
@@ -453,8 +476,103 @@ const validateEconomicPercentsSum = async (req, res, next) => {
     }
 };
 
+const validateChangeDealStatus = (nextStatus) => async (req, res, next) => {
+    try {
+        let data = req.body;
+
+        const { dealId } = req.params;
+        const { company } = res.locals;
+
+        const deal = await DealsService.getRecordStrict(dealId);
+        const transporterCompanyId = deal[colsDeals.TRANSPORTER_COMPANY_ID];
+        const holderCompanyId = deal[colsCargos.COMPANY_ID];
+
+        let scheme = null;
+
+        switch (nextStatus) {
+        case DEAL_STATUSES_MAP.CONFIRMED: {
+
+            const confirmedByTransporter = deal[colsDealsStatusesConfirmations.CONFIRMED_BY_TRANSPORTER];
+            const confirmedByHolder = deal[colsDealsStatusesConfirmations.CONFIRMED_BY_HOLDER];
+
+            if (confirmedByTransporter === null || confirmedByHolder === null) {
+                return reject(res, ERRORS.SYSTEM.ERROR);
+            }
+
+            if (transporterCompanyId === company.id) {
+                if (confirmedByTransporter) {
+                    return reject(res, ERRORS.DEALS.STEP_ALREADY_CONFIRMED_BY_THIS_ROLE);
+                }
+                scheme = ValidatorSchemes.validateNextStepConfirmedTransporter;
+                const validate = ajv.compile(scheme);
+                const isValidData = validate(data);
+
+                if (!isValidData) {
+                    return reject(res, ERRORS.VALIDATION.ERROR, validate.errors);
+                }
+
+            } else if (holderCompanyId === company.id) {
+                if (confirmedByHolder) {
+                    return reject(res, ERRORS.DEALS.STEP_ALREADY_CONFIRMED_BY_THIS_ROLE);
+                }
+
+                // body
+                scheme = ValidatorSchemes.validateNextStepConfirmedHolder;
+                let validate = ajv.compile(scheme);
+                let isValidData = validate(data);
+
+                if (!isValidData) {
+                    return reject(res, ERRORS.VALIDATION.ERROR, validate.errors);
+                }
+
+                // files
+                scheme = ValidatorSchemes.validateNextStepConfirmedHolderFiles;
+                validate = ajv.compile(scheme);
+                isValidData = validate(req.files);
+
+                if (!isValidData) {
+                    return reject(res, ERRORS.VALIDATION.ERROR, validate.errors);
+                }
+
+                // files with body
+                scheme = ValidatorSchemes.validateNextStepConfirmedHolderBodyWithFiles;
+                validate = ajv.compile(scheme);
+                isValidData = validate({
+                    ...req.files,
+                    ...req.body,
+                });
+
+                if (!isValidData) {
+                    return reject(res, ERRORS.VALIDATION.ERROR, validate.errors);
+                }
+
+                // body async
+                scheme = ValidatorSchemes.validateNextStepConfirmedHolderAsync;
+                validate = ajv.compile(scheme);
+                isValidData = validate(data);
+                try {
+                    await isValidData;
+                } catch (error) {
+                    return reject(res, ERRORS.VALIDATION.ERROR, error.errors);
+                }
+            }
+            break;
+        }
+        }
+
+        if (!scheme) {
+            return reject(res, ERRORS.SYSTEM.ERROR);
+        }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     validate,
     validateFileType,
     validateEconomicPercentsSum,
+    validateChangeDealStatus,
 };
