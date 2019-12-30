@@ -9,7 +9,7 @@ exports.up = function(knex) {
         table.string('arrival_customs_person_full_name');
         table.string('arrival_customs_person_full_phone_number');
 
-        table.uuid('tnved_code_id').references('tnved_codes.id');
+        table.uuid('tnved_code');
 
         table.uuid('invoice_currency_id').references('currencies.id');
         table.decimal('invoice_price', 14, 2);
@@ -40,7 +40,7 @@ exports.down = function(knex) {
                 table.dropColumn('arrival_customs_person_full_name');
                 table.dropColumn('arrival_customs_person_full_phone_number');
 
-                table.dropColumn('tnved_code_id');
+                table.dropColumn('tnved_code');
 
                 table.dropColumn('invoice_currency_id');
                 table.dropColumn('invoice_price');

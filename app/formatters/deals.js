@@ -194,7 +194,7 @@ const formatRecordToEditDataForConfirmedStatusForHolder = body => ({
     [colsDeals.ARRIVAL_CUSTOMS_COUNTRY]: body[colsDeals.DEPARTURE_CUSTOMS_COUNTRY] || null,
     [colsDeals.ARRIVAL_CUSTOMS_PERSON_FULL_NAME]: body[colsDeals.DEPARTURE_CUSTOMS_PERSON_FULL_NAME] || null,
     [colsDeals.ARRIVAL_CUSTOMS_PERSON_FULL_PHONE_NUMBER]: body[colsDeals.DEPARTURE_CUSTOMS_PERSON_FULL_PHONE_NUMBER] || null,
-    [colsDeals.TNVED_CODE_ID]: body[colsDeals.TNVED_CODE_ID] || null,
+    [colsDeals.TNVED_CODE]: body[colsDeals.TNVED_CODE] || null,
     [colsDeals.INVOICE_CURRENCY_ID]: body[colsDeals.INVOICE_CURRENCY_ID] || null,
     [colsDeals.INVOICE_PRICE]: body[colsDeals.INVOICE_PRICE] || null,
     [colsDeals.STANDARD_LOADING_TIME_HOURS]: body[colsDeals.STANDARD_LOADING_TIME_HOURS] || null,

@@ -367,9 +367,9 @@ const validateNextStepConfirmedHolder = {
             pattern: PHONE_NUMBER_VALIDATION_PATTERN,
             maxLength: POSTGRES_MAX_STRING_LENGTH,
         },
-        [colsDeals.TNVED_CODE_ID]: {
+        [colsDeals.TNVED_CODE]: {
             type: 'string',
-            format: 'uuid',
+            minLength: 1,
         },
         [colsDeals.INVOICE_CURRENCY_ID]: {
             type: 'string',
@@ -482,11 +482,11 @@ const validateNextStepConfirmedHolderBodyWithFiles = {
             colsDeals.ARRIVAL_CUSTOMS_COUNTRY,
             colsDeals.ARRIVAL_CUSTOMS_PERSON_FULL_NAME,
         ],
-        [colsDeals.TNVED_CODE_ID]: [
+        [colsDeals.TNVED_CODE]: [
             DOCUMENTS.TNVED_FILE,
         ],
         [DOCUMENTS.TNVED_FILE]: [
-            colsDeals.TNVED_CODE_ID,
+            colsDeals.TNVED_CODE,
         ],
         [colsDeals.INVOICE_PRICE]: [
             colsDeals.INVOICE_CURRENCY_ID,
@@ -508,9 +508,6 @@ const validateNextStepConfirmedHolderAsync = {
     properties: {
         [colsDeals.INVOICE_CURRENCY_ID]: {
             currency_not_exist: {},
-        },
-        [colsDeals.TNVED_CODE_ID]: {
-            tnved_code_not_exist: {},
         },
     },
 };

@@ -350,14 +350,14 @@ const ROUTES = {
                 BASE: BASES.CARGOS,
                 POST: '',
             },
+            CARS: {
+                BASE: BASES.CARS,
+                POST: '',
+            },
             STATUSES: {
                 BASE: IDS.DEAL_ID + BASES.STATUSES,
                 CONFIRMED: {
                     BASE: BASES.CONFIRMED,
-                    POST: '',
-                },
-                CARS: {
-                    BASE: BASES.CARS,
                     POST: '',
                 },
             },

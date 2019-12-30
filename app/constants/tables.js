@@ -459,7 +459,7 @@ const SQL_TABLES = {
             ARRIVAL_CUSTOMS_COUNTRY: 'arrival_customs_country',
             ARRIVAL_CUSTOMS_PERSON_FULL_NAME: 'arrival_customs_person_full_name',
             ARRIVAL_CUSTOMS_PERSON_FULL_PHONE_NUMBER: 'arrival_customs_person_full_phone_number',
-            TNVED_CODE_ID: 'tnved_code_id',
+            TNVED_CODE: 'tnved_code',
             INVOICE_CURRENCY_ID: 'invoice_currency_id',
             INVOICE_PRICE: 'invoice_price',
             STANDARD_LOADING_TIME_HOURS: 'standard_loading_time_hours',
