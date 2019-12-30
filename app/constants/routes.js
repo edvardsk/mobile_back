@@ -347,6 +347,10 @@ const ROUTES = {
                 BASE: BASES.CARGOS,
                 POST: '',
             },
+            CARS: {
+                BASE: BASES.CARS,
+                POST: '',
+            },
         },
     },
     OTHERS: {

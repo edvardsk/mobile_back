@@ -90,6 +90,7 @@ const PERMISSIONS = {
     CRUD_TNVED_CODES_KEYWORDS: 'crud_tndev_codes_keywords',
 
     CREATE_CARGO_DEAL: 'create_cargo_deal',
+    CREATE_CAR_DEAL: 'create_car_deal',
 
     VERIFY_DEAL_INSTANCE: 'verify_deal_instance',
     READ_LIST_DEALS: 'read_list_deals',
