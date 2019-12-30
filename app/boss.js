@@ -168,7 +168,7 @@ async function autoSetGoingToUploadDealStatus(data) {
             ACTION_TYPES.AUTO_SET_GOING_TO_UPLOAD_DEAL_STATUS,
             data,
             {
-                startAfter: moment(timeToExecute).toISOString(),
+                startAfter: timeToExecute || 0,
             },
         );
         logger.info(`Job created id: ${jobId}`);

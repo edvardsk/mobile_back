@@ -1,4 +1,5 @@
 const uuid = require('uuid/v4');
+const moment = require('moment');
 
 const { success, reject } = require('api/response');
 
@@ -20,6 +21,7 @@ const DealStatusesConfirmationsService = require('services/tables/deal-statuses-
 const TablesService = require('services/tables');
 const S3Service = require('services/aws/s3');
 const PgJobService = require('services/pg-jobs');
+const BackgroundService = require('services/background/creators');
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
@@ -48,6 +50,11 @@ const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 const colsDealHistoryConfirmations = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATIONS.COLUMNS;
 
+const {
+    SET_GOING_TO_UPLOAD_DEAL_STATUS_UNIT,
+    SET_GOING_TO_UPLOAD_DEAL_STATUS_VALUE,
+} = process.env;
+
 const setConfirmedStatus = async (req, res, next) => {
     try {
         const { company, user } = res.locals;
@@ -59,9 +66,15 @@ const setConfirmedStatus = async (req, res, next) => {
         const holderCompanyId = deal[colsCargos.COMPANY_ID];
         const confirmedByTransporter = deal[colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER];
         const dealStatusConfirmationId = deal[HOMELESS_COLUMNS.DEAL_STATUS_CONFIRMATION_ID];
+        const cargoStartUploadingDate = deal[HOMELESS_COLUMNS.UPLOADING_DATE_FROM];
+        let timeToSetNextStatus = moment(cargoStartUploadingDate)
+            .subtract(+SET_GOING_TO_UPLOAD_DEAL_STATUS_VALUE, SET_GOING_TO_UPLOAD_DEAL_STATUS_UNIT)
+            .toISOString();
 
         const transactionsList = [];
         let filesToStore = [];
+
+        let enableJobToSetNextStatus = false;
 
         if (transporterCompanyId === company.id) {
             const driverId = body[HOMELESS_COLUMNS.DRIVER_ID];
@@ -249,6 +262,11 @@ const setConfirmedStatus = async (req, res, next) => {
                 transactionsList.push(
                     PgJobService.removeRecordByNameAndDataPathAsTransaction(ACTION_TYPES.AUTO_CANCEL_UNCONFIRMED_DEAL, dealId)
                 );
+
+                enableJobToSetNextStatus = true;
+                if (moment(timeToSetNextStatus) < moment()) { // set next status immediately
+                    timeToSetNextStatus = 0;
+                }
             }
 
         } else {
@@ -256,6 +274,10 @@ const setConfirmedStatus = async (req, res, next) => {
         }
 
         await TablesService.runTransaction(transactionsList);
+
+        if (enableJobToSetNextStatus) {
+            await BackgroundService.autoSetGoingToUploadDealStatusCreator(dealId, timeToSetNextStatus);
+        }
 
         await Promise.all(filesToStore.map(({ bucket, path, data, contentType }) => {
             return S3Service.putObject(bucket, path, data, contentType);

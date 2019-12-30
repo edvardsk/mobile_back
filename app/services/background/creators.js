@@ -33,10 +33,10 @@ const autoCancelUnconfirmedDealCreator = (dealId) => {
     childProcess.send(msg);
 };
 
-const autoSetGoingToUploadDealStatusCreator = (dealId) => {
+const autoSetGoingToUploadDealStatusCreator = (...rest) => {
     const msg = {
         payload: {
-            dealId,
+            ...rest
         },
         type: ACTION_TYPES.AUTO_CANCEL_UNCONFIRMED_DEAL,
     };
