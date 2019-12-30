@@ -63,7 +63,8 @@ const BASES = {
     VERIFY: '/verify',
     REJECT: '/reject',
     STATUSES: '/statuses',
-    CONFIRMED: '/confirmed',
+    CONFIRM: '/confirm',
+    CANCEL: '/cancel',
 };
 
 const IDS = {
@@ -356,8 +357,12 @@ const ROUTES = {
             },
             STATUSES: {
                 BASE: IDS.DEAL_ID + BASES.STATUSES,
-                CONFIRMED: {
-                    BASE: BASES.CONFIRMED,
+                CONFIRM: {
+                    BASE: BASES.CONFIRM,
+                    POST: '',
+                },
+                CANCEL: {
+                    BASE: BASES.CANCEL,
                     POST: '',
                 },
             },
