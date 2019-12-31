@@ -112,9 +112,10 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
     }, [[], [], [], [], [], [], []]);
 };
 
-const formatAllInstancesToSaveCarDeal = (arr, cargoLoadingType, companyId, initiatorId, dealStatusId) => {
+const formatAllInstancesToSaveCarDeal = (arr, cargoLoadingType, availableCars, initiatorId, dealStatusId) => {
     const generatedCarId = uuid();
     const generatedTrailerId = uuid();
+    const companyId = availableCars && availableCars[0] && availableCars[0][colsCars.COMPANY_ID];
 
     return arr.reduce((acc, item) => {
         const [deals, dealHistory, dealStatusHistoryConfirmations] = acc;

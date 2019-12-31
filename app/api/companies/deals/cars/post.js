@@ -80,7 +80,7 @@ const createCarDeal = async (req, res, next) => {
         const dealCreatedStatus = await DealStatusesService.getRecordStrict(DEAL_STATUSES_MAP.CREATED);
         const [
             deals, dealStatusesHistory, dealStatusHistoryConfirmations,
-        ] = formatAllInstancesToSaveCarDeal(body, cargoLoadingType, company.id, user.id, dealCreatedStatus.id);
+        ] = formatAllInstancesToSaveCarDeal(body, cargoLoadingType, availableCars, user.id, dealCreatedStatus.id);
 
         transactionsList = [
             ...transactionsList,
