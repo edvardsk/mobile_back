@@ -352,6 +352,7 @@ const ROUTES = {
             TRACKING: {
                 BASE: IDS.DEAL_ID + BASES.TRACKING,
                 POST: '',
+                GET: '',
             }
         },
     },

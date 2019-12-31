@@ -21,6 +21,11 @@ const insertRecord = values => squelPostgres
 
 const selectLatestRecordByCarId = carId => squelPostgres
     .select()
+    .field(`row_to_json(row(ST_AsText(${cols.COORDINATES}))),`+
+        `${cols.DEAL_ID},` +
+        `${cols.CAR_ID},` +
+        `${cols.TRAILER_ID},` +
+        `${cols.CREATED_AT}`)
     .from(table.NAME, 'c')
     .where(`${cols.CAR_ID} = '${carId}'`)
     .order(cols.CREATED_AT, false)
@@ -29,6 +34,11 @@ const selectLatestRecordByCarId = carId => squelPostgres
 
 const selectLatestRecordByTrailerId = (trailerId) => squelPostgres
     .select()
+    .field(`row_to_json(row(ST_AsText(${cols.COORDINATES}))),`+
+        `${cols.DEAL_ID},` +
+        `${cols.CAR_ID},` +
+        `${cols.TRAILER_ID},` +
+        `${cols.CREATED_AT}`)
     .from(table.NAME, 'c')
     .where(`${cols.TRAILER_ID} = '${trailerId}'`)
     .order(cols.CREATED_AT, false)
@@ -37,6 +47,11 @@ const selectLatestRecordByTrailerId = (trailerId) => squelPostgres
 
 const selectRecordsByDealId = (dealId) => squelPostgres
     .select()
+    .field(`row_to_json(row(ST_AsText(${cols.COORDINATES}))),`+
+        `${cols.DEAL_ID},` +
+        `${cols.CAR_ID},` +
+        `${cols.TRAILER_ID},` +
+        `${cols.CREATED_AT}`)
     .from(table.NAME, 'c')
     .where(`${cols.DEAL_ID} = '${dealId}'`)
     .order(cols.CREATED_AT, false)
@@ -44,6 +59,11 @@ const selectRecordsByDealId = (dealId) => squelPostgres
 
 const selectRecordsByDealIdAndDate = (dealId, dateAfter) => squelPostgres
     .select()
+    .field(`row_to_json(row(ST_AsText(${cols.COORDINATES}))),`+
+        `${cols.DEAL_ID},` +
+        `${cols.CAR_ID},` +
+        `${cols.TRAILER_ID},` +
+        `${cols.CREATED_AT}`)
     .from(table.NAME, 'c')
     .where(`${cols.DEAL_ID} = '${dealId}' AND ${cols.CREATED_AT} > '${dateAfter}'`)
     .order(cols.CREATED_AT, false)

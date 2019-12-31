@@ -10,6 +10,7 @@ const tableCargos = SQL_TABLES.CARGOS;
 const tableCargoPoints = SQL_TABLES.CARGO_POINTS;
 const tablePoints = SQL_TABLES.POINTS;
 const tableTranslations = SQL_TABLES.POINT_TRANSLATIONS;
+const tableDeals = SQL_TABLES.DEALS;
 const tableDealStatuses = SQL_TABLES.DEAL_STATUSES;
 const tableDealHistory = SQL_TABLES.DEAL_HISTORY_STATUSES;
 
@@ -18,6 +19,7 @@ const colsCargos = tableCargos.COLUMNS;
 const colsCargoPoints = tableCargoPoints.COLUMNS;
 const colsPoints = tablePoints.COLUMNS;
 const colsTranslations = tableTranslations.COLUMNS;
+const colsDeals = tableDeals.COLUMNS;
 const colsDealStatuses = tableDealStatuses.COLUMNS;
 const colsDealHistory = tableDealHistory.COLUMNS;
 
@@ -47,16 +49,15 @@ const selectRecordByIdAndTransporterCompanyIdLight = (id, companyId) => squelPos
     .from(table.NAME)
     .where(`id = '${id}'`)
     .where(`${cols.TRANSPORTER_COMPANY_ID} = '${companyId}'`)
-    .where(`${cols.DELETED} = 'f'`)
     .toString();
 
 const selectRecordByIdAndCompanyIdLight = (id, companyId) => squelPostgres
     .select()
-    .field('id')
-    .from(table.NAME)
-    .where(`id = '${id}'`)
-    .where(`${cols.TRANSPORTER_COMPANY_ID} = '${companyId}' OR ${colsCargos.COMPANY_ID} = '${companyId}'`)
-    .where(`${cols.DELETED} = 'f'`)
+    .field('d.id')
+    .from(table.NAME, 'd')
+    .where(` d.id = '${id}'`)
+    .where(`d.${cols.TRANSPORTER_COMPANY_ID} = '${companyId}' OR c.${colsCargos.COMPANY_ID} = '${companyId}'`)
+    .left_join(tableCargos.NAME, 'c', `d.${colsDeals.CARGO_ID} = c.id`)
     .toString();
 
 

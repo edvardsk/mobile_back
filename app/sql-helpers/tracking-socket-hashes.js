@@ -19,6 +19,13 @@ const selectRecordByHash = hash => squelPostgres
     .where(`${cols.HASH} = '${hash}'`)
     .toString();
 
+const deleteRecordsByUserId = userId => squelPostgres
+    .delete()
+    .from(table.NAME)
+    .where(`${cols.USER_ID} = '${userId}'`)
+    .returning('*')
+    .toString();
+
 const deleteRecordById = id => squelPostgres
     .delete()
     .from(table.NAME)
@@ -30,4 +37,5 @@ module.exports = {
     insertRecord,
     selectRecordByHash,
     deleteRecordById,
+    deleteRecordsByUserId,
 };

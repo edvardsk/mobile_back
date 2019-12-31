@@ -5,6 +5,7 @@ const { success, reject } = require('api/response');
 const CarPointsService = require('services/tables/car-points');
 const DealService = require('services/tables/deals');
 const TablesService = require('services/tables');
+const RolesPermissionsService = require('services/tables/roles-to-permissions');
 
 // constants
 const { SUCCESS_CODES, ERROR_CODES } = require('constants/http-codes');
@@ -18,15 +19,17 @@ const colsDeals = SQL_TABLES.DEALS.COLUMNS;
 
 const createTrackingPoint = async (req, res, next) => {
     try {
-        const { user, permissions } = res.locals;
+        const { user } = res.locals;
         const { dealId } = req.params;
 
+        const permissions = await RolesPermissionsService.getUserPermissions(user.id);
+
         const deal = await DealService.getRecordStrict(dealId);
-        const isDriver = deal[colsDeals.DRIVER_ID] = user.id;
+        const isDriver = deal[colsDeals.DRIVER_ID] == user.id;
         const hasPermissions = permissions.includes(PERMISSIONS.CREATE_CARGO_DEAL);
 
         if (isDriver || hasPermissions) {
-            const coordinates = req.body.coordinate;
+            const coordinates = req.body;
             const pointId = uuid();
             const newPoint = CarPointsFormatters.formatRecordToSave(
                 pointId,

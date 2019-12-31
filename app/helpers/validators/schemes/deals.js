@@ -2,7 +2,7 @@
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
 // patterns
-const { DIGITS_VALIDATION_PATTERN } = require('./patterns');
+const { DIGITS_VALIDATION_PATTERN, DOUBLE_NUMBER_VALIDATION_PATTERN } = require('./patterns');
 
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
@@ -196,17 +196,32 @@ const createCargoDealPhoneNumberWithPrefixAsync = {
     },
 };
 
-
 const requiredDealId = {
     properties: {
-        carId: {
+        dealId: {
             type: 'string',
             format: 'uuid',
         },
     },
     required: [
-        'carId',
+        'dealId',
     ]
+};
+
+
+const trackingCoordinates = {
+    properties: {
+        [HOMELESS_COLUMNS.LATITUDE]: {
+            type: 'string',
+            pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
+        },
+        [HOMELESS_COLUMNS.LONGITUDE]: {
+            type: 'string',
+            pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
+        },
+    },
+    required: [HOMELESS_COLUMNS.LATITUDE, HOMELESS_COLUMNS.LONGITUDE],
+    additionalProperties: false,
 };
 
 const requiredExistingDealInTransporterCompanyAsyncFunc = ({ companyId }) => ({
@@ -239,4 +254,5 @@ module.exports = {
     requiredDealId,
     requiredExistingDealInCompanyAsyncFunc,
     requiredExistingDealInTransporterCompanyAsyncFunc,
+    trackingCoordinates,
 };

@@ -568,6 +568,7 @@ router.post(
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
     validate(ValidatorSchemes.requiredDealId, 'params'),
+    validate(ValidatorSchemes.trackingCoordinates),
     validate(({ company }) => ValidatorSchemes.requiredExistingDealInTransporterCompanyAsyncFunc({ companyId: company.id }), 'params'),
     postTracking.createTrackingPoint,
 );
