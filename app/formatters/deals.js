@@ -203,6 +203,7 @@ const formatRecordForResponse = (deal, userLanguageId) => {
         [colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER]: deal[colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER],
 
         cargo: {
+            id: deal[colsDeals.CARGO_ID],
             [colsCargo.UPLOADING_DATE_FROM]: deal[colsCargo.UPLOADING_DATE_FROM],
             [colsCargo.UPLOADING_DATE_TO]: deal[colsCargo.UPLOADING_DATE_TO],
             [colsCargo.DOWNLOADING_DATE_FROM]: deal[colsCargo.DOWNLOADING_DATE_FROM],
