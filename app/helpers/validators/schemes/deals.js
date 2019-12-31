@@ -303,11 +303,13 @@ const requiredExistingOwnDealAsyncFunc = ({ companyId }) => ({
     },
 });
 
-const validateDealExistsAsync = () => ({
+const validateDealExistsAsync = ({ companyId }) => ({
     $async: true,
     properties: {
         dealId: {
-            deal_not_exists: {},
+            own_deal_not_exists: {
+                companyId,
+            },
         },
     },
 });
