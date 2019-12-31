@@ -47,6 +47,7 @@ const DealStatusHistoryConfirmationFormatters = require('formatters/deal-status-
 const { validateDealInstancesToConfirmedStatus } = require('helpers/validators/deals');
 
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
+const colsCars = SQL_TABLES.CARS.COLUMNS;
 const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 const colsDealHistoryConfirmations = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATIONS.COLUMNS;
@@ -67,7 +68,7 @@ const setConfirmedStatus = async (req, res, next) => {
         const holderCompanyId = deal[colsCargos.COMPANY_ID];
         const confirmedByTransporter = deal[colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER];
         const dealStatusConfirmationId = deal[HOMELESS_COLUMNS.DEAL_STATUS_CONFIRMATION_ID];
-        const cargoStartUploadingDate = deal[HOMELESS_COLUMNS.UPLOADING_DATE_FROM];
+        const cargoStartUploadingDate = deal[colsCargos.UPLOADING_DATE_FROM];
         let timeToSetNextStatus = moment(cargoStartUploadingDate)
             .subtract(+SET_GOING_TO_UPLOAD_DEAL_STATUS_VALUE, SET_GOING_TO_UPLOAD_DEAL_STATUS_UNIT)
             .toISOString();
@@ -140,11 +141,11 @@ const setConfirmedStatus = async (req, res, next) => {
                 trailerId && TrailersService.getRecordStrict(trailerId),
             ]);
 
-            const isCarAbleTransport = !!car[CAR_TYPES_MAP.TRUCK];
-            const carWidth = parseFloat(car[colsTrailers.CAR_WIDTH]) || 0;
-            const carLength = parseFloat(car[colsTrailers.CAR_LENGTH]) || 0;
-            const carHeight = parseFloat(car[colsTrailers.CAR_HEIGHT]) || 0;
-            const carCarryingCapacity = parseFloat(car[colsTrailers.CAR_CARRYING_CAPACITY]) || 0;
+            const isCarAbleTransport = car[colsCars.CAR_TYPE] === CAR_TYPES_MAP.TRUCK;
+            const carWidth = parseFloat(car[colsCars.CAR_WIDTH]) || 0;
+            const carLength = parseFloat(car[colsCars.CAR_LENGTH]) || 0;
+            const carHeight = parseFloat(car[colsCars.CAR_HEIGHT]) || 0;
+            const carCarryingCapacity = parseFloat(car[colsCars.CAR_CARRYING_CAPACITY]) || 0;
 
             const trailerWidth = trailer ? parseFloat(trailer[colsTrailers.TRAILER_WIDTH]) : 0;
             const trailerLength = trailer ? parseFloat(trailer[colsTrailers.TRAILER_LENGTH]) : 0;
