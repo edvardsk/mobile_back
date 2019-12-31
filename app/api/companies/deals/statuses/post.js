@@ -318,7 +318,43 @@ const setCancelledStatus = async (req, res, next) => {
     }
 };
 
+const setRejectedStatus = async (req, res, next) => {
+    try {
+        const { user } = res.locals;
+        const { dealId } = req.params;
+
+        const transactionsList = [];
+
+        const [deal, failedDealStatus] = await Promise.all([
+            DealsService.getRecordStrict(dealId),
+            DealsStatusesServices.getRecordStrict(DEAL_STATUSES_MAP.REJECTED),
+        ]);
+        const dealStatusHistoryId = uuid();
+
+        const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, failedDealStatus.id, user.id);
+
+        transactionsList.push(
+            DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory)
+        );
+
+        transactionsList.push(
+            CargosService.editRecordIncreaseFreeCountAsTransaction(deal[colsDeals.CARGO_ID], 1),
+        );
+
+        transactionsList.push(
+            PgJobService.removeRecordByNameAndDataPathAsTransaction(ACTION_TYPES.AUTO_SET_GOING_TO_UPLOAD_DEAL_STATUS, dealId)
+        );
+
+        await TablesService.runTransaction(transactionsList);
+
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     setConfirmedStatus,
     setCancelledStatus,
+    setRejectedStatus,
 };
