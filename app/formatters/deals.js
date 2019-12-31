@@ -9,7 +9,7 @@ const { LOADING_TYPES_MAP } = require('constants/cargos');
 const { isValidUUID } = require('helpers/validators');
 
 // formatters
-const { formatGeoPoints } = require('./cargos');
+const { formatGeoPoints, formatDealGeoPoints } = require('./cargos');
 const { formatPricesFromPostgresJSON } = require('./cargo-prices');
 
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
@@ -202,6 +202,18 @@ const formatRecordForResponse = (deal, userLanguageId) => {
         [colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER]: deal[colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER],
         [colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER]: deal[colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER],
 
+        [colsDeals.DEPARTURE_CUSTOMS_COUNTRY]: deal[colsDeals.DEPARTURE_CUSTOMS_COUNTRY],
+        [colsDeals.DEPARTURE_CUSTOMS_PERSON_FULL_NAME]: deal[colsDeals.DEPARTURE_CUSTOMS_PERSON_FULL_NAME],
+        [colsDeals.DEPARTURE_CUSTOMS_PERSON_FULL_PHONE_NUMBER]: deal[colsDeals.DEPARTURE_CUSTOMS_PERSON_FULL_PHONE_NUMBER],
+        [colsDeals.ARRIVAL_CUSTOMS_COUNTRY]: deal[colsDeals.ARRIVAL_CUSTOMS_COUNTRY],
+        [colsDeals.ARRIVAL_CUSTOMS_PERSON_FULL_NAME]: deal[colsDeals.ARRIVAL_CUSTOMS_PERSON_FULL_NAME],
+        [colsDeals.ARRIVAL_CUSTOMS_PERSON_FULL_PHONE_NUMBER]: deal[colsDeals.ARRIVAL_CUSTOMS_PERSON_FULL_PHONE_NUMBER],
+        [colsDeals.TNVED_CODE]: deal[colsDeals.TNVED_CODE],
+        [colsDeals.INVOICE_CURRENCY_ID]: deal[colsDeals.INVOICE_CURRENCY_ID],
+        [colsDeals.INVOICE_PRICE]: parseFloat(deal[colsDeals.INVOICE_PRICE]),
+        [colsDeals.STANDARD_LOADING_TIME_HOURS]: deal[colsDeals.STANDARD_LOADING_TIME_HOURS],
+        [colsDeals.SPECIAL_REQUIREMENTS]: deal[colsDeals.SPECIAL_REQUIREMENTS],
+
         cargo: {
             id: deal[colsDeals.CARGO_ID],
             [colsCargo.UPLOADING_DATE_FROM]: deal[colsCargo.UPLOADING_DATE_FROM],
@@ -245,7 +257,7 @@ const formatRecordForResponse = (deal, userLanguageId) => {
         };
     }
 
-    const [uploadingPoints, downloadingPoints] = formatGeoPoints(deal, userLanguageId);
+    const [uploadingPoints, downloadingPoints] = formatDealGeoPoints(deal, userLanguageId);
 
     return {
         ...result,

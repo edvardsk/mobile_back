@@ -6,6 +6,7 @@ const { LOADING_TYPES_MAP } = require('constants/cargos');
 // helpers
 const { isValidUUID } = require('./index');
 
+const colsDeals = SQL_TABLES.DEALS.COLUMNS;
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 const colsCargoPrices = SQL_TABLES.CARGO_PRICES.COLUMNS;
 
@@ -199,13 +200,13 @@ const validateDealInstancesToConfirmedStatus = deal => {
         dealsErrors.push(ERRORS.DEALS.CAR_IN_DRAFT);
     }
 
-    if (deal[HOMELESS_COLUMNS.TRAILER_SHADOW]) {
+    if (deal[colsDeals.TRAILER_ID] && deal[HOMELESS_COLUMNS.TRAILER_SHADOW]) {
         dealsErrors.push(ERRORS.DEALS.SHADOW_TRAILER);
     }
-    if (!deal[HOMELESS_COLUMNS.TRAILER_VERIFIED]) {
+    if (deal[colsDeals.TRAILER_ID] && !deal[HOMELESS_COLUMNS.TRAILER_VERIFIED]) {
         dealsErrors.push(ERRORS.DEALS.NOT_VERIFIED_TRAILER);
     }
-    if (deal[HOMELESS_COLUMNS.DRAFT_TRAILER_ID]) {
+    if (deal[colsDeals.TRAILER_ID] && deal[HOMELESS_COLUMNS.DRAFT_TRAILER_ID]) {
         dealsErrors.push(ERRORS.DEALS.TRAILER_IN_DRAFT);
     }
 

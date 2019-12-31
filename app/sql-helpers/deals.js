@@ -13,6 +13,7 @@ const tablePoints = SQL_TABLES.POINTS;
 const tableTranslations = SQL_TABLES.POINT_TRANSLATIONS;
 const tableDealStatuses = SQL_TABLES.DEAL_STATUSES;
 const tableDealHistory = SQL_TABLES.DEAL_HISTORY_STATUSES;
+const tableDealPointsInfo = SQL_TABLES.DEAL_POINTS_INFO;
 const tableCars = SQL_TABLES.CARS;
 const tableTrailers = SQL_TABLES.TRAILERS;
 const tableDrivers = SQL_TABLES.DRIVERS;
@@ -35,6 +36,7 @@ const colsPoints = tablePoints.COLUMNS;
 const colsTranslations = tableTranslations.COLUMNS;
 const colsDealStatuses = tableDealStatuses.COLUMNS;
 const colsDealHistory = tableDealHistory.COLUMNS;
+const colsDealPointsInfo = tableDealPointsInfo.COLUMNS;
 const colsCars = tableCars.COLUMNS;
 const colsTrailers = tableTrailers.COLUMNS;
 const colsDrivers = tableDrivers.COLUMNS;
@@ -248,25 +250,27 @@ const selectFullRecordById = (id, userLanguageId) => squelPostgres
     .field(`ARRAY(${
         squelPostgres
             .select()
-            .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+            .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}, dpi.${colsDealPointsInfo.POINT_ADDRESS}, dpi.${colsDealPointsInfo.POINT_PERSON_FULL_NAME}, dpi.${colsDealPointsInfo.POINT_PERSON_FULL_PHONE_NUMBER}))`)
             .from(tableCargoPoints.NAME, 'cp')
             .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
             .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
             .where(`t.${colsTranslations.LANGUAGE_ID} = '${userLanguageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
             .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
             .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
+            .left_join(tableDealPointsInfo.NAME, 'dpi', `dpi.${colsDealPointsInfo.CARGO_POINT_ID} = cp.id`)
             .toString()
     })`, HOMELESS_COLUMNS.UPLOADING_POINTS)
     .field(`ARRAY(${
         squelPostgres
             .select()
-            .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+            .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}, dpi.${colsDealPointsInfo.POINT_ADDRESS}, dpi.${colsDealPointsInfo.POINT_PERSON_FULL_NAME}, dpi.${colsDealPointsInfo.POINT_PERSON_FULL_PHONE_NUMBER}))`)
             .from(tableCargoPoints.NAME, 'cp')
             .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
             .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
             .where(`t.${colsTranslations.LANGUAGE_ID} = '${userLanguageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
             .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
             .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
+            .left_join(tableDealPointsInfo.NAME, 'dpi', `dpi.${colsDealPointsInfo.CARGO_POINT_ID} = cp.id`)
             .toString()
     })`, HOMELESS_COLUMNS.DOWNLOADING_POINTS)
     .field(`ds.${colsDealStatuses.NAME}`, HOMELESS_COLUMNS.DEAL_STATUS)
