@@ -612,11 +612,11 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
-    DEALS_TO_FILES: {
-        NAME: 'deals_to_files',
+    DEALS_TO_DEAL_FILES: {
+        NAME: 'deals_to_deal_files',
         COLUMNS: {
             DEAL_ID: 'deal_id',
-            FILE_ID: 'file_id',
+            DEAL_FILE_ID: 'deal_file_id',
             CREATED_AT: 'created_at',
         },
     },
@@ -654,8 +654,8 @@ const SQL_TABLES = {
     DEAL_CARS_TO_FILES: {
         NAME: 'deal_cars_to_files',
         COLUMNS: {
-            DRAFT_CAR_ID: 'deal_car_id',
-            DRAFT_FILE_ID: 'deal_file_id',
+            DEAL_CAR_ID: 'deal_car_id',
+            DEAL_FILE_ID: 'deal_file_id',
             CREATED_AT: 'created_at',
         },
     },
@@ -681,8 +681,8 @@ const SQL_TABLES = {
     DEAL_TRAILERS_TO_FILES: {
         NAME: 'deal_trailers_to_files',
         COLUMNS: {
-            DRAFT_TRAILER_ID: 'deal_trailer_id',
-            DRAFT_FILE_ID: 'deal_file_id',
+            DEAL_TRAILER_ID: 'deal_trailer_id',
+            DEAL_FILE_ID: 'deal_file_id',
             CREATED_AT: 'created_at',
         },
     },
@@ -707,8 +707,19 @@ const SQL_TABLES = {
     DEAL_DRIVERS_TO_FILES: {
         NAME: 'deal_drivers_to_files',
         COLUMNS: {
-            DRAFT_DRIVER_ID: 'deal_driver_id',
-            DRAFT_FILE_ID: 'deal_file_id',
+            DEAL_DRIVER_ID: 'deal_driver_id',
+            DEAL_FILE_ID: 'deal_file_id',
+            CREATED_AT: 'created_at',
+        },
+    },
+    DEAL_FILES: {
+        NAME: 'deal_files',
+        COLUMNS: {
+            NAME: 'name',
+            URL: 'url',
+            LABELS: 'labels',
+            VALID_DATE_FROM: 'valid_date_from',
+            VALID_DATE_TO: 'valid_date_to',
             CREATED_AT: 'created_at',
         },
     },

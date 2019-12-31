@@ -13,8 +13,8 @@ const CargoPointsService = require('services/tables/cargo-points');
 const DealPointsInfoService = require('services/tables/deal-points-info');
 const DealsStatusesServices = require('services/tables/deal-statuses');
 const DealsStatusesHistoryServices = require('services/tables/deal-statuses-history');
-const FilesService = require('services/tables/files');
-const DealsFilesService = require('services/tables/deals-to-files');
+const DealFilesService = require('services/tables/deal-files');
+const DealsToDealFilesService = require('services/tables/deals-to-deals-files');
 const DealStatusesConfirmationsService = require('services/tables/deal-statuses-history-confirmations');
 const TablesService = require('services/tables');
 const S3Service = require('services/aws/s3');
@@ -132,7 +132,7 @@ const setConfirmedStatus = async (req, res, next) => {
             const trailerId = deal[colsDeals.TRAILER_ID];
             const [car, trailer] = await Promise.all([
                 CarsService.getRecordStrict(carId),
-                TrailersService.getRecordStrict(trailerId),
+                trailerId && TrailersService.getRecordStrict(trailerId),
             ]);
 
             const isCarAbleTransport = !!car[CAR_TYPES_MAP.TRUCK];
@@ -232,37 +232,35 @@ const setConfirmedStatus = async (req, res, next) => {
                     ...storageFiles,
                 ];
                 transactionsList.push(
-                    FilesService.addFilesAsTransaction(dbFiles)
+                    DealFilesService.addFilesAsTransaction(dbFiles)
                 );
                 transactionsList.push(
-                    DealsFilesService.addRecordsAsTransaction(dbDealsFiles)
+                    DealsToDealFilesService.addRecordsAsTransaction(dbDealsFiles)
                 );
             }
 
-            if (deal[colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER]) { // move to next step
-                transactionsList.push(
-                    DealStatusesConfirmationsService.editRecordAsTransaction(dealStatusConfirmationId, {
-                        [colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER]: true,
-                    })
-                );
+            transactionsList.push(
+                DealStatusesConfirmationsService.editRecordAsTransaction(dealStatusConfirmationId, {
+                    [colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER]: true,
+                })
+            );
 
-                const confirmedDealStatus = await DealsStatusesServices.getRecordStrict(DEAL_STATUSES_MAP.CONFIRMED);
-                const dealStatusHistoryId = uuid();
+            const confirmedDealStatus = await DealsStatusesServices.getRecordStrict(DEAL_STATUSES_MAP.CONFIRMED);
+            const dealStatusHistoryId = uuid();
 
-                const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, confirmedDealStatus.id, user.id);
+            const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, confirmedDealStatus.id, user.id);
 
-                transactionsList.push(
-                    DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory)
-                );
+            transactionsList.push(
+                DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory)
+            );
 
-                transactionsList.push(
-                    PgJobService.removeRecordByNameAndDataPathAsTransaction(ACTION_TYPES.AUTO_CANCEL_UNCONFIRMED_DEAL, dealId)
-                );
+            transactionsList.push(
+                PgJobService.removeRecordByNameAndDataPathAsTransaction(ACTION_TYPES.AUTO_CANCEL_UNCONFIRMED_DEAL, dealId)
+            );
 
-                enableJobToSetNextStatus = true;
-                if (moment(timeToSetNextStatus) < moment()) { // set next status immediately
-                    timeToSetNextStatus = 0;
-                }
+            enableJobToSetNextStatus = true;
+            if (moment(timeToSetNextStatus) < moment()) { // set next status immediately
+                timeToSetNextStatus = 0;
             }
 
         } else {

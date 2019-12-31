@@ -10,6 +10,15 @@ exports.up = function(knex) {
         table.timestamp('created_at').defaultTo(knex.fn.now());
     })
         .then(function () {
+            return knex.schema.createTable('deals_to_deal_files', function(table) {
+                table.uuid('id').defaultTo(knex.raw('uuid_generate_v4()')).primary().unique();
+                table.uuid('deal_id').references('deals.id').notNull();
+                table.uuid('deal_file_id').references('deal_files.id').notNull();
+                table.timestamp('created_at').defaultTo(knex.fn.now());
+                table.unique(['deal_id', 'deal_file_id']);
+            });
+        })
+        .then(function () {
             return knex.schema.createTable('deal_cars', function(table) {
                 table.uuid('id').defaultTo(knex.raw('uuid_generate_v4()')).primary().unique();
                 table.uuid('car_id').references('cars.id').notNull();
@@ -95,17 +104,13 @@ exports.up = function(knex) {
         })
         .then(function () {
             return knex.schema.alterTable('deals', function(table) {
-                table.dropColumn('driver_id');
-                table.dropColumn('car_id');
-                table.dropColumn('trailer_id');
+                table.uuid('deal_driver_id').references('deal_drivers.id');
+                table.uuid('deal_car_id').references('deal_cars.id');
+                table.uuid('deal_trailer_id').references('deal_trailers');
             });
         })
         .then(function () {
-            return knex.schema.alterTable('deals', function(table) {
-                table.uuid('deal_driver_id').notNull().references('deal_drivers.id');
-                table.uuid('deal_car_id').notNull().references('deal_cars.id');
-                table.uuid('deal_trailer_id').references('deal_trailers');
-            });
+            return knex.schema.dropTable('deals_to_files');
         });
 };
 
@@ -119,11 +124,7 @@ exports.down = function(knex) {
             });
         })
         .then(function () {
-            return knex.schema.alterTable('deals', function(table) {
-                table.uuid('driver_id').references('drivers.id');
-                table.uuid('car_id').references('cars.id');
-                table.uuid('trailer_id').references('trailers');
-            });
+            return knex.schema.dropTable('deals_to_deal_files');
         })
         .then(function () {
             return knex.schema.dropTable('deal_drivers');
@@ -142,5 +143,14 @@ exports.down = function(knex) {
         })
         .then(function () {
             return knex.schema.dropTable('deal_files');
+        })
+        .then(function () {
+            return knex.schema.createTable('deals_to_files', function(table) {
+                table.uuid('id').defaultTo(knex.raw('uuid_generate_v4()')).primary().unique();
+                table.uuid('deal_id').references('deals.id').notNull();
+                table.uuid('file_id').references('files.id').notNull();
+                table.timestamp('created_at').defaultTo(knex.fn.now());
+                table.unique(['deal_id', 'file_id']);
+            });
         });
 };
