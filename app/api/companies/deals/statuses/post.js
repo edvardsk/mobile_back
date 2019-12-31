@@ -152,6 +152,22 @@ const setConfirmedStatus = async (req, res, next) => {
             const currentCargoGrossWeight = parseFloat(deal[colsCargos.GROSS_WEIGHT]);
             const currentCargoVolume = currentCargoWidth * currentCargoLength * currentCargoHeight;
 
+            console.log(carWidth);
+            console.log(carLength);
+            console.log(carHeight);
+            console.log(carCarryingCapacity);
+
+            console.log(trailerWidth);
+            console.log(trailerLength);
+            console.log(trailerHeight);
+            console.log(trailerCarryingCapacity);
+
+            console.log(currentCargoWidth);
+            console.log(currentCargoLength);
+            console.log(currentCargoHeight);
+            console.log(currentCargoGrossWeight);
+            console.log(currentCargoVolume);
+
             const widthSizes = [];
             const heightSizes = [];
 
@@ -164,6 +180,7 @@ const setConfirmedStatus = async (req, res, next) => {
                 heightSizes.push(trailerHeight);
             }
             if (!isCarAbleTransport && !trailer) {
+                console.log('kek');
                 return reject(res, ERRORS.DEALS.CARGO_DOES_NOT_SUIT);
             }
 
@@ -180,6 +197,7 @@ const setConfirmedStatus = async (req, res, next) => {
                 minTransportHeight < currentCargoHeight ||
                 transportLength < currentCargoLength
             ) {
+                console.log('lol');
                 return reject(res, ERRORS.DEALS.CARGO_DOES_NOT_SUIT);
             }
 
@@ -208,6 +226,7 @@ const setConfirmedStatus = async (req, res, next) => {
                 transportVolume < sumVolume
             ) {
                 // remove cargo
+                console.log('cheburek');
                 return reject(res, ERRORS.DEALS.CARGO_DOES_NOT_SUIT);
             }
 
