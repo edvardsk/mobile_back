@@ -51,7 +51,7 @@ const { formDataHandler, createOrUpdateDataOnStep3 } = require('api/middlewares/
 // constants
 const { PERMISSIONS, ROLES } = require('constants/system');
 const {
-    DEAL_STATUSES_ROUTE,
+    DEAL_STATUSES_ROUTE, DEAL_STATUSES_MAP,
 } = require('constants/deal-statuses');
 
 // helpers
@@ -593,8 +593,8 @@ router.post(
     validate(ValidatorSchemes.requiredDealId, 'params'),
     formDataHandler(uploadData), // uploading files middleware
     validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
-    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.CONFIRM }), 'params'),
-    validateChangeDealStatus(DEAL_STATUSES_ROUTE.CONFIRM),
+    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_MAP.CONFIRMED }), 'params'),
+    validateChangeDealStatus(DEAL_STATUSES_MAP.CONFIRMED),
     postDealsStatuses.setConfirmedStatus,
 );
 

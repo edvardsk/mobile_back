@@ -5,6 +5,7 @@ const CargosService = require('services/tables/cargos');
 const DealsService = require('services/tables/deals');
 const DealStatusesService = require('services/tables/deal-statuses');
 const DealStatusesHistoryService = require('services/tables/deal-statuses-history');
+const DealStatusesHistoryConfirmationsService = require('services/tables/deal-statuses-history-confirmations');
 const TablesService = require('services/tables');
 const BackgroundService = require('services/background/creators');
 
@@ -78,13 +79,14 @@ const createCarDeal = async (req, res, next) => {
         /* create all shadow records */
         const dealCreatedStatus = await DealStatusesService.getRecordStrict(DEAL_STATUSES_MAP.CREATED);
         const [
-            deals, dealStatusesHistory,
+            deals, dealStatusesHistory, dealStatusHistoryConfirmations,
         ] = formatAllInstancesToSaveCarDeal(body, cargoLoadingType, company.id, user.id, dealCreatedStatus.id);
 
         transactionsList = [
             ...transactionsList,
             DealsService.addRecordsAsTransaction(deals),
             DealStatusesHistoryService.addRecordsAsTransaction(dealStatusesHistory),
+            DealStatusesHistoryConfirmationsService.addRecordsAsTransaction(dealStatusHistoryConfirmations),
         ];
 
         transactionsList = [

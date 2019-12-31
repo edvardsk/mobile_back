@@ -181,8 +181,24 @@ const selectDealsByCompanyIdPaginationSorting = (companyId, limit, offset, sortC
         .toString();
 };
 
+const selectRecordById = id => squelPostgres
+    .select()
+    .field('d.*')
+    .field(`c.${colsCargos.COMPANY_ID}`)
+    .field(`ds.${colsDealStatuses.NAME}`, HOMELESS_COLUMNS.DEAL_STATUS_NAME)
+    .field(`dsc.${colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER}`, colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER)
+    .field(`dsc.${colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER}`, colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER)
+    .from(table.NAME, 'd')
+    .where(`d.id = '${id}'`)
+    .left_join(tableCargos.NAME, 'c', `c.id = d.${cols.CARGO_ID}`)
+    .left_join(tableDealHistory.NAME, 'dh', `dh.${colsDealHistory.DEAL_ID} = d.id`)
+    .left_join(tableDealStatuses.NAME, 'ds', `ds.id = dh.${colsDealHistory.DEAL_STATUS_ID}`)
+    .left_join(tableDealHistoryConfirmations.NAME, 'dsc', `dsc.${colsDealHistoryConfirmations.DEAL_STATUS_HISTORY_ID} = dh.id`)
+    .order(`dh.${colsDealHistory.CREATED_AT}`, false)
+    .limit(1)
+    .toString();
 
-const selectRecordById = (id, userLanguageId) => squelPostgres
+const selectFullRecordById = (id, userLanguageId) => squelPostgres
     .select()
     .field('d.*')
     // cargo
@@ -368,6 +384,7 @@ module.exports = {
     selectDealsByCompanyIdPaginationSorting,
     selectCountDealsByCompanyId,
     setAvailableDealsFilter,
+    selectFullRecordById,
     selectRecordById,
     selectRecordWithInstancesInfoById,
     selectDealsInProcessByRangeAndCarId,

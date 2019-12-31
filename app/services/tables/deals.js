@@ -6,6 +6,7 @@ const {
     updateRecord,
     selectDealsByCompanyIdPaginationSorting,
     selectCountDealsByCompanyId,
+    selectFullRecordById,
     selectRecordById,
     selectRecordWithInstancesInfoById,
     selectDealsInProcessByRangeAndCarId,
@@ -35,12 +36,14 @@ const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 
 const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MANY];
 
-const getRecordStrict = (id, userLanguageId) => one(selectRecordById(id, userLanguageId));
+const getRecordStrict = id => one(selectRecordById(id));
 const editRecordAsTransaction = (id, data) => [updateRecord(id, data), OPERATIONS.ONE];
 
 const getRecordWithInstancesInfoStrict = id => one(selectRecordWithInstancesInfoById(id));
 
 const getRecord = id => oneOrNone(selectRecordById(id));
+
+const getFullRecordStrict = (id, userLanguageId) => one(selectFullRecordById(id, userLanguageId));
 
 const validateDealItems = async (arr, companyId, cargoLoadingType, userLanguageId) => {
     const availableDrivers = [];
@@ -163,6 +166,7 @@ const checkNextStatusAllowed = async (meta, dealId) => {
 module.exports = {
     addRecordsAsTransaction,
     editRecordAsTransaction,
+    getFullRecordStrict,
     getRecordStrict,
     getRecordWithInstancesInfoStrict,
     validateDealItems,

@@ -63,7 +63,7 @@ const getDeal = async (req, res, next) => {
         const userLanguageId = user[colsUsers.LANGUAGE_ID];
         const { dealId } = req.params;
 
-        const deal = await DealsService.getRecordStrict(dealId, userLanguageId);
+        const deal = await DealsService.getFullRecordStrict(dealId, userLanguageId);
 
         const formattedDeal = formatRecordForResponse(deal, userLanguageId);
 

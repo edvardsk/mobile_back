@@ -117,7 +117,7 @@ const formatAllInstancesToSaveCarDeal = (arr, cargoLoadingType, companyId, initi
     const generatedTrailerId = uuid();
 
     return arr.reduce((acc, item) => {
-        const [deals, dealHistory] = acc;
+        const [deals, dealHistory, dealStatusHistoryConfirmations] = acc;
         const cargoId = item[HOMELESS_COLUMNS.CARGO_ID];
         const carIdOrData = item[HOMELESS_COLUMNS.CAR_ID_OR_DATA];
         const trailerIdOrData = item[HOMELESS_COLUMNS.TRAILER_ID_OR_DATA];
@@ -144,13 +144,21 @@ const formatAllInstancesToSaveCarDeal = (arr, cargoLoadingType, companyId, initi
             [colsDeals.NAME]: item[colsDeals.NAME] || null,
         });
 
+        const dealHistoryId = uuid();
         dealHistory.push({
+            id: dealHistoryId,
             [colsDealStatuses.DEAL_ID]: dealId,
             [colsDealStatuses.INITIATOR_ID]: initiatorId,
             [colsDealStatuses.DEAL_STATUS_ID]: dealStatusId,
         });
+
+        dealStatusHistoryConfirmations.push({
+            [colsDealStatusesConfirmation.DEAL_STATUS_HISTORY_ID]: dealHistoryId,
+            [colsDealStatusesConfirmation.CONFIRMED_BY_TRANSPORTER]: false,
+            [colsDealStatusesConfirmation.CONFIRMED_BY_HOLDER]: false,
+        });
         return acc;
-    }, [[], [], [], [], [], []]);
+    }, [[], [], []]);
 };
 
 const formatRecordForList = (deal, userLanguageId) => {
