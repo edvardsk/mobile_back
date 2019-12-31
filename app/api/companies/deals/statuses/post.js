@@ -24,7 +24,11 @@ const BackgroundService = require('services/background/creators');
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
-const { DEAL_STATUSES_MAP, DEAL_ROUTES_TO_STATUSES_MAP } = require('constants/deal-statuses');
+const {
+    DEAL_STATUSES_MAP,
+    DEAL_ROUTES_TO_STATUSES_MAP,
+    STATUSES_TO_CREATE_CONFIRMATION_RECORD_SET,
+} = require('constants/deal-statuses');
 const { ACTION_TYPES } = require('constants/background');
 const { LOADING_TYPES_MAP } = require('constants/cargos');
 const { CAR_TYPES_MAP } = require('constants/cars');
@@ -385,15 +389,16 @@ const setDoubleConfirmedStatus = async (req, res, next) => {
             const dealStatusHistoryId = uuid();
 
             const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, nextDealStatus.id, user.id);
-            const statusHistoryConfirmation = DealStatusHistoryConfirmationFormatters.formatRecordToSave(dealStatusHistoryId);
-
             transactionsList.push(
                 DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory)
             );
 
-            transactionsList.push(
-                DealStatusesConfirmationsService.addRecordAsTransaction(statusHistoryConfirmation)
-            );
+            if (STATUSES_TO_CREATE_CONFIRMATION_RECORD_SET.has(statusToSet)) {
+                const statusHistoryConfirmation = DealStatusHistoryConfirmationFormatters.formatRecordToSave(dealStatusHistoryId);
+                transactionsList.push(
+                    DealStatusesConfirmationsService.addRecordAsTransaction(statusHistoryConfirmation)
+                );
+            }
         }
 
         await TablesService.runTransaction(transactionsList);
