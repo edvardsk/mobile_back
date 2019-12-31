@@ -137,10 +137,10 @@ const setConfirmedStatus = async (req, res, next) => {
             ]);
 
             const isCarAbleTransport = car[colsCars.CAR_TYPE] === CAR_TYPES_MAP.TRUCK;
-            const carWidth = parseFloat(car[colsTrailers.CAR_WIDTH]) || 0;
-            const carLength = parseFloat(car[colsTrailers.CAR_LENGTH]) || 0;
-            const carHeight = parseFloat(car[colsTrailers.CAR_HEIGHT]) || 0;
-            const carCarryingCapacity = parseFloat(car[colsTrailers.CAR_CARRYING_CAPACITY]) || 0;
+            const carWidth = parseFloat(car[colsCars.CAR_WIDTH]) || 0;
+            const carLength = parseFloat(car[colsCars.CAR_LENGTH]) || 0;
+            const carHeight = parseFloat(car[colsCars.CAR_HEIGHT]) || 0;
+            const carCarryingCapacity = parseFloat(car[colsCars.CAR_CARRYING_CAPACITY]) || 0;
 
             const trailerWidth = trailer ? parseFloat(trailer[colsTrailers.TRAILER_WIDTH]) : 0;
             const trailerLength = trailer ? parseFloat(trailer[colsTrailers.TRAILER_LENGTH]) : 0;
