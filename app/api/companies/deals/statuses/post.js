@@ -63,7 +63,7 @@ const setConfirmedStatus = async (req, res, next) => {
         const holderCompanyId = deal[colsCargos.COMPANY_ID];
         const confirmedByTransporter = deal[colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER];
         const dealStatusConfirmationId = deal[HOMELESS_COLUMNS.DEAL_STATUS_CONFIRMATION_ID];
-        const cargoStartUploadingDate = deal[HOMELESS_COLUMNS.UPLOADING_DATE_FROM];
+        const cargoStartUploadingDate = deal[colsCargos.UPLOADING_DATE_FROM];
         let timeToSetNextStatus = moment(cargoStartUploadingDate)
             .subtract(+SET_GOING_TO_UPLOAD_DEAL_STATUS_VALUE, SET_GOING_TO_UPLOAD_DEAL_STATUS_UNIT)
             .toISOString();
