@@ -154,6 +154,11 @@ const checkOwnActiveDealExist = async (meta, dealId) => {
         (deal[cols.TRANSPORTER_COMPANY_ID] === companyId || deal[colsCargos.COMPANY_ID] === companyId);
 };
 
+const checkDealExist = async (meta, dealId) => {
+    const deal = await getRecord(dealId);
+    return !!deal;
+};
+
 const checkNextStatusAllowed = async (meta, dealId) => {
     const deal = await getRecordStrict(dealId);
 
@@ -175,6 +180,7 @@ module.exports = {
     getDealsInProcessByRangeAndCarId,
 
     checkOwnActiveDealExist,
+    checkDealExist,
     checkNextStatusAllowed,
     validateCarDealItems,
 };

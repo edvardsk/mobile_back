@@ -303,6 +303,15 @@ const requiredExistingOwnDealAsyncFunc = ({ companyId }) => ({
     },
 });
 
+const validateDealExistsAsync = () => ({
+    $async: true,
+    properties: {
+        dealId: {
+            deal_not_exists: {},
+        },
+    },
+});
+
 const changeDealStatusPrimary = {
     properties: {
         dealId: {
@@ -520,6 +529,7 @@ module.exports = {
     requiredDealId,
     requiredExistingOwnDealAsyncFunc,
     changeDealStatusPrimary,
+    validateDealExistsAsync,
     validateNextStepAsyncFunc,
     validateNextStepConfirmedTransporter,
     validateNextStepConfirmedHolder,
