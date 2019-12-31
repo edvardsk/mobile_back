@@ -3,21 +3,21 @@ const { manyOrNone } = require('db');
 // sql-helpers
 const {
     insertRecords,
+    selectFilesByDealDriverId,
     deleteRecordsByFileIds,
-    selectRecordsByCarId,
-} = require('sql-helpers/cars-to-files');
+} = require('sql-helpers/deal-drivers-to-deal-files');
 
 // constants
 const { OPERATIONS } = require('constants/postgres');
 
 const addRecordsAsTransaction = data => [insertRecords(data), OPERATIONS.MANY_OR_NONE];
 
-const removeRecordsByFileIdsAsTransaction = fileIds => [deleteRecordsByFileIds(fileIds), OPERATIONS.MANY_OR_NONE];
+const getFilesByDraftDriverId = dealDriverId => manyOrNone(selectFilesByDealDriverId(dealDriverId));
 
-const getRecordsByCarId = carId => manyOrNone(selectRecordsByCarId(carId));
+const removeRecordsByFileIdsAsTransaction = fileIds => [deleteRecordsByFileIds(fileIds), OPERATIONS.MANY_OR_NONE];
 
 module.exports = {
     addRecordsAsTransaction,
+    getFilesByDraftDriverId,
     removeRecordsByFileIdsAsTransaction,
-    getRecordsByCarId,
 };

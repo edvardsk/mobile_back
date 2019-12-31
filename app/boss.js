@@ -62,6 +62,11 @@ process.on('message', function (msg) {
     case ACTION_TYPES.AUTO_CANCEL_UNCONFIRMED_DEAL:
         autoCancelUnconfirmedDeal(msg.payload);
         break;
+
+    case ACTION_TYPES.AUTO_SET_GOING_TO_UPLOAD_DEAL_STATUS:
+        autoSetGoingToUploadDealStatus(msg.payload);
+        break;
+
     }
 });
 
@@ -82,6 +87,11 @@ async function subscribe() {
                 teamSize: PARALLEL_JOBS_NUMBER,
                 teamConcurrency: PARALLEL_JOBS_NUMBER
             }, WorkerServices.autoCancelUnconfirmedDeal),
+
+            boss.subscribe(ACTION_TYPES.AUTO_SET_GOING_TO_UPLOAD_DEAL_STATUS, {
+                teamSize: PARALLEL_JOBS_NUMBER,
+                teamConcurrency: PARALLEL_JOBS_NUMBER
+            }, WorkerServices.autoSetGoingToUploadDealStatus),
         ]);
         startJobs();
     } catch (error) {
@@ -133,7 +143,6 @@ async function extractExchangeRate(data) {
     }
 }
 
-// todo: cancel deal cancellation after successful status change
 async function autoCancelUnconfirmedDeal(data) {
     try {
         const jobId = await boss.publish(
@@ -141,6 +150,25 @@ async function autoCancelUnconfirmedDeal(data) {
             data,
             {
                 startAfter: moment().add(CANCEL_UNCONFIRMED_DEAL_VALUE, CANCEL_UNCONFIRMED_DEAL_UNIT).toISOString(),
+            },
+        );
+        logger.info(`Job created id: ${jobId}`);
+
+    } catch(err) {
+        onError(err);
+    }
+}
+
+async function autoSetGoingToUploadDealStatus(data) {
+    try {
+        const { timeToExecute } = data;
+        delete data['timeToExecute'];
+
+        const jobId = await boss.publish(
+            ACTION_TYPES.AUTO_SET_GOING_TO_UPLOAD_DEAL_STATUS,
+            data,
+            {
+                startAfter: timeToExecute || 0,
             },
         );
         logger.info(`Job created id: ${jobId}`);

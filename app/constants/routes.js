@@ -366,6 +366,10 @@ const ROUTES = {
                     BASE: BASES.CANCEL,
                     POST: '',
                 },
+                REJECT: {
+                    BASE: BASES.REJECT,
+                    POST: '',
+                },
             },
         },
     },

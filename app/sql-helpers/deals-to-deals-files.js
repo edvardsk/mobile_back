@@ -3,7 +3,9 @@ const { SQL_TABLES } = require('constants/tables');
 
 const squelPostgres = squel.useFlavour('postgres');
 
-const table = SQL_TABLES.DEAL_SUB_STATUSES_HISTORY;
+const table = SQL_TABLES.DEALS_TO_DEAL_FILES;
+
+const cols = table.COLUMNS;
 
 const insertRecords = values => squelPostgres
     .insert()
@@ -12,14 +14,14 @@ const insertRecords = values => squelPostgres
     .returning('*')
     .toString();
 
-const insertRecord = values => squelPostgres
-    .insert()
-    .into(table.NAME)
-    .setFields(values)
+const deleteRecordsByFileIds = fileIds => squelPostgres
+    .delete()
+    .from(table.NAME)
+    .where(`${cols.DEAL_FILE_ID} IN ?`, fileIds)
     .returning('*')
     .toString();
 
 module.exports = {
     insertRecords,
-    insertRecord,
+    deleteRecordsByFileIds,
 };

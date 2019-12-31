@@ -51,7 +51,7 @@ const { formDataHandler, createOrUpdateDataOnStep3 } = require('api/middlewares/
 // constants
 const { PERMISSIONS, ROLES } = require('constants/system');
 const {
-    DEAL_STATUSES_ROUTE, DEAL_STATUSES_MAP,
+    DEAL_STATUSES_ROUTE,
 } = require('constants/deal-statuses');
 
 // helpers
@@ -593,8 +593,8 @@ router.post(
     validate(ValidatorSchemes.requiredDealId, 'params'),
     formDataHandler(uploadData), // uploading files middleware
     validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
-    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_MAP.CONFIRMED }), 'params'),
-    validateChangeDealStatus(DEAL_STATUSES_MAP.CONFIRMED),
+    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.CONFIRM }), 'params'),
+    validateChangeDealStatus(DEAL_STATUSES_ROUTE.CONFIRM),
     postDealsStatuses.setConfirmedStatus,
 );
 
@@ -607,6 +607,18 @@ router.post(
     validate(ValidatorSchemes.requiredDealId, 'params'),
     validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
     validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.CANCEL }), 'params'),
+    postDealsStatuses.setCancelledStatus,
+);
+
+router.post(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.STATUSES.BASE +
+    ROUTES.COMPANIES.DEALS.STATUSES.REJECT.BASE + ROUTES.COMPANIES.DEALS.STATUSES.REJECT.POST,
+    isHasPermissions([PERMISSIONS.CHANGE_DEAL_STATUS_ADVANCED]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredDealId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
+    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.REJECT }), 'params'),
     postDealsStatuses.setCancelledStatus,
 );
 

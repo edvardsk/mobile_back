@@ -1,4 +1,5 @@
 const uuid = require('uuid/v4');
+const moment = require('moment');
 
 const { success, reject } = require('api/response');
 
@@ -11,21 +12,19 @@ const CargosService = require('services/tables/cargos');
 const CargoPointsService = require('services/tables/cargo-points');
 const DealPointsInfoService = require('services/tables/deal-points-info');
 const DealsStatusesServices = require('services/tables/deal-statuses');
-const DealsSubStatusesServices = require('services/tables/deal-sub-statuses');
 const DealsStatusesHistoryServices = require('services/tables/deal-statuses-history');
-const DealsSubStatusesHistoryServices = require('services/tables/deal-sub-statuses-history');
-const FilesService = require('services/tables/files');
-const DealsFilesService = require('services/tables/deals-to-files');
+const DealFilesService = require('services/tables/deal-files');
+const DealsToDealFilesService = require('services/tables/deals-to-deals-files');
 const DealStatusesConfirmationsService = require('services/tables/deal-statuses-history-confirmations');
 const TablesService = require('services/tables');
 const S3Service = require('services/aws/s3');
 const PgJobService = require('services/pg-jobs');
+const BackgroundService = require('services/background/creators');
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
 const { DEAL_STATUSES_MAP } = require('constants/deal-statuses');
-const { DEAL_SUB_STATUSES_MAP } = require('constants/deal-sub-statuses');
 const { ACTION_TYPES } = require('constants/background');
 const { LOADING_TYPES_MAP } = require('constants/cargos');
 const { CAR_TYPES_MAP } = require('constants/cars');
@@ -38,7 +37,6 @@ const CargoPointsFormatters = require('formatters/cargo-points');
 const DealPointsInfoFormatters = require('formatters/deal-points-info');
 const FilesFormatters = require('formatters/files');
 const DealStatusesHistoryFormatters = require('formatters/deal-statuses-history');
-const DealSubStatusesHistoryFormatters = require('formatters/deal-sub-statuses-history');
 
 // helpers
 const { validateDealInstancesToConfirmedStatus } = require('helpers/validators/deals');
@@ -47,6 +45,11 @@ const colsDeals = SQL_TABLES.DEALS.COLUMNS;
 const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 const colsDealHistoryConfirmations = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATIONS.COLUMNS;
+
+const {
+    SET_GOING_TO_UPLOAD_DEAL_STATUS_UNIT,
+    SET_GOING_TO_UPLOAD_DEAL_STATUS_VALUE,
+} = process.env;
 
 const setConfirmedStatus = async (req, res, next) => {
     try {
@@ -59,9 +62,15 @@ const setConfirmedStatus = async (req, res, next) => {
         const holderCompanyId = deal[colsCargos.COMPANY_ID];
         const confirmedByTransporter = deal[colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER];
         const dealStatusConfirmationId = deal[HOMELESS_COLUMNS.DEAL_STATUS_CONFIRMATION_ID];
+        const cargoStartUploadingDate = deal[HOMELESS_COLUMNS.UPLOADING_DATE_FROM];
+        let timeToSetNextStatus = moment(cargoStartUploadingDate)
+            .subtract(+SET_GOING_TO_UPLOAD_DEAL_STATUS_VALUE, SET_GOING_TO_UPLOAD_DEAL_STATUS_UNIT)
+            .toISOString();
 
         const transactionsList = [];
         let filesToStore = [];
+
+        let enableJobToSetNextStatus = false;
 
         if (transporterCompanyId === company.id) {
             const driverId = body[HOMELESS_COLUMNS.DRIVER_ID];
@@ -123,7 +132,7 @@ const setConfirmedStatus = async (req, res, next) => {
             const trailerId = deal[colsDeals.TRAILER_ID];
             const [car, trailer] = await Promise.all([
                 CarsService.getRecordStrict(carId),
-                TrailersService.getRecordStrict(trailerId),
+                trailerId && TrailersService.getRecordStrict(trailerId),
             ]);
 
             const isCarAbleTransport = !!car[CAR_TYPES_MAP.TRUCK];
@@ -223,32 +232,35 @@ const setConfirmedStatus = async (req, res, next) => {
                     ...storageFiles,
                 ];
                 transactionsList.push(
-                    FilesService.addFilesAsTransaction(dbFiles)
+                    DealFilesService.addFilesAsTransaction(dbFiles)
                 );
                 transactionsList.push(
-                    DealsFilesService.addRecordsAsTransaction(dbDealsFiles)
+                    DealsToDealFilesService.addRecordsAsTransaction(dbDealsFiles)
                 );
             }
 
-            if (deal[colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER]) { // move to next step
-                transactionsList.push(
-                    DealStatusesConfirmationsService.editRecordAsTransaction(dealStatusConfirmationId, {
-                        [colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER]: true,
-                    })
-                );
+            transactionsList.push(
+                DealStatusesConfirmationsService.editRecordAsTransaction(dealStatusConfirmationId, {
+                    [colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER]: true,
+                })
+            );
 
-                const confirmedDealStatus = await DealsStatusesServices.getRecordStrict(DEAL_STATUSES_MAP.CONFIRMED);
-                const dealStatusHistoryId = uuid();
+            const confirmedDealStatus = await DealsStatusesServices.getRecordStrict(DEAL_STATUSES_MAP.CONFIRMED);
+            const dealStatusHistoryId = uuid();
 
-                const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, confirmedDealStatus.id, user.id);
+            const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, confirmedDealStatus.id, user.id);
 
-                transactionsList.push(
-                    DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory)
-                );
+            transactionsList.push(
+                DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory)
+            );
 
-                transactionsList.push(
-                    PgJobService.removeRecordByNameAndDataPathAsTransaction(ACTION_TYPES.AUTO_CANCEL_UNCONFIRMED_DEAL, dealId)
-                );
+            transactionsList.push(
+                PgJobService.removeRecordByNameAndDataPathAsTransaction(ACTION_TYPES.AUTO_CANCEL_UNCONFIRMED_DEAL, dealId)
+            );
+
+            enableJobToSetNextStatus = true;
+            if (moment(timeToSetNextStatus) < moment()) { // set next status immediately
+                timeToSetNextStatus = 0;
             }
 
         } else {
@@ -256,6 +268,10 @@ const setConfirmedStatus = async (req, res, next) => {
         }
 
         await TablesService.runTransaction(transactionsList);
+
+        if (enableJobToSetNextStatus) {
+            await BackgroundService.autoSetGoingToUploadDealStatusCreator(dealId, timeToSetNextStatus);
+        }
 
         await Promise.all(filesToStore.map(({ bucket, path, data, contentType }) => {
             return S3Service.putObject(bucket, path, data, contentType);
@@ -274,22 +290,16 @@ const setCancelledStatus = async (req, res, next) => {
 
         const transactionsList = [];
 
-        const [deal, failedDealStatus, cancelledDealSubStatus] = await Promise.all([
+        const [deal, failedDealStatus] = await Promise.all([
             DealsService.getRecordStrict(dealId),
-            DealsStatusesServices.getRecordStrict(DEAL_STATUSES_MAP.FAILED),
-            DealsSubStatusesServices.getRecordStrict(DEAL_SUB_STATUSES_MAP.CANCELLED),
+            DealsStatusesServices.getRecordStrict(DEAL_STATUSES_MAP.CANCELLED),
         ]);
         const dealStatusHistoryId = uuid();
 
         const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, failedDealStatus.id, user.id);
-        const subStatusHistory = DealSubStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, cancelledDealSubStatus.id, user.id);
 
         transactionsList.push(
             DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory)
-        );
-
-        transactionsList.push(
-            DealsSubStatusesHistoryServices.addRecordAsTransaction(subStatusHistory)
         );
 
         transactionsList.push(
@@ -308,7 +318,43 @@ const setCancelledStatus = async (req, res, next) => {
     }
 };
 
+const setRejectedStatus = async (req, res, next) => {
+    try {
+        const { user } = res.locals;
+        const { dealId } = req.params;
+
+        const transactionsList = [];
+
+        const [deal, failedDealStatus] = await Promise.all([
+            DealsService.getRecordStrict(dealId),
+            DealsStatusesServices.getRecordStrict(DEAL_STATUSES_MAP.REJECTED),
+        ]);
+        const dealStatusHistoryId = uuid();
+
+        const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, failedDealStatus.id, user.id);
+
+        transactionsList.push(
+            DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory)
+        );
+
+        transactionsList.push(
+            CargosService.editRecordIncreaseFreeCountAsTransaction(deal[colsDeals.CARGO_ID], 1),
+        );
+
+        transactionsList.push(
+            PgJobService.removeRecordByNameAndDataPathAsTransaction(ACTION_TYPES.AUTO_SET_GOING_TO_UPLOAD_DEAL_STATUS, dealId)
+        );
+
+        await TablesService.runTransaction(transactionsList);
+
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     setConfirmedStatus,
     setCancelledStatus,
+    setRejectedStatus,
 };
