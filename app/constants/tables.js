@@ -813,6 +813,7 @@ const HOMELESS_COLUMNS = {
     KEYWORD: 'keyword',
     SEARCH_ITEMS: 'search_items',
     DEALS: 'deals',
+    DEAL_STATUS: 'status',
     DRAFT_EMAIL: 'draft_email',
     DRAFT_FULL_NAME: 'draft_full_name',
     DRAFT_DRIVER_LICENCE_REGISTERED_AT: 'draft_driver_licence_registered_at',

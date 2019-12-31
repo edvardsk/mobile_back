@@ -10,11 +10,16 @@ const { isValidUUID } = require('helpers/validators');
 
 // formatters
 const { formatGeoPoints } = require('./cargos');
+const { formatPricesFromPostgresJSON } = require('./cargo-prices');
 
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
 const colsDealStatuses = SQL_TABLES.DEAL_HISTORY_STATUSES.COLUMNS;
 const colsDealStatusesConfirmation = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATIONS.COLUMNS;
 const colsCargo = SQL_TABLES.CARGOS.COLUMNS;
+const colsCars = SQL_TABLES.CARS.COLUMNS;
+const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
+const colsUsers = SQL_TABLES.USERS.COLUMNS;
+const colsDealHistoryConfirmations = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATIONS.COLUMNS;
 
 const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, companyId, initiatorId, dealStatusId) => {
     const generatedDriverId = uuid();
@@ -107,12 +112,13 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
     }, [[], [], [], [], [], [], []]);
 };
 
-const formatAllInstancesToSaveCarDeal = (arr, cargoLoadingType, companyId, initiatorId, dealStatusId) => {
+const formatAllInstancesToSaveCarDeal = (arr, cargoLoadingType, availableCars, initiatorId, dealStatusId) => {
     const generatedCarId = uuid();
     const generatedTrailerId = uuid();
+    const companyId = availableCars && availableCars[0] && availableCars[0][colsCars.COMPANY_ID];
 
     return arr.reduce((acc, item) => {
-        const [deals, dealHistory] = acc;
+        const [deals, dealHistory, dealStatusHistoryConfirmations] = acc;
         const cargoId = item[HOMELESS_COLUMNS.CARGO_ID];
         const carIdOrData = item[HOMELESS_COLUMNS.CAR_ID_OR_DATA];
         const trailerIdOrData = item[HOMELESS_COLUMNS.TRAILER_ID_OR_DATA];
@@ -139,13 +145,21 @@ const formatAllInstancesToSaveCarDeal = (arr, cargoLoadingType, companyId, initi
             [colsDeals.NAME]: item[colsDeals.NAME] || null,
         });
 
+        const dealHistoryId = uuid();
         dealHistory.push({
+            id: dealHistoryId,
             [colsDealStatuses.DEAL_ID]: dealId,
             [colsDealStatuses.INITIATOR_ID]: initiatorId,
             [colsDealStatuses.DEAL_STATUS_ID]: dealStatusId,
         });
+
+        dealStatusHistoryConfirmations.push({
+            [colsDealStatusesConfirmation.DEAL_STATUS_HISTORY_ID]: dealHistoryId,
+            [colsDealStatusesConfirmation.CONFIRMED_BY_TRANSPORTER]: false,
+            [colsDealStatusesConfirmation.CONFIRMED_BY_HOLDER]: false,
+        });
         return acc;
-    }, [[], [], [], [], [], []]);
+    }, [[], [], []]);
 };
 
 const formatRecordForList = (deal, userLanguageId) => {
@@ -164,8 +178,71 @@ const formatRecordForList = (deal, userLanguageId) => {
         [colsCargo.UPLOADING_DATE_TO]: deal[colsCargo.UPLOADING_DATE_TO],
         [colsCargo.DOWNLOADING_DATE_FROM]: deal[colsCargo.DOWNLOADING_DATE_FROM],
         [colsCargo.DOWNLOADING_DATE_TO]: deal[colsCargo.DOWNLOADING_DATE_TO],
-        status: deal['status'],
+        [HOMELESS_COLUMNS.DEAL_STATUS]: deal[HOMELESS_COLUMNS.DEAL_STATUS],
     };
+
+    const [uploadingPoints, downloadingPoints] = formatGeoPoints(deal, userLanguageId);
+
+    return {
+        ...result,
+        [HOMELESS_COLUMNS.UPLOADING_POINTS]: uploadingPoints,
+        [HOMELESS_COLUMNS.DOWNLOADING_POINTS]: downloadingPoints,
+    };
+};
+
+const formatRecordForResponse = (deal, userLanguageId) => {
+    const result = {
+        id: deal.id,
+        [colsDeals.NAME]: deal[colsDeals.NAME],
+        [colsDeals.TRANSPORTER_COMPANY_ID]: deal[colsDeals.TRANSPORTER_COMPANY_ID],
+        [colsDeals.CREATED_AT]: deal[colsDeals.CREATED_AT],
+        [colsDeals.PAY_CURRENCY_ID]: deal[colsDeals.PAY_CURRENCY_ID],
+        [colsDeals.PAY_VALUE]: parseFloat(deal[colsDeals.PAY_VALUE]),
+        [HOMELESS_COLUMNS.DEAL_STATUS]: deal[HOMELESS_COLUMNS.DEAL_STATUS],
+        [colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER]: deal[colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER],
+        [colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER]: deal[colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER],
+
+        cargo: {
+            [colsCargo.UPLOADING_DATE_FROM]: deal[colsCargo.UPLOADING_DATE_FROM],
+            [colsCargo.UPLOADING_DATE_TO]: deal[colsCargo.UPLOADING_DATE_TO],
+            [colsCargo.DOWNLOADING_DATE_FROM]: deal[colsCargo.DOWNLOADING_DATE_FROM],
+            [colsCargo.DOWNLOADING_DATE_TO]: deal[colsCargo.DOWNLOADING_DATE_TO],
+            [colsCargo.DISTANCE]: parseFloat(deal[colsCargo.DISTANCE]),
+            [colsCargo.GROSS_WEIGHT]: parseFloat(deal[colsCargo.GROSS_WEIGHT]),
+            [colsCargo.WIDTH]: parseFloat(deal[colsCargo.WIDTH]),
+            [colsCargo.HEIGHT]: parseFloat(deal[colsCargo.HEIGHT]),
+            [colsCargo.LENGTH]: parseFloat(deal[colsCargo.LENGTH]),
+            [HOMELESS_COLUMNS.PRICES]: formatPricesFromPostgresJSON(deal[HOMELESS_COLUMNS.PRICES]),
+        },
+        car: {
+            [colsDeals.CAR_ID]: deal[colsDeals.CAR_ID],
+            [colsCars.CAR_MARK]: deal[colsCars.CAR_MARK],
+            [colsCars.CAR_MODEL]: deal[colsCars.CAR_MODEL],
+            [colsCars.CAR_WIDTH]: parseFloat(deal[colsCars.CAR_WIDTH]),
+            [colsCars.CAR_HEIGHT]: parseFloat(deal[colsCars.CAR_HEIGHT]),
+            [colsCars.CAR_LENGTH]: parseFloat(deal[colsCars.CAR_LENGTH]),
+            [colsCars.CAR_CARRYING_CAPACITY]: parseFloat(deal[colsCars.CAR_CARRYING_CAPACITY]),
+            [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: deal[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
+        },
+        driver: {
+            driver_id: deal['driver_id'],
+            [colsUsers.FULL_NAME]: deal[colsUsers.FULL_NAME],
+            [HOMELESS_COLUMNS.FULL_PHONE_NUMBER]: deal[HOMELESS_COLUMNS.FULL_PHONE_NUMBER],
+        }
+    };
+
+    if (deal['trailer_id']) {
+        result.trailer = {
+            trailer_id: deal['trailer_id'],
+            [colsTrailers.TRAILER_MARK]: deal[colsTrailers.TRAILER_MARK],
+            [colsTrailers.TRAILER_MODEL]: deal[colsTrailers.TRAILER_MODEL],
+            [colsTrailers.TRAILER_WIDTH]: parseFloat(deal[colsTrailers.TRAILER_WIDTH]),
+            [colsTrailers.TRAILER_HEIGHT]: parseFloat(deal[colsTrailers.TRAILER_HEIGHT]),
+            [colsTrailers.TRAILER_LENGTH]: parseFloat(deal[colsTrailers.TRAILER_LENGTH]),
+            [colsTrailers.TRAILER_CARRYING_CAPACITY]: parseFloat(deal[colsTrailers.TRAILER_CARRYING_CAPACITY]),
+            [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: deal[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
+        };
+    }
 
     const [uploadingPoints, downloadingPoints] = formatGeoPoints(deal, userLanguageId);
 
@@ -205,6 +282,7 @@ module.exports = {
     formatAllInstancesToSave,
     formatAllInstancesToSaveCarDeal,
     formatRecordForList,
+    formatRecordForResponse,
     separatePointsInConfirmedRequest,
     formatRecordToEditDataForConfirmedStatusForHolder,
 };
