@@ -634,7 +634,6 @@ const SQL_TABLES = {
     DEAL_CARS: {
         NAME: 'deal_cars',
         COLUMNS: {
-            DEAL_ID: 'deal_id',
             CAR_ID: 'car_id',
             CAR_VIN: 'car_vin',
             CAR_STATE_NUMBER: 'car_state_number',
@@ -663,7 +662,6 @@ const SQL_TABLES = {
     DEAL_TRAILERS: {
         NAME: 'deal_trailers',
         COLUMNS: {
-            DEAL_ID: 'deal_id',
             TRAILER_ID: 'trailer_id',
             TRAILER_VIN: 'trailer_vin',
             TRAILER_STATE_NUMBER: 'trailer_state_number',
@@ -691,7 +689,6 @@ const SQL_TABLES = {
     DEAL_DRIVERS: {
         NAME: 'deal_drivers',
         COLUMNS: {
-            DEAL_ID: 'deal_id',
             DRIVER_ID: 'driver_id',
             EMAIL: 'email',
             FULL_NAME: 'full_name',

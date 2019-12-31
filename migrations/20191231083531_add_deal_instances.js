@@ -12,7 +12,6 @@ exports.up = function(knex) {
         .then(function () {
             return knex.schema.createTable('deal_cars', function(table) {
                 table.uuid('id').defaultTo(knex.raw('uuid_generate_v4()')).primary().unique();
-                table.uuid('deal_id').references('deals.id').notNull();
                 table.uuid('car_id').references('cars.id').notNull();
                 table.string('car_vin').unique().notNull();
                 table.string('car_state_number').unique().notNull();
@@ -28,7 +27,6 @@ exports.up = function(knex) {
                 table.decimal('car_length', 10, 2);
                 table.decimal('car_carrying_capacity', 10, 2);
                 table.timestamp('created_at').defaultTo(knex.fn.now());
-                table.unique(['deal_id', 'car_id']);
             });
         })
         .then(function () {
@@ -43,7 +41,6 @@ exports.up = function(knex) {
         .then(function () {
             return knex.schema.createTable('deal_trailers', function(table) {
                 table.uuid('id').defaultTo(knex.raw('uuid_generate_v4()')).primary().unique();
-                table.uuid('deal_id').references('deals.id').notNull();
                 table.uuid('trailer_id').references('trailers.id').notNull();
                 table.string('trailer_vin').unique().notNull();
                 table.string('trailer_state_number').unique().notNull();
@@ -58,7 +55,6 @@ exports.up = function(knex) {
                 table.decimal('trailer_length', 10, 2).notNull();
                 table.decimal('trailer_carrying_capacity', 10, 2).notNull();
                 table.timestamp('created_at').defaultTo(knex.fn.now());
-                table.unique(['trailer_id', 'deal_id']);
             });
         })
         .then(function () {
@@ -73,7 +69,6 @@ exports.up = function(knex) {
         .then(function () {
             return knex.schema.createTable('deal_drivers', function(table) {
                 table.uuid('id').defaultTo(knex.raw('uuid_generate_v4()')).primary().unique();
-                table.uuid('deal_id').references('deals.id').notNull();
                 table.uuid('driver_id').references('drivers.id').notNull();
                 table.string('email').notNull();
                 table.string('full_name').notNull();
@@ -87,7 +82,6 @@ exports.up = function(knex) {
                 table.string('passport_issuing_authority').notNull();
                 table.date('passport_created_at').notNull();
                 table.date('passport_expired_at').notNull();
-                table.unique(['deal_id', 'driver_id']);
             });
         })
         .then(function () {
@@ -98,11 +92,39 @@ exports.up = function(knex) {
                 table.timestamp('created_at').defaultTo(knex.fn.now());
                 table.unique(['deal_driver_id', 'deal_file_id']);
             });
+        })
+        .then(function () {
+            return knex.schema.alterTable('deals', function(table) {
+                table.dropColumn('driver_id');
+                table.dropColumn('car_id');
+                table.dropColumn('trailer_id');
+            });
+        })
+        .then(function () {
+            return knex.schema.alterTable('deals', function(table) {
+                table.uuid('deal_driver_id').notNull().references('deal_drivers.id');
+                table.uuid('deal_car_id').notNull().references('deal_cars.id');
+                table.uuid('deal_trailer_id').references('deal_trailers');
+            });
         });
 };
 
 exports.down = function(knex) {
     return knex.schema.dropTable('deal_drivers_to_files')
+        .then(function () {
+            return knex.schema.alterTable('deals', function(table) {
+                table.dropColumn('deal_driver_id');
+                table.dropColumn('deal_car_id');
+                table.dropColumn('deal_trailer_id');
+            });
+        })
+        .then(function () {
+            return knex.schema.alterTable('deals', function(table) {
+                table.uuid('driver_id').references('drivers.id');
+                table.uuid('car_id').references('cars.id');
+                table.uuid('trailer_id').references('trailers');
+            });
+        })
         .then(function () {
             return knex.schema.dropTable('deal_drivers');
         })
