@@ -65,6 +65,7 @@ const BASES = {
     STATUSES: '/statuses',
     CONFIRM: '/confirm',
     CANCEL: '/cancel',
+    UPLOAD: '/upload',
 };
 
 const IDS = {
@@ -368,6 +369,10 @@ const ROUTES = {
                 },
                 REJECT: {
                     BASE: BASES.REJECT,
+                    POST: '',
+                },
+                UPLOAD: {
+                    BASE: BASES.UPLOAD,
                     POST: '',
                 },
             },

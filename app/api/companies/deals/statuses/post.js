@@ -24,7 +24,7 @@ const BackgroundService = require('services/background/creators');
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
-const { DEAL_STATUSES_MAP } = require('constants/deal-statuses');
+const { DEAL_STATUSES_MAP, DEAL_ROUTES_TO_STATUSES_MAP } = require('constants/deal-statuses');
 const { ACTION_TYPES } = require('constants/background');
 const { LOADING_TYPES_MAP } = require('constants/cargos');
 const { CAR_TYPES_MAP } = require('constants/cars');
@@ -37,6 +37,7 @@ const CargoPointsFormatters = require('formatters/cargo-points');
 const DealPointsInfoFormatters = require('formatters/deal-points-info');
 const FilesFormatters = require('formatters/files');
 const DealStatusesHistoryFormatters = require('formatters/deal-statuses-history');
+const DealStatusHistoryConfirmationFormatters = require('formatters/deal-status-history-confirmations');
 
 // helpers
 const { validateDealInstancesToConfirmedStatus } = require('helpers/validators/deals');
@@ -353,8 +354,59 @@ const setRejectedStatus = async (req, res, next) => {
     }
 };
 
+const setDoubleConfirmedStatus = async (req, res, next) => {
+    try {
+        const { user, nextStatus, isTransporter } = res.locals;
+        const { dealId } = req.params;
+
+        const transactionsList = [];
+
+        const statusToSet = DEAL_ROUTES_TO_STATUSES_MAP[nextStatus];
+
+        if (!statusToSet) {
+            return reject(res, ERRORS.SYSTEM.ERROR);
+        }
+
+        const deal = await DealsService.getRecordStrict(dealId);
+
+        const confirmedByTransporter = deal[colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER];
+        const confirmedByHolder = deal[colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER];
+        const dealStatusConfirmationId = deal[HOMELESS_COLUMNS.DEAL_STATUS_CONFIRMATION_ID];
+
+        const updatedStatusHistoryConfirmation = DealStatusHistoryConfirmationFormatters.formatRecordToConfirmBySomeRole(isTransporter);
+
+        transactionsList.push(
+            DealStatusesConfirmationsService.editRecordAsTransaction(dealStatusConfirmationId, updatedStatusHistoryConfirmation)
+        );
+
+        if (confirmedByTransporter || confirmedByHolder) { // set next status
+            const nextDealStatus = await DealsStatusesServices.getRecordStrict(statusToSet);
+
+            const dealStatusHistoryId = uuid();
+
+            const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, nextDealStatus.id, user.id);
+            const statusHistoryConfirmation = DealStatusHistoryConfirmationFormatters.formatRecordToSave(dealStatusHistoryId);
+
+            transactionsList.push(
+                DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory)
+            );
+
+            transactionsList.push(
+                DealStatusesConfirmationsService.addRecordAsTransaction(statusHistoryConfirmation)
+            );
+        }
+
+        await TablesService.runTransaction(transactionsList);
+
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     setConfirmedStatus,
     setCancelledStatus,
     setRejectedStatus,
+    setDoubleConfirmedStatus,
 };

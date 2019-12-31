@@ -486,23 +486,33 @@ const validateChangeDealStatus = (nextStatus) => async (req, res, next) => {
         const deal = await DealsService.getRecordStrict(dealId);
         const transporterCompanyId = deal[colsDeals.TRANSPORTER_COMPANY_ID];
         const holderCompanyId = deal[colsCargos.COMPANY_ID];
+        const confirmedByTransporter = deal[colsDealsStatusesConfirmations.CONFIRMED_BY_TRANSPORTER];
+        const confirmedByHolder = deal[colsDealsStatusesConfirmations.CONFIRMED_BY_HOLDER];
 
-        let scheme = null;
+        if (confirmedByTransporter === null || confirmedByHolder === null) {
+            return reject(res, ERRORS.SYSTEM.ERROR);
+        }
+
+        if (
+            (transporterCompanyId === company.id && confirmedByTransporter) ||
+            (holderCompanyId === company.id && confirmedByHolder)
+        ) {
+            return reject(res, ERRORS.DEALS.STEP_ALREADY_CONFIRMED_BY_THIS_ROLE);
+        }
+
+        let isTransporter;
+        if (transporterCompanyId === company.id) {
+            isTransporter = true;
+        } else if (holderCompanyId === company.id) {
+            isTransporter = false;
+        } else {
+            return reject(res, ERRORS.SYSTEM.ERROR);
+        }
 
         switch (nextStatus) {
         case DEAL_STATUSES_ROUTE.CONFIRM: {
-
-            const confirmedByTransporter = deal[colsDealsStatusesConfirmations.CONFIRMED_BY_TRANSPORTER];
-            const confirmedByHolder = deal[colsDealsStatusesConfirmations.CONFIRMED_BY_HOLDER];
-
-            if (confirmedByTransporter === null || confirmedByHolder === null) {
-                return reject(res, ERRORS.SYSTEM.ERROR);
-            }
-
-            if (transporterCompanyId === company.id) {
-                if (confirmedByTransporter) {
-                    return reject(res, ERRORS.DEALS.STEP_ALREADY_CONFIRMED_BY_THIS_ROLE);
-                }
+            let scheme = null;
+            if (isTransporter) {
                 scheme = ValidatorSchemes.validateNextStepConfirmedTransporter;
                 const validate = ajv.compile(scheme);
                 const isValidData = validate(data);
@@ -511,11 +521,7 @@ const validateChangeDealStatus = (nextStatus) => async (req, res, next) => {
                     return reject(res, ERRORS.VALIDATION.ERROR, validate.errors);
                 }
 
-            } else if (holderCompanyId === company.id) {
-                if (confirmedByHolder) {
-                    return reject(res, ERRORS.DEALS.STEP_ALREADY_CONFIRMED_BY_THIS_ROLE);
-                }
-
+            } else {
                 // body
                 scheme = ValidatorSchemes.validateNextStepConfirmedHolder;
                 let validate = ajv.compile(scheme);
@@ -560,10 +566,8 @@ const validateChangeDealStatus = (nextStatus) => async (req, res, next) => {
         }
         }
 
-        if (!scheme) {
-            return reject(res, ERRORS.SYSTEM.ERROR);
-        }
-
+        res.locals.nextStatus = nextStatus;
+        res.locals.isTransporter = isTransporter;
         next();
     } catch (error) {
         next(error);
