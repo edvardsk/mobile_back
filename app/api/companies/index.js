@@ -51,7 +51,7 @@ const { formDataHandler, createOrUpdateDataOnStep3 } = require('api/middlewares/
 // constants
 const { PERMISSIONS, ROLES } = require('constants/system');
 const {
-    DEAL_STATUSES_ROUTE,
+    DEAL_STATUSES_ROUTE, DEAL_STATUSES_MAP,
 } = require('constants/deal-statuses');
 
 // helpers
@@ -577,6 +577,13 @@ router.get(
     getDeals.getListDeals,
 );
 
+router.get(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.GET,
+    isHasPermissions([PERMISSIONS.READ_LIST_DEALS]), // permissions middleware
+    injectCompanyData,
+    getDeals.getDeal,
+);
+
 router.post(
     ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.STATUSES.BASE +
     ROUTES.COMPANIES.DEALS.STATUSES.CONFIRM.BASE + ROUTES.COMPANIES.DEALS.STATUSES.CONFIRM.POST,
@@ -586,8 +593,8 @@ router.post(
     validate(ValidatorSchemes.requiredDealId, 'params'),
     formDataHandler(uploadData), // uploading files middleware
     validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
-    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.CONFIRM }), 'params'),
-    validateChangeDealStatus(DEAL_STATUSES_ROUTE.CONFIRM),
+    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_MAP.CONFIRMED }), 'params'),
+    validateChangeDealStatus(DEAL_STATUSES_MAP.CONFIRMED),
     postDealsStatuses.setConfirmedStatus,
 );
 

@@ -347,6 +347,7 @@ const ROUTES = {
         },
         DEALS: {
             BASE: IDS.ME_OR_ID + BASES.DEALS,
+            GET: IDS.DEAL_ID,
             CARGOS: {
                 BASE: BASES.CARGOS,
                 POST: '',
