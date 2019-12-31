@@ -42,6 +42,7 @@ const DealStatusesHistoryFormatters = require('formatters/deal-statuses-history'
 const { validateDealInstancesToConfirmedStatus } = require('helpers/validators/deals');
 
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
+const colsCars = SQL_TABLES.CARS.COLUMNS;
 const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 const colsDealHistoryConfirmations = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATIONS.COLUMNS;
@@ -135,7 +136,7 @@ const setConfirmedStatus = async (req, res, next) => {
                 trailerId && TrailersService.getRecordStrict(trailerId),
             ]);
 
-            const isCarAbleTransport = !!car[CAR_TYPES_MAP.TRUCK];
+            const isCarAbleTransport = car[colsCars.CAR_TYPE] === CAR_TYPES_MAP.TRUCK;
             const carWidth = parseFloat(car[colsTrailers.CAR_WIDTH]) || 0;
             const carLength = parseFloat(car[colsTrailers.CAR_LENGTH]) || 0;
             const carHeight = parseFloat(car[colsTrailers.CAR_HEIGHT]) || 0;
@@ -152,22 +153,6 @@ const setConfirmedStatus = async (req, res, next) => {
             const currentCargoGrossWeight = parseFloat(deal[colsCargos.GROSS_WEIGHT]);
             const currentCargoVolume = currentCargoWidth * currentCargoLength * currentCargoHeight;
 
-            console.log(carWidth);
-            console.log(carLength);
-            console.log(carHeight);
-            console.log(carCarryingCapacity);
-
-            console.log(trailerWidth);
-            console.log(trailerLength);
-            console.log(trailerHeight);
-            console.log(trailerCarryingCapacity);
-
-            console.log(currentCargoWidth);
-            console.log(currentCargoLength);
-            console.log(currentCargoHeight);
-            console.log(currentCargoGrossWeight);
-            console.log(currentCargoVolume);
-
             const widthSizes = [];
             const heightSizes = [];
 
@@ -180,7 +165,6 @@ const setConfirmedStatus = async (req, res, next) => {
                 heightSizes.push(trailerHeight);
             }
             if (!isCarAbleTransport && !trailer) {
-                console.log('kek');
                 return reject(res, ERRORS.DEALS.CARGO_DOES_NOT_SUIT);
             }
 
@@ -197,7 +181,6 @@ const setConfirmedStatus = async (req, res, next) => {
                 minTransportHeight < currentCargoHeight ||
                 transportLength < currentCargoLength
             ) {
-                console.log('lol');
                 return reject(res, ERRORS.DEALS.CARGO_DOES_NOT_SUIT);
             }
 
@@ -226,7 +209,6 @@ const setConfirmedStatus = async (req, res, next) => {
                 transportVolume < sumVolume
             ) {
                 // remove cargo
-                console.log('cheburek');
                 return reject(res, ERRORS.DEALS.CARGO_DOES_NOT_SUIT);
             }
 
