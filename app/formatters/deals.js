@@ -9,7 +9,7 @@ const { LOADING_TYPES_MAP } = require('constants/cargos');
 const { isValidUUID } = require('helpers/validators');
 
 // formatters
-const { formatGeoPoints } = require('./cargos');
+const { formatGeoPoints, formatDealGeoPoints } = require('./cargos');
 const { formatPricesFromPostgresJSON } = require('./cargo-prices');
 
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
@@ -257,7 +257,7 @@ const formatRecordForResponse = (deal, userLanguageId) => {
         };
     }
 
-    const [uploadingPoints, downloadingPoints] = formatGeoPoints(deal, userLanguageId);
+    const [uploadingPoints, downloadingPoints] = formatDealGeoPoints(deal, userLanguageId);
 
     return {
         ...result,
