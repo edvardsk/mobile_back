@@ -21,7 +21,6 @@ const formatRecordToSave = (id, carId, body) => ({
     [cols.CAR_HEIGHT]: body[colsCars.CAR_HEIGHT] || null,
     [cols.CAR_LENGTH]: body[colsCars.CAR_LENGTH] || null,
     [cols.CAR_CARRYING_CAPACITY]: body[colsCars.CAR_CARRYING_CAPACITY] || null,
-    [cols.CAR_CARRYING_CAPACITY]: body[colsCars.CAR_CARRYING_CAPACITY] || null,
 });
 
 const formatRecordToEdit = (body) => ({
@@ -37,7 +36,6 @@ const formatRecordToEdit = (body) => ({
     [cols.CAR_WIDTH]: body[colsCars.CAR_WIDTH] || null,
     [cols.CAR_HEIGHT]: body[colsCars.CAR_HEIGHT] || null,
     [cols.CAR_LENGTH]: body[colsCars.CAR_LENGTH] || null,
-    [cols.CAR_CARRYING_CAPACITY]: body[colsCars.CAR_CARRYING_CAPACITY] || null,
     [cols.CAR_CARRYING_CAPACITY]: body[colsCars.CAR_CARRYING_CAPACITY] || null,
 });
 

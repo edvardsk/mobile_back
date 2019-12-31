@@ -23,7 +23,8 @@ const colsDraftDriversFiles = SQL_TABLES.DRAFT_DRIVERS_TO_FILES.COLUMNS;
 const colsDraftFiles = SQL_TABLES.DRAFT_FILES.COLUMNS;
 const colsDraftCarsFiles = SQL_TABLES.DRAFT_CARS_TO_FILES.COLUMNS;
 const colsDraftTrailersFiles = SQL_TABLES.DRAFT_TRAILERS_TO_FILES.COLUMNS;
-const colsDealsFiles = SQL_TABLES.DEALS_TO_FILES.COLUMNS;
+const colsDealFiles = SQL_TABLES.DEAL_FILES.COLUMNS;
+const colsDealsToFiles = SQL_TABLES.DEALS_TO_DEAL_FILES.COLUMNS;
 
 const formatStoringFile = (bucket, path) => `${bucket}/${path}`;
 
@@ -395,13 +396,13 @@ const prepareFilesToStoreForDeals = (files, dealId) => Object.keys(files).reduce
 
         dbFiles.push({
             id: fileId,
-            [cols.NAME]: file.originalname,
-            [cols.LABELS]: fileLabels,
-            [cols.URL]: CryptService.encrypt(fileUrl),
+            [colsDealFiles.NAME]: file.originalname,
+            [colsDealFiles.LABELS]: fileLabels,
+            [colsDealFiles.URL]: CryptService.encrypt(fileUrl),
         });
         dbDealsFiles.push({
-            [colsDealsFiles.DEAL_ID]: dealId,
-            [colsDealsFiles.FILE_ID]: fileId,
+            [colsDealsToFiles.DEAL_ID]: dealId,
+            [colsDealsToFiles.DEAL_FILE_ID]: fileId,
         });
         storageFiles.push({
             bucket: AWS_S3_BUCKET_NAME,

@@ -347,6 +347,7 @@ const ROUTES = {
         },
         DEALS: {
             BASE: IDS.ME_OR_ID + BASES.DEALS,
+            GET: IDS.DEAL_ID,
             CARGOS: {
                 BASE: BASES.CARGOS,
                 POST: '',
@@ -363,6 +364,10 @@ const ROUTES = {
                 },
                 CANCEL: {
                     BASE: BASES.CANCEL,
+                    POST: '',
+                },
+                REJECT: {
+                    BASE: BASES.REJECT,
                     POST: '',
                 },
             },

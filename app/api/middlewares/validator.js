@@ -28,7 +28,7 @@ const DealsService = require('services/tables/deals');
 // constants
 const { ERRORS } = require('constants/errors');
 const { HOMELESS_COLUMNS, SQL_TABLES } = require('constants/tables');
-const { DEAL_STATUSES_MAP } = require('constants/deal-statuses');
+const { DEAL_STATUSES_ROUTE } = require('constants/deal-statuses');
 
 // helpers
 const {
@@ -490,7 +490,7 @@ const validateChangeDealStatus = (nextStatus) => async (req, res, next) => {
         let scheme = null;
 
         switch (nextStatus) {
-        case DEAL_STATUSES_MAP.CONFIRMED: {
+        case DEAL_STATUSES_ROUTE.CONFIRM: {
 
             const confirmedByTransporter = deal[colsDealsStatusesConfirmations.CONFIRMED_BY_TRANSPORTER];
             const confirmedByHolder = deal[colsDealsStatusesConfirmations.CONFIRMED_BY_HOLDER];

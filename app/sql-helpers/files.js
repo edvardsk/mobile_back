@@ -127,6 +127,20 @@ const selectFilesByUserId = userId => squelPostgres
     .left_join(tableUsersFiles.NAME, 'uf', `uf.${colsUsersFiles.FILE_ID} = f.id`)
     .toString();
 
+const selectFilesByCarId = carId => squelPostgres
+    .select()
+    .from(table.NAME, 'f')
+    .where(`cf.${colsCarsFiles.CAR_ID} = '${carId}'`)
+    .left_join(tableCarsFiles.NAME, 'cf', `cf.${colsCarsFiles.FILE_ID} = f.id`)
+    .toString();
+
+const selectFilesByTrailerId = trailerId => squelPostgres
+    .select()
+    .from(table.NAME, 'f')
+    .where(`tf.${colsTrailersFiles.TRAILER_ID} = '${trailerId}'`)
+    .left_join(colsTrailersFiles.NAME, 'tf', `cf.${colsTrailersFiles.FILE_ID} = f.id`)
+    .toString();
+
 const selectFilesByDriverIdAndLabels = (driverId, labelsArr) => {
     const exp = squelPostgres
         .select()
@@ -169,4 +183,6 @@ module.exports = {
     selectFilesByUserIdAndLabels,
     selectFilesByUserId,
     selectFilesByDriverIdAndLabels,
+    selectFilesByCarId,
+    selectFilesByTrailerId,
 };
