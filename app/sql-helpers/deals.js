@@ -120,6 +120,17 @@ const selectDealsByCompanyIdPaginationSorting = (companyId, limit, offset, sortC
         .field(`ARRAY(${
             squelPostgres
                 .select()
+                .field(`row_to_json(row(
+                cpr.${colsCargoPrices.CURRENCY_ID}, cpr.${colsCargoPrices.NEXT_CURRENCY_ID}, cpr.${colsCargoPrices.PRICE}, cur.${colsCurrencies.CODE}
+                ))`)
+                .from(tableCargoPrices.NAME, 'cpr')
+                .where(`cpr.${colsCargoPrices.CARGO_ID} = c.id`)
+                .left_join(tableCurrencies.NAME, 'cur', `cur.id= cpr.${colsCargoPrices.CURRENCY_ID}`)
+                .toString()
+        })`, HOMELESS_COLUMNS.PRICES)
+        .field(`ARRAY(${
+            squelPostgres
+                .select()
                 .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
                 .from(tableCargoPoints.NAME, 'cp')
                 .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
