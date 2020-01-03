@@ -6,6 +6,7 @@ const CarPointsService = require('services/tables/car-points');
 const DealService = require('services/tables/deals');
 const TablesService = require('services/tables');
 const RolesPermissionsService = require('services/tables/roles-to-permissions');
+const WebSocketService = require('services/ws');
 
 // constants
 const { SUCCESS_CODES, ERROR_CODES } = require('constants/http-codes');
@@ -40,6 +41,8 @@ const createTrackingPoint = async (req, res, next) => {
             );
     
             const transactions = await CarPointsService.addPointOnTracking(newPoint);
+
+            WebSocketService.emitWebsocketReaction(dealId, [{coordinates}]);
     
             await TablesService.runTransaction(transactions);
     
