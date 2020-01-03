@@ -30,10 +30,10 @@ exports.up = function(knex) {
 };
 
 exports.down = function(knex) {
-    return knex.schema.dropTable('languages')
+    return knex.schema.alterTable('users', function (table) {
+        table.dropColumn('language_id');
+    })
         .then(function () {
-            return knex.schema.alterTable('users', function (table) {
-                table.dropColumn('language_id');
-            });
+            return knex.schema.dropTable('languages');
         });
 };

@@ -299,6 +299,9 @@ const dealsFilterQuery = {
                 [HOMELESS_COLUMNS.DATE_TO]: {
                     type: 'string',
                 },
+                [HOMELESS_COLUMNS.DEAL_STATUS]: {
+                    type: 'string',
+                }
             },
             additionalProperties: false,
         },

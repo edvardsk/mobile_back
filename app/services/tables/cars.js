@@ -92,8 +92,8 @@ const getAvailableCarsByIdsAndCompanyId = (ids, companyId) => (
     manyOrNone(selectAvailableCarsByIdsAndCompanyId(ids, companyId))
 );
 
-const getAvailableCarByIdAndCompanyId = (id, companyId, cargoDates) => (
-    oneOrNone(selectAvailableCarByIdAndCompanyId(id, companyId, cargoDates))
+const getAvailableCarByIdAndCompanyId = (id, companyId, cargoDates, checkExternalCars = false) => (
+    oneOrNone(selectAvailableCarByIdAndCompanyId(id, companyId, cargoDates, checkExternalCars))
 );
 
 const getRecordsByStateNumbers = numbers => (
@@ -149,31 +149,47 @@ const checkIsPassedFileWithNewDangerClass = async (meta, newDangerClassId, schem
         return !dangerClassFile;
     }
     const car = await getRecordStrict(carId);
+
+    const isShadow = car[colsCars.SHADOW];
     const carType = car[colsCars.CAR_TYPE];
 
-    if (carType === CAR_TYPES_MAP.QUAD) {
-        const newDangerClass = await DangerClassesService.getRecordStrict(newDangerClassId);
-        const newDangerClassName = newDangerClass[colsDangerClasses.NAME];
-        return (
-            (!isDangerous(newDangerClassName) && !dangerClassFile) ||
-            (isDangerous(newDangerClassName) && dangerClassFile)
-        );
+    if (isShadow) {
+        if (carType === CAR_TYPES_MAP.QUAD) {
+            return !dangerClassFile;
+        } else {
+            const newDangerClass = await DangerClassesService.getRecordStrict(newDangerClassId);
+            const newDangerClassName = newDangerClass[colsDangerClasses.NAME];
+            return (
+                (!isDangerous(newDangerClassName) && !dangerClassFile) ||
+                (isDangerous(newDangerClassName) && dangerClassFile)
+            );
+        }
     } else {
-        const oldDangerClassId = car[colsCars.CAR_DANGER_CLASS_ID];
-        const [oldDangerClass, newDangerClass] = await Promise.all([
-            DangerClassesService.getRecordStrict(oldDangerClassId),
-            DangerClassesService.getRecordStrict(newDangerClassId),
-        ]);
+        if (carType === CAR_TYPES_MAP.QUAD) {
+            const newDangerClass = await DangerClassesService.getRecordStrict(newDangerClassId);
+            const newDangerClassName = newDangerClass[colsDangerClasses.NAME];
+            return (
+                (!isDangerous(newDangerClassName) && !dangerClassFile) ||
+                (isDangerous(newDangerClassName) && dangerClassFile)
+            );
+        } else {
+            const oldDangerClassId = car[colsCars.CAR_DANGER_CLASS_ID];
+            const [oldDangerClass, newDangerClass] = await Promise.all([
+                DangerClassesService.getRecordStrict(oldDangerClassId),
+                DangerClassesService.getRecordStrict(newDangerClassId),
+            ]);
 
-        const olsDangerClassName = oldDangerClass[colsDangerClasses.NAME];
-        const newDangerClassName = newDangerClass[colsDangerClasses.NAME];
+            const olsDangerClassName = oldDangerClass[colsDangerClasses.NAME];
+            const newDangerClassName = newDangerClass[colsDangerClasses.NAME];
 
-        return !(
-            (!isDangerous(olsDangerClassName) && isDangerous(newDangerClassName) && !dangerClassFile) ||
-            (!isDangerous(olsDangerClassName) && !isDangerous(newDangerClassName) && dangerClassFile) ||
-            (isDangerous(olsDangerClassName) && !isDangerous(newDangerClassName) && dangerClassFile)
-        );
+            return !(
+                (!isDangerous(olsDangerClassName) && isDangerous(newDangerClassName) && !dangerClassFile) ||
+                (!isDangerous(olsDangerClassName) && !isDangerous(newDangerClassName) && dangerClassFile) ||
+                (isDangerous(olsDangerClassName) && !isDangerous(newDangerClassName) && dangerClassFile)
+            );
+        }
     }
+
 };
 
 module.exports = {

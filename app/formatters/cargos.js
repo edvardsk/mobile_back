@@ -7,7 +7,12 @@ const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { SqlArray } = require('constants/instances');
 
 // formatters
-const { formatGeoPointWithName, formatGeoPointWithNameFromPostgresJSONToObject } = require('./geo');
+const {
+    formatGeoPointWithName,
+    formatDealGeoPointWithName,
+    formatGeoPointWithNameFromPostgresJSONToObject,
+    formatDealGeoPointWithNameFromPostgresJSONToObject,
+} = require('./geo');
 const { formatPricesFromPostgresJSON } = require('./cargo-prices');
 
 const {
@@ -163,6 +168,18 @@ const formatGeoPoints = (cargo, userLanguageId) => {
 
     const uploadingPoints = uniqueUp.map(point => formatGeoPointWithName(point));
     const downloadingPoints = uniqueDown.map(point => formatGeoPointWithName(point));
+    return [uploadingPoints, downloadingPoints];
+};
+
+const formatDealGeoPoints = (deal, userLanguageId) => {
+    const up = deal[HOMELESS_COLUMNS.UPLOADING_POINTS].map(value => formatDealGeoPointWithNameFromPostgresJSONToObject(value));
+    const down = deal[HOMELESS_COLUMNS.DOWNLOADING_POINTS].map(value => formatDealGeoPointWithNameFromPostgresJSONToObject(value));
+
+    const uniqueUp = uniqueByLanguageId(up, userLanguageId);
+    const uniqueDown = uniqueByLanguageId(down, userLanguageId);
+
+    const uploadingPoints = uniqueUp.map(point => formatDealGeoPointWithName(point));
+    const downloadingPoints = uniqueDown.map(point => formatDealGeoPointWithName(point));
     return [uploadingPoints, downloadingPoints];
 };
 
@@ -324,5 +341,6 @@ module.exports = {
     formatRecordForSearchAllResponse,
     formatRecordForUnauthorizedResponse,
     formatGeoPoints,
+    formatDealGeoPoints,
     formatCargoDates,
 };

@@ -2,7 +2,6 @@ const FIRST_ROLES = require('./20191017143230_add_roles').ROLES;
 const CONTROL_ROLES = require('./20191023095323_insert_roles').ROLES;
 const DISPATCHER_ROLES = require('./20191026063335_insert_dispatcher_role.js').ROLES;
 
-
 const { getRolesToPermissionsForDb } = require('../app/formatters/system');
 
 const PERMISSIONS = [

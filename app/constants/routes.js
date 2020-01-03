@@ -63,6 +63,13 @@ const BASES = {
     VERIFY: '/verify',
     REJECT: '/reject',
     TRACKING: '/tracking',
+    STATUSES: '/statuses',
+    CONFIRM: '/confirm',
+    CANCEL: '/cancel',
+    UPLOAD: '/upload',
+    IN_PROGRESS: '/in-progress',
+    DOWNLOAD: '/download',
+    FINISH: '/finish',
 };
 
 const IDS = {
@@ -345,6 +352,7 @@ const ROUTES = {
         },
         DEALS: {
             BASE: IDS.ME_OR_ID + BASES.DEALS,
+            GET: IDS.DEAL_ID,
             CARGOS: {
                 BASE: BASES.CARGOS,
                 POST: '',
@@ -354,7 +362,42 @@ const ROUTES = {
                 POST: '',
                 GET: '',
                 WS: '/ws',
-            }
+            },
+            CARS: {
+                BASE: BASES.CARS,
+                POST: '',
+            },
+            STATUSES: {
+                BASE: IDS.DEAL_ID + BASES.STATUSES,
+                CONFIRM: {
+                    BASE: BASES.CONFIRM,
+                    POST: '',
+                },
+                CANCEL: {
+                    BASE: BASES.CANCEL,
+                    POST: '',
+                },
+                REJECT: {
+                    BASE: BASES.REJECT,
+                    POST: '',
+                },
+                UPLOAD: {
+                    BASE: BASES.UPLOAD,
+                    POST: '',
+                },
+                IN_PROGRESS: {
+                    BASE: BASES.IN_PROGRESS,
+                    POST: '',
+                },
+                DOWNLOAD: {
+                    BASE: BASES.DOWNLOAD,
+                    POST: '',
+                },
+                FINISH: {
+                    BASE: BASES.FINISH,
+                    POST: '',
+                },
+            },
         },
     },
     OTHERS: {

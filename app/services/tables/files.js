@@ -14,6 +14,8 @@ const {
     selectFilesByUserIdAndLabels,
     selectFilesByUserId,
     selectFilesByDriverIdAndLabels,
+    selectFilesByCarId,
+    selectFilesByTrailerId,
 
     deleteFilesByIds,
 } = require('sql-helpers/files');
@@ -55,6 +57,10 @@ const getFilesByDriverIdAndLabels = (driverId, labelsArr) => manyOrNone(selectFi
 
 const getFilesByUserId = userId => manyOrNone(selectFilesByUserId(userId));
 
+const getFilesByCarId = carId => manyOrNone(selectFilesByCarId(carId));
+
+const getFilesByTrailerId = trailerId => manyOrNone(selectFilesByTrailerId(trailerId));
+
 const removeFilesByIdsAsTransaction = ids => [deleteFilesByIds(ids), OPERATIONS.MANY_OR_NONE];
 
 const formatTemporaryLinks = async files => {
@@ -90,6 +96,8 @@ module.exports = {
     getFilesByUserIdAndLabels,
     getFilesByUserId,
     getFilesByDriverIdAndLabels,
+    getFilesByCarId,
+    getFilesByTrailerId,
 
     removeFilesByIdsAsTransaction,
 

@@ -56,7 +56,7 @@ const editCar = async (req, res, next) => {
             const carData = CarsFormatters.formatCarToEdit(body);
 
             transactionsList = [
-                CarsServices.editRecordAsTransaction(carId, carData)
+                CarsServices.editRecordAsTransaction(carId, CarsFormatters.formatRecordAsNotShadow(carData))
             ];
 
             const carFromDb = await CarsServices.getRecordStrict(carId);

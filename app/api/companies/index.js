@@ -36,18 +36,26 @@ const getTrailersDeals = require('./trailers/deals/get');
 const getDriversDeals = require('./drivers/deals/get');
 
 const postDealsCargos = require('./deals/cargos/post');
+const postDealsCars = require('./deals/cars/post');
 const getDeals = require('./deals/get');
 const postTracking = require('./deals/tracking/post');
 const getTracking = require('./deals/tracking/get');
 const wsTracking = require('./deals/tracking/ws');
+const postDealsStatuses  = require('./deals/statuses/post');
 
 // middlewares
 const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
-const { validate } = require('api/middlewares/validator');
+const {
+    validate,
+    validateChangeDealStatus,
+} = require('api/middlewares/validator');
 const { formDataHandler, createOrUpdateDataOnStep3 } = require('api/middlewares/files');
 
 // constants
 const { PERMISSIONS, ROLES } = require('constants/system');
+const {
+    DEAL_STATUSES_ROUTE,
+} = require('constants/deal-statuses');
 
 // helpers
 const ValidatorSchemes = require('helpers/validators/schemes');
@@ -552,6 +560,15 @@ router.post(
     postDealsCargos.createCargoDeal,
 );
 
+router.post(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.CARS.BASE + ROUTES.COMPANIES.DEALS.CARS.POST,
+    isHasPermissions([PERMISSIONS.CREATE_CAR_DEAL]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.createCarDeal),
+    postDealsCars.createCarDeal,
+);
+
 router.get(
     ROUTES.COMPANIES.DEALS.BASE,
     isHasPermissions([PERMISSIONS.READ_LIST_DEALS]), // permissions middleware
@@ -587,5 +604,116 @@ router.ws(
     ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.TRACKING.BASE + ROUTES.COMPANIES.DEALS.TRACKING.WS,
     wsTracking.getListDealPoints,
 );
+
+router.get(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.GET,
+    isHasPermissions([PERMISSIONS.READ_LIST_DEALS]), // permissions middleware
+    injectCompanyData,
+    validate(({ company }) => ValidatorSchemes.validateDealExistsAsync({ companyId: company.id }), 'params'),
+    getDeals.getDeal,
+);
+
+router.post(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.STATUSES.BASE +
+    ROUTES.COMPANIES.DEALS.STATUSES.CONFIRM.BASE + ROUTES.COMPANIES.DEALS.STATUSES.CONFIRM.POST,
+    isHasPermissions([PERMISSIONS.CHANGE_DEAL_STATUS_ADVANCED]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredDealId, 'params'),
+    formDataHandler(uploadData), // uploading files middleware
+    validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
+    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.CONFIRM }), 'params'),
+    validateChangeDealStatus(DEAL_STATUSES_ROUTE.CONFIRM),
+    postDealsStatuses.setConfirmedStatus,
+);
+
+router.post(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.STATUSES.BASE +
+    ROUTES.COMPANIES.DEALS.STATUSES.CANCEL.BASE + ROUTES.COMPANIES.DEALS.STATUSES.CANCEL.POST,
+    isHasPermissions([PERMISSIONS.CHANGE_DEAL_STATUS_ADVANCED]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredDealId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
+    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.CANCEL }), 'params'),
+    postDealsStatuses.setCancelledStatus,
+);
+
+router.post(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.STATUSES.BASE +
+    ROUTES.COMPANIES.DEALS.STATUSES.REJECT.BASE + ROUTES.COMPANIES.DEALS.STATUSES.REJECT.POST,
+    isHasPermissions([PERMISSIONS.CHANGE_DEAL_STATUS_ADVANCED]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredDealId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
+    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.REJECT }), 'params'),
+    postDealsStatuses.setCancelledStatus,
+);
+
+router.post(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.STATUSES.BASE +
+    ROUTES.COMPANIES.DEALS.STATUSES.REJECT.BASE + ROUTES.COMPANIES.DEALS.STATUSES.REJECT.POST,
+    isHasPermissions([PERMISSIONS.CHANGE_DEAL_STATUS_ADVANCED]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredDealId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
+    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.REJECT }), 'params'),
+    postDealsStatuses.setCancelledStatus,
+);
+
+router.post(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.STATUSES.BASE +
+    ROUTES.COMPANIES.DEALS.STATUSES.UPLOAD.BASE + ROUTES.COMPANIES.DEALS.STATUSES.UPLOAD.POST,
+    isHasPermissions([PERMISSIONS.CHANGE_DEAL_STATUS_BASE]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredDealId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
+    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.UPLOAD }), 'params'),
+    validateChangeDealStatus(DEAL_STATUSES_ROUTE.UPLOAD),
+    postDealsStatuses.setDoubleConfirmedStatus,
+);
+
+router.post(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.STATUSES.BASE +
+    ROUTES.COMPANIES.DEALS.STATUSES.IN_PROGRESS.BASE + ROUTES.COMPANIES.DEALS.STATUSES.IN_PROGRESS.POST,
+    isHasPermissions([PERMISSIONS.CHANGE_DEAL_STATUS_BASE]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredDealId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
+    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.IN_PROGRESS }), 'params'),
+    validateChangeDealStatus(DEAL_STATUSES_ROUTE.IN_PROGRESS),
+    postDealsStatuses.setDoubleConfirmedStatus,
+);
+
+router.post(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.STATUSES.BASE +
+    ROUTES.COMPANIES.DEALS.STATUSES.DOWNLOAD.BASE + ROUTES.COMPANIES.DEALS.STATUSES.DOWNLOAD.POST,
+    isHasPermissions([PERMISSIONS.CHANGE_DEAL_STATUS_BASE]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredDealId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
+    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.DOWNLOAD }), 'params'),
+    validateChangeDealStatus(DEAL_STATUSES_ROUTE.DOWNLOAD),
+    postDealsStatuses.setDoubleConfirmedStatus,
+);
+
+router.post(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.STATUSES.BASE +
+    ROUTES.COMPANIES.DEALS.STATUSES.FINISH.BASE + ROUTES.COMPANIES.DEALS.STATUSES.FINISH.POST,
+    isHasPermissions([PERMISSIONS.CHANGE_DEAL_STATUS_BASE]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredDealId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
+    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.FINISH }), 'params'),
+    validateChangeDealStatus(DEAL_STATUSES_ROUTE.FINISH),
+    postDealsStatuses.setDoubleConfirmedStatus,
+);
+
 
 module.exports = router;

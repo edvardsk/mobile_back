@@ -2,7 +2,7 @@
 const {
     insertRecords,
     insertRecord,
-} = require('sql-helpers/deal-sub-statuses-history');
+} = require('sql-helpers/deal-points-info');
 
 // constants
 const { OPERATIONS } = require('constants/postgres');

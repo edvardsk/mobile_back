@@ -21,7 +21,14 @@ const deleteRecordsByFileIds = fileIds => squelPostgres
     .returning('*')
     .toString();
 
+const selectRecordsByCarId = carId => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where(`${cols.CAR_ID} = '${carId}'`)
+    .toString();
+
 module.exports = {
     insertRecords,
     deleteRecordsByFileIds,
+    selectRecordsByCarId,
 };

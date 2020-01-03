@@ -33,8 +33,20 @@ const autoCancelUnconfirmedDealCreator = (dealId) => {
     childProcess.send(msg);
 };
 
+const autoSetGoingToUploadDealStatusCreator = (dealId, timeToExecute) => {
+    const msg = {
+        payload: {
+            dealId,
+            timeToExecute,
+        },
+        type: ACTION_TYPES.AUTO_SET_GOING_TO_UPLOAD_DEAL_STATUS,
+    };
+    childProcess.send(msg);
+};
+
 module.exports = {
     translateCoordinatesCreator,
     extractExchangeRateCreator,
     autoCancelUnconfirmedDealCreator,
+    autoSetGoingToUploadDealStatusCreator,
 };

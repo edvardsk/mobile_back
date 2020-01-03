@@ -23,6 +23,9 @@ const formatPointToStore = (id, record) => ({
     [cols.COORDINATES]: record[colsCargoPoints.COORDINATES],
 });
 
+const formatCoordinatesToLatLon = coordinatesString => coordinatesString.slice(6, -1).split(' ');
+
 module.exports = {
     formatPointsAndTranslationsToSave,
+    formatCoordinatesToLatLon,
 };
