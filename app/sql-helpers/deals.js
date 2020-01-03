@@ -257,7 +257,7 @@ const selectFullRecordById = (id, userLanguageId) => squelPostgres
             .where(`t.${colsTranslations.LANGUAGE_ID} = '${userLanguageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
             .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
             .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
-            .left_join(tableDealPointsInfo.NAME, 'dpi', `dpi.${colsDealPointsInfo.CARGO_POINT_ID} = cp.id`)
+            .left_join(tableDealPointsInfo.NAME, 'dpi', `dpi.${colsDealPointsInfo.CARGO_POINT_ID} = cp.id AND dpi.${colsDealPointsInfo.DEAL_ID} = d.id`)
             .toString()
     })`, HOMELESS_COLUMNS.UPLOADING_POINTS)
     .field(`ARRAY(${
@@ -270,7 +270,7 @@ const selectFullRecordById = (id, userLanguageId) => squelPostgres
             .where(`t.${colsTranslations.LANGUAGE_ID} = '${userLanguageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
             .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
             .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
-            .left_join(tableDealPointsInfo.NAME, 'dpi', `dpi.${colsDealPointsInfo.CARGO_POINT_ID} = cp.id`)
+            .left_join(tableDealPointsInfo.NAME, 'dpi', `dpi.${colsDealPointsInfo.CARGO_POINT_ID} = cp.id AND dpi.${colsDealPointsInfo.DEAL_ID} = d.id`)
             .toString()
     })`, HOMELESS_COLUMNS.DOWNLOADING_POINTS)
     .field(`ds.${colsDealStatuses.NAME}`, HOMELESS_COLUMNS.DEAL_STATUS)
