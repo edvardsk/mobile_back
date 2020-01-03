@@ -21,6 +21,7 @@ const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 const colsDealHistoryConfirmations = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATIONS.COLUMNS;
 const colsEconomicSettings = SQL_TABLES.ECONOMIC_SETTINGS.COLUMNS;
+const colsCargoPrices = SQL_TABLES.CARGO_PRICES.COLUMNS;
 
 const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, companyId, initiatorId, dealStatusId) => {
     const generatedDriverId = uuid();
@@ -196,6 +197,8 @@ const formatRecordForList = (deal, userLanguageId) => {
         [colsCargo.DOWNLOADING_DATE_FROM]: deal[colsCargo.DOWNLOADING_DATE_FROM],
         [colsCargo.DOWNLOADING_DATE_TO]: deal[colsCargo.DOWNLOADING_DATE_TO],
         [HOMELESS_COLUMNS.DEAL_STATUS]: deal[HOMELESS_COLUMNS.DEAL_STATUS],
+        [HOMELESS_COLUMNS.PRICE]: formatPricesFromPostgresJSON(deal[HOMELESS_COLUMNS.PRICES])
+            .find((p) => p[colsCargoPrices.CURRENCY_ID] === deal[colsDeals.PAY_CURRENCY_ID]),
     };
 
     const [uploadingPoints, downloadingPoints] = formatGeoPoints(deal, userLanguageId);
@@ -242,7 +245,8 @@ const formatRecordForResponse = (deal, userLanguageId) => {
             [colsCargo.WIDTH]: parseFloat(deal[colsCargo.WIDTH]),
             [colsCargo.HEIGHT]: parseFloat(deal[colsCargo.HEIGHT]),
             [colsCargo.LENGTH]: parseFloat(deal[colsCargo.LENGTH]),
-            [HOMELESS_COLUMNS.PRICES]: formatPricesFromPostgresJSON(deal[HOMELESS_COLUMNS.PRICES]),
+            [HOMELESS_COLUMNS.PRICE]: formatPricesFromPostgresJSON(deal[HOMELESS_COLUMNS.PRICES])
+                .find((p) => p[colsCargoPrices.CURRENCY_ID] === deal[colsDeals.PAY_CURRENCY_ID]),
         },
         car: {
             [colsDeals.CAR_ID]: deal[colsDeals.CAR_ID],
