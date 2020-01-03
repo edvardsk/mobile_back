@@ -65,6 +65,10 @@ const BASES = {
     STATUSES: '/statuses',
     CONFIRM: '/confirm',
     CANCEL: '/cancel',
+    UPLOAD: '/upload',
+    IN_PROGRESS: '/in-progress',
+    DOWNLOAD: '/download',
+    FINISH: '/finish',
 };
 
 const IDS = {
@@ -368,6 +372,22 @@ const ROUTES = {
                 },
                 REJECT: {
                     BASE: BASES.REJECT,
+                    POST: '',
+                },
+                UPLOAD: {
+                    BASE: BASES.UPLOAD,
+                    POST: '',
+                },
+                IN_PROGRESS: {
+                    BASE: BASES.IN_PROGRESS,
+                    POST: '',
+                },
+                DOWNLOAD: {
+                    BASE: BASES.DOWNLOAD,
+                    POST: '',
+                },
+                FINISH: {
+                    BASE: BASES.FINISH,
                     POST: '',
                 },
             },

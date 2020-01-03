@@ -37,6 +37,7 @@ const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MANY];
 
 const getRecordStrict = id => one(selectRecordById(id));
+
 const editRecordAsTransaction = (id, data) => [updateRecord(id, data), OPERATIONS.ONE];
 
 const getRecordWithInstancesInfoStrict = id => one(selectRecordWithInstancesInfoById(id));

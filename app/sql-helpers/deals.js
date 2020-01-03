@@ -188,6 +188,7 @@ const selectRecordById = id => squelPostgres
     .field('d.*')
     .field(`c.${colsCargos.COMPANY_ID}`)
     .field(`ds.${colsDealStatuses.NAME}`, HOMELESS_COLUMNS.DEAL_STATUS_NAME)
+    .field('dsc.id', HOMELESS_COLUMNS.DEAL_STATUS_CONFIRMATION_ID)
     .field(`dsc.${colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER}`, colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER)
     .field(`dsc.${colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER}`, colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER)
     .from(table.NAME, 'd')
