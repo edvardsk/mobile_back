@@ -33,7 +33,7 @@ const getListDealPoints = async (req, res, next) => {
         const secondTransaction = await TrackingSocketHashesService.addRecordAsTransaction(hashRecord);
         await TablesService.runTransaction([secondTransaction]);
 
-        return success(res, { points: result, hash: hashRecord[colsTracking.HASH] });
+        return success(res, { points: result, hash: hashRecord[colsTracking.HASH], dealId });
     } catch (error) {
         next(error);
     }

@@ -3,7 +3,6 @@ const moment = require('moment');
 // services
 const CarPointsService = require('services/tables/car-points');
 const TrackingSocketHashesService = require('services/tables/tracking-socket-hashes');
-const TablesService = require('services/tables');
 
 // formatters
 const CarPointsFormatters = require('formatters/car-points');
@@ -13,32 +12,33 @@ const { SQL_TABLES } = require('constants/tables');
 
 const colsTracking = SQL_TABLES.TRACKING_SOCKET_HASHES.COLUMNS;
 
-const TIMEOUT_VALUE = 3000;
+const TIMEOUT_VALUE = process.env.SOCKET_TRACKING_TIMEOUT;
 
 const getListDealPoints = async (ws, req) => {
     const { dealId } = req.params;
     const { hash } = req.query;
 
     const hashRecord = await TrackingSocketHashesService.getRecordByHash(hash);
-    await TablesService.runTransaction(await TrackingSocketHashesService.deleteRecord(hashRecord.id));
+    await TrackingSocketHashesService.deleteRecord(hashRecord.id);
 
     if (!hashRecord || hashRecord[colsTracking.DEAL_ID] !== dealId) {
         ws.terminate();
     } else {
-        let latestDate = moment.now();
+        let latestDate = moment();
         let timeoutId;
         const timeoutHandler = () => {
-            latestDate = moment.now();
             CarPointsService.getDealPointsAfterDate(dealId, latestDate.toISOString())
                 .then(pointItems => {
-                    const formattedpoints = pointItems.map(point => CarPointsFormatters.formatPoinstForList(point));
-                    ws.message(JSON.stringify({ formattedpoints }));
+                    const formattedPoints = pointItems.map(point => CarPointsFormatters.formatPoinstForList(point));
+                    if(formattedPoints.length > 0) {
+                        ws.send(JSON.stringify({ formattedPoints }));
+                    }
+                    timeoutId = setTimeout(timeoutHandler, TIMEOUT_VALUE);
+                    latestDate = moment();
                 });
         };
-        ws.onopen(() => {
-            timeoutId = setTimeout(timeoutHandler, TIMEOUT_VALUE);
-        });
-        ws.onClose(() => {
+        timeoutId = setTimeout(timeoutHandler, TIMEOUT_VALUE);
+        ws.on('close', () => {
             clearTimeout(timeoutId);
         });
     }

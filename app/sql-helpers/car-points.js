@@ -67,7 +67,6 @@ const selectRecordsByDealIdAndDate = (dealId, dateAfter) => squelPostgres
     .from(table.NAME, 'c')
     .where(`${cols.DEAL_ID} = '${dealId}' AND ${cols.CREATED_AT} > '${dateAfter}'`)
     .order(cols.CREATED_AT, false)
-    .limit(1)
     .toString();
 
 module.exports = {
