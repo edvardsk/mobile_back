@@ -300,6 +300,12 @@ ajv.addKeyword('own_active_deal_not_exists', {
     validate: DealsService.checkOwnActiveDealExist,
 });
 
+ajv.addKeyword('own_deal_not_exists', {
+    async: true,
+    type: 'string',
+    validate: DealsService.checkOwnDealExist,
+});
+
 ajv.addKeyword('deal_status_not_allowed', {
     async: true,
     type: 'string',

@@ -157,7 +157,6 @@ const checkIsPassedFileWithNewDangerClass = async (meta, newDangerClassId, schem
 
     const isShadow = trailer[colsTrailers.SHADOW];
 
-
     let oldDangerClassId;
     if (!isControlRole) {
         const draftTrailer = await DraftTrailersService.getRecordByTrailerId(trailerId);

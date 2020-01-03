@@ -581,6 +581,7 @@ router.get(
     ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.GET,
     isHasPermissions([PERMISSIONS.READ_LIST_DEALS]), // permissions middleware
     injectCompanyData,
+    validate(({ company }) => ValidatorSchemes.validateDealExistsAsync({ companyId: company.id }), 'params'),
     getDeals.getDeal,
 );
 
