@@ -8,6 +8,7 @@ const DealStatusesHistoryService = require('services/tables/deal-statuses-histor
 const DealStatusesHistoryConfirmationsService = require('services/tables/deal-statuses-history-confirmations');
 const TablesService = require('services/tables');
 const BackgroundService = require('services/background/creators');
+const EconomicSettingsServices = require('services/tables/economic-settings');
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
@@ -29,6 +30,7 @@ const {
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 const colsCompanies = SQL_TABLES.COMPANIES.COLUMNS;
+const colsCars = SQL_TABLES.CARS.COLUMNS;
 
 const createCarDeal = async (req, res, next) => {
     try {
@@ -76,11 +78,17 @@ const createCarDeal = async (req, res, next) => {
         }
 
         let transactionsList = [];
+
+        const companyId = availableCars && availableCars[0] && availableCars[0][colsCars.COMPANY_ID];
+        const [defaultEconomicSettings, companyEconomySettings] = await Promise.all([
+            EconomicSettingsServices.getDefaultRecordStrict(),
+            EconomicSettingsServices.getRecordByCompanyId(companyId),
+        ]);
         /* create all shadow records */
         const dealCreatedStatus = await DealStatusesService.getRecordStrict(DEAL_STATUSES_MAP.CREATED);
         const [
             deals, dealStatusesHistory, dealStatusHistoryConfirmations,
-        ] = formatAllInstancesToSaveCarDeal(body, cargoLoadingType, availableCars, user.id, dealCreatedStatus.id);
+        ] = formatAllInstancesToSaveCarDeal(body, cargoLoadingType, companyId, user.id, dealCreatedStatus.id, defaultEconomicSettings, companyEconomySettings);
 
         transactionsList = [
             ...transactionsList,
