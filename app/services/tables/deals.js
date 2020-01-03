@@ -198,7 +198,7 @@ const saveLatestDealInstances = async deal => {
 
     if (carId) {
         const dealCarId = uuid();
-        updateDeal[cols.DEAL_CAR] = dealCarId;
+        updateDeal[cols.DEAL_CAR_ID] = dealCarId;
 
         const dealCar = DealCarsFormatters.formatRecordToSaveFromOriginal(dealCarId, car);
 
@@ -224,7 +224,7 @@ const saveLatestDealInstances = async deal => {
 
     if (trailerFilesDecrypted.length) {
         const dealTrailerId = uuid();
-        updateDeal[cols.DEAL_TRAILER] = dealTrailerId;
+        updateDeal[cols.DEAL_TRAILER_ID] = dealTrailerId;
 
         const dealTrailer = DealTrailersFormatters.formatRecordToSaveFromOriginal(dealTrailerId, trailer);
 
@@ -250,7 +250,7 @@ const saveLatestDealInstances = async deal => {
 
     if (driverFilesDecrypted.length) {
         const dealDriverId = uuid();
-        updateDeal[cols.DEAL_DRIVER] = dealDriverId;
+        updateDeal[cols.DEAL_DRIVER_ID] = dealDriverId;
 
         const dealDriver = DealDriversFormatters.formatRecordToSaveFromOriginal(dealDriverId, user, driver);
 
