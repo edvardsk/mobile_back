@@ -43,9 +43,18 @@ const formatTemporaryLinks = async files => {
     }));
 };
 
+const formatDataWithDecryptedUrl = files => files.map(file => {
+    const url = CryptoService.decrypt(file[cols.URL]);
+    return {
+        ...file,
+        [cols.URL]: url,
+    };
+});
+
 module.exports = {
     addFilesAsTransaction,
     removeFilesByIdsAsTransaction,
 
     formatTemporaryLinks,
+    formatDataWithDecryptedUrl,
 };

@@ -82,10 +82,26 @@ const getSignedUrl = (bucketName, fileName, expiration = 60) => new Promise((res
     resolve(url);
 });
 
+const copyObject = (bucket, oldPath, newPath) => new Promise((resolve, reject) => {
+    const params = {
+        Bucket: bucket,
+        CopySource: oldPath,
+        Key: newPath,
+    };
+    s3.copyObject(params, (error) => {
+        if (error) {
+            reject(error);
+        } else {
+            resolve();
+        }
+    });
+});
+
 module.exports = {
     getObject,
     putObject,
     headObject,
     deleteObject,
     getSignedUrl,
+    copyObject,
 };

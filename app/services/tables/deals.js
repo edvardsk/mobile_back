@@ -1,3 +1,6 @@
+const uuid = require('uuid/v4');
+const { isEmpty } = require('lodash');
+
 const  { one, oneOrNone, manyOrNone } = require('db');
 
 // sql-helpers
@@ -13,10 +16,19 @@ const {
 } = require('sql-helpers/deals');
 
 // services
+const UsersService = require('./users');
 const DriversService = require('./drivers');
 const CarsService = require('./cars');
 const TrailersService = require('./trailers');
 const CargosService = require('./cargos');
+const FilesService = require('./files');
+const DealDriversService = require('./deal-drivers');
+const DealCarsService = require('./deal-cars');
+const DealTrailersService = require('./deal-trailers');
+const DealFilesService = require('./deal-files');
+const DealCarsFilesService = require('./deal-cars-to-deal-files');
+const DealTrailersFilesService = require('./deal-trailers-to-deal-files');
+const DealDriversFilesService = require('./deal-drivers-to-deal-files');
 
 // constants
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
@@ -24,15 +36,21 @@ const { ERRORS } = require('constants/errors');
 const { OPERATIONS } = require('constants/postgres');
 const { LOADING_TYPES_MAP } = require('constants/cargos');
 const { FINISHED_STATUSES_LIST, ALLOWED_NEXT_STATUSES_MAP } = require('constants/deal-statuses');
+const { ENTITIES } = require('constants/index');
 
 // helpers
 const { isValidUUID } = require('helpers/validators');
 
 // formatters
-const { formatCargoDates } = require('formatters/cargos');
+const CargosFormatters = require('formatters/cargos');
+const DealFilesFormatters = require('formatters/deal-files');
+const DealCarsFormatters = require('formatters/deal-cars');
+const DealTrailersFormatters = require('formatters/deal-trailers');
+const DealDriversFormatters = require('formatters/deal-drivers');
 
 const cols = SQL_TABLES.DEALS.COLUMNS;
 const colsCargos = SQL_TABLES.CARGOS.COLUMNS;
+const colsDrivers = SQL_TABLES.DRIVERS.COLUMNS;
 
 const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MANY];
 
@@ -57,7 +75,7 @@ const validateDealItems = async (arr, companyId, cargoLoadingType, userLanguageI
         const carIdOrData = item[HOMELESS_COLUMNS.CAR_ID_OR_DATA];
         const trailerIdOrData = item[HOMELESS_COLUMNS.TRAILER_ID_OR_DATA];
         const cargo = await CargosService.getRecordStrict(cargoId, userLanguageId);
-        const cargoDates = formatCargoDates(cargo);
+        const cargoDates = CargosFormatters.formatCargoDates(cargo);
 
         if (isValidUUID(driverIdOrData)) {
             const availableDriver = await DriversService.getAvailableDriverByIdAndCompanyId(driverIdOrData, companyId, cargoDates);
@@ -106,7 +124,7 @@ const validateCarDealItems = async (arr, companyId, cargoLoadingType, userLangua
         const carIdOrData = item[HOMELESS_COLUMNS.CAR_ID_OR_DATA];
         const trailerIdOrData = item[HOMELESS_COLUMNS.TRAILER_ID_OR_DATA];
         const cargo = await CargosService.getRecordStrict(cargoId, userLanguageId);
-        const cargoDates = formatCargoDates(cargo);
+        const cargoDates = CargosFormatters.formatCargoDates(cargo);
 
         if (isValidUUID(carIdOrData)) {
             const availableCar = await CarsService.getAvailableCarByIdAndCompanyId(carIdOrData, companyId, cargoDates, true);
@@ -147,6 +165,124 @@ const getDealsInProcessByRangeAndCarId = (carId, startDate, endDate) => (
     manyOrNone(selectDealsInProcessByRangeAndCarId(carId, startDate, endDate))
 );
 
+const saveLatestDealInstances = async deal => {
+    let transactions = [];
+    let filesToCopy = [];
+    const updateDeal = {};
+
+    const carId = deal[cols.CAR_ID];
+    const trailerId = deal[cols.TRAILER_ID];
+    const driverId = deal[cols.DRIVER_ID];
+
+    const [car, trailer, driver] = await Promise.all([
+        carId && CarsService.getRecordStrict(carId),
+        trailerId && TrailersService.getRecordStrict(trailerId),
+        driverId && DriversService.getRecordStrict(driverId),
+    ]);
+
+    const userId = !!driver && driver[colsDrivers.USER_ID];
+
+    const user = userId && await UsersService.getUserWithRoleAndPhoneNumber(userId);
+
+    const [carFiles, trailerFiles, driverFiles] = await Promise.all([
+        car && FilesService.getFilesByCarId(carId) || [],
+        trailer && FilesService.getFilesByTrailerId(trailerId) || [],
+        driver && FilesService.getFilesByUserId(driver[colsDrivers.USER_ID]) || [],
+    ]);
+
+    const [carFilesDecrypted, trailerFilesDecrypted, driverFilesDecrypted] = await Promise.all([
+        DealFilesService.formatDataWithDecryptedUrl(carFiles),
+        DealFilesService.formatDataWithDecryptedUrl(trailerFiles),
+        DealFilesService.formatDataWithDecryptedUrl(driverFiles),
+    ]);
+
+    if (carId) {
+        const dealCarId = uuid();
+        updateDeal[cols.DEAL_CAR] = dealCarId;
+
+        const dealCar = DealCarsFormatters.formatRecordToSaveFromOriginal(dealCarId, car);
+
+        transactions.push(
+            DealCarsService.addRecordAsTransaction(dealCar)
+        );
+
+        const [
+            carDealFiles, carsToDealsFiles, carCopyFiles
+        ] = DealFilesFormatters.prepareFilesToStoreForCarsFromOriginal(ENTITIES.CAR, carFilesDecrypted, dealCarId, deal.id);
+        filesToCopy = [
+            ...filesToCopy,
+            ...carCopyFiles,
+        ];
+
+        transactions.push(
+            DealFilesService.addFilesAsTransaction(carDealFiles)
+        );
+        transactions.push(
+            DealCarsFilesService.addRecordsAsTransaction(carsToDealsFiles)
+        );
+    }
+
+    if (trailerFilesDecrypted.length) {
+        const dealTrailerId = uuid();
+        updateDeal[cols.DEAL_TRAILER] = dealTrailerId;
+
+        const dealTrailer = DealTrailersFormatters.formatRecordToSaveFromOriginal(dealTrailerId, trailer);
+
+        transactions.push(
+            DealTrailersService.addRecordAsTransaction(dealTrailer)
+        );
+
+        const [
+            trailerDealFiles, trailersToDealsFiles, trailerCopyFiles
+        ] = DealFilesFormatters.prepareFilesToStoreForCarsFromOriginal(ENTITIES.TRAILER, trailerFilesDecrypted, dealTrailerId, deal.id);
+        filesToCopy = [
+            ...filesToCopy,
+            ...trailerCopyFiles,
+        ];
+
+        transactions.push(
+            DealFilesService.addFilesAsTransaction(trailerDealFiles)
+        );
+        transactions.push(
+            DealTrailersFilesService.addRecordsAsTransaction(trailersToDealsFiles)
+        );
+    }
+
+    if (driverFilesDecrypted.length) {
+        const dealDriverId = uuid();
+        updateDeal[cols.DEAL_DRIVER] = dealDriverId;
+
+        const dealDriver = DealDriversFormatters.formatRecordToSaveFromOriginal(dealDriverId, user, driver);
+
+        transactions.push(
+            DealDriversService.addRecordAsTransaction(dealDriver)
+        );
+
+        const [
+            driverDealFiles, driversToDealsFiles, driverCopyFiles
+        ] = DealFilesFormatters.prepareFilesToStoreForCarsFromOriginal(ENTITIES.DRIVER, driverFilesDecrypted, dealDriverId, deal.id);
+        filesToCopy = [
+            ...filesToCopy,
+            ...driverCopyFiles,
+        ];
+
+        transactions.push(
+            DealFilesService.addFilesAsTransaction(driverDealFiles)
+        );
+        transactions.push(
+            DealDriversFilesService.addRecordsAsTransaction(driversToDealsFiles)
+        );
+    }
+
+    if (!isEmpty(updateDeal)) {
+        transactions.push(
+            editRecordAsTransaction(deal.id, updateDeal)
+        );
+    }
+
+    return [transactions, filesToCopy];
+};
+
 const checkOwnActiveDealExist = async (meta, dealId) => {
     const deal = await getRecord(dealId);
     const { companyId } = meta;
@@ -180,6 +316,7 @@ module.exports = {
     getDealsPaginationSorting,
     getCountDeals,
     getDealsInProcessByRangeAndCarId,
+    saveLatestDealInstances,
 
     checkOwnActiveDealExist,
     checkOwnDealExist,

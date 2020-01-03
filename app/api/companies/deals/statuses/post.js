@@ -329,8 +329,6 @@ const setRejectedStatus = async (req, res, next) => {
         const { user } = res.locals;
         const { dealId } = req.params;
 
-        const transactionsList = [];
-
         const [deal, failedDealStatus] = await Promise.all([
             DealsService.getRecordStrict(dealId),
             DealsStatusesServices.getRecordStrict(DEAL_STATUSES_MAP.REJECTED),
@@ -339,19 +337,26 @@ const setRejectedStatus = async (req, res, next) => {
 
         const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, failedDealStatus.id, user.id);
 
-        transactionsList.push(
-            DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory)
-        );
-
-        transactionsList.push(
+        let transactionsList = [
+            DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory),
             CargosService.editRecordIncreaseFreeCountAsTransaction(deal[colsDeals.CARGO_ID], 1),
-        );
+            PgJobService.removeRecordByNameAndDataPathAsTransaction(ACTION_TYPES.AUTO_SET_GOING_TO_UPLOAD_DEAL_STATUS, dealId),
+        ];
 
-        transactionsList.push(
-            PgJobService.removeRecordByNameAndDataPathAsTransaction(ACTION_TYPES.AUTO_SET_GOING_TO_UPLOAD_DEAL_STATUS, dealId)
-        );
+        const [transactions, filesToCopy] = await DealsService.saveLatestDealInstances(deal);
+
+        transactionsList = [
+            ...transactionsList,
+            ...transactions,
+        ];
 
         await TablesService.runTransaction(transactionsList);
+
+        if (filesToCopy.length) {
+            await Promise.all(filesToCopy.map(({ bucket, oldPath, newPath }) => (
+                S3Service.copyObject(bucket, oldPath, newPath)
+            )));
+        }
 
         return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
     } catch (error) {
@@ -364,7 +369,7 @@ const setDoubleConfirmedStatus = async (req, res, next) => {
         const { user, nextStatus, isTransporter } = res.locals;
         const { dealId } = req.params;
 
-        const transactionsList = [];
+        let transactionsList = [];
 
         const statusToSet = DEAL_ROUTES_TO_STATUSES_MAP[nextStatus];
 
@@ -400,6 +405,16 @@ const setDoubleConfirmedStatus = async (req, res, next) => {
                     DealStatusesConfirmationsService.addRecordAsTransaction(statusHistoryConfirmation)
                 );
             }
+
+            // if (statusToSet === DEAL_STATUSES_MAP.DONE) { // set constant deal instances (cars/trailers/drivers)
+            //     const [transactions, files] = await DealsService.saveLatestDealInstances(deal);
+            //
+            //     transactionsList = [
+            //         ...transactionsList,
+            //         ...transactions,
+            //     ];
+            //
+            // }
         }
 
         await TablesService.runTransaction(transactionsList);
