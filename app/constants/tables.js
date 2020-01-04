@@ -776,6 +776,7 @@ const HOMELESS_COLUMNS = {
     CURRENCY_SCALE: 'currency_scale',
     CURRENCY_RATE: 'currency_rate',
     COUNTRY_ID: 'country_id',
+    PRICE: 'price',
     PRICES: 'prices',
     ORIGINAL: 'original',
     CAR_DANGER_CLASS: 'car_danger_class',
