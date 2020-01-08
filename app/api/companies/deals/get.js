@@ -3,6 +3,9 @@ const { success } = require('api/response');
 
 // services
 const DealsService = require('services/tables/deals');
+const DealCarsService = require('services/tables/deal-cars');
+const DealTrailersService = require('services/tables/deal-trailers');
+const DealDriversService = require('services/tables/deal-drivers');
 
 // constants
 const { SQL_TABLES } = require('constants/tables');
@@ -16,6 +19,7 @@ const { formatRecordForList, formatRecordForResponse } = require('formatters/dea
 const { getParams } = require('helpers/pagination-sorting');
 
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
+const colsDeals = SQL_TABLES.DEALS.COLUMNS;
 
 const dealsPaginationOptions = {
     DEFAULT_LIMIT: 5,
@@ -65,7 +69,17 @@ const getDeal = async (req, res, next) => {
 
         const deal = await DealsService.getFullRecordStrict(dealId, userLanguageId);
 
-        const formattedDeal = formatRecordForResponse(deal, userLanguageId);
+        const dealCarId = deal[colsDeals.DEAL_CAR_ID];
+        const dealTrailerId = deal[colsDeals.DEAL_TRAILER_ID];
+        const dealDriverId = deal[colsDeals.DEAL_DRIVER_ID];
+
+        const [dealCar, dealTrailer, dealDriver] = await Promise.all([
+            dealCarId && DealCarsService.getRecord(dealCarId),
+            dealTrailerId && DealTrailersService.getRecord(dealTrailerId),
+            dealDriverId && DealDriversService.getRecord(dealDriverId),
+        ]);
+
+        const formattedDeal = formatRecordForResponse(deal, userLanguageId, dealCar, dealTrailer, dealDriver);
 
         return success(res, { ...formattedDeal });
     } catch (error) {

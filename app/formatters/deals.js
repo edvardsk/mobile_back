@@ -20,6 +20,9 @@ const colsCars = SQL_TABLES.CARS.COLUMNS;
 const colsTrailers = SQL_TABLES.TRAILERS.COLUMNS;
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 const colsDealHistoryConfirmations = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATIONS.COLUMNS;
+const colsDealCars = SQL_TABLES.DEAL_CARS.COLUMNS;
+const colsDealTrailers = SQL_TABLES.DEAL_TRAILERS.COLUMNS;
+const colsDealDrivers = SQL_TABLES.DEAL_DRIVERS.COLUMNS;
 
 const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, companyId, initiatorId, dealStatusId) => {
     const generatedDriverId = uuid();
@@ -190,7 +193,7 @@ const formatRecordForList = (deal, userLanguageId) => {
     };
 };
 
-const formatRecordForResponse = (deal, userLanguageId) => {
+const formatRecordForResponse = (deal, userLanguageId, dealCar, dealTrailer, dealDriver) => {
     const result = {
         id: deal.id,
         [colsDeals.NAME]: deal[colsDeals.NAME],
@@ -227,33 +230,84 @@ const formatRecordForResponse = (deal, userLanguageId) => {
             [colsCargo.LENGTH]: parseFloat(deal[colsCargo.LENGTH]),
             [HOMELESS_COLUMNS.PRICES]: formatPricesFromPostgresJSON(deal[HOMELESS_COLUMNS.PRICES]),
         },
-        car: {
-            [colsDeals.CAR_ID]: deal[colsDeals.CAR_ID],
-            [colsCars.CAR_MARK]: deal[colsCars.CAR_MARK],
-            [colsCars.CAR_MODEL]: deal[colsCars.CAR_MODEL],
-            [colsCars.CAR_WIDTH]: parseFloat(deal[colsCars.CAR_WIDTH]),
-            [colsCars.CAR_HEIGHT]: parseFloat(deal[colsCars.CAR_HEIGHT]),
-            [colsCars.CAR_LENGTH]: parseFloat(deal[colsCars.CAR_LENGTH]),
-            [colsCars.CAR_CARRYING_CAPACITY]: parseFloat(deal[colsCars.CAR_CARRYING_CAPACITY]),
-            [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: deal[HOMELESS_COLUMNS.CAR_STATE_NUMBER],
-        },
-        driver: {
-            driver_id: deal['driver_id'],
-            [colsUsers.FULL_NAME]: deal[colsUsers.FULL_NAME],
-            [HOMELESS_COLUMNS.FULL_PHONE_NUMBER]: deal[HOMELESS_COLUMNS.FULL_PHONE_NUMBER],
-        }
     };
 
-    if (deal['trailer_id']) {
+    if (deal[colsDeals.CAR_ID]) {
+        let mark, model, width, height, length, carryingCapacity, stateNumber;
+        if (dealCar) {
+            mark = dealCar[colsDealCars.CAR_MARK];
+            model = dealCar[colsDealCars.CAR_MODEL];
+            width = dealCar[colsDealCars.CAR_WIDTH];
+            height = dealCar[colsDealCars.CAR_HEIGHT];
+            length = dealCar[colsDealCars.CAR_LENGTH];
+            carryingCapacity = dealCar[colsDealCars.CAR_CARRYING_CAPACITY];
+            stateNumber = dealCar[colsDealCars.CAR_STATE_NUMBER];
+        } else {
+            mark = deal[colsCars.CAR_MARK];
+            model = deal[colsCars.CAR_MODEL];
+            width = deal[colsCars.CAR_WIDTH];
+            height = deal[colsCars.CAR_HEIGHT];
+            length = deal[colsCars.CAR_LENGTH];
+            carryingCapacity = deal[colsCars.CAR_CARRYING_CAPACITY];
+            stateNumber = deal[HOMELESS_COLUMNS.CAR_STATE_NUMBER];
+        }
+        result.car = {
+            [colsDeals.CAR_ID]: deal[colsDeals.CAR_ID],
+            [colsCars.CAR_MARK]: mark,
+            [colsCars.CAR_MODEL]: model,
+            [colsCars.CAR_WIDTH]: (width && parseFloat(width)) || null,
+            [colsCars.CAR_HEIGHT]: (height && parseFloat(height)) || null,
+            [colsCars.CAR_LENGTH]: (length && parseFloat(length)) || null,
+            [colsCars.CAR_CARRYING_CAPACITY]: (carryingCapacity && parseFloat(carryingCapacity)) || null,
+            [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: stateNumber,
+        };
+    }
+
+    if (deal[colsDeals.DRIVER_ID]) {
+        let fullName, fullPhoneNumber;
+        if (dealDriver) {
+            fullName = dealDriver[colsDealDrivers.FULL_NAME];
+            fullPhoneNumber = dealDriver[HOMELESS_COLUMNS.FULL_PHONE_NUMBER];
+        } else {
+            fullName = deal[colsUsers.FULL_NAME];
+            fullPhoneNumber = deal[HOMELESS_COLUMNS.FULL_PHONE_NUMBER];
+        }
+        result.driver = {
+            [colsDeals.DRIVER_ID]: deal[colsDeals.DRIVER_ID],
+            [colsUsers.FULL_NAME]: fullName,
+            [HOMELESS_COLUMNS.FULL_PHONE_NUMBER]: fullPhoneNumber,
+        };
+    }
+
+    if (deal[colsDeals.TRAILER_ID]) {
+        let mark, model, width, height, length, carryingCapacity, stateNumber;
+        if (dealTrailer) {
+            mark = dealTrailer[colsDealTrailers.TRAILER_MARK];
+            model = dealTrailer[colsDealTrailers.TRAILER_MODEL];
+            width = dealTrailer[colsDealTrailers.TRAILER_WIDTH];
+            height = dealTrailer[colsDealTrailers.TRAILER_HEIGHT];
+            length = dealTrailer[colsDealTrailers.TRAILER_LENGTH];
+            carryingCapacity = dealTrailer[colsDealTrailers.TRAILER_CARRYING_CAPACITY];
+            stateNumber = dealTrailer[colsDealTrailers.TRAILER_STATE_NUMBER];
+        } else {
+            mark = deal[colsTrailers.TRAILER_MARK];
+            model = deal[colsTrailers.TRAILER_MODEL];
+            width = deal[colsTrailers.TRAILER_WIDTH];
+            height = deal[colsTrailers.TRAILER_HEIGHT];
+            length = deal[colsTrailers.TRAILER_LENGTH];
+            carryingCapacity = deal[colsTrailers.TRAILER_CARRYING_CAPACITY];
+            stateNumber = deal[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER];
+        }
+
         result.trailer = {
-            trailer_id: deal['trailer_id'],
-            [colsTrailers.TRAILER_MARK]: deal[colsTrailers.TRAILER_MARK],
-            [colsTrailers.TRAILER_MODEL]: deal[colsTrailers.TRAILER_MODEL],
-            [colsTrailers.TRAILER_WIDTH]: parseFloat(deal[colsTrailers.TRAILER_WIDTH]),
-            [colsTrailers.TRAILER_HEIGHT]: parseFloat(deal[colsTrailers.TRAILER_HEIGHT]),
-            [colsTrailers.TRAILER_LENGTH]: parseFloat(deal[colsTrailers.TRAILER_LENGTH]),
-            [colsTrailers.TRAILER_CARRYING_CAPACITY]: parseFloat(deal[colsTrailers.TRAILER_CARRYING_CAPACITY]),
-            [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: deal[HOMELESS_COLUMNS.TRAILER_STATE_NUMBER],
+            [colsDeals.TRAILER_ID]: deal[colsDeals.TRAILER_ID],
+            [colsTrailers.TRAILER_MARK]: mark,
+            [colsTrailers.TRAILER_MODEL]: model,
+            [colsTrailers.TRAILER_WIDTH]: parseFloat(width),
+            [colsTrailers.TRAILER_HEIGHT]: parseFloat(height),
+            [colsTrailers.TRAILER_LENGTH]: parseFloat(length),
+            [colsTrailers.TRAILER_CARRYING_CAPACITY]: parseFloat(carryingCapacity),
+            [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: stateNumber,
         };
     }
 

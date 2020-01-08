@@ -1,5 +1,5 @@
 const squel = require('squel');
-const { SQL_TABLES } = require('constants/tables');
+const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 
 const squelPostgres = squel.useFlavour('postgres');
 
@@ -44,14 +44,20 @@ const deleteRecordById = id => squelPostgres
 
 const selectRecordByDriverId = driverId => squelPostgres
     .select()
-    .from(table.NAME)
-    .where(`${cols.DRIVER_ID} = '${driverId}'`)
+    .field('dd.*')
+    .field(`CONCAT(pp.${colsPhonePrefixes.CODE}, dd.${cols.NUMBER})::bigint`, HOMELESS_COLUMNS.FULL_PHONE_NUMBER)
+    .from(table.NAME, 'dd')
+    .where(`dd.${cols.DRIVER_ID} = '${driverId}'`)
+    .left_join(tablePhonePrefixes.NAME, 'pp', `pp.id = dd.${cols.PHONE_PREFIX_ID}`)
     .toString();
 
 const selectRecordById = id => squelPostgres
     .select()
-    .from(table.NAME)
-    .where(`d.id = '${id}'`)
+    .field('dd.*')
+    .field(`CONCAT(pp.${colsPhonePrefixes.CODE}, dd.${cols.NUMBER})::bigint`, HOMELESS_COLUMNS.FULL_PHONE_NUMBER)
+    .from(table.NAME, 'dd')
+    .where(`dd.id = '${id}'`)
+    .left_join(tablePhonePrefixes.NAME, 'pp', `pp.id = dd.${cols.PHONE_PREFIX_ID}`)
     .toString();
 
 const selectRecordByUserId = userId => squelPostgres
