@@ -138,7 +138,7 @@ const selectFilesByTrailerId = trailerId => squelPostgres
     .select()
     .from(table.NAME, 'f')
     .where(`tf.${colsTrailersFiles.TRAILER_ID} = '${trailerId}'`)
-    .left_join(colsTrailersFiles.NAME, 'tf', `cf.${colsTrailersFiles.FILE_ID} = f.id`)
+    .left_join(tableTrailersFiles.NAME, 'tf', `tf.${colsTrailersFiles.FILE_ID} = f.id`)
     .toString();
 
 const selectFilesByDriverIdAndLabels = (driverId, labelsArr) => {

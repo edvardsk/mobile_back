@@ -273,6 +273,7 @@ const selectFullRecordById = (id, userLanguageId) => squelPostgres
     .field(`t.${colsTrailers.TRAILER_CARRYING_CAPACITY}`, colsTrailers.TRAILER_CARRYING_CAPACITY)
     .field(`tsn.${colsTrailersNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
     // driver
+    .field(`dr.${colsDrivers.USER_ID}`, colsDrivers.USER_ID)
     .field('dr.id', 'driver_id')
     .field(`u.${colsUsers.FULL_NAME}`, colsUsers.FULL_NAME)
     .field(`CONCAT(php.${colsPhonePrefixes.CODE}, phn.${colsPhoneNumbers.NUMBER})`, HOMELESS_COLUMNS.FULL_PHONE_NUMBER)

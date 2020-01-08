@@ -74,9 +74,12 @@ const updateRecordByCarId = (carId, data) => squelPostgres
 
 const selectRecordById = id => squelPostgres
     .select()
-    .from(table.NAME)
-    .where(`id = '${id}'`)
-    .where(`${cols.DELETED} = 'f'`)
+    .from(table.NAME, 't')
+    .where(`t.id = '${id}'`)
+    .where(`t.${cols.DELETED} = 'f'`)
+    .where(`tsn.${colsTrailersStateNumbers.IS_ACTIVE} = 't'`)
+    .left_join(tableTrailersStateNumbers.NAME, 'tsn', `tsn.${colsTrailersStateNumbers.TRAILER_ID} = t.id`)
+    .limit(1)
     .toString();
 
 const selectRecordWithActiveDealsById = id => squelPostgres

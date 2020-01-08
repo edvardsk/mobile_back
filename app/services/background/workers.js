@@ -132,9 +132,9 @@ const autoCancelUnconfirmedDeal = async job => {
         const trailerId = deal[colsDeals.TRAILER_ID];
 
         const [driver, car, trailer] = await Promise.all([
-            DriversService.getRecordWithActiveDeals(driverId),
-            CarsService.getRecordWithActiveDeals(carId),
-            TrailersService.getRecordWithActiveDeals(trailerId),
+            driverId && DriversService.getRecordWithActiveDeals(driverId),
+            carId && CarsService.getRecordWithActiveDeals(carId),
+            trailerId && TrailersService.getRecordWithActiveDeals(trailerId),
         ]);
 
         let transactionsList = [];

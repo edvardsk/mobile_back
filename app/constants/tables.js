@@ -464,6 +464,9 @@ const SQL_TABLES = {
             INVOICE_PRICE: 'invoice_price',
             STANDARD_LOADING_TIME_HOURS: 'standard_loading_time_hours',
             SPECIAL_REQUIREMENTS: 'special_requirements',
+            DEAL_CAR_ID: 'deal_car_id',
+            DEAL_TRAILER_ID: 'deal_trailer_id',
+            DEAL_DRIVER_ID: 'deal_driver_id',
             CREATED_AT: 'created_at',
         },
     },
@@ -665,6 +668,7 @@ const SQL_TABLES = {
     DEAL_CARS_TO_FILES: {
         NAME: 'deal_cars_to_files',
         COLUMNS: {
+            DEAL_ID: 'deal_id',
             DEAL_CAR_ID: 'deal_car_id',
             DEAL_FILE_ID: 'deal_file_id',
             CREATED_AT: 'created_at',
@@ -692,6 +696,7 @@ const SQL_TABLES = {
     DEAL_TRAILERS_TO_FILES: {
         NAME: 'deal_trailers_to_files',
         COLUMNS: {
+            DEAL_ID: 'deal_id',
             DEAL_TRAILER_ID: 'deal_trailer_id',
             DEAL_FILE_ID: 'deal_file_id',
             CREATED_AT: 'created_at',
@@ -718,6 +723,7 @@ const SQL_TABLES = {
     DEAL_DRIVERS_TO_FILES: {
         NAME: 'deal_drivers_to_files',
         COLUMNS: {
+            DEAL_ID: 'deal_id',
             DEAL_DRIVER_ID: 'deal_driver_id',
             DEAL_FILE_ID: 'deal_file_id',
             CREATED_AT: 'created_at',

@@ -9,7 +9,7 @@ const {
 // constants
 const { OPERATIONS } = require('constants/postgres');
 
-const removeRecordByNameAndDataPathAsTransaction = (name, path) => [deleteRecordByNameAndDealId(name, path), OPERATIONS.ONE];
+const removeRecordByNameAndDataPathAsTransaction = (name, path) => [deleteRecordByNameAndDealId(name, path), OPERATIONS.ONE_OR_NONE];
 
 const getRecordByNameAndDealId = (name, dealId) => one(selectRecordByNameAndDealId(name, dealId));
 
