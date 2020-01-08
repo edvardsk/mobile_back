@@ -8,6 +8,8 @@ const {
     insertRecords,
     updateRecord,
     selectDealsByCompanyIdPaginationSorting,
+    selectRecordByIdAndCompanyIdLight,
+    selectRecordByIdAndTransporterCompanyIdLight,
     selectCountDealsByCompanyId,
     selectFullRecordById,
     selectRecordById,
@@ -56,6 +58,9 @@ const addRecordsAsTransaction = values => [insertRecords(values), OPERATIONS.MAN
 
 const getRecordStrict = id => one(selectRecordById(id));
 
+const getRecordByIdAndTransporterCompanyIdLight = (id, companyId) => oneOrNone(selectRecordByIdAndTransporterCompanyIdLight(id, companyId));
+
+const getRecordByIdAndCompanyIdLight = (id, companyId) => oneOrNone(selectRecordByIdAndCompanyIdLight(id, companyId));
 const editRecordAsTransaction = (id, data) => [updateRecord(id, data), OPERATIONS.ONE];
 
 const getRecordWithInstancesInfoStrict = id => one(selectRecordWithInstancesInfoById(id));
@@ -160,6 +165,18 @@ const getCountDeals = (companyId, filter) => (
     one(selectCountDealsByCompanyId(companyId, filter))
         .then(({ count }) => +count)
 );
+
+const checkDealInCompanyExist = async (meta, id) => {
+    const { companyId } = meta;
+    const deal = await getRecordByIdAndCompanyIdLight(id, companyId);
+    return !!deal;
+};
+
+const checkDealInTransporterCompanyExist = async (meta, id) => {
+    const { companyId } = meta;
+    const deal = await getRecordByIdAndTransporterCompanyIdLight(id, companyId);
+    return !!deal;
+};
 
 const getDealsInProcessByRangeAndCarId = (carId, startDate, endDate) => (
     manyOrNone(selectDealsInProcessByRangeAndCarId(carId, startDate, endDate))
@@ -329,6 +346,8 @@ module.exports = {
     validateDealItems,
     getDealsPaginationSorting,
     getCountDeals,
+    checkDealInCompanyExist,
+    checkDealInTransporterCompanyExist,
     getDealsInProcessByRangeAndCarId,
     saveLatestDealInstances,
 

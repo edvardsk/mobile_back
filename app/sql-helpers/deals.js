@@ -11,6 +11,7 @@ const tableCargos = SQL_TABLES.CARGOS;
 const tableCargoPoints = SQL_TABLES.CARGO_POINTS;
 const tablePoints = SQL_TABLES.POINTS;
 const tableTranslations = SQL_TABLES.POINT_TRANSLATIONS;
+const tableDeals = SQL_TABLES.DEALS;
 const tableDealStatuses = SQL_TABLES.DEAL_STATUSES;
 const tableDealHistory = SQL_TABLES.DEAL_HISTORY_STATUSES;
 const tableDealPointsInfo = SQL_TABLES.DEAL_POINTS_INFO;
@@ -34,6 +35,7 @@ const colsCargos = tableCargos.COLUMNS;
 const colsCargoPoints = tableCargoPoints.COLUMNS;
 const colsPoints = tablePoints.COLUMNS;
 const colsTranslations = tableTranslations.COLUMNS;
+const colsDeals = tableDeals.COLUMNS;
 const colsDealStatuses = tableDealStatuses.COLUMNS;
 const colsDealHistory = tableDealHistory.COLUMNS;
 const colsDealPointsInfo = tableDealPointsInfo.COLUMNS;
@@ -79,6 +81,23 @@ const setAvailableDealsFilter = (expression, filteringObject) => {
     }
     return expression;
 };
+
+const selectRecordByIdAndTransporterCompanyIdLight = (id, companyId) => squelPostgres
+    .select()
+    .field('id')
+    .from(table.NAME)
+    .where(`id = '${id}'`)
+    .where(`${cols.TRANSPORTER_COMPANY_ID} = '${companyId}'`)
+    .toString();
+
+const selectRecordByIdAndCompanyIdLight = (id, companyId) => squelPostgres
+    .select()
+    .field('d.id')
+    .from(table.NAME, 'd')
+    .where(` d.id = '${id}'`)
+    .where(`d.${cols.TRANSPORTER_COMPANY_ID} = '${companyId}' OR c.${colsCargos.COMPANY_ID} = '${companyId}'`)
+    .left_join(tableCargos.NAME, 'c', `d.${colsDeals.CARGO_ID} = c.id`)
+    .toString();
 
 
 const selectCountDealsByCompanyId = (companyId, filter) => {
@@ -403,6 +422,8 @@ module.exports = {
     setAvailableDealsFilter,
     selectFullRecordById,
     selectRecordById,
+    selectRecordByIdAndCompanyIdLight,
+    selectRecordByIdAndTransporterCompanyIdLight,
     selectRecordWithInstancesInfoById,
     selectDealsInProcessByRangeAndCarId,
 };

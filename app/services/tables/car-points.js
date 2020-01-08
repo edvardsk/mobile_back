@@ -1,4 +1,4 @@
-const { oneOrNone } = require('db');
+const { oneOrNone, manyOrNone } = require('db');
 const uuid = require('uuid/v4');
 
 // sql-helpers
@@ -6,6 +6,8 @@ const {
     insertRecord,
     selectLatestRecordByCarId,
     selectLatestRecordByTrailerId,
+    selectRecordsByDealId,
+    selectRecordsByDealIdAndDate,
 } = require('sql-helpers/car-points');
 
 // formatters
@@ -87,9 +89,28 @@ const addPointOnUnlinking = async (trailerId) => {
     return result;
 };
 
+const getPointsByDealId = (dealId) => manyOrNone(selectRecordsByDealId(dealId));
+
+const getDealPointsAfterDate = (dealId, dateString) => manyOrNone(selectRecordsByDealIdAndDate(dealId, dateString));
+
+const addPointOnTracking = async (latestPoint) => {
+    const carId = latestPoint[colPoints.CAR_ID];
+    const result = [
+        addRecordAsTransaction(latestPoint),
+        ...(CarLatestPoints.addWithReplacement(
+            carId, latestPoint,
+        )),
+    ];
+
+    return result;
+};
+
 module.exports = {
     addRecordAsTransaction,
     getRecordByCarId,
     addPointOnLinking,
     addPointOnUnlinking,
+    addPointOnTracking,
+    getPointsByDealId,
+    getDealPointsAfterDate,
 };

@@ -290,7 +290,37 @@ const requiredDealId = {
             format: 'uuid',
         },
     },
+    required: [
+        'dealId',
+    ]
 };
+
+
+const trackingCoordinates = {
+    properties: {
+        [HOMELESS_COLUMNS.LATITUDE]: {
+            type: 'string',
+            pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
+        },
+        [HOMELESS_COLUMNS.LONGITUDE]: {
+            type: 'string',
+            pattern: DOUBLE_NUMBER_VALIDATION_PATTERN,
+        },
+    },
+    required: [HOMELESS_COLUMNS.LATITUDE, HOMELESS_COLUMNS.LONGITUDE],
+    additionalProperties: false,
+};
+
+const requiredExistingDealInTransporterCompanyAsyncFunc = ({ companyId }) => ({
+    $async: true,
+    properties: {
+        dealId: {
+            deal_in_transporter_company_not_exists: {
+                companyId,
+            },
+        },
+    },
+});
 
 const requiredExistingOwnDealAsyncFunc = ({ companyId }) => ({
     $async: true,
@@ -308,6 +338,17 @@ const validateDealExistsAsync = ({ companyId }) => ({
     properties: {
         dealId: {
             own_deal_not_exists: {
+                companyId,
+            },
+        },
+    },
+});
+
+const requiredExistingDealInCompanyAsyncFunc = ({ companyId }) => ({
+    $async: true,
+    properties: {
+        dealId: {
+            deal_in_company_not_exists: {
                 companyId,
             },
         },
@@ -529,6 +570,9 @@ module.exports = {
     createCargoDealPhoneNumberAsync,
     createCargoDealPhoneNumberWithPrefixAsync,
     requiredDealId,
+    requiredExistingDealInCompanyAsyncFunc,
+    requiredExistingDealInTransporterCompanyAsyncFunc,
+    trackingCoordinates,
     requiredExistingOwnDealAsyncFunc,
     changeDealStatusPrimary,
     validateDealExistsAsync,
