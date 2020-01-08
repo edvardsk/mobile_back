@@ -193,7 +193,10 @@ const formatRecordForList = (deal, userLanguageId) => {
     };
 };
 
-const formatRecordForResponse = (deal, userLanguageId, dealCar, dealTrailer, dealDriver) => {
+const formatRecordForResponse = (
+    deal, userLanguageId, dealCar, dealTrailer, dealDriver,
+    dealFiles, dealCarFiles, dealTrailerFiles, dealDriverFiles
+) => {
     const result = {
         id: deal.id,
         [colsDeals.NAME]: deal[colsDeals.NAME],
@@ -216,6 +219,8 @@ const formatRecordForResponse = (deal, userLanguageId, dealCar, dealTrailer, dea
         [colsDeals.INVOICE_PRICE]: parseFloat(deal[colsDeals.INVOICE_PRICE]),
         [colsDeals.STANDARD_LOADING_TIME_HOURS]: deal[colsDeals.STANDARD_LOADING_TIME_HOURS],
         [colsDeals.SPECIAL_REQUIREMENTS]: deal[colsDeals.SPECIAL_REQUIREMENTS],
+
+        files: dealFiles,
 
         cargo: {
             id: deal[colsDeals.CARGO_ID],
@@ -260,6 +265,7 @@ const formatRecordForResponse = (deal, userLanguageId, dealCar, dealTrailer, dea
             [colsCars.CAR_LENGTH]: (length && parseFloat(length)) || null,
             [colsCars.CAR_CARRYING_CAPACITY]: (carryingCapacity && parseFloat(carryingCapacity)) || null,
             [HOMELESS_COLUMNS.CAR_STATE_NUMBER]: stateNumber,
+            files: dealCarFiles,
         };
     }
 
@@ -276,6 +282,7 @@ const formatRecordForResponse = (deal, userLanguageId, dealCar, dealTrailer, dea
             [colsDeals.DRIVER_ID]: deal[colsDeals.DRIVER_ID],
             [colsUsers.FULL_NAME]: fullName,
             [HOMELESS_COLUMNS.FULL_PHONE_NUMBER]: fullPhoneNumber,
+            files: dealDriverFiles,
         };
     }
 
@@ -308,6 +315,7 @@ const formatRecordForResponse = (deal, userLanguageId, dealCar, dealTrailer, dea
             [colsTrailers.TRAILER_LENGTH]: parseFloat(length),
             [colsTrailers.TRAILER_CARRYING_CAPACITY]: parseFloat(carryingCapacity),
             [HOMELESS_COLUMNS.TRAILER_STATE_NUMBER]: stateNumber,
+            files: dealTrailerFiles,
         };
     }
 

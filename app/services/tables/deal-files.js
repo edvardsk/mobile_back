@@ -1,7 +1,13 @@
+const { manyOrNone } = require('db');
+
 // sql-helpers
 const {
     insertFiles,
     deleteFilesByIds,
+    selectRecordsByDealId,
+    selectRecordsByDealCarId,
+    selectRecordsByDealTrailerId,
+    selectRecordsByDealDriverId,
 } = require('sql-helpers/deal-files');
 
 // services
@@ -22,6 +28,14 @@ const { FILES_PREVIEW_LIFETIME_SECONDS } = process.env;
 const addFilesAsTransaction = data => [insertFiles(data), OPERATIONS.MANY_OR_NONE];
 
 const removeFilesByIdsAsTransaction = ids => [deleteFilesByIds(ids), OPERATIONS.MANY_OR_NONE];
+
+const getRecordsByDealId = dealId => manyOrNone(selectRecordsByDealId(dealId));
+
+const getRecordsByDealCarId = dealCarId => manyOrNone(selectRecordsByDealCarId(dealCarId));
+
+const getRecordsByDealTrailerId = dealTrailerId => manyOrNone(selectRecordsByDealTrailerId(dealTrailerId));
+
+const getRecordsByDealDriverId = dealDriverId => manyOrNone(selectRecordsByDealDriverId(dealDriverId));
 
 const formatTemporaryLinks = async files => {
     const decryptedFiles = files.map(file => {
@@ -54,6 +68,10 @@ const formatDataWithDecryptedUrl = files => files.map(file => {
 module.exports = {
     addFilesAsTransaction,
     removeFilesByIdsAsTransaction,
+    getRecordsByDealId,
+    getRecordsByDealCarId,
+    getRecordsByDealTrailerId,
+    getRecordsByDealDriverId,
 
     formatTemporaryLinks,
     formatDataWithDecryptedUrl,
