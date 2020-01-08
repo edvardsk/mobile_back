@@ -23,6 +23,8 @@ const colsDealHistoryConfirmations = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATI
 const colsDealCars = SQL_TABLES.DEAL_CARS.COLUMNS;
 const colsDealTrailers = SQL_TABLES.DEAL_TRAILERS.COLUMNS;
 const colsDealDrivers = SQL_TABLES.DEAL_DRIVERS.COLUMNS;
+const colsEconomicSettings = SQL_TABLES.ECONOMIC_SETTINGS.COLUMNS;
+const colsCargoPrices = SQL_TABLES.CARGO_PRICES.COLUMNS;
 
 const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, companyId, initiatorId, dealStatusId) => {
     const generatedDriverId = uuid();
@@ -115,10 +117,24 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
     }, [[], [], [], [], [], [], []]);
 };
 
-const formatAllInstancesToSaveCarDeal = (arr, cargoLoadingType, availableCars, initiatorId, dealStatusId) => {
+const formatPriceWithFee = (priceValue, defaultSettings, companySettings) => {
+    let transporterPercent = parseFloat(defaultSettings[colsEconomicSettings.PERCENT_FROM_TRANSPORTER]);
+    let holderPercent = parseFloat(defaultSettings[colsEconomicSettings.PERCENT_FROM_HOLDER]);
+    if (companySettings && companySettings[colsEconomicSettings.PERCENT_FROM_TRANSPORTER] && companySettings[colsEconomicSettings.PERCENT_FROM_HOLDER]) {
+        transporterPercent = parseFloat(companySettings[colsEconomicSettings.PERCENT_FROM_TRANSPORTER]);
+        holderPercent = parseFloat(companySettings[colsEconomicSettings.PERCENT_FROM_HOLDER]);
+    }
+
+    const amountFromTransporter = parseFloat((priceValue * (transporterPercent / 100)).toFixed(2));
+    const amountFromHolder = parseFloat((priceValue * (holderPercent / 100)).toFixed(2));
+    const finalPrice = parseFloat((priceValue - amountFromTransporter - amountFromHolder).toFixed(2));
+
+    return finalPrice;
+};
+
+const formatAllInstancesToSaveCarDeal = (arr, cargoLoadingType, companyId, initiatorId, dealStatusId, defaultEconomicSettings, companyEconomySettings) => {
     const generatedCarId = uuid();
     const generatedTrailerId = uuid();
-    const companyId = availableCars && availableCars[0] && availableCars[0][colsCars.COMPANY_ID];
 
     return arr.reduce((acc, item) => {
         const [deals, dealHistory, dealStatusHistoryConfirmations] = acc;
@@ -137,6 +153,8 @@ const formatAllInstancesToSaveCarDeal = (arr, cargoLoadingType, availableCars, i
         }
 
         const dealId = uuid();
+        const payValue = formatPriceWithFee(item[HOMELESS_COLUMNS.PAY_VALUE], defaultEconomicSettings, companyEconomySettings);
+
         deals.push({
             id: dealId,
             [colsDeals.CARGO_ID]: cargoId,
@@ -144,7 +162,7 @@ const formatAllInstancesToSaveCarDeal = (arr, cargoLoadingType, availableCars, i
             [colsDeals.CAR_ID]: carId,
             [colsDeals.TRAILER_ID]: trailerIdOrData ? trailerId : null,
             [colsDeals.PAY_CURRENCY_ID]: item[HOMELESS_COLUMNS.PAY_CURRENCY_ID],
-            [colsDeals.PAY_VALUE]: item[HOMELESS_COLUMNS.PAY_VALUE],
+            [colsDeals.PAY_VALUE]: payValue,
             [colsDeals.NAME]: item[colsDeals.NAME] || null,
         });
 
@@ -182,6 +200,8 @@ const formatRecordForList = (deal, userLanguageId) => {
         [colsCargo.DOWNLOADING_DATE_FROM]: deal[colsCargo.DOWNLOADING_DATE_FROM],
         [colsCargo.DOWNLOADING_DATE_TO]: deal[colsCargo.DOWNLOADING_DATE_TO],
         [HOMELESS_COLUMNS.DEAL_STATUS]: deal[HOMELESS_COLUMNS.DEAL_STATUS],
+        [HOMELESS_COLUMNS.PRICE]: formatPricesFromPostgresJSON(deal[HOMELESS_COLUMNS.PRICES])
+            .find((p) => p[colsCargoPrices.CURRENCY_ID] === deal[colsDeals.PAY_CURRENCY_ID]),
     };
 
     const [uploadingPoints, downloadingPoints] = formatGeoPoints(deal, userLanguageId);

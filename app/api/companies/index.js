@@ -625,7 +625,7 @@ router.post(
 
 router.post(
     ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.STATUSES.BASE +
-    ROUTES.COMPANIES.DEALS.STATUSES.UPLOAD.BASE + ROUTES.COMPANIES.DEALS.STATUSES.REJECT.POST,
+    ROUTES.COMPANIES.DEALS.STATUSES.UPLOAD.BASE + ROUTES.COMPANIES.DEALS.STATUSES.UPLOAD.POST,
     isHasPermissions([PERMISSIONS.CHANGE_DEAL_STATUS_BASE]), // permissions middleware
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
