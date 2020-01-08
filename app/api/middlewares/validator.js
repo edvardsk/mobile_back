@@ -395,6 +395,19 @@ ajv.addFormat('json', {
     },
 });
 
+
+ajv.addKeyword('deal_in_transporter_company_not_exists', {
+    async: true,
+    type: 'string',
+    validate: DealsService.checkDealInTransporterCompanyExist,
+});
+
+ajv.addKeyword('deal_in_company_not_exists', {
+    async: true,
+    type: 'string',
+    validate: DealsService.checkDealInCompanyExist,
+});
+
 const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next) => {
     try {
         let data = {};

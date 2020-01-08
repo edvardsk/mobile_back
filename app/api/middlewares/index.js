@@ -30,7 +30,8 @@ const isAllowedRoute = req => {
     })) ||
         (req.method === 'POST' && ALLOWED_ROUTES.POST.has(req.baseUrl)) ||
         (req.method === 'PUT' && ALLOWED_ROUTES.PUT.has(req.baseUrl)) ||
-        (req.method === 'DELETE' && ALLOWED_ROUTES.DELETE.has(req.baseUrl));
+        (req.method === 'DELETE' && ALLOWED_ROUTES.DELETE.has(req.baseUrl)) ||
+        (url.endsWith('.websocket'));
 };
 
 const isAuthenticated = async (req, res) => {

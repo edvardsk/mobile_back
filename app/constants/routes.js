@@ -62,6 +62,7 @@ const BASES = {
     EXCHANGE_RATES: '/exchange-rates',
     VERIFY: '/verify',
     REJECT: '/reject',
+    TRACKING: '/tracking',
     STATUSES: '/statuses',
     CONFIRM: '/confirm',
     CANCEL: '/cancel',
@@ -356,6 +357,12 @@ const ROUTES = {
                 BASE: BASES.CARGOS,
                 POST: '',
             },
+            TRACKING: {
+                BASE: IDS.DEAL_ID + BASES.TRACKING,
+                POST: '',
+                GET: '',
+                WS: '/ws',
+            },
             CARS: {
                 BASE: BASES.CARS,
                 POST: '',
@@ -515,6 +522,8 @@ const ALLOWED_ROUTES = {
 
         API_PREFIX + ROUTES.OTHERS.BASE + ROUTES.OTHERS.TNVED_CODES.BASE + ROUTES.OTHERS.TNVED_CODES.GET,
         API_PREFIX + ROUTES.OTHERS.BASE + ROUTES.OTHERS.TNVED_CODES.BASE + ROUTES.OTHERS.TNVED_CODES.GET_ALL,
+
+        API_PREFIX + ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.TRACKING.BASE + ROUTES.COMPANIES.DEALS.TRACKING.WS,
     ]),
     POST: new Set([
         API_PREFIX + ROUTES.AUTH.REGISTRATION.BASE + ROUTES.AUTH.REGISTRATION.POST,
