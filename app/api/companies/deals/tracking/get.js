@@ -27,11 +27,10 @@ const getListDealPoints = async (req, res, next) => {
             dealId,
             uuid(),
         );
-        const firstTransaction = await TrackingSocketHashesService.deleteRecordsByUser(user.id);
-        await TablesService.runTransaction([firstTransaction]);
+        const firstTransaction = await TrackingSocketHashesService.removeRecordsByUserAsTransaction(user.id);
 
         const secondTransaction = await TrackingSocketHashesService.addRecordAsTransaction(hashRecord);
-        await TablesService.runTransaction([secondTransaction]);
+        await TablesService.runTransaction([firstTransaction, secondTransaction]);
 
         return success(res, { points: result, hash: hashRecord[colsTracking.HASH], dealId });
     } catch (error) {

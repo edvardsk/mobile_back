@@ -13,8 +13,7 @@ const getListDealPoints = async (ws, req) => {
     const { dealId } = req.params;
     const { hash } = req.query;
 
-    const hashRecord = await TrackingSocketHashesService.getRecordByHash(hash);
-    await TrackingSocketHashesService.deleteRecord(hashRecord.id);
+    const hashRecord = await TrackingSocketHashesService.removeRecordByHash(hash);
 
     if (!hashRecord || hashRecord[colsTracking.DEAL_ID] !== dealId) {
         ws.terminate();

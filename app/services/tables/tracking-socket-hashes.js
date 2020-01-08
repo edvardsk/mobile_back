@@ -3,6 +3,7 @@ const {
     insertRecord,
     selectRecordByHash,
     deleteRecordById,
+    deleteRecordByHash,
     deleteRecordsByUserId,
 } = require('sql-helpers/tracking-socket-hashes');
 
@@ -10,15 +11,18 @@ const { OPERATIONS } = require('constants/postgres');
 
 const getRecordByHash = hash => oneOrNone(selectRecordByHash(hash));
 
-const deleteRecord = id => oneOrNone(deleteRecordById(id));
+const removeRecordByHash = hash => oneOrNone(deleteRecordByHash(hash));
 
-const deleteRecordsByUser = userId => [deleteRecordsByUserId(userId), OPERATIONS.MANY_OR_NONE];
+const removeRecord = id => oneOrNone(deleteRecordById(id));
+
+const removeRecordsByUserAsTransaction = id => [deleteRecordsByUserId(id), OPERATIONS.MANY_OR_NONE];
 
 const addRecordAsTransaction = data => [insertRecord(data), OPERATIONS.ONE];
 
 module.exports = {
     getRecordByHash,
-    deleteRecord,
+    removeRecordByHash,
+    removeRecord,
+    removeRecordsByUserAsTransaction,
     addRecordAsTransaction,
-    deleteRecordsByUser,
 };
