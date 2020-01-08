@@ -93,7 +93,7 @@ const getDeal = async (req, res, next) => {
         let dealTrailerFilesPromise;
         let dealDriverFilesPromise;
 
-        if (carId) {
+        if (!carId) {
             if (dealCar) {
                 dealCarFilesPromise = DealFilesService.getRecordsByDealCarId(dealCarId);
             } else {
@@ -118,10 +118,10 @@ const getDeal = async (req, res, next) => {
         }
 
         const [dealFiles, dealCarFiles, dealTrailerFiles, dealDriverFiles] = await Promise.all([
-            dealFilesPromise,
-            dealCarFilesPromise,
-            dealTrailerFilesPromise,
-            dealDriverFilesPromise
+            dealFilesPromise || [],
+            dealCarFilesPromise || [],
+            dealTrailerFilesPromise || [],
+            dealDriverFilesPromise || []
         ]);
 
         const [formattedDealFiles, formattedDealCarFiles, formattedDealTrailerFiles, formattedDealDriverFiles] = await Promise.all([
