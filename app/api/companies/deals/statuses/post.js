@@ -441,9 +441,33 @@ const setDoubleConfirmedStatus = async (req, res, next) => {
     }
 };
 
+const setHolderSentPaymentStatus = async (req, res, next) => {
+    try {
+        const { user } = res.locals;
+        const { dealId } = req.params;
+
+        const transactionsList = [];
+
+        const nextDealStatus = await DealsStatusesServices.getRecordStrict(DEAL_STATUSES_MAP.WAIT_TRANSPORTER_PAYMENT);
+
+        const dealStatusHistoryId = uuid();
+        const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, nextDealStatus.id, user.id);
+        transactionsList.push(
+            DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory)
+        );
+
+        await TablesService.runTransaction(transactionsList);
+
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     setConfirmedStatus,
     setCancelledStatus,
     setRejectedStatus,
     setDoubleConfirmedStatus,
+    setHolderSentPaymentStatus,
 };

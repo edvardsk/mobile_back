@@ -29,6 +29,7 @@ const DealsService = require('services/tables/deals');
 const { ERRORS } = require('constants/errors');
 const { HOMELESS_COLUMNS, SQL_TABLES } = require('constants/tables');
 const { DEAL_STATUSES_ROUTE } = require('constants/deal-statuses');
+const { ERROR_CODES } = require('constants/http-codes');
 
 // helpers
 const {
@@ -495,10 +496,6 @@ const validateChangeDealStatus = (nextStatus) => async (req, res, next) => {
         const confirmedByTransporter = deal[colsDealsStatusesConfirmations.CONFIRMED_BY_TRANSPORTER];
         const confirmedByHolder = deal[colsDealsStatusesConfirmations.CONFIRMED_BY_HOLDER];
 
-        if (confirmedByTransporter === null || confirmedByHolder === null) {
-            return reject(res, ERRORS.SYSTEM.ERROR);
-        }
-
         if (
             (transporterCompanyId === company.id && confirmedByTransporter) ||
             (holderCompanyId === company.id && confirmedByHolder)
@@ -570,6 +567,14 @@ const validateChangeDealStatus = (nextStatus) => async (req, res, next) => {
             }
             break;
         }
+
+        case DEAL_STATUSES_ROUTE.HOLDER_SENT_PAYMENT: {
+            if (isTransporter) {
+                return reject(res, ERRORS.SYSTEM.FORBIDDEN, {}, ERROR_CODES.FORBIDDEN);
+            }
+            break;
+        }
+
         }
 
         res.locals.nextStatus = nextStatus;
