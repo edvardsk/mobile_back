@@ -93,7 +93,7 @@ const getDeal = async (req, res, next) => {
         let dealTrailerFilesPromise;
         let dealDriverFilesPromise;
 
-        if (!carId) {
+        if (carId) {
             if (dealCar) {
                 dealCarFilesPromise = DealFilesService.getRecordsByDealCarId(dealCarId);
             } else {
