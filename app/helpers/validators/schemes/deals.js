@@ -372,6 +372,7 @@ const validateNextStepAsyncFunc = ({ nextStatus }) => ({
             },
         },
     },
+
 });
 
 const validateNextStepConfirmedTransporter = {
@@ -564,6 +565,16 @@ const validateNextStepConfirmedHolderAsync = {
     },
 };
 
+const validateNextStepWithComment = {
+    properties: {
+        [HOMELESS_COLUMNS.COMMENT]: {
+            type: 'string',
+            minLength: 1,
+        },
+    },
+    additionalProperties: false,
+};
+
 module.exports = {
     createCargoDeal,
     createCargoDealAsync,
@@ -583,4 +594,5 @@ module.exports = {
     validateNextStepConfirmedHolderBodyWithFiles,
     validateNextStepConfirmedHolderAsync,
     createCarDeal,
+    validateNextStepWithComment,
 };

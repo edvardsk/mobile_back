@@ -28,6 +28,7 @@ const {
     DEAL_STATUSES_MAP,
     DEAL_ROUTES_TO_STATUSES_MAP,
     STATUSES_TO_CREATE_CONFIRMATION_RECORD_SET,
+    STATUSES_TO_STORE_DEAL_INSTANCES_SET,
 } = require('constants/deal-statuses');
 const { ACTION_TYPES } = require('constants/background');
 const { LOADING_TYPES_MAP } = require('constants/cargos');
@@ -293,6 +294,7 @@ const setCancelledStatus = async (req, res, next) => {
     try {
         const { user } = res.locals;
         const { dealId } = req.params;
+        const comment = req.body[HOMELESS_COLUMNS.COMMENT];
 
         const [deal, failedDealStatus] = await Promise.all([
             DealsService.getRecordStrict(dealId),
@@ -300,7 +302,7 @@ const setCancelledStatus = async (req, res, next) => {
         ]);
         const dealStatusHistoryId = uuid();
 
-        const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, failedDealStatus.id, user.id);
+        const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, failedDealStatus.id, user.id, comment);
 
         let transactionsList = [
             DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory),
@@ -333,6 +335,7 @@ const setRejectedStatus = async (req, res, next) => {
     try {
         const { user } = res.locals;
         const { dealId } = req.params;
+        const comment = req.body[HOMELESS_COLUMNS.COMMENT];
 
         const [deal, failedDealStatus] = await Promise.all([
             DealsService.getRecordStrict(dealId),
@@ -340,7 +343,7 @@ const setRejectedStatus = async (req, res, next) => {
         ]);
         const dealStatusHistoryId = uuid();
 
-        const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, failedDealStatus.id, user.id);
+        const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, failedDealStatus.id, user.id, comment);
 
         let transactionsList = [
             DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory),
@@ -354,6 +357,55 @@ const setRejectedStatus = async (req, res, next) => {
             ...transactionsList,
             ...transactions,
         ];
+
+        await TablesService.runTransaction(transactionsList);
+
+        if (filesToCopy.length) {
+            await Promise.all(filesToCopy.map(({ bucket, oldPath, newPath }) => (
+                S3Service.copyObject(bucket, oldPath, newPath)
+            )));
+        }
+
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const setFailedStatus = async (req, res, next) => {
+    try {
+        const { user } = res.locals;
+        const { dealId } = req.params;
+        const comment = req.body[HOMELESS_COLUMNS.COMMENT];
+
+        const [deal, failedDealStatus] = await Promise.all([
+            DealsService.getRecordStrict(dealId),
+            DealsStatusesServices.getRecordStrict(DEAL_STATUSES_MAP.FAILED),
+        ]);
+
+        const dealStatusHistoryId = uuid();
+
+        const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, failedDealStatus.id, user.id, comment);
+
+        let filesToCopy = [];
+        let transactionsList = [
+            DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory),
+        ];
+
+        const currentDealStatus = deal[HOMELESS_COLUMNS.DEAL_STATUS_NAME];
+        if (STATUSES_TO_STORE_DEAL_INSTANCES_SET.has(currentDealStatus)) {
+            const [transactions, copyFiles] = await DealsService.saveLatestDealInstances(deal);
+
+            transactionsList = [
+                ...transactionsList,
+                ...transactions,
+            ];
+
+            filesToCopy = [
+                ...filesToCopy,
+                ...copyFiles,
+            ];
+        }
 
         await TablesService.runTransaction(transactionsList);
 
@@ -441,9 +493,34 @@ const setDoubleConfirmedStatus = async (req, res, next) => {
     }
 };
 
+const setHolderSentPaymentStatus = async (req, res, next) => {
+    try {
+        const { user } = res.locals;
+        const { dealId } = req.params;
+
+        const transactionsList = [];
+
+        const nextDealStatus = await DealsStatusesServices.getRecordStrict(DEAL_STATUSES_MAP.WAIT_TRANSPORTER_PAYMENT);
+
+        const dealStatusHistoryId = uuid();
+        const statusHistory = DealStatusesHistoryFormatters.formatRecordsToSave(dealStatusHistoryId, dealId, nextDealStatus.id, user.id);
+        transactionsList.push(
+            DealsStatusesHistoryServices.addRecordAsTransaction(statusHistory)
+        );
+
+        await TablesService.runTransaction(transactionsList);
+
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     setConfirmedStatus,
     setCancelledStatus,
     setRejectedStatus,
+    setFailedStatus,
     setDoubleConfirmedStatus,
+    setHolderSentPaymentStatus,
 };

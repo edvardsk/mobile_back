@@ -11,7 +11,7 @@ const formatRecordToSaveFromOriginal = (id, user, driver) => ({
     [cols.FULL_NAME]: user[colsUsers.FULL_NAME],
     [cols.NUMBER]: user[HOMELESS_COLUMNS.PHONE_NUMBER],
     [cols.PHONE_PREFIX_ID]: user[HOMELESS_COLUMNS.PHONE_PREFIX_ID],
-    [cols.DRIVER_LICENCE_REGISTERED_AT]: (driver[colsDrivers.DRIVER_LICENCE_REGISTERED_AT] || driver[colsDrivers.DRIVER_LICENCE_REGISTERED_AT].toISOString()) || null,
+    [cols.DRIVER_LICENCE_REGISTERED_AT]: (driver[colsDrivers.DRIVER_LICENCE_REGISTERED_AT] && driver[colsDrivers.DRIVER_LICENCE_REGISTERED_AT].toISOString()) || null,
     [cols.DRIVER_LICENCE_EXPIRED_AT]: (driver[colsDrivers.DRIVER_LICENCE_EXPIRED_AT] && driver[colsDrivers.DRIVER_LICENCE_EXPIRED_AT].toISOString()) || null,
     [cols.PASSPORT_NUMBER]: user[colsUsers.PASSPORT_NUMBER],
     [cols.PASSPORT_PERSONAL_ID]: user[colsUsers.PASSPORT_PERSONAL_ID],

@@ -636,6 +636,7 @@ router.post(
     validate(ValidatorSchemes.requiredDealId, 'params'),
     validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
     validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.CANCEL }), 'params'),
+    validateChangeDealStatus(DEAL_STATUSES_ROUTE.CANCEL),
     postDealsStatuses.setCancelledStatus,
 );
 
@@ -648,7 +649,21 @@ router.post(
     validate(ValidatorSchemes.requiredDealId, 'params'),
     validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
     validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.REJECT }), 'params'),
+    validateChangeDealStatus(DEAL_STATUSES_ROUTE.REJECT),
     postDealsStatuses.setRejectedStatus,
+);
+
+router.post(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.STATUSES.BASE +
+    ROUTES.COMPANIES.DEALS.STATUSES.FAIL.BASE + ROUTES.COMPANIES.DEALS.STATUSES.FAIL.POST,
+    isHasPermissions([PERMISSIONS.CHANGE_DEAL_STATUS_ADVANCED]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredDealId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
+    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.FAIL }), 'params'),
+    validateChangeDealStatus(DEAL_STATUSES_ROUTE.FAIL),
+    postDealsStatuses.setFailedStatus,
 );
 
 router.post(
@@ -701,6 +716,19 @@ router.post(
     validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.FINISH }), 'params'),
     validateChangeDealStatus(DEAL_STATUSES_ROUTE.FINISH),
     postDealsStatuses.setDoubleConfirmedStatus,
+);
+
+router.post(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.STATUSES.BASE +
+    ROUTES.COMPANIES.DEALS.STATUSES.HOLDER_SENT_PAYMENT.BASE + ROUTES.COMPANIES.DEALS.STATUSES.HOLDER_SENT_PAYMENT.POST,
+    isHasPermissions([PERMISSIONS.CHANGE_DEAL_STATUS_ADVANCED]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredDealId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
+    validate(() => ValidatorSchemes.validateNextStepAsyncFunc({ nextStatus: DEAL_STATUSES_ROUTE.HOLDER_SENT_PAYMENT }), 'params'),
+    validateChangeDealStatus(DEAL_STATUSES_ROUTE.HOLDER_SENT_PAYMENT),
+    postDealsStatuses.setHolderSentPaymentStatus,
 );
 
 

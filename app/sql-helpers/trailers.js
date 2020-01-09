@@ -75,6 +75,8 @@ const updateRecordByCarId = (carId, data) => squelPostgres
 const selectRecordById = id => squelPostgres
     .select()
     .from(table.NAME, 't')
+    .field('t.*')
+    .field(`tsn.${colsTrailersStateNumbers.NUMBER}`, HOMELESS_COLUMNS.TRAILER_STATE_NUMBER)
     .where(`t.id = '${id}'`)
     .where(`t.${cols.DELETED} = 'f'`)
     .where(`tsn.${colsTrailersStateNumbers.IS_ACTIVE} = 't'`)

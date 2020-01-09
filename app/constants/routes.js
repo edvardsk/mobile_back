@@ -70,6 +70,8 @@ const BASES = {
     IN_PROGRESS: '/in-progress',
     DOWNLOAD: '/download',
     FINISH: '/finish',
+    HOLDER_SENT_PAYMENT: '/holder-sent-payment',
+    FAIL: '/fail',
 };
 
 const IDS = {
@@ -381,6 +383,10 @@ const ROUTES = {
                     BASE: BASES.REJECT,
                     POST: '',
                 },
+                FAIL: {
+                    BASE: BASES.FAIL,
+                    POST: '',
+                },
                 UPLOAD: {
                     BASE: BASES.UPLOAD,
                     POST: '',
@@ -395,6 +401,10 @@ const ROUTES = {
                 },
                 FINISH: {
                     BASE: BASES.FINISH,
+                    POST: '',
+                },
+                HOLDER_SENT_PAYMENT: {
+                    BASE: BASES.HOLDER_SENT_PAYMENT,
                     POST: '',
                 },
             },

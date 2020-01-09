@@ -37,7 +37,7 @@ const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
 const { ERRORS } = require('constants/errors');
 const { OPERATIONS } = require('constants/postgres');
 const { LOADING_TYPES_MAP } = require('constants/cargos');
-const { FINISHED_STATUSES_LIST, ALLOWED_NEXT_STATUSES_MAP } = require('constants/deal-statuses');
+const { IMMUTABLE_STATUSES_LIST, ALLOWED_NEXT_STATUSES_MAP } = require('constants/deal-statuses');
 const { ENTITIES } = require('constants/index');
 
 // helpers
@@ -213,6 +213,8 @@ const saveLatestDealInstances = async deal => {
         DealFilesService.formatDataWithDecryptedUrl(driverFiles),
     ]);
 
+    let dealFilesToStore = [];
+
     if (carId) {
         const dealCarId = uuid();
         updateDeal[cols.DEAL_CAR_ID] = dealCarId;
@@ -231,9 +233,11 @@ const saveLatestDealInstances = async deal => {
             ...carCopyFiles,
         ];
 
-        transactions.push(
-            DealFilesService.addFilesAsTransaction(carDealFiles)
-        );
+        dealFilesToStore = [
+            ...dealFilesToStore,
+            ...carDealFiles,
+        ];
+
         transactions.push(
             DealCarsFilesService.addRecordsAsTransaction(carsToDealsFiles)
         );
@@ -257,9 +261,11 @@ const saveLatestDealInstances = async deal => {
             ...trailerCopyFiles,
         ];
 
-        transactions.push(
-            DealFilesService.addFilesAsTransaction(trailerDealFiles)
-        );
+        dealFilesToStore = [
+            ...dealFilesToStore,
+            ...trailerDealFiles,
+        ];
+
         transactions.push(
             DealTrailersFilesService.addRecordsAsTransaction(trailersToDealsFiles)
         );
@@ -283,11 +289,19 @@ const saveLatestDealInstances = async deal => {
             ...driverCopyFiles,
         ];
 
-        transactions.push(
-            DealFilesService.addFilesAsTransaction(driverDealFiles)
-        );
+        dealFilesToStore = [
+            ...dealFilesToStore,
+            ...driverDealFiles,
+        ];
+
         transactions.push(
             DealDriversFilesService.addRecordsAsTransaction(driversToDealsFiles)
+        );
+    }
+
+    if (dealFilesToStore.length) {
+        transactions.unshift(
+            DealFilesService.addFilesAsTransaction(dealFilesToStore)
         );
     }
 
@@ -304,7 +318,7 @@ const checkOwnActiveDealExist = async (meta, dealId) => {
     const deal = await getRecord(dealId);
     const { companyId } = meta;
     return !!deal &&
-        !FINISHED_STATUSES_LIST.includes(deal[HOMELESS_COLUMNS.DEAL_STATUS_NAME]) &&
+        !IMMUTABLE_STATUSES_LIST.includes(deal[HOMELESS_COLUMNS.DEAL_STATUS_NAME]) &&
         (deal[cols.TRANSPORTER_COMPANY_ID] === companyId || deal[colsCargos.COMPANY_ID] === companyId);
 };
 

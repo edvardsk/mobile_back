@@ -860,6 +860,7 @@ const HOMELESS_COLUMNS = {
     CAR_IS_DRAFT: 'car_is_draft',
     DRAFT_FILES: 'draft_files',
     COMMENTS: 'comments',
+    COMMENT: 'comment',
     DRAFT_TRAILER_VIN: 'draft_trailer_vin',
     DRAFT_TRAILER_STATE_NUMBER: 'draft_trailer_state_number',
     DRAFT_TRAILER_MARK: 'draft_trailer_mark',
