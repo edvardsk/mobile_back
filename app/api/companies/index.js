@@ -592,7 +592,7 @@ router.post(
 
 router.get(
     ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.TRACKING.BASE + ROUTES.COMPANIES.DEALS.TRACKING.GET,
-    isHasPermissions([PERMISSIONS.CREATE_CARGO_DEAL]),
+    isHasPermissions([PERMISSIONS.CREATE_CAR_DEAL]),
     validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
     injectCompanyData,
     validate(ValidatorSchemes.requiredDealId, 'params'),
