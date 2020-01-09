@@ -588,6 +588,18 @@ const validateChangeDealStatus = (nextStatus) => async (req, res, next) => {
             break;
         }
 
+        case DEAL_STATUSES_ROUTE.CANCEL:
+        case DEAL_STATUSES_ROUTE.REJECT:
+        case DEAL_STATUSES_ROUTE.FAIL: {
+            const scheme = ValidatorSchemes.validateNextStepWithComment;
+            const validate = ajv.compile(scheme);
+            const isValidData = validate(data);
+
+            if (!isValidData) {
+                return reject(res, ERRORS.VALIDATION.ERROR, validate.errors);
+            }
+        }
+
         }
 
         res.locals.nextStatus = nextStatus;

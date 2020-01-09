@@ -71,6 +71,7 @@ const BASES = {
     DOWNLOAD: '/download',
     FINISH: '/finish',
     HOLDER_SENT_PAYMENT: '/holder-sent-payment',
+    FAIL: '/fail',
 };
 
 const IDS = {
@@ -380,6 +381,10 @@ const ROUTES = {
                 },
                 REJECT: {
                     BASE: BASES.REJECT,
+                    POST: '',
+                },
+                FAIL: {
+                    BASE: BASES.FAIL,
                     POST: '',
                 },
                 UPLOAD: {
