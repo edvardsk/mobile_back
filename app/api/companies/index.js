@@ -562,6 +562,17 @@ router.get(
     getDriversDeals.getActiveDealsForDriver,
 );
 
+router.get(
+    ROUTES.COMPANIES.DRIVERS.BASE + ROUTES.COMPANIES.DRIVERS.MY_DEALS.BASE +
+    ROUTES.COMPANIES.DRIVERS.MY_DEALS.HISTORY.BASE + ROUTES.COMPANIES.DRIVERS.MY_DEALS.HISTORY.GET,
+    isHasPermissions([PERMISSIONS.READ_DRIVER_DEALS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(({ isDriver }) => isDriver ? ValidatorSchemes.driverIdOrIdRequiredDriverIdParams : ValidatorSchemes.driverIdOrIdRequiredIdParams, 'params'),
+    injectCompanyData,
+    injectDriverData,
+    getDriversDeals.getHistoryDealsForDriver,
+);
+
 
 // deals
 router.post(

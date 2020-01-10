@@ -16,6 +16,8 @@ const {
     selectRecordWithInstancesInfoById,
     selectDealsInProcessByRangeAndCarId,
     selectActiveDriverDealsByDriverId,
+    selectHistoryDriverDealsSortingPagination,
+    selectCountHistoryDriverDeals,
 } = require('sql-helpers/deals');
 
 // services
@@ -170,6 +172,15 @@ const getCountDeals = (companyId, filter) => (
 
 const getActiveDriverDeals = (driverId, userLanguageId) => (
     manyOrNone(selectActiveDriverDealsByDriverId(driverId, userLanguageId))
+);
+
+const getHistoryDriverDealsSortingPagination = (driverId, userLanguageId, limit, offset, sortColumn, asc, filter) => (
+    manyOrNone(selectHistoryDriverDealsSortingPagination(driverId, userLanguageId, limit, offset, sortColumn, asc, filter))
+);
+
+const getCountHistoryDriverDeals = (driverId, filter) => (
+    one(selectCountHistoryDriverDeals(driverId, filter))
+        .then(({ count }) => +count)
 );
 
 const checkDealInCompanyExist = async (meta, id) => {
@@ -357,6 +368,8 @@ module.exports = {
     checkDealInTransporterCompanyExist,
     getDealsInProcessByRangeAndCarId,
     saveLatestDealInstances,
+    getHistoryDriverDealsSortingPagination,
+    getCountHistoryDriverDeals,
 
     checkOwnActiveDealExist,
     checkOwnDealExist,

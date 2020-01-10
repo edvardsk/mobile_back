@@ -25,6 +25,12 @@ const availableDriversPaginationOptions = {
     DEFAULT_SORT_DIRECTION: SORTING_DIRECTIONS.ASC,
 };
 
+const historyDealsForDriver = {
+    DEFAULT_LIMIT: 5,
+    DEFAULT_SORT_COLUMN: SQL_TABLES.DEALS.COLUMNS.CREATED_AT,
+    DEFAULT_SORT_DIRECTION: SORTING_DIRECTIONS.ASC,
+};
+
 const colsUsers = SQL_TABLES.USERS.COLUMNS;
 
 const getAvailableDrivers = async (req, res, next) => {
@@ -80,7 +86,43 @@ const getActiveDealsForDriver = async (req, res, next) => {
     }
 };
 
+const getHistoryDealsForDriver = async (req, res, next) => {
+    try {
+        const { user, driver } = res.locals;
+        const userLanguageId = user[colsUsers.LANGUAGE_ID];
+
+        const {
+            page,
+            limit,
+            sortColumn,
+            asc,
+        } = getParams(req, historyDealsForDriver);
+
+        const filter = get(req, 'query.filter', {});
+
+        const [deals, dealsCount] = await Promise.all([
+            DealsServices.getHistoryDriverDealsSortingPagination(driver.id, userLanguageId, limit, limit * page, sortColumn, asc, filter),
+            DealsServices.getCountHistoryDriverDeals(driver.id, filter)
+        ]);
+
+        const result = formatPaginationDataForResponse(
+            deals.map(deal => formatRecordForList(deal)),
+            dealsCount,
+            limit,
+            page,
+            sortColumn,
+            asc,
+            filter
+        );
+
+        return success(res, result);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     getAvailableDrivers,
     getActiveDealsForDriver,
+    getHistoryDealsForDriver,
 };

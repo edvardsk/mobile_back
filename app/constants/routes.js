@@ -74,6 +74,7 @@ const BASES = {
     FAIL: '/fail',
     PROBLEM: '/problem',
     ACTIVE: '/active',
+    HISTORY: '/history',
 };
 
 const IDS = {
@@ -347,6 +348,10 @@ const ROUTES = {
                 BASE: IDS.DRIVER_ID_OR_ID + BASES.DEALS,
                 ACTIVE: {
                     BASE: BASES.ACTIVE,
+                    GET: '',
+                },
+                HISTORY: {
+                    BASE: BASES.HISTORY,
                     GET: '',
                 },
             },
