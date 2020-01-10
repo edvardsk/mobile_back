@@ -72,6 +72,7 @@ const BASES = {
     FINISH: '/finish',
     HOLDER_SENT_PAYMENT: '/holder-sent-payment',
     FAIL: '/fail',
+    PROBLEM: '/problem',
 };
 
 const IDS = {
@@ -385,6 +386,10 @@ const ROUTES = {
                 },
                 FAIL: {
                     BASE: BASES.FAIL,
+                    POST: '',
+                },
+                PROBLEM: {
+                    BASE: BASES.PROBLEM,
                     POST: '',
                 },
                 UPLOAD: {

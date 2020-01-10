@@ -740,6 +740,15 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    DEAL_PROBLEMS: {
+        NAME: 'deal_problems',
+        COLUMNS: {
+            DEAL_STATUS_HISTORY_ID: 'deal_status_history_id',
+            DESCRIPTION: 'description',
+            INITIATOR_ID: 'initiator_id',
+            CREATED_AT: 'created_at',
+        },
+    },
 };
 
 const NO_SQL_TABLES = {
@@ -875,12 +884,14 @@ const HOMELESS_COLUMNS = {
     DRAFT_TRAILER_CARRYING_CAPACITY: 'draft_trailer_carrying_capacity',
     TRAILER_IS_DRAFT: 'trailer_is_draft',
     DEAL_STATUS_NAME: 'deal_status_name',
+    DEAL_STATUS_HISTORY_ID: 'deal_status_history_id',
     CAR_SHADOW: 'car_shadow',
     DRIVER_SHADOW: 'driver_shadow',
     DRIVER_VERIFIED: 'driver_verified',
     DRAFT_CAR_ID: 'draft_car_id',
     DRAFT_TRAILER_ID: 'draft_trailer_id',
     DEAL_STATUS_CONFIRMATION_ID: 'deal_status_confirmation_id',
+    PROBLEMS: 'problems',
 };
 
 module.exports = {

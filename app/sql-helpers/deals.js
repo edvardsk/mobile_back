@@ -22,6 +22,7 @@ const tableUsers = SQL_TABLES.USERS;
 const tablePhoneNumbers = SQL_TABLES.PHONE_NUMBERS;
 const tablePhonePrefixes = SQL_TABLES.PHONE_PREFIXES;
 const tableDealHistoryConfirmations = SQL_TABLES.DEAL_STATUSES_HISTORY_CONFIRMATIONS;
+const tableDealProblems = SQL_TABLES.DEAL_PROBLEMS;
 const tableDraftCars = SQL_TABLES.DRAFT_CARS;
 const tableDraftTrailers = SQL_TABLES.DRAFT_TRAILERS;
 const tableDraftDrivers = SQL_TABLES.DRAFT_DRIVERS;
@@ -46,6 +47,7 @@ const colsUsers = tableUsers.COLUMNS;
 const colsPhoneNumbers = tablePhoneNumbers.COLUMNS;
 const colsPhonePrefixes = tablePhonePrefixes.COLUMNS;
 const colsDealHistoryConfirmations = tableDealHistoryConfirmations.COLUMNS;
+const colsDealProblems = tableDealProblems.COLUMNS;
 const colsDraftCars = tableDraftCars.COLUMNS;
 const colsDraftTrailers = tableDraftTrailers.COLUMNS;
 const colsDraftDrivers = tableDraftDrivers.COLUMNS;
@@ -218,6 +220,7 @@ const selectRecordById = id => squelPostgres
     .field('d.*')
     .field(`c.${colsCargos.COMPANY_ID}`)
     .field(`ds.${colsDealStatuses.NAME}`, HOMELESS_COLUMNS.DEAL_STATUS_NAME)
+    .field('dh.id', HOMELESS_COLUMNS.DEAL_STATUS_HISTORY_ID)
     .field('dsc.id', HOMELESS_COLUMNS.DEAL_STATUS_CONFIRMATION_ID)
     .field(`dsc.${colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER}`, colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER)
     .field(`dsc.${colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER}`, colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER)
@@ -304,6 +307,18 @@ const selectFullRecordById = (id, userLanguageId) => squelPostgres
             .left_join(tableDealPointsInfo.NAME, 'dpi', `dpi.${colsDealPointsInfo.CARGO_POINT_ID} = cp.id AND dpi.${colsDealPointsInfo.DEAL_ID} = d.id`)
             .toString()
     })`, HOMELESS_COLUMNS.DOWNLOADING_POINTS)
+    // deal problems
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(dp.id, ds2.${colsDealStatuses.NAME}, dp.${colsDealProblems.DESCRIPTION}))`)
+            .from(tableDealHistory.NAME, 'dh2')
+            .where(`dh2.${colsDealHistory.DEAL_ID} = '${id}'`)
+            .where('dp.id IS NOT NULL')
+            .left_join(tableDealProblems.NAME, 'dp', `dp.${colsDealProblems.DEAL_STATUS_HISTORY_ID} = dh2.id`)
+            .left_join(tableDealStatuses.NAME, 'ds2', `ds2.id = dh2.${colsDealHistory.DEAL_STATUS_ID}`)
+            .toString()
+    })`, HOMELESS_COLUMNS.PROBLEMS)
     .field(`ds.${colsDealStatuses.NAME}`, HOMELESS_COLUMNS.DEAL_STATUS)
     .field(`dsc.${colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER}`, colsDealHistoryConfirmations.CONFIRMED_BY_TRANSPORTER)
     .field(`dsc.${colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER}`, colsDealHistoryConfirmations.CONFIRMED_BY_HOLDER)
