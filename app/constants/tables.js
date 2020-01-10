@@ -740,6 +740,24 @@ const SQL_TABLES = {
             CREATED_AT: 'created_at',
         },
     },
+    DEAL_PROBLEMS: {
+        NAME: 'deal_problems',
+        COLUMNS: {
+            DEAL_STATUS_HISTORY_ID: 'deal_status_history_id',
+            DESCRIPTION: 'description',
+            INITIATOR_ID: 'initiator_id',
+            CREATED_AT: 'created_at',
+        },
+    },
+};
+
+exports.up = function(knex) {
+    return knex.schema.createTable('deal_problems', function(table) {
+        table.uuid('id').defaultTo(knex.raw('uuid_generate_v4()')).primary().unique();
+        table.uuid('deal_status_history_id').references('deal_history_statuses.id').notNull();
+        table.text('description').notNull();
+        table.timestamp('created_at').defaultTo(knex.fn.now());
+    });
 };
 
 const NO_SQL_TABLES = {
