@@ -900,6 +900,7 @@ const HOMELESS_COLUMNS = {
     DRAFT_CAR_ID: 'draft_car_id',
     DRAFT_TRAILER_ID: 'draft_trailer_id',
     DEAL_STATUS_CONFIRMATION_ID: 'deal_status_confirmation_id',
+    PROBLEMS: 'problems',
 };
 
 module.exports = {

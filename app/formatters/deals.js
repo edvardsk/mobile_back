@@ -11,6 +11,7 @@ const { isValidUUID } = require('helpers/validators');
 // formatters
 const { formatGeoPoints, formatDealGeoPoints } = require('./cargos');
 const { formatPricesFromPostgresJSON } = require('./cargo-prices');
+const DealProblemsFormatters = require('./deal-problems');
 
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
 const colsDealStatuses = SQL_TABLES.DEAL_HISTORY_STATUSES.COLUMNS;
@@ -239,6 +240,7 @@ const formatRecordForResponse = (
         [colsDeals.INVOICE_PRICE]: parseFloat(deal[colsDeals.INVOICE_PRICE]),
         [colsDeals.STANDARD_LOADING_TIME_HOURS]: deal[colsDeals.STANDARD_LOADING_TIME_HOURS],
         [colsDeals.SPECIAL_REQUIREMENTS]: deal[colsDeals.SPECIAL_REQUIREMENTS],
+        [HOMELESS_COLUMNS.PROBLEMS]: DealProblemsFormatters.formatRecordsFromPostgresJSON(deal[HOMELESS_COLUMNS.PROBLEMS]),
 
         files: dealFiles,
 
