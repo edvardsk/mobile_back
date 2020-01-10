@@ -16,6 +16,7 @@ const DealsStatusesHistoryServices = require('services/tables/deal-statuses-hist
 const DealFilesService = require('services/tables/deal-files');
 const DealsToDealFilesService = require('services/tables/deals-to-deals-files');
 const DealStatusesConfirmationsService = require('services/tables/deal-statuses-history-confirmations');
+const DealProblemsService = require('services/tables/deal-problems');
 const TablesService = require('services/tables');
 const S3Service = require('services/aws/s3');
 const PgJobService = require('services/pg-jobs');
@@ -43,6 +44,7 @@ const DealPointsInfoFormatters = require('formatters/deal-points-info');
 const FilesFormatters = require('formatters/files');
 const DealStatusesHistoryFormatters = require('formatters/deal-statuses-history');
 const DealStatusHistoryConfirmationFormatters = require('formatters/deal-status-history-confirmations');
+const DealProblemsFormatters = require('formatters/deal-problems');
 
 // helpers
 const { validateDealInstancesToConfirmedStatus } = require('helpers/validators/deals');
@@ -516,6 +518,32 @@ const setHolderSentPaymentStatus = async (req, res, next) => {
     }
 };
 
+const addProblem = async (req, res, next) => {
+    try {
+        const { user } = res.locals;
+        const { dealId } = req.params;
+        const comment = req.body[HOMELESS_COLUMNS.COMMENT];
+
+        const transactionsList = [];
+
+        const deal = await DealsService.getRecordStrict(dealId);
+
+        const dealStatusHistoryId = deal[HOMELESS_COLUMNS.DEAL_STATUS_HISTORY_ID];
+
+        const dealProblem = DealProblemsFormatters.formatRecordsToSave(dealStatusHistoryId, comment, user.id);
+
+        transactionsList.push(
+            DealProblemsService.addRecordAsTransaction(dealProblem)
+        );
+
+        await TablesService.runTransaction(transactionsList);
+
+        return success(res, {}, SUCCESS_CODES.NOT_CONTENT);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     setConfirmedStatus,
     setCancelledStatus,
@@ -523,4 +551,5 @@ module.exports = {
     setFailedStatus,
     setDoubleConfirmedStatus,
     setHolderSentPaymentStatus,
+    addProblem,
 };

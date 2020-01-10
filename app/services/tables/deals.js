@@ -61,6 +61,7 @@ const getRecordStrict = id => one(selectRecordById(id));
 const getRecordByIdAndTransporterCompanyIdLight = (id, companyId) => oneOrNone(selectRecordByIdAndTransporterCompanyIdLight(id, companyId));
 
 const getRecordByIdAndCompanyIdLight = (id, companyId) => oneOrNone(selectRecordByIdAndCompanyIdLight(id, companyId));
+
 const editRecordAsTransaction = (id, data) => [updateRecord(id, data), OPERATIONS.ONE];
 
 const getRecordWithInstancesInfoStrict = id => one(selectRecordWithInstancesInfoById(id));

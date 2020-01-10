@@ -731,5 +731,17 @@ router.post(
     postDealsStatuses.setHolderSentPaymentStatus,
 );
 
+router.post(
+    ROUTES.COMPANIES.DEALS.BASE + ROUTES.COMPANIES.DEALS.STATUSES.BASE +
+    ROUTES.COMPANIES.DEALS.STATUSES.PROBLEM.BASE + ROUTES.COMPANIES.DEALS.STATUSES.PROBLEM.POST,
+    isHasPermissions([PERMISSIONS.CHANGE_DEAL_STATUS_ADVANCED]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    injectCompanyData,
+    validate(ValidatorSchemes.requiredDealId, 'params'),
+    validate(({ company }) => ValidatorSchemes.requiredExistingOwnDealAsyncFunc({ companyId: company.id }), 'params'),
+    validate(ValidatorSchemes.addProblem),
+    postDealsStatuses.addProblem
+);
+
 
 module.exports = router;

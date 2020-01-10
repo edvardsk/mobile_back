@@ -575,6 +575,19 @@ const validateNextStepWithComment = {
     additionalProperties: false,
 };
 
+const addProblem = {
+    properties: {
+        [HOMELESS_COLUMNS.COMMENT]: {
+            type: 'string',
+            minLength: 1,
+        },
+    },
+    required: [
+        HOMELESS_COLUMNS.COMMENT,
+    ],
+    additionalProperties: false,
+};
+
 module.exports = {
     createCargoDeal,
     createCargoDealAsync,
@@ -595,4 +608,5 @@ module.exports = {
     validateNextStepConfirmedHolderAsync,
     createCarDeal,
     validateNextStepWithComment,
+    addProblem,
 };
