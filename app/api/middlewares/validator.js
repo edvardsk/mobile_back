@@ -28,7 +28,7 @@ const DealsService = require('services/tables/deals');
 // constants
 const { ERRORS } = require('constants/errors');
 const { HOMELESS_COLUMNS, SQL_TABLES } = require('constants/tables');
-const { DEAL_STATUSES_ROUTE } = require('constants/deal-statuses');
+const { DEAL_STATUSES_ROUTE, REJECTED_STATUES_ROUTES_SET } = require('constants/deal-statuses');
 const { ERROR_CODES } = require('constants/http-codes');
 
 // helpers
@@ -510,8 +510,8 @@ const validateChangeDealStatus = (nextStatus) => async (req, res, next) => {
         const confirmedByHolder = deal[colsDealsStatusesConfirmations.CONFIRMED_BY_HOLDER];
 
         if (
-            (transporterCompanyId === company.id && confirmedByTransporter) ||
-            (holderCompanyId === company.id && confirmedByHolder)
+            ((transporterCompanyId === company.id && confirmedByTransporter) ||
+            (holderCompanyId === company.id && confirmedByHolder)) && (!REJECTED_STATUES_ROUTES_SET.has(nextStatus))
         ) {
             return reject(res, ERRORS.DEALS.STEP_ALREADY_CONFIRMED_BY_THIS_ROLE);
         }
