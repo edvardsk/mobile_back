@@ -44,7 +44,12 @@ const wsTracking = require('./deals/tracking/ws');
 const postDealsStatuses  = require('./deals/statuses/post');
 
 // middlewares
-const { isHasPermissions, injectCompanyData, injectTargetRole } = require('api/middlewares');
+const {
+    isHasPermissions,
+    injectCompanyData,
+    injectDriverData,
+    injectTargetRole,
+} = require('api/middlewares');
 const {
     validate,
     validateChangeDealStatus,
@@ -544,6 +549,17 @@ router.get(
     validate(ValidatorSchemes.driversDealsAvailableFilterQuery, 'query'),
     injectCompanyData,
     getDriversDeals.getAvailableDrivers,
+);
+
+router.get(
+    ROUTES.COMPANIES.DRIVERS.BASE + ROUTES.COMPANIES.DRIVERS.MY_DEALS.BASE +
+    ROUTES.COMPANIES.DRIVERS.MY_DEALS.ACTIVE.BASE + ROUTES.COMPANIES.DRIVERS.MY_DEALS.ACTIVE.GET,
+    isHasPermissions([PERMISSIONS.READ_DRIVER_DEALS]), // permissions middleware
+    validate(({ isControlRole }) => isControlRole ? ValidatorSchemes.meOrIdRequiredIdParams : ValidatorSchemes.meOrIdRequiredMeParams, 'params'),
+    validate(({ isDriver }) => isDriver ? ValidatorSchemes.driverIdOrIdRequiredDriverIdParams : ValidatorSchemes.driverIdOrIdRequiredIdParams, 'params'),
+    injectCompanyData,
+    injectDriverData,
+    getDriversDeals.getActiveDealsForDriver,
 );
 
 

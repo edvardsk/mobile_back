@@ -7,13 +7,14 @@ const TokenService = require('services/token');
 const UsersService = require('services/tables/users');
 const PermissionsService = require('services/tables/permissions');
 const CompaniesService = require('services/tables/companies');
+const DriversService = require('services/tables/drivers');
 
 // constants
 const { ERRORS } = require('constants/errors');
 const { ALLOWED_ROUTES } = require('constants/routes');
 const { ERROR_CODES } = require('constants/http-codes');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
-const { MAP_ROLES_TO_MAIN_ROLE } = require('constants/system');
+const { MAP_ROLES_TO_MAIN_ROLE, SET_DRIVER_ROLES } = require('constants/system');
 
 // helpers
 const { extractToken, isControlRole } = require('helpers');
@@ -64,6 +65,7 @@ const isAuthenticated = async (req, res) => {
             res.locals.user = user;
             res.locals.permissions = new Set(permissions);
             res.locals.isControlRole = isControlRole(user.role);
+            res.locals.isDriver = SET_DRIVER_ROLES.has(user.role);
 
             return req.next();
         } catch (error) {
@@ -137,6 +139,32 @@ const injectCompanyData = async (req, res, next) => {
     }
 };
 
+const injectDriverData = async (req, res, next) => {
+    try {
+        const { isDriver, user, company } = res.locals;
+        let targetUserId;
+        if (isDriver) {
+            targetUserId = user.id;
+            res.locals.driver = await DriversService.getRecordByUserIdStrict(user.id);
+        } else {
+            const userId = req.params.driverIdOrId;
+            targetUserId = userId;
+            const driver = await DriversService.getRecordByUserId(userId);
+            if (!driver) {
+                return reject(res, ERRORS.DRIVERS.INVALID_DRIVER_ID);
+            }
+            res.locals.driver = driver;
+        }
+        const companyFromDb = await CompaniesService.getCompanyByUserId(targetUserId);
+        if (!companyFromDb || companyFromDb.id !== company.id) {
+            return reject(res, ERRORS.DRIVERS.INVALID_COMPANY);
+        }
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
 const injectNotRequiredUser = async (req, res, next) => {
     try {
         const token = extractToken(req);
@@ -179,6 +207,7 @@ module.exports = {
     isAuthenticated,
     injectTargetRole,
     injectCompanyData,
+    injectDriverData,
     injectNotRequiredUser,
     injectNotRequiredCompanyId,
 };

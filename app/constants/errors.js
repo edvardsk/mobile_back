@@ -40,6 +40,10 @@ const ERRORS = {
         NOT_USER_IN_COMPANY: 'companies.not_user_in_company',
         APPROVED: 'companies.approved',
     },
+    DRIVERS: {
+        INVALID_DRIVER_ID: 'drivers.invalid_driver_id',
+        INVALID_COMPANY: 'drivers.invalid_company',
+    },
     VALIDATION: {
         ERROR: 'validation.error',
         INVALID_PHONE_NUMBER: 'validation.invalid_phone_number',
