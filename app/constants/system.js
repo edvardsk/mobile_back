@@ -96,6 +96,7 @@ const PERMISSIONS = {
 
     VERIFY_DEAL_INSTANCE: 'verify_deal_instance',
     READ_LIST_DEALS: 'read_list_deals',
+    READ_DRIVER_DEALS: 'read_driver_deals',
 };
 
 const ARRAY_ROLES_WITHOUT_ADMIN = Object.values(ROLES).filter(role => role !== ROLES.ADMIN);

@@ -1,7 +1,7 @@
 const squel = require('squel');
 const { get } = require('lodash');
 const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
-const { IN_WORK_STATUSES_LIST } = require('constants/deal-statuses');
+const { IN_WORK_STATUSES_LIST, ACTIVE_STATUSES_LIST } = require('constants/deal-statuses');
 
 const squelPostgres = squel.useFlavour('postgres');
 
@@ -429,6 +429,56 @@ const selectDealsInProcessByRangeAndCarId = (carId, startDate, endDate) => squel
     .left_join(tableCars.NAME, 'crs', `crs.id = d.${cols.CAR_ID}`)
     .toString();
 
+const selectActiveDriverDealsByDriverId = (driverId, userLanguageId) => squelPostgres
+    .select()
+    .field('d.*')
+    .field(`c.${colsCargos.UPLOADING_DATE_FROM}`)
+    .field(`c.${colsCargos.UPLOADING_DATE_TO}`)
+    .field(`c.${colsCargos.DOWNLOADING_DATE_FROM}`)
+    .field(`c.${colsCargos.DOWNLOADING_DATE_TO}`)
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+            .from(tableCargoPoints.NAME, 'cp')
+            .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
+            .where(`cp.${colsCargoPoints.TYPE} = 'upload'`)
+            .where(`t.${colsTranslations.LANGUAGE_ID} = '${userLanguageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
+            .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
+            .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
+            .toString()
+    })`, HOMELESS_COLUMNS.UPLOADING_POINTS)
+    .field(`ARRAY(${
+        squelPostgres
+            .select()
+            .field(`row_to_json(row(cp.id, ST_AsText(cp.${colsCargoPoints.COORDINATES}), t.${colsTranslations.VALUE}, t.${colsTranslations.LANGUAGE_ID}))`)
+            .from(tableCargoPoints.NAME, 'cp')
+            .where(`cp.${colsCargoPoints.CARGO_ID} = c.id`)
+            .where(`cp.${colsCargoPoints.TYPE} = 'download'`)
+            .where(`t.${colsTranslations.LANGUAGE_ID} = '${userLanguageId}' OR t.${colsTranslations.LANGUAGE_ID} = (SELECT id FROM languages WHERE code = 'en')`)
+            .left_join(tablePoints.NAME, 'p', `p.${colsPoints.COORDINATES} = cp.${colsCargoPoints.COORDINATES}`)
+            .left_join(tableTranslations.NAME, 't', `t.${colsTranslations.POINT_ID} = p.id`)
+            .toString()
+    })`, HOMELESS_COLUMNS.DOWNLOADING_POINTS)
+    .field(`ds.${colsDealStatuses.NAME}`, HOMELESS_COLUMNS.DEAL_STATUS)
+    .from(table.NAME, 'd')
+    .where('dsh.id = ?',
+        squelPostgres
+            .select()
+            .field('dsh2.id')
+            .from(tableDealHistory.NAME, 'dsh2')
+            .where(`dsh2.${colsDealHistory.DEAL_ID} = d.id`)
+            .order(`dsh2.${colsDealHistory.CREATED_AT}`, false)
+            .limit(1)
+    )
+    .where(`dr.id = '${driverId}'`)
+    .where(`ds.${colsDealStatuses.NAME} IN ?`, ACTIVE_STATUSES_LIST)
+    .left_join(tableDrivers.NAME, 'dr', `dr.id = d.${cols.DRIVER_ID}`)
+    .left_join(tableCargos.NAME, 'c', `c.id = d.${cols.CARGO_ID}`)
+    .left_join(tableDealHistory.NAME, 'dsh', `dsh.${colsDealHistory.DEAL_ID} = d.id`)
+    .left_join(tableDealStatuses.NAME, 'ds', `ds.id = dsh.${colsDealHistory.DEAL_STATUS_ID}`)
+    .toString();
+
 module.exports = {
     insertRecords,
     updateRecord,
@@ -441,4 +491,5 @@ module.exports = {
     selectRecordByIdAndTransporterCompanyIdLight,
     selectRecordWithInstancesInfoById,
     selectDealsInProcessByRangeAndCarId,
+    selectActiveDriverDealsByDriverId,
 };

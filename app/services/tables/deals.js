@@ -15,6 +15,7 @@ const {
     selectRecordById,
     selectRecordWithInstancesInfoById,
     selectDealsInProcessByRangeAndCarId,
+    selectActiveDriverDealsByDriverId,
 } = require('sql-helpers/deals');
 
 // services
@@ -165,6 +166,10 @@ const getDealsPaginationSorting = (companyId, limit, offset, sortColumn, asc, fi
 const getCountDeals = (companyId, filter) => (
     one(selectCountDealsByCompanyId(companyId, filter))
         .then(({ count }) => +count)
+);
+
+const getActiveDriverDeals = (driverId, userLanguageId) => (
+    manyOrNone(selectActiveDriverDealsByDriverId(driverId, userLanguageId))
 );
 
 const checkDealInCompanyExist = async (meta, id) => {
@@ -347,6 +352,7 @@ module.exports = {
     validateDealItems,
     getDealsPaginationSorting,
     getCountDeals,
+    getActiveDriverDeals,
     checkDealInCompanyExist,
     checkDealInTransporterCompanyExist,
     getDealsInProcessByRangeAndCarId,

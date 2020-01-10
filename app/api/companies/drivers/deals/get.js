@@ -4,6 +4,7 @@ const { success } = require('api/response');
 // services
 const DriversService = require('services/tables/drivers');
 const CargosServices = require('services/tables/cargos');
+const DealsServices = require('services/tables/deals');
 
 // constants
 const { SQL_TABLES } = require('constants/tables');
@@ -13,6 +14,7 @@ const { SORTING_DIRECTIONS } = require('constants/pagination-sorting');
 const { formatPaginationDataForResponse } = require('formatters/pagination-sorting');
 const { formatRecordForAvailableList } = require('formatters/drivers');
 const { formatCargoDates } = require('formatters/cargos');
+const { formatRecordForList } = require('formatters/deals');
 
 // helpers
 const { getParams } = require('helpers/pagination-sorting');
@@ -63,6 +65,22 @@ const getAvailableDrivers = async (req, res, next) => {
     }
 };
 
+const getActiveDealsForDriver = async (req, res, next) => {
+    try {
+        const { user, driver } = res.locals;
+        const userLanguageId = user[colsUsers.LANGUAGE_ID];
+
+        const deals = await DealsServices.getActiveDriverDeals(driver.id, userLanguageId);
+
+        const formattedDeals = deals.map(deal => formatRecordForList(deal, userLanguageId));
+
+        return success(res, { deals: formattedDeals });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     getAvailableDrivers,
+    getActiveDealsForDriver,
 };

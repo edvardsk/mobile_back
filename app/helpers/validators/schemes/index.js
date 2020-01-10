@@ -245,6 +245,30 @@ const meOrIdRequiredIdParams = {
     ],
 };
 
+const driverIdOrIdRequiredDriverIdParams = {
+    properties: {
+        driverIdOrId: {
+            type: 'string',
+            enum: ['driverId'],
+        },
+    },
+    required: [
+        'driverIdOrId'
+    ],
+};
+
+const driverIdOrIdRequiredIdParams = {
+    properties: {
+        driverIdOrId: {
+            type: 'string',
+            format: 'uuid',
+        },
+    },
+    required: [
+        'driverIdOrId'
+    ],
+};
+
 const requiredMeParams = {
     properties: {
         me: {
@@ -326,6 +350,8 @@ module.exports = {
     requiredCompanyIdParams,
     meOrIdRequiredMeParams,
     meOrIdRequiredIdParams,
+    driverIdOrIdRequiredDriverIdParams,
+    driverIdOrIdRequiredIdParams,
     listFilesGroupParams,
     notRequiredFiles,
     rejectDraft,

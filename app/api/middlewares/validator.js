@@ -435,6 +435,7 @@ const validate = (schemeOrGetter, pathToData = 'body') => async (req, res, next)
                 targetRole: res.locals.targetRole,
                 company: res.locals.company,
                 body: req.body,
+                isDriver: res.locals.isDriver,
             };
             scheme = schemeOrGetter(params);
             if (!scheme) {

@@ -73,6 +73,7 @@ const BASES = {
     HOLDER_SENT_PAYMENT: '/holder-sent-payment',
     FAIL: '/fail',
     PROBLEM: '/problem',
+    ACTIVE: '/active',
 };
 
 const IDS = {
@@ -88,6 +89,7 @@ const IDS = {
     DRIVER_ID: '/:driverId',
     KEYWORD_ID: '/:keywordId',
     DEAL_ID: '/:dealId',
+    DRIVER_ID_OR_ID: '/:driverIdOrId',
 };
 
 const ROUTES = {
@@ -341,6 +343,13 @@ const ROUTES = {
         },
         DRIVERS: {
             BASE: IDS.ME_OR_ID + BASES.DRIVERS,
+            MY_DEALS: {
+                BASE: IDS.DRIVER_ID_OR_ID + BASES.DEALS,
+                ACTIVE: {
+                    BASE: BASES.ACTIVE,
+                    GET: '',
+                },
+            },
             DEALS: {
                 BASE: BASES.DEALS,
                 CARGOS: {
