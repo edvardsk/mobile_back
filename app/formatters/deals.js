@@ -149,12 +149,18 @@ const formatPriceWithFee = (priceValue, defaultSettings, companySettings) => {
     return finalPrice;
 };
 
-const formatAllInstancesToSaveCarDeal = (arr, cargoLoadingType, companyId, initiatorId, dealStatusId, defaultEconomicSettings, companyEconomySettings) => {
+const formatAllInstancesToSaveCarDeal = (
+    arr, cargoLoadingType, holderCompanyId, transporterCompanyId, initiatorId,
+    dealStatusId, defaultEconomicSettings, companyEconomySettings, companies
+) => {
     const generatedCarId = uuid();
     const generatedTrailerId = uuid();
 
+    const holderCompany = companies.find(company => company.id === holderCompanyId);
+    const transporterCompany = companies.find(company => company.id === transporterCompanyId);
+
     return arr.reduce((acc, item) => {
-        const [deals, dealHistory, dealStatusHistoryConfirmations] = acc;
+        const [deals, dealHistory, dealStatusHistoryConfirmations, dealCompaniesInfo] = acc;
         const cargoId = item[HOMELESS_COLUMNS.CARGO_ID];
         const carIdOrData = item[HOMELESS_COLUMNS.CAR_ID_OR_DATA];
         const trailerIdOrData = item[HOMELESS_COLUMNS.TRAILER_ID_OR_DATA];
@@ -171,11 +177,16 @@ const formatAllInstancesToSaveCarDeal = (arr, cargoLoadingType, companyId, initi
 
         const dealId = uuid();
         const payValue = formatPriceWithFee(item[HOMELESS_COLUMNS.PAY_VALUE], defaultEconomicSettings, companyEconomySettings);
+        const dealCompanyHolderInfoId = uuid();
+        const dealCompanyTransporterInfoId = uuid();
+
+        dealCompaniesInfo.push(DealCompaniesInfoFormatters.formatRecordToSaveFromOriginal(dealCompanyHolderInfoId, holderCompany));
+        dealCompaniesInfo.push(DealCompaniesInfoFormatters.formatRecordToSaveFromOriginal(dealCompanyTransporterInfoId, transporterCompany));
 
         deals.push({
             id: dealId,
             [colsDeals.CARGO_ID]: cargoId,
-            [colsDeals.TRANSPORTER_COMPANY_ID]: companyId,
+            [colsDeals.TRANSPORTER_COMPANY_ID]: transporterCompanyId,
             [colsDeals.CAR_ID]: carId,
             [colsDeals.TRAILER_ID]: trailerIdOrData ? trailerId : null,
             [colsDeals.PAY_CURRENCY_ID]: item[HOMELESS_COLUMNS.PAY_CURRENCY_ID],
@@ -197,7 +208,7 @@ const formatAllInstancesToSaveCarDeal = (arr, cargoLoadingType, companyId, initi
             [colsDealStatusesConfirmation.CONFIRMED_BY_HOLDER]: false,
         });
         return acc;
-    }, [[], [], []]);
+    }, [[], [], [], []]);
 };
 
 const formatRecordForList = (deal, userLanguageId) => {
