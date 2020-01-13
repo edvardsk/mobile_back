@@ -1,4 +1,4 @@
-const { oneOrNone, one, manyOrNone } = require('db');
+const { oneOrNone, one, manyOrNone, many } = require('db');
 
 // sql-helpers
 const {
@@ -12,6 +12,7 @@ const {
     selectCompanyByStateRegistrationCertificateNumberWithFirstOwner,
     selectCompaniesPaginationSorting,
     selectCountCompanies,
+    selectCompaniesByIds,
 } = require('sql-helpers/companies');
 
 // services
@@ -61,6 +62,8 @@ const getCountCompanies = (filter) => (
         .then(({ count }) => +count)
 );
 
+const getCompaniesByIds = ids => many(selectCompaniesByIds(ids));
+
 const checkCompanyWithSettlementAccountExistsOpposite = async (meta, account) => {
     const company = await getCompanyBySettlementAccountWithFirstOwner(account);
     const { userId, companyId } = meta;
@@ -106,6 +109,7 @@ module.exports = {
     updateCompanyAsTransaction,
     getCompaniesPaginationSorting,
     getCountCompanies,
+    getCompaniesByIds,
 
     checkCompanyWithSettlementAccountExistsOpposite,
     checkCompanyWithIdentityNumberExistsOpposite,

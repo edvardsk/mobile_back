@@ -110,6 +110,7 @@ const ERRORS = {
         CARGO_DOES_NOT_SUIT: 'deals.cargo_does_not_suit',
         WAIT_FOR_CONFIRM_FROM_TRANSPORTER_FIRST: 'deals.wait_for_confirm_from_transporter_first',
         AVAILABLE_DRIVER_IS_NOT_FOUND: 'deals.available_driver_is_not_found',
+        INVALID_COMPANIES_COUNT: 'deals.invalid_companies_count',
     },
     VERIFY: {
         ALREADY_VERIFIED: 'verify.already_verified',

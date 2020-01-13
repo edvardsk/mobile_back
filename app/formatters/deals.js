@@ -12,6 +12,7 @@ const { isValidUUID } = require('helpers/validators');
 const { formatGeoPoints, formatDealGeoPoints } = require('./cargos');
 const { formatPricesFromPostgresJSON } = require('./cargo-prices');
 const DealProblemsFormatters = require('./deal-problems');
+const DealCompaniesInfoFormatters = require('./deal-companies-info');
 
 const colsDeals = SQL_TABLES.DEALS.COLUMNS;
 const colsDealStatuses = SQL_TABLES.DEAL_HISTORY_STATUSES.COLUMNS;
@@ -27,17 +28,24 @@ const colsDealDrivers = SQL_TABLES.DEAL_DRIVERS.COLUMNS;
 const colsEconomicSettings = SQL_TABLES.ECONOMIC_SETTINGS.COLUMNS;
 const colsCargoPrices = SQL_TABLES.CARGO_PRICES.COLUMNS;
 
-const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, companyId, initiatorId, dealStatusId) => {
+const formatAllInstancesToSave = (
+    arr, availableTrailers, availableCargos, cargoLoadingType, transporterCompanyId, initiatorId, dealStatusId, companies
+) => {
     const generatedDriverId = uuid();
     const generatedCarId = uuid();
     const generatedTrailerId = uuid();
 
     return arr.reduce((acc, item, i) => {
-        const [deals, dealHistory, dealStatusHistoryConfirmations, newDrivers, newCars, newTrailers, editTrailers] = acc;
+        const [
+            deals, dealHistory, dealStatusHistoryConfirmations, dealCompaniesInfo, newDrivers, newCars, newTrailers, editTrailers
+        ] = acc;
         const cargoId = item[HOMELESS_COLUMNS.CARGO_ID];
         const driverIdOrData = item[HOMELESS_COLUMNS.DRIVER_ID_OR_DATA];
         const carIdOrData = item[HOMELESS_COLUMNS.CAR_ID_OR_DATA];
         const trailerIdOrData = item[HOMELESS_COLUMNS.TRAILER_ID_OR_DATA];
+        const holderCompanyId = availableCargos.find(cargo => cargo.id === cargoId)[colsCargo.COMPANY_ID];
+        const transporterCompany = companies.find(company => company.id === transporterCompanyId);
+        const holderCompany = companies.find(company => company.id === holderCompanyId);
 
         let driverId;
         let carId;
@@ -88,16 +96,24 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
         }
 
         const dealId = uuid();
+        const dealCompanyTransporterInfoId = uuid();
+        const dealCompanyHolderInfoId = uuid();
+
+        dealCompaniesInfo.push(DealCompaniesInfoFormatters.formatRecordToSaveFromOriginal(dealCompanyTransporterInfoId, transporterCompany));
+        dealCompaniesInfo.push(DealCompaniesInfoFormatters.formatRecordToSaveFromOriginal(dealCompanyHolderInfoId, holderCompany));
+
         deals.push({
             id: dealId,
             [colsDeals.CARGO_ID]: cargoId,
-            [colsDeals.TRANSPORTER_COMPANY_ID]: companyId,
+            [colsDeals.TRANSPORTER_COMPANY_ID]: transporterCompanyId,
             [colsDeals.DRIVER_ID]: driverId,
             [colsDeals.CAR_ID]: carId,
             [colsDeals.TRAILER_ID]: trailerIdOrData ? trailerId : null,
             [colsDeals.PAY_CURRENCY_ID]: item[HOMELESS_COLUMNS.PAY_CURRENCY_ID],
             [colsDeals.PAY_VALUE]: item[HOMELESS_COLUMNS.PAY_VALUE],
             [colsDeals.NAME]: item[colsDeals.NAME] || null,
+            [colsDeals.TRANSPORTER_COMPANY_INFO_ID]: dealCompanyTransporterInfoId,
+            [colsDeals.HOLDER_COMPANY_INFO_ID]: dealCompanyHolderInfoId,
         });
 
         const dealHistoryId = uuid();
@@ -115,7 +131,7 @@ const formatAllInstancesToSave = (arr, availableTrailers, cargoLoadingType, comp
         });
 
         return acc;
-    }, [[], [], [], [], [], [], []]);
+    }, [[], [], [], [], [], [], [], []]);
 };
 
 const formatPriceWithFee = (priceValue, defaultSettings, companySettings) => {
