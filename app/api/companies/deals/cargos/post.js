@@ -9,6 +9,7 @@ const TrailersService = require('services/tables/trailers');
 const TrailersStateNumbersService = require('services/tables/trailers-state-numbers');
 const RolesService = require('services/tables/roles');
 const UsersService = require('services/tables/users');
+const CompaniesService = require('services/tables/companies');
 const UsersRolesService = require('services/tables/users-to-roles');
 const PhoneNumbersService = require('services/tables/phone-numbers');
 const UsersCompaniesService = require('services/tables/users-to-companies');
@@ -16,6 +17,7 @@ const DealsService = require('services/tables/deals');
 const DealStatusesService = require('services/tables/deal-statuses');
 const DealStatusesHistoryService = require('services/tables/deal-statuses-history');
 const DealStatusesHistoryConfirmationsService = require('services/tables/deal-statuses-history-confirmations');
+const DealCompaniesInfoService = require('services/tables/deal-compnaies-info');
 const TablesService = require('services/tables');
 const BackgroundService = require('services/background/creators');
 
@@ -52,6 +54,7 @@ const createCargoDeal = async (req, res, next) => {
     try {
         const { body } = req;
         const { company, user, isControlRole } = res.locals;
+
         if (!isControlRole && !company[colsCompanies.PRIMARY_CONFIRMED]) {
             return reject(res, ERRORS.SYSTEM.FORBIDDEN, ERROR_CODES.FORBIDDEN);
         }
@@ -138,10 +141,24 @@ const createCargoDeal = async (req, res, next) => {
 
         let transactionsList = [];
         /* create all shadow records */
-        const dealCreatedStatus = await DealStatusesService.getRecordStrict(DEAL_STATUSES_MAP.CREATED);
+        const allCompaniesIds = availableCargos.map(cargo => cargo[colsCargos.COMPANY_ID]);
+        allCompaniesIds.push(company.id); // add transporter company as well
+        const allCompaniesIdsUnique = Array.from(new Set(allCompaniesIds));
+        const [allCompanies, dealCreatedStatus] = await Promise.all([
+            CompaniesService.getCompaniesByIds(allCompaniesIdsUnique),
+            DealStatusesService.getRecordStrict(DEAL_STATUSES_MAP.CREATED),
+        ]);
+
+        if (allCompanies.length !== allCompaniesIdsUnique.length) {
+            return reject(res, ERRORS.DEALS.INVALID_COMPANIES_COUNT);
+        }
+
         const [
-            deals, dealStatusesHistory, dealStatusHistoryConfirmations, newDrivers, newCars, newTrailers, editTrailers
-        ] = formatAllInstancesToSave(body, availableTrailers, cargoLoadingType, company.id, user.id, dealCreatedStatus.id);
+            deals, dealStatusesHistory, dealStatusHistoryConfirmations, dealCompaniesInfo,
+            newDrivers, newCars, newTrailers, editTrailers
+        ] = formatAllInstancesToSave(
+            body, availableTrailers, availableCargos, cargoLoadingType, company.id, user.id, dealCreatedStatus.id, allCompanies
+        );
 
         if (newDrivers.length) {
             const role = await RolesService.getRoleByName(ROLES.UNCONFIRMED_DRIVER);
@@ -189,6 +206,7 @@ const createCargoDeal = async (req, res, next) => {
 
         transactionsList = [
             ...transactionsList,
+            DealCompaniesInfoService.addRecordsAsTransaction(dealCompaniesInfo),
             DealsService.addRecordsAsTransaction(deals),
             DealStatusesHistoryService.addRecordsAsTransaction(dealStatusesHistory),
             DealStatusesHistoryConfirmationsService.addRecordsAsTransaction(dealStatusHistoryConfirmations),

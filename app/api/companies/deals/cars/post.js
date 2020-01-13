@@ -3,9 +3,11 @@ const { success, reject } = require('api/response');
 // services
 const CargosService = require('services/tables/cargos');
 const DealsService = require('services/tables/deals');
+const CompaniesService = require('services/tables/companies');
 const DealStatusesService = require('services/tables/deal-statuses');
 const DealStatusesHistoryService = require('services/tables/deal-statuses-history');
 const DealStatusesHistoryConfirmationsService = require('services/tables/deal-statuses-history-confirmations');
+const DealCompaniesInfoService = require('services/tables/deal-compnaies-info');
 const TablesService = require('services/tables');
 const BackgroundService = require('services/background/creators');
 const EconomicSettingsServices = require('services/tables/economic-settings');
@@ -35,6 +37,7 @@ const colsCars = SQL_TABLES.CARS.COLUMNS;
 const createCarDeal = async (req, res, next) => {
     try {
         const { body } = req;
+
         const { company, user, isControlRole } = res.locals;
         if (!isControlRole && !company[colsCompanies.PRIMARY_CONFIRMED]) {
             return reject(res, ERRORS.SYSTEM.FORBIDDEN, ERROR_CODES.FORBIDDEN);
@@ -79,19 +82,32 @@ const createCarDeal = async (req, res, next) => {
 
         let transactionsList = [];
 
-        const companyId = availableCars && availableCars[0] && availableCars[0][colsCars.COMPANY_ID];
+        const transporterCompanyId = availableCars && availableCars[0] && availableCars[0][colsCars.COMPANY_ID];
         const [defaultEconomicSettings, companyEconomySettings] = await Promise.all([
             EconomicSettingsServices.getDefaultRecordStrict(),
-            EconomicSettingsServices.getRecordByCompanyId(companyId),
+            EconomicSettingsServices.getRecordByCompanyId(transporterCompanyId),
         ]);
         /* create all shadow records */
-        const dealCreatedStatus = await DealStatusesService.getRecordStrict(DEAL_STATUSES_MAP.CREATED);
+        const allCompaniesIds = [company.id, transporterCompanyId];
+        const [allCompanies, dealCreatedStatus] = await Promise.all([
+            CompaniesService.getCompaniesByIds(allCompaniesIds),
+            DealStatusesService.getRecordStrict(DEAL_STATUSES_MAP.CREATED),
+        ]);
+
+        if (allCompanies.length !== allCompaniesIds.length) {
+            return reject(res, ERRORS.DEALS.INVALID_COMPANIES_COUNT);
+        }
+
         const [
-            deals, dealStatusesHistory, dealStatusHistoryConfirmations,
-        ] = formatAllInstancesToSaveCarDeal(body, cargoLoadingType, companyId, user.id, dealCreatedStatus.id, defaultEconomicSettings, companyEconomySettings);
+            deals, dealStatusesHistory, dealStatusHistoryConfirmations, dealCompaniesInfo
+        ] = formatAllInstancesToSaveCarDeal(
+            body, cargoLoadingType, company.id, transporterCompanyId, user.id, dealCreatedStatus.id,
+            defaultEconomicSettings, companyEconomySettings, allCompanies
+        );
 
         transactionsList = [
             ...transactionsList,
+            DealCompaniesInfoService.addRecordsAsTransaction(dealCompaniesInfo),
             DealsService.addRecordsAsTransaction(deals),
             DealStatusesHistoryService.addRecordsAsTransaction(dealStatusesHistory),
             DealStatusesHistoryConfirmationsService.addRecordsAsTransaction(dealStatusHistoryConfirmations),

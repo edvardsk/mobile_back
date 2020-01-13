@@ -150,6 +150,12 @@ const setCompaniesFilter = (expression, filteringObject) => {
     return expression;
 };
 
+const selectCompaniesByIds = ids => squelPostgres
+    .select()
+    .from(table.NAME)
+    .where('id IN ?', ids)
+    .toString();
+
 module.exports = {
     insertCompany,
     updateCompany,
@@ -161,4 +167,5 @@ module.exports = {
     selectCompanyByStateRegistrationCertificateNumberWithFirstOwner,
     selectCompaniesPaginationSorting,
     selectCountCompanies,
+    selectCompaniesByIds,
 };
