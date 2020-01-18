@@ -1,0 +1,22 @@
+const ERROR_CODES = {
+    BAD_REQUEST: 400,
+    UNAUTHORIZED: 401,
+    FORBIDDEN: 403,
+    NOT_FOUND: 404,
+};
+
+const SUCCESS_CODES = {
+    OK: 200,
+    CREATED: 201,
+    NOT_CONTENT: 204,
+};
+
+const SERVER_ERROR_CODES = {
+    INTERNAL_ERROR: 500,
+};
+
+module.exports = {
+    ERROR_CODES,
+    SUCCESS_CODES,
+    SERVER_ERROR_CODES,
+};

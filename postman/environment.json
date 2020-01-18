@@ -1,0 +1,34 @@
+{
+	"id": "04c22bbe-87d5-4e83-b42f-6ef8272f95a3",
+	"name": "NDA",
+	"values": [
+		{
+			"key": "url",
+			"value": "localhost:3000/api/v1",
+			"enabled": true
+		},
+		{
+			"key": "token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIyN2M0YjY5LWEzM2QtNDExNC1iMjM5LTM4YWIzY2IxY2M2NSIsImlhdCI6MTU3MTcyNTQ1OCwiZXhwIjoxNTc0MzE3NDU4fQ.WEb-_F6_7eEh8AtR0ygPHXjc7M6EkhV15OjTD89Ub5g",
+			"enabled": true
+		},
+		{
+			"key": "role",
+			"value": "confirmed_customer",
+			"enabled": true
+		},
+		{
+			"key": "phonePrefixId",
+			"value": "2e1cedd2-4c21-4d64-88ed-6edbb7ec4357",
+			"enabled": true
+		},
+		{
+			"key": "countryId",
+			"value": "fce5b2c5-d60d-4788-9b16-b5c626d7b4b6",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2019-10-22T06:29:22.162Z",
+	"_postman_exported_using": "Postman/7.9.0"
+}
