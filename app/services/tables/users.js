@@ -1,4 +1,4 @@
-const { one, oneOrNone, manyOrNone } = require('db');
+const { one, oneOrNone } = require('db');
 const {
     selectUserByName,
 
@@ -8,10 +8,9 @@ const {
 } = require('sql-helpers/users');
 
 const { OPERATIONS } = require('constants/postgres');
-const { SQL_TABLES } = require('constants/tables');
+// const { SQL_TABLES } = require('constants/tables');
 
-const cols = SQL_TABLES.USERS.COLUMNS;
-
+// const cols = SQL_TABLES.USERS.COLUMNS;
 
 const getUserByName = name => oneOrNone(selectUserByName(name));
 

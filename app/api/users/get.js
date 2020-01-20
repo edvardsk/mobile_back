@@ -6,7 +6,6 @@ const { formatUserForResponse } = require('formatters/users');
 const getUser = async (req, res, next) => {
     try {
         const { user } = res.locals;
-        console.log(user);
         return success(res, { user: formatUserForResponse(user) });
     } catch (error) {
         next(error);

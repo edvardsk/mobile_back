@@ -1,9 +1,0 @@
-#!/bin/bash
-source ./.env
-
-PGPASSWORD=$DB_PASS psql -U $DB_USER << EOF
-DROP DATABASE $DB_NAME;
-CREATE DATABASE $DB_NAME;
-EOF
-
-yarn up;

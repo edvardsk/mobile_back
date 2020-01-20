@@ -1,10 +1,25 @@
-### To init project:
-1. Install modules using `yarn` command
-2. Create `.env` file in root, copy values from `.env.sample` and fill in if it is necessary
-3. Run `./scripts/init_db`
-
-### To run server:
-`yarn dev`
+### Instruction
+1. install docker
+2. copy .env file
+3. run `yarn docker-build` after each update
+4. run `yarn docker-start` for reload
 
 ### Postman collection:
-`https://documenter.getpostman.com/view/1307315/SVmwwyRP?version=latest`
+https://documenter.getpostman.com/view/2048986/SWT5j1Fv?version=latest
+
+### DOCKER
+
+Build docker
+```$xslt
+yarn docker-build
+```
+
+Start docker
+```$xslt
+yarn docker-start
+```
+
+Stop project
+```$xslt
+yarn docker-stop
+```

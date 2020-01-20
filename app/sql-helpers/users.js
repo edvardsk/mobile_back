@@ -1,6 +1,5 @@
 const squel = require('squel');
-const { get } = require('lodash');
-const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
+const { SQL_TABLES } = require('constants/tables');
 
 const squelPostgres = squel.useFlavour('postgres');
 

@@ -1,4 +1,4 @@
-const { SQL_TABLES, HOMELESS_COLUMNS } = require('constants/tables');
+const { SQL_TABLES } = require('constants/tables');
 
 const cols = SQL_TABLES.USERS.COLUMNS;
 
