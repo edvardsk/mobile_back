@@ -13,6 +13,8 @@ const formatUserForResponse = user => ({
     id: user.id,
     [cols.NAME]: user[cols.NAME],
     [cols.CREATED_AT]: user[cols.CREATED_AT],
+    [cols.SKILLS_ID]: user[cols.SKILLS_ID],
+    [cols.STATS_ID]: user[cols.STATS_ID],
 });
 
 const formatPasswordDataToUpdate = data => ({
@@ -24,9 +26,15 @@ const formatUserToUpdate = data => ({
     [cols.NAME]: data[cols.NAME],
 });
 
+const formatLinksToUpdate = (statsId, skillsId) => ({
+    [cols.SKILLS_ID]: skillsId,
+    [cols.STATS_ID]: statsId,
+});
+
 module.exports = {
     formatUserForSaving,
     formatUserForResponse,
     formatPasswordDataToUpdate,
     formatUserToUpdate,
+    formatLinksToUpdate,
 };

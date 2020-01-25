@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "nodemon --watch app --exec node app/server.js --inspect=9229",
-    "start": "yarn && npm run up && node app/server.js",
+    "start": "node app/server.js",
     "up": "knex-migrate up",
     "down": "knex-migrate down",
     "rollback": "knex-migrate rollback",

@@ -5,12 +5,7 @@ const BASES = {
     AUTHORIZATION: '/authorization',
     USERS: '/users',
     ME: '/me',
-};
-
-const IDS = {
-    USER_ID: '/:userId',
-    ME: '/:me',
-    ME_OR_ID: '/:meOrId',
+    CHARACTERISTICS: '/characteristics',
 };
 
 const ROUTES = {
@@ -31,27 +26,9 @@ const ROUTES = {
         ME: {
             BASE: BASES.ME,
             GET: '',
-        },
-        FREEZE: {
-            BASE: IDS.USER_ID + BASES.FREEZE,
-            POST: '',
-        },
-        UNFREEZE: {
-            BASE: IDS.USER_ID + BASES.UNFREEZE,
-            POST: '',
+            CHARACTERISTICS: '/characteristics'
         },
     },
-    // DRIVERS: {
-    //     BASE: BASES.DRIVERS,
-    //     VERIFY: {
-    //         BASE: IDS.DRIVER_ID + BASES.VERIFY,
-    //         POST: '',
-    //     },
-    //     REJECT: {
-    //         BASE: IDS.DRIVER_ID + BASES.REJECT,
-    //         POST: '',
-    //     },
-    // },
 };
 
 const ALLOWED_ROUTES = {
