@@ -22,7 +22,7 @@
   "dependencies": {
     "@google-cloud/translate": "^5.0.2",
     "@google/maps": "^1.0.2",
-    "ajv": "^6.10.2",
+    "ajv": "^6.12.3",
     "ajv-errors": "^1.0.1",
     "ajv-keywords": "^3.4.1",
     "app-module-path": "^2.2.0",
