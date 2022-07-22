@@ -37,7 +37,7 @@
     "email-templates": "^6.0.2",
     "express": "^4.16.4",
     "express-ws": "^4.0.0",
-    "file-type": "^12.3.1",
+    "file-type": "^16.5.4",
     "geolib": "^3.1.0",
     "google-libphonenumber": "^3.2.5",
     "http-errors": "^1.7.2",
