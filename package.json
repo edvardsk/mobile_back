@@ -42,7 +42,7 @@
     "google-libphonenumber": "^3.2.5",
     "http-errors": "^1.7.2",
     "jsonwebtoken": "^8.5.1",
-    "knex": "^0.19.4",
+    "knex": "^2.4.0",
     "knex-migrate": "^1.7.1",
     "lodash": "^4.17.11",
     "mammoth": "^1.4.8",
